@@ -1,0 +1,51 @@
+---- g_atMotorPara Matches (41 in 3 files) ----
+MT_X_Home in InterfaceScope.c (source) :     tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+MT_X_Home in InterfaceScope.c (source) :     tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+MT_X_Home in InterfaceScope.c (source) :     tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+MT_X_Home in InterfaceScope.c (source) :     tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+MT_X_Home_only in InterfaceScope.c (source) :     tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+MT_X_Home_only in InterfaceScope.c (source) :     tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+MT_X_Home_only in InterfaceScope.c (source) :     tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+MT_X_Home_only in InterfaceScope.c (source) :     tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+MT_Y_Home in InterfaceScope.c (source) :     tMvoingPara.nFreqMin = g_atMotorPara[Motor_Y].nFreqMin;
+MT_Y_Home in InterfaceScope.c (source) :     tMvoingPara.nFreqMax = g_atMotorPara[Motor_Y].nFreqMax;
+MT_Y_Home in InterfaceScope.c (source) :     tMvoingPara.nFreqInc = g_atMotorPara[Motor_Y].nFreqInc;
+MT_Y_Home in InterfaceScope.c (source) :     tMvoingPara.nFreqSam = g_atMotorPara[Motor_Y].nFreqSam;
+MT_X_MoveToPosRel in InterfaceScope.c (source) :     tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+MT_X_MoveToPosRel in InterfaceScope.c (source) :     tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+MT_X_MoveToPosRel in InterfaceScope.c (source) :     tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+MT_X_MoveToPosRel in InterfaceScope.c (source) :     tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+MT_X_MoveToPosRel_only in InterfaceScope.c (source) :     tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+MT_X_MoveToPosRel_only in InterfaceScope.c (source) :     tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+MT_X_MoveToPosRel_only in InterfaceScope.c (source) :     tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+MT_X_MoveToPosRel_only in InterfaceScope.c (source) :     tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+MT_Y_MoveToPosRel in InterfaceScope.c (source) :     tMvoingPara.nFreqMin = g_atMotorPara[Motor_Y].nFreqMin;
+MT_Y_MoveToPosRel in InterfaceScope.c (source) :     tMvoingPara.nFreqMax = g_atMotorPara[Motor_Y].nFreqMax;
+MT_Y_MoveToPosRel in InterfaceScope.c (source) :     tMvoingPara.nFreqInc = g_atMotorPara[Motor_Y].nFreqInc;
+MT_Y_MoveToPosRel in InterfaceScope.c (source) :     tMvoingPara.nFreqSam = g_atMotorPara[Motor_Y].nFreqSam;
+Scope_Move.c (config) line 15 : IO_ struct tMvMotorPara   XRAM_ g_atMotorPara[MV_MOTOR_NUM];   // paramenters
+MV_InitPara in Scope_Move.c (config) :     g_atMotorPara[eMotor].nFreqMin   = nFreqMin;
+MV_InitPara in Scope_Move.c (config) : 	g_atMotorPara[eMotor].nFreqMax   = nFreqMax;
+MV_InitPara in Scope_Move.c (config) : 	g_atMotorPara[eMotor].nFreqInc   = nFreqInc;
+MV_InitPara in Scope_Move.c (config) :     g_atMotorPara[eMotor].nFreqSam   = nFreqSam;
+MV_Move in Scope_Move.c (config) :     if( (0 == g_atMotorPara[eMotor].nFreqSam) ||
+MV_Move in Scope_Move.c (config) : 		(0 == g_atMotorPara[eMotor].nFreqInc) ||
+MV_Move in Scope_Move.c (config) : 		(g_atMotorPara[eMotor].nFreqMin > g_atMotorPara[eMotor].nFreqMax) ||
+MV_Move in Scope_Move.c (config) : 		(g_atMotorPara[eMotor].nFreqInc > g_atMotorPara[eMotor].nFreqMax) )
+MV_Move in Scope_Move.c (config) :     nBase  = (UINT32)( (g_atMotorPara[eMotor].nFreqMax - g_atMotorPara[eMotor].nFreqMin) / g_atMotorPara[eMotor].nFreqInc);     
+MV_Move in Scope_Move.c (config) : 	nAllow = (UINT32)( (nSteps / 2) / g_atMotorPara[eMotor].nFreqSam );
+MV_Move in Scope_Move.c (config) : 	nCount = (UINT32)( nAcc * g_atMotorPara[eMotor].nFreqSam );
+Scope_Move.h (config) line 65 : _EXT_ IO_ struct tMvMotorPara   XRAM_ g_atMotorPara[MV_MOTOR_NUM];   // paramenters
+---- MOTO_DOBULE_ENABLE Matches (2 in 1 files) ----
+MT_X_Home in InterfaceScope.c (source) : 
+
+#ifdef  MOTO_DOBULE_ENABLE
+    MT_Y_MoveToPosRel();
+#endif
+
+MT_X_MoveToPosRel in InterfaceScope.c (source) : 
+
+#ifdef  MOTO_DOBULE_ENABLE
+    MT_Y_Home();
+#endif
+

@@ -1,0 +1,4 @@
+---- softver_edtion Matches (4 in 1 files) ----
+ProcessScope.c (source):/* const UINT8 softver_edtion[] = "CX2100_SLA_V004_20180521_1000"; */  /* 统一版本号命名 */
+ProcessScope.c (source):const UINT8 softver_edtion[] = "0.0.5";
+ProcessScope.c (source):                memcpy((pchFbkBuf + 2), softver_edtion, (sizeof(softver_edtion)));/* MCU版本 ASCII格式 32个字节 */
