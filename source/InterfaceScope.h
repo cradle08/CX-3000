@@ -4,21 +4,21 @@
 #define    __INTERFACE_SCOPE_H__
 
 #include  "MyType.h"
-//#include  "ProcessScope.h"
+#include  "ProcessScope.h"
 //-----------------------------------------------------------------------------------------
 // 宏定义
 
 //yaolan_start
 
 #define  OC_AXIS_POS_INDEX	 0
-enum ADC_Channel
-{
-	EN_Data_CHANNEL_WBC 		= 1,
-	EN_Data_CHANNEL_RBC 		= 2,
-	EN_Data_CHANNEL_PLT 		= 3,
-	EN_Data_CHANNEL_RBC_PLT     = 4,
-	EN_Data_CHANNEL_END 		= 5,
-};
+//enum ADC_Channel
+//{
+//	EN_Data_CHANNEL_WBC 		= 1,
+//	EN_Data_CHANNEL_RBC 		= 2,
+//	EN_Data_CHANNEL_PLT 		= 3,
+//	EN_Data_CHANNEL_RBC_PLT     = 4,
+//	EN_Data_CHANNEL_END 		= 5,
+//};
 
 //yaolan_end
 
@@ -94,40 +94,6 @@ struct tTempKeep
 	IO_ UINT16      nTemp; 
 };
 
-typedef enum
-{
-    MOTO_WORK_STAT_RUN = 0,  /* 正在执行 */
-    MOTO_WORK_STAT_OK,       /* 执行成功 */
-    MOTO_WORK_STAT_FAIL,     /* 执行失败 */
-}
-MOTO_WORK_STAT_E;
-
-typedef enum
-{
-	e_BUILD_PRESS_SUCCESS = 0,
-	e_BUILD_PRESS_FAIL = 1,
-} BUILD_PRESS_E;
-
-typedef enum
-{
-	e_Moto_Out = 0,
-	e_Moto_In  = 1,
-}MOTO_WORK_DIR;
-
-typedef enum {
-	e_NormalCheck_Call = 0,  // normal test
-	e_SelfCheck_Call   = 1, // for self check
-	e_PartTest_Call    = 2	// for part tet
-}CALL_STYLE_E;
-
-
-typedef enum{
-	e_Msg_Ctrol  = 0,
-	e_Msg_Status = 1,
-	e_Msg_Query  = 2,
-	e_Msg_Data   = 3,
-	e_Msg_End    = 4
-} EN_MSG_TYPE;
 
 typedef enum{
 	// get or clear for HW_DATA_GetData
@@ -167,13 +133,16 @@ UINT16  HW_Get_ADC_HGB(void);
 UINT32  HW_Get_ADC_CRP(void);
 UINT16  Get_HGB_Value(void);
 UINT32  Get_CRP_Value(void);
-UINT8 Send_Data_HGB(UINT16* pData, UINT16 nLen);
-UINT8 Send_Data_CRP(IO_ UINT16* pData, UINT16 nLen);
+UINT8 Send_Data_HGB(UINT32 nCmd, UINT16* pData, UINT16 nLen);
+UINT8 Send_Data_CRP(UINT32 nCmd, IO_ UINT32* pData, UINT16 nLen);
 
-// data channel
-UINT8 HW_Enable_Data_Channel(UINT8 Index);
-UINT8 HW_Disable_Data_Channel(UINT8 Index);
-UINT8 HW_Clear_Data_Channel(UINT8 Index);
+UINT8 HW_WBC_GetData(UINT16* pnData, UINT16* pnLen, UINT16* pnStatus);
+UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
+UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
+UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
+UINT8 Data_Circle_Handle(eTestMode eMode);
+
+
 // yaolan_end
 //-----------------------------------------------------------------------------------------
 

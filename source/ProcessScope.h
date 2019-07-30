@@ -4,7 +4,7 @@
 #define    __PROCESS_SCOPE_H__
 
 #include  "MyType.h"
-#include "InterfaceScope.h"
+//#include "InterfaceScope.h"
 
 //----- control --------------------------------------
 #define    CMD_CTRL_VALVE         0x00000000
@@ -29,9 +29,12 @@
 #define    CMD_CTRL_TEST_RBC_PLT  0x00000504  // test cmd
 #define    CMD_CTRL_TEST_HGB  	  0x00000505
 #define    CMD_CTRL_TEST_CRP      0x00000506
+#define    CMD_CTRL_CALIBRATE_HGB      0x00000507
+#define    CMD_CTRL_CALIBTATE_CRP      0x00000508
 
 #define    CMD_CTRL_PRESS_CONFIG  		0x00000600 
 #define    CMD_CTRL_PRESS_ADD     		0x00000601 
+#define    CMD_CTRL_CRP_PARAM_SET     	0x00000602
 #define    CMD_CTRL_MOT_OUT_CHECK 		0x00000700 
 #define    CMD_CTRL_MOT_IN_CHECK  		0x00000701 // yaolan_20190220
 #define    CMD_CTRL_WBC_48V_CHECK 		0x00000702 
@@ -60,6 +63,7 @@
 #define    CMD_STATUS_WBC_48V        	0x01000002
 #define    CMD_STATUS_BUILD_PRESS    	0x01000003
 #define    CMD_STATUS_AIRLIGHT_PRESS 	0x01000004
+#define    CMD_STATUS_CRP_PARAM_SET     0x01000602
 #define    CMD_STATUS_PART_TEST      	0x01000708
 #define    CMD_STATUS_PRESS_DATA     	0x00000100
 #define    CMD_STATUS_PRESS_ADD      	0x00000101
@@ -77,6 +81,16 @@
 #define    CMD_QUERY_PRESS_ADD   		0x00000101
 #define    CMD_QUERY_AIRLIGHT_RESULT   	0x20000102
 
+#define    CMD_QUERY_TMEPERATURE	   	0x20000103 
+#define    CMD_QUERY_CUR_V_HGB		   	0x20000104
+#define    CMD_QUERY_CUR_V_CRP   		0x20000105
+#define    CMD_QUERY_CUR_V_XK   		0x20000106
+#define    CMD_QUERY_CUR_V_DL   		0x20000107
+#define    CMD_QUERY_CUR_V_48V   		0x20000108
+#define    CMD_QUERY_V_ADC_HGB  		0x20000109
+#define    CMD_QUERY_V_ADC_CRP	   		0x2000010A
+#define    CMD_QUERY_REGISTER_VALUE		0x2000010B
+
 //-----data----------------------------------------------------- 
 #define    CMD_DATA_MOTO_IN_X_ADD   	0x30000007
 #define    CMD_DATA_WBC_VALUE       	0x30000008
@@ -85,6 +99,15 @@
 #define    CMD_DATA_ALY          		0x00000001
 #define    CMD_DATA_WAVE         		0x00000002
 #define    CMD_DATA_AIRLIGHT_RESULT		0x30000102
+
+#define    CMD_DATA_TEST_WBC   			0x30000501
+#define    CMD_DATA_TEST_RBC   			0x30000502
+#define    CMD_DATA_TEST_PLT   			0x30000503
+#define    CMD_DATA_TEST_RBC_PLT   		0x30000504
+#define    CMD_DATA_TEST_HGB   			0x30000505
+#define    CMD_DATA_TEST_CRP   			0x30000506
+#define    CMD_DATA_CALIBRATE_HGB   	0x30000507
+#define    CMD_DATA_CALIBRATE_CRP   	0x30000508
 
 
 #define  COLLECT_RET_SUCESS            	0x0000      /* 采集成功 */
@@ -120,9 +143,9 @@
 #define LED_CRP_INDEX   	  	1
 #define LED_STATUS_OPEN   	  	1
 #define LED_STATUS_CLOSE 	  	0
-#define HGB_BLACK_VALUE			0x1111
+#define HGB_BLACK_VALUE			0x0000
 
-#define CRP_TOTAL_DATA_NUM		1200		//at 120s, per 0.1s get one data,total num is 120*10=1200
+
 #define DATA_FRAME_NUM_4BYTE	128			// send data number a time
 #define DATA_FRAME_NUM_2BYTE	256			// send data number a time
 #define DATA_FRAME_NUM_1BYTE	512			// send data number a time
@@ -136,19 +159,54 @@
 
 #define HGB_MIX_THRESHOLD_V		4500		// 4500mv
 #define CRP_MIX_THRESHOLD_V		4500		// 4500mv
-#define ELEC_STATUS_OPEN     1
-#define ELEC_STATUS_CLOSE    0
+#define ELEC_STATUS_OPEN     	1
+#define ELEC_STATUS_CLOSE    	0
 
+#define HGB_CALIBRATE_DATA_NUM	10
+#define CRP_CALIBRATE_DATA_NUM  10
+typedef enum {
+	EN_HGB_TEST			= 0,
+	EN_CRP_TEST			= 1,
+	EN_HGB_CALIBRATE 	= 2,
+	EN_CRP_CALIBRATE	= 3,
+	EN_WBC_TEST			= 4,
+	EN_RBC_TEST			= 5,
+	EN_PLT_TEST			= 6,
+	EN_RBC_PLT_TEST		= 7,
+	EN_MODE_END			= 8,
+}eTestMode;
 
+enum {
+	EN_REGISTER_WBC		= 0,
+	EN_REGISTER_RBC		= 1,
+	EN_REGISTER_PLT		= 2,
+	EN_REGISTER_HGB		= 3,
+	EN_REGISTER_CRP		= 4,
+	EN_REGISTER_RBC_PLT = 5,
+	EN_REGISTER_END		= 6
+};
 
-struct CRP_DataType{
+struct CRP_DataType{	
 	UINT8 eEnable;
 	UINT8 eSend;
 	UINT16 nTotal;
 	UINT16 nIndex;
-	UINT16 crpBuffer[DATA_FRAME_NUM_2BYTE*2]; // 256*2*2=1024
+	UINT32 crpBuffer[DATA_FRAME_NUM_4BYTE*2]; // 256*2*2=1024
 };
 extern IO_ struct CRP_DataType g_CRP_Data;
+
+
+// 
+UINT8 Set_CRP_Param(UINT16 nTime, UINT16 nHZ);
+UINT8 Set_Press_Add(UINT16 nAdd);
+UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal);
+void Cmd_Wave_Exec(UINT8 nFlag);
+
+// data channel
+UINT8 HW_Enable_Data_Channel(eTestMode eMode);
+UINT8 HW_Disable_Data_Channel(eTestMode eMode);
+UINT8 HW_Clear_Data_Channel(eTestMode eMode);
+UINT8 Data_Circle_Handle(eTestMode eMode);
 
 //yaolan_end
 //----------------------------------------------------------------------------------------------
@@ -233,6 +291,44 @@ enum {
 	VALVE_TEST 				= 5  // valve test
 };
 
+typedef enum{
+	e_Msg_Ctrol  = 0,
+	e_Msg_Status = 1,
+	e_Msg_Query  = 2,
+	e_Msg_Data   = 3,
+	e_Msg_End    = 4
+}EN_MSG_TYPE;
+
+
+typedef enum
+{
+    MOTO_WORK_STAT_RUN = 0,  /* 正在执行 */
+    MOTO_WORK_STAT_OK,       /* 执行成功 */
+    MOTO_WORK_STAT_FAIL,     /* 执行失败 */
+}
+MOTO_WORK_STAT_E;
+
+
+typedef enum
+{
+	e_BUILD_PRESS_SUCCESS = 0,
+	e_BUILD_PRESS_FAIL = 1,
+} BUILD_PRESS_E;
+
+typedef enum {
+	e_NormalCheck_Call = 0,  // normal test
+	e_SelfCheck_Call   = 1, // for self check
+	e_PartTest_Call    = 2	// for part tet
+}CALL_STYLE_E;
+
+
+
+typedef enum
+{
+	e_Moto_Out = 0,
+	e_Moto_In  = 1,
+}MOTO_WORK_DIR;
+
 typedef enum {
 	EN_WBC_V_LOW  = 0,
 	EN_WBC_V_HIGH = 1
@@ -262,13 +358,15 @@ void Append_Debug_Info(INT8 *pInfo, INT8 *pTemp, UINT16 *pInfoLen);
 //-----------------------------------------------------------------------------------------
 
 // yaolan_start
-UINT8 HGB_Test_Exec(void);
-UINT8 CRP_Test_Exec(void);
+UINT8 HGB_Test_Exec(eTestMode eMode);
+UINT8 CRP_Test_Exec(eTestMode eMode);
+//UINT8 HGB_Calibrate_Exec(void);
+//UINT8 CRP_Calibate_Exec(void);
 UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag);
 
 //yaolan_end
 
-
+eTestMode GetTestMode(UINT32 nCmd);
 _EXT_ UINT8 MSG_Handling(UINT8* pchCmdBuf, UINT8* pchFbkBuf);
 _EXT_ UINT8 MSG_Handling_MsgHandle(UINT8* pchCmdBuf, UINT8* pchFbkBuf);
 
@@ -317,7 +415,7 @@ INT32 Get_Press_Value(UINT8 nNum);
 _EXT_ UINT8 MSG_Testing(void);
 //
 #ifdef DEBUG_INFO_UP_LOAD
-_EXT_ UINT8 MSG_TestingFunc(UINT8 *pDInfo, UINT16 *pDILen, UINT8 nChannel);
+_EXT_ UINT8 MSG_TestingFunc(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode);
 #else
 _EXT_ UINT8 MSG_TestingFunc(void);
 #endif

@@ -38,7 +38,6 @@
 //_EXT_ UINT8 XRAM_ g_const_ach[4]; 
 
 
-
 //FLASH 扇区的起始地址
 #define ADDR_FLASH_SECTOR_0     ((u32)0x08000000) 	//扇区0起始地址, 16 Kbytes  
 #define ADDR_FLASH_SECTOR_1     ((u32)0x08004000) 	//扇区1起始地址, 16 Kbytes  
@@ -55,22 +54,35 @@
 
  //sector 2 ,0x08008000-0x0800BFFF=16k, 0x08008000-0x0800BFFF=12k
 #define FLASH_SAVE_ADDR    0x08009000
-#define FLASH_INIT_FLAG    0xabcd
+#define FLASH_INIT_FLAG    0x1234
 #define RECORD_PARAM_LEN  (sizeof(RECORD_PARAM))
 typedef struct {
 	UINT16 nFlag;
-	UINT8 nWBC;       // wbc value
+	UINT8  nRegister_WBC;       // wbc value
+	UINT8  nRegister_RBC;
+	UINT8  nRegister_PLT;
+	UINT8  nRegister_RBC_PLT; 
+	UINT8  nRegister_HGB;
+	UINT8  nRegister_CRP;
 	UINT16 nXAddStep; // moto x home, add step
-	INT32 nAddPress; // press
+	INT32  nAddPress; // press
 	UINT32 nCrc;      // crc
+	// CRP
+	UINT16 nTime; // time to get data
+	UINT16 nHZ;   // in one second how many data to get
+	UINT16 nTotal_Num; // in nTime and nHz, nTotal_Num(nTime*nHz) will be get
+	
 } RECORD_PARAM;
-_EXT_ RECORD_PARAM g_Record_Param;
-
+_EXT_  RECORD_PARAM g_Record_Param;
 	
 void Set_Default_Param(RECORD_PARAM *pParam);
+void Set_Default_Param_Machine(RECORD_PARAM *pParam);
+void Set_Default_Param_CRP(RECORD_PARAM *pParam);
+
 UINT16 STMFLASH_GetFlashSector(UINT32 addr);
 UINT8 Flash_Read_Param(RECORD_PARAM *pParam, UINT32 nLen);
 UINT8 Flash_Write_Param(RECORD_PARAM *pParam, UINT32 nLen);
+
 
 
 #endif

@@ -6,6 +6,9 @@
 #include "KernelHeader.h"
 #include "stdlib.h"
 
+
+
+
 ////===================================================
 ////
 //#define  TIMING_1    (50)
@@ -447,21 +450,36 @@ _EXT_ UINT8 MSG_Handling_MsgHandle(UINT8* pchCmdBuf, UINT8* pchFbkBuf)
 	
 }
 
+eTestMode GetTestMode(UINT32 nCmd)
+{
+	eTestMode eMode = EN_MODE_END;
+	if(nCmd == CMD_CTRL_TEST_WBC){
+		eMode =  EN_WBC_TEST;
+	}else if(nCmd == CMD_CTRL_TEST_RBC){
+		eMode =  EN_RBC_TEST;
+	}else if(nCmd == CMD_CTRL_TEST_PLT){
+		eMode =  EN_PLT_TEST;
+	}else if(nCmd == CMD_CTRL_TEST_RBC_PLT){
+		eMode =  EN_RBC_PLT_TEST;
+	}
+	return eMode;
+}
+
 //===================================================
 //
 UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 {
     UINT8  chType              = 0;
-	UINT8  nChannel            = 0;
+//	UINT8  nChannel            = 0;
     UINT32 nCommand            = 0;
     UINT16 nParaLen            = 0;
     //
     enum eFlag  bSendBack      = e_False;
+	eTestMode 	eMode		   = EN_MODE_END;
     //
-    UINT16 nShort  = 0;
-    UINT32 nWord   = 0;
-	INT16 nAdd     = 0;
-    UINT32 nWord_p = 0;
+    UINT16 nShort = 0, nAdd = 0, nParam1 = 0, nParam2 = 0;
+	UINT32 nWord    = 0;
+    UINT32 nWord_p  = 0;
     //
     chType   = *(pchCmdBuf + 3);
     nCommand = PL_UnionFourBytes(*(pchCmdBuf + 4),
@@ -485,11 +503,11 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			case CMD_CTRL_TEST_RBC_PLT:
             case CMD_CTRL_TEST_WBC: // count func
             {
-				nChannel  = *(pchCmdBuf + 7); // which cmd was be exec
+				eMode  = GetTestMode(nCommand);// which cmd was be exec
                 nCommand  = CMD_CTRL_TEST_WBC;
                 // bSendBack = e_True;
 #ifdef DEBUG_INFO_UP_LOAD
-                if(e_Feedback_Success != MSG_TestingFunc(pchFbkBuf, &nParaLen, nChannel))
+                if(e_Feedback_Success != MSG_TestingFunc(pchFbkBuf, &nParaLen, eMode))
 				{
 #else
 				if(e_Feedback_Success != MSG_TestingFunc())
@@ -515,33 +533,44 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_TEST_HGB:
 			{
-				HGB_Test_Exec();
+				HGB_Test_Exec(EN_HGB_TEST);
 			}
 			break;
 			case CMD_CTRL_TEST_CRP:
 			{
-				CRP_Test_Exec();
+				printf("CRP Param Set: nTime=%d,nHz=%d, nTotal=%d\r\n", g_Record_Param.nTime,\
+												g_Record_Param.nHZ, g_Record_Param.nTotal_Num);
+				CRP_Test_Exec(EN_CRP_TEST);
+			}
+			break;
+			case CMD_CTRL_CALIBRATE_HGB:
+			{
+				HGB_Test_Exec(EN_HGB_CALIBRATE);
+			}
+			break;
+			case CMD_CTRL_CALIBTATE_CRP:
+			{
+				CRP_Test_Exec(EN_CRP_CALIBRATE);
+			}
+			break;
+			case CMD_CTRL_CRP_PARAM_SET:
+			{
+				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				nParam2 = PL_UnionTwoBytes_2(*(pchCmdBuf + 10), *(pchCmdBuf + 11));
+				Set_CRP_Param(nParam1, nParam2);
 			}
 			break;
 			case CMD_CTRL_LED:
 			{
 				LED_Test_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
 			}
-			break;			
+			break;					
             case CMD_CTRL_VALVE: //
             {
-                if (0 == (*(pchCmdBuf + 9)))
-                {
-                    HW_Valve_Off(*(pchCmdBuf + 8));
-                }
-                else
-                {
-                    HW_Valve_On(*(pchCmdBuf + 8));
-                }
+				Cmd_Wave_Exec(*(pchCmdBuf + 8));
                 //
             }
 			break;
-            //
             case CMD_CTRL_PUMP:
             {
                 nWord = PL_UnionFourBytes(*(pchCmdBuf +  8),
@@ -555,30 +584,14 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_PRESS_ADD: // 
 			{
-				nAdd = PL_UnionTwoBytes_2(*(pchCmdBuf + 8),
+				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8),
 						  *(pchCmdBuf + 9));
-				
-				g_Record_Param.nAddPress = nAdd*PRESS_PRECISION_FACTOR;
-				g_Record_Param.nFlag = FLASH_INIT_FLAG;
-				printf("Set add=%d, addpress=%010d\r\n", nAdd, (int)g_Record_Param.nAddPress);
-				Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
-				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_PRESS_ADD, e_Feedback_Success);
+				Set_Press_Add(nParam1);
 			}
 			break;
 			case CMD_CTRL_REGISTER: 
             {
-				// index = 0: WBC  transmission gain
-                HW_ADJ_SetResistor(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
-				// todo
-				if(*(pchCmdBuf + 8) == 0)
-				{
-					g_Record_Param.nWBC =  *(pchCmdBuf + 9);
-					g_Record_Param.nFlag = FLASH_INIT_FLAG;
-					printf("Set WBC Value=%d\r\n", g_Record_Param.nWBC);
-					Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
-					Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_WBC_SET, e_Feedback_Success);
-				}
-                //
+				Set_Register_Param(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
             }
 			break;
 			case CMD_CTRL_WBC_48V_CHECK:
@@ -628,7 +641,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 					
 
-            //***************************************************
+            //*******************************************************
             case CMD_CTRL_MOT_IN:
             {
                 MT_X_Home(e_NormalCheck_Call); // go home
@@ -804,8 +817,8 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
             break;
 			case CMD_QUERY_WBC_VALUE: // get wbc value
 			{
-				printf("Query WBC Value=%d\r\n", (int)g_Record_Param.nWBC);
-				Msg_Return_Handle_8(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nWBC);
+				printf("Query WBC register Value=%d\r\n", (int)g_Record_Param.nRegister_WBC);
+				Msg_Return_Handle_8(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nRegister_WBC);
 			}
 			break;
 			case CMD_QUERY_PRESS_ADD: // get press add
@@ -843,8 +856,52 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
                 nParaLen         = 1;
 			}
 			break;
-		
-			//********************
+			case CMD_QUERY_TMEPERATURE:
+			{
+			
+			}	
+			break;
+			case CMD_QUERY_CUR_V_HGB:
+			{
+			
+			}	
+			break;
+			case CMD_QUERY_CUR_V_CRP:
+			{
+			
+			}	
+			break;
+			case CMD_QUERY_CUR_V_XK:
+			{
+			
+			}	
+			break;
+			case CMD_QUERY_CUR_V_DL:
+			{
+			
+			}	
+			break;
+			case CMD_QUERY_CUR_V_48V:
+			{
+			
+			}	
+			break;
+			case CMD_QUERY_V_ADC_HGB:
+			{
+			
+			}	
+			break;
+			case CMD_QUERY_V_ADC_CRP:
+			{
+			
+			}	
+			break;	
+			
+			
+			
+			
+			
+			//****************************************************
             case CMD_QUERY_MOT_STAT:    /* 查询电机状态 */
 			{
                 bSendBack = e_True;
@@ -929,10 +986,7 @@ UINT8 MSG_Testing(void)
     while (nCurTicks <= (nLstTicks + TIMING_1))
     {
         nCurTicks = IT_SYS_GetTicks();
-        // do not get press 1
-        // do not get press 2
         HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
     }
     //--------- 2 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -958,7 +1012,6 @@ UINT8 MSG_Testing(void)
             printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
         }
         HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
     }
     //--------- 3 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -981,7 +1034,6 @@ UINT8 MSG_Testing(void)
             printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
         }
         HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
     }
     //--------- 4 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -1015,7 +1067,6 @@ UINT8 MSG_Testing(void)
             printf("\r\n %0.8d: %0.5d, %0.5d, HGB = %0.5d", (int)nCurTicks, nPress1, nPress2, nHgb);
         }
         HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
     }
     //==========================
     // switch off : WBC and RBC
@@ -1046,7 +1097,6 @@ UINT8 MSG_Testing(void)
             printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
         }
         HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
     }
     //--------- 6 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -1065,7 +1115,6 @@ UINT8 MSG_Testing(void)
         // do not get press 1
         // do not get press 2
         HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
     }
     //--------- 7 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -1077,8 +1126,7 @@ UINT8 MSG_Testing(void)
         nCurTicks = IT_SYS_GetTicks();
         // do nothing
         HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
-    }
+	}
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
     HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
@@ -1863,6 +1911,7 @@ void Send_Packets_Test(UINT16 Time, UINT32 Num)
 		}
 }
 
+
 UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 {
 	if(nFlag == LED_STATUS_OPEN) // HGB LED
@@ -1885,10 +1934,22 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 	return e_Feedback_Success;
 }
 
-UINT8 HGB_Test_Exec(void)
+
+//UINT8 HGB_Calibrate_Exec(void)
+//{
+
+//}
+
+//UINT8 CRP_Calibate_Exec(void)
+//{
+
+//}
+
+UINT8 HGB_Test_Exec(eTestMode eMode)
 {
+	UINT16 nVal = 0, i, buffer[HGB_CALIBRATE_DATA_NUM] = {0};
+	
 	printf("HGB_Test_Exec Start\r\n");
-	UINT16 nVal = 0, nTemp, i;
 	// check postion 
 	if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
     {
@@ -1909,40 +1970,56 @@ UINT8 HGB_Test_Exec(void)
 	HW_LED_On(LED_HGB_INDEX);
 	// enable LED ADC Channel
 	HW_EN_ADC_HGB(e_True);
-	IT_SYS_DlyMs(50);
-	// get HGB adc data
-	printf("HGB_Test_Exec:");
-#if HGB_DEBUG_FLAG
-	for(i = 0; i < 10; i++)
+	IT_SYS_DlyMs(100);
+	//
+	if(eMode ==  EN_HGB_TEST)
 	{
-		nTemp = HW_Get_ADC_HGB();
-		nVal += nTemp;
-		printf("ADC=%d,", nTemp);
+		// get HGB adc data
+		printf("HGB_Test_Exec:");
+	#if HGB_DEBUG_FLAG
+		for(i = 0; i < 10; i++)
+		{
+			nTemp = HW_Get_ADC_HGB();
+			nVal += nTemp;
+			printf("ADC=%d,", nTemp);
+		}
+		nVal /= 10;
+		printf("\r\nHGB ADC_Ave: %d", nVal);
+		nVal = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
+		printf("\r\nHGB_V: %d=0x%x", nVal, nVal);
+	#else
+		srand(IT_SYS_GetTicks());
+		nVal = rand()%5000;
+		printf("\r\nHGB_V: %d=0x%x", nVal, nVal);
+	#endif
+		// send HGB data
+		Send_Data_HGB(CMD_DATA_TEST_HGB, &nVal, 1);
+
+	}else if(eMode == EN_HGB_CALIBRATE){
+		printf("HGB Calibrate\r\n");
+		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
+		{
+			buffer[i] = HW_Get_ADC_HGB();
+			printf("HGB ADC=%d\r\n", buffer[i]);
+			IT_SYS_DlyMs(100);
+		}
+		// send HGB data
+		Send_Data_HGB(CMD_DATA_CALIBRATE_HGB, buffer, HGB_CALIBRATE_DATA_NUM);
 	}
-	nVal /= 10;
-	printf("\r\nHGB ADC_Ave: %d", nVal);
-	nVal = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
-	printf("\r\nHGB_V: %d=0x%x", nVal, nVal);
-#else
-	srand(IT_SYS_GetTicks());
-	nVal = rand()%5000;
-	printf("\r\nHGB_V: %d=0x%x", nVal, nVal);
-#endif
 	// enable LED ADC Channel
 	HW_EN_ADC_HGB(e_False);
 	// close LED
 	HW_LED_Off(LED_HGB_INDEX);
-	// send HGB data
-	Send_Data_HGB(&nVal, 1);
 	// send finished flag
 	 collect_return_hdl(COLLECT_RET_SUCESS);
 	printf("HGB_Test_Exec End\r\n");
 	return 0;
 }
 
-UINT8 CRP_Test_Exec(void)
+UINT8 CRP_Test_Exec(eTestMode eMode)
 {
 	UINT16 i, j;
+	UINT32 buffer[CRP_CALIBRATE_DATA_NUM] = {0};
 	printf("CRP_Test_Exec Start\r\n");
 	// check postion 
     if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
@@ -1961,7 +2038,7 @@ UINT8 CRP_Test_Exec(void)
 	}
 #endif
 	// enable CRP adc channel
-		// open LED
+	// open LED
 	HW_LED_On(LED_CRP_INDEX);
 	// enable LED ADC Channel
 	HW_EN_ADC_CRP(e_True);
@@ -1969,58 +2046,72 @@ UINT8 CRP_Test_Exec(void)
 	// get CRP adc data
 	printf("CRP_Test_Exec:");
 	
+	if(eMode ==  EN_CRP_TEST)
+	{
 #if CRP_DEBUG_FLAG
-	memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
-	g_CRP_Data.eEnable = e_True;
-	while(g_CRP_Data.nTotal <= CRP_TOTAL_DATA_NUM)
-	{
-		printf("send=%d, total=%d, index=%d\r\n", g_CRP_Data.eSend, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-		if(g_CRP_Data.eSend == e_True)
+		memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
+		g_CRP_Data.eEnable = e_True;
+		while(g_CRP_Data.nTotal <= g_Record_Param.nTotal_Num)
 		{
-			if((g_CRP_Data.nTotal/DATA_FRAME_NUM_2BYTE)%2 == 0) //crpBuffer[0-511]
+			printf("send=%d, total=%d, index=%d\r\n", g_CRP_Data.eSend, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
+			if(g_CRP_Data.eSend == e_True)
 			{
-				printf("Send one Frame: ticks=%d,total=%d, index=%d\r\n", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-				Send_Data_CRP(&g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_2BYTE);
-			}else{ //crpBuffer[512-1024]
-				printf("Send one Frame: ticks=%d,total=%d, index=%d\r\n", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-				Send_Data_CRP(&g_CRP_Data.crpBuffer[DATA_FRAME_NUM_2BYTE], DATA_FRAME_NUM_2BYTE);
+				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 0) //crpBuffer[0-511]
+				{
+					printf("Send one Frame: ticks=%d,total=%d, index=%d\r\n", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
+					Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_4BYTE);
+				}else{ //crpBuffer[512-1024]
+					printf("Send one Frame: ticks=%d,total=%d, index=%d\r\n", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
+					Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[DATA_FRAME_NUM_2BYTE], DATA_FRAME_NUM_4BYTE);
+				}
+				g_CRP_Data.eSend = e_False;
+				printf("send false\r\n");
 			}
-			g_CRP_Data.eSend = e_False;
-			printf("send false\r\n");
+			IT_SYS_DlyMs(10);
+			//printf("f\r\n");
 		}
-		IT_SYS_DlyMs(10);
-		//printf("f\r\n");
-	}
-	// send the last data
-	if(g_CRP_Data.nIndex != 0)
-	{
-		if((g_CRP_Data.nTotal/DATA_FRAME_NUM_2BYTE)%2 == 0) //crpBuffer[0-511]
+		// send the last data
+		if(g_CRP_Data.nIndex != 0)
 		{
-			Send_Data_CRP(&g_CRP_Data.crpBuffer[0], g_CRP_Data.nIndex);
-			printf("Send one Frame: ticks=%d,total=%d, index=%d", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-		}else{ //crpBuffer[512-1024]
-			Send_Data_CRP(&g_CRP_Data.crpBuffer[DATA_FRAME_NUM_2BYTE], g_CRP_Data.nIndex);
-			printf("Send one Frame: ticks=%d,total=%d, index=%d", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
+			if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 0) //crpBuffer[0-511]
+			{
+				Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[0], g_CRP_Data.nIndex);
+				printf("Send one Frame: ticks=%d,total=%d, index=%d", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
+			}else{ //crpBuffer[512-1024]
+				Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE], g_CRP_Data.nIndex);
+				printf("Send one Frame: ticks=%d,total=%d, index=%d", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
+			}
 		}
-	}
-	memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
-	g_CRP_Data.eEnable = e_False;
-	
+		memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
+		g_CRP_Data.eEnable = e_False;
+		
 #else
-	memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
-	g_CRP_Data.eEnable = e_False;
-	srand(IT_SYS_GetTicks());
-	for(i = 0; i < 5; i++ )
-	{
-		for(j = 0; j < DATA_FRAME_NUM_2BYTE; j++)
+		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
+		g_CRP_Data.eEnable = e_False;
+		srand(IT_SYS_GetTicks());
+		for(i = 0; i < 5; i++ )
 		{
-			g_CRP_Data.crpBuffer[j] = rand()%5000;
+			for(j = 0; j < DATA_FRAME_NUM_4BYTE; j++)
+			{
+				g_CRP_Data.crpBuffer[j] = rand()%ADC_RESOLUTION_24;
+			}
+			Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_4BYTE);
 		}
-		Send_Data_CRP(&g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_2BYTE);
+		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
+		g_CRP_Data.eEnable = e_False;
+#endif		
+		
+	}else if(eMode == EN_CRP_CALIBRATE){
+		printf("CRP Calibrate\r\n");
+		for(i = 0; i < CRP_CALIBRATE_DATA_NUM; i++)
+		{
+			buffer[i] = HW_Get_ADC_CRP();
+			printf("CRP ADC=%d\r\n", (int)buffer[i]);
+			IT_SYS_DlyMs(100);
+		}
+		// send CRP data
+		Send_Data_CRP(CMD_DATA_CALIBRATE_CRP, buffer, CRP_CALIBRATE_DATA_NUM);			
 	}
-	memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
-	g_CRP_Data.eEnable = e_False;
-#endif
 	
 	// enable LED ADC Channel
 	HW_EN_ADC_CRP(e_False);
@@ -2034,7 +2125,7 @@ UINT8 CRP_Test_Exec(void)
 
 //
 #ifdef DEBUG_INFO_UP_LOAD
-UINT8 MSG_TestingFunc(UINT8 *pDInfo, UINT16 *pDILen, UINT8 nChannel)
+UINT8 MSG_TestingFunc(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode)
 {
 #else
 UINT8 MSG_TestingFunc(void)
@@ -2143,7 +2234,6 @@ UINT8 MSG_TestingFunc(void)
                 }
             }
 		   HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-           //HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
         }
         // turn off
         HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
@@ -2233,7 +2323,7 @@ UINT8 MSG_TestingFunc(void)
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
 #endif
-	//------------pre-handle 4s---------
+	//------------pre-handle 4.5s---------
 	nCurTicks = IT_SYS_GetTicks();
 	nTempTicks = nCurTicks;
 	nTempTicks1 = nCurTicks;
@@ -2264,37 +2354,7 @@ UINT8 MSG_TestingFunc(void)
 			*pDILen = nDILen;
 #endif			
 		}	
-	
-//    while((nCurTicks - nTempTicks) <= TIME_TS_ACTION_OFF) // 4000ms
-//    {
-//        nCurTicks = IT_SYS_GetTicks();
-//		nPreTicks = nCurTicks - nTempTicks;
-//		if(COUNT_WBC_START_V > Get_XK_V_Value()){ // wbc elec volight changed normal
-		//	nPreTicks = nCurTicks - nTempTicks;
-//			HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-//			HW_Valve_Off(INDEX_VALVE_WBC);    // WBC
-/*			IT_SYS_DlyMs(1000);
-			nCurTicks = IT_SYS_GetTicks();
-			nPreTicks = nCurTicks - nTempTicks;
-			nPreTicks -= 1000;
-*/
-//			if(COUNT_WBC_START_V > Get_XK_V_Value()){
-//					printf("Count Status: at 4S imbibition, ticks=%08d, preticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
-//						(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)HW_ADC_SpiGetPress(), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
-//#ifdef DEBUG_INFO_UP_LOAD
-//				sprintf((char*)sTempInfo, "Count Status: at 4S imbibition, ticks=%08d, preticks=%08d,press=%010d, udp=%d, wbc_v=%d\r\n", \
-//							(int)IT_LIST_GetTicks(), (int)nPreTicks,(int)HW_ADC_SpiGetPress(), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
-//				Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-//				memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
-//				*pDILen = nDILen;
-//#endif
-//				break;
-//			}
-//			HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-//			HW_Valve_On(INDEX_VALVE_WBC);    // WBC
-//		}
-//		nCurTicks = IT_SYS_GetTicks();
-//		nPreTicks = nCurTicks - nTempTicks;
+
         // to check the ELECTRODE
 		
         //if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))
@@ -2330,7 +2390,6 @@ UINT8 MSG_TestingFunc(void)
             return e_Feedback_Error;
 		}
 		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
 		nCurTicks = IT_SYS_GetTicks();
 		nPreTicks = nCurTicks - nTempTicks;
 		if(nPreTicks <= 1500 && flag == 0){ // 0-1500ms
@@ -2360,38 +2419,6 @@ UINT8 MSG_TestingFunc(void)
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
 #endif
-//	}
-// more time
-//	nCurTicks = IT_SYS_GetTicks();
-//	nTempTicks = nCurTicks;
-//	nPreTicks1 = nCurTicks - nTempTicks;
-//	if(COUNT_WBC_START_V < Get_XK_V_Value()){
-//		HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-//		HW_Valve_On(INDEX_VALVE_WBC);    // WBC
-//		nCurTicks = IT_SYS_GetTicks();
-//		while((nCurTicks - nTempTicks) <= TIME_TS_ACTION_OFF){ // 4000ms
-//			nCurTicks = IT_SYS_GetTicks();
-//			nPreTicks1 = nCurTicks - nTempTicks;
-//			if(COUNT_WBC_START_V > Get_XK_V_Value()){
-//				HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-//				HW_Valve_Off(INDEX_VALVE_WBC);    // WBC
-//				break;
-//				}
-//			}
-//	}
-//	nPreTicks += nPreTicks1;
-//	HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-//    HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-//    HW_Valve_Off(INDEX_VALVE_WBC);    // WBC
-//	printf("Count Status: after 4S-2, ticks=%08d, preticks=%08d, press=%010d, udp=%d, preticks=%d, wbc_v=%d\r\n", \
-//						(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)HW_ADC_SpiGetPress(), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
-//#ifdef DEBUG_INFO_UP_LOAD
-//		sprintf((char*)sTempInfo, "Count Status: after 4S-2, ticks=%08d, preticks=%08d,press=%010d, udp=%d, preticks=%d, wbc_v=%d\r\n", \
-//							(int)IT_LIST_GetTicks(), (int)nPreTicks,(int)HW_ADC_SpiGetPress(), (int)Get_Udp_Count(), (int)nPreTicks,( int)Get_XK_V_Value());
-//		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-//		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
-//		*pDILen = nDILen;
-//#endif
 
 	// -----check wbc elec touch before count----------
 	if(EN_WBC_V_LOW != Get_WBC_V_Status(COUNT_WBC_START_V)) // the wbc_v not changed
@@ -2441,13 +2468,11 @@ UINT8 MSG_TestingFunc(void)
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
 #endif
-	// 7s-4s
+
     //while((nCurTicks - nTempTicks) <= TIME_TS_ACTION_ON - TIME_TS_ACTION_OFF)
 	while((nCurTicks - nTempTicks) <= 3000)
     {
         nCurTicks = IT_SYS_GetTicks();
-		// Clear fpga fifo data
-//		Clear_FPGA_FIFO_Data();////////////////////
 //		IT_SYS_DlyMs(1);
 		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
         // to check the ELECTRODE
@@ -2483,7 +2508,6 @@ UINT8 MSG_TestingFunc(void)
             return e_Feedback_Error;
 		}
 		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
     }
 	printf("Count Status(after 3S): ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
@@ -2521,48 +2545,13 @@ UINT8 MSG_TestingFunc(void)
 	// ---------open get data switch--------
 	HW_Valve_On(INDEX_VALVE_WBC);  /* 开阀准备检测 */
 	HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-    HW_Enable_Data_Channel(nChannel);//HW_Start_WBC(); // todo...
+    HW_Enable_Data_Channel(eMode);//HW_Start_WBC(); // todo...
 //	while (nCurTicks <= (nLstTicks + (TIME_OVER_TS_ADC - TIME_TS_ACTION_ON))) //25s - 7s = 18s
-	while (nCurTicks <= (nLstTicks + TIME_TS_ACTION_TIMEOUT)) //18s
+	while (nCurTicks <= (nLstTicks + TIME_TS_ACTION_TIMEOUT)) //24s
     {
 		//----------getting data and send ------------------------------
-		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_SEND_FPGA_DATA);
-		
-		// to check wbc_v, the wbc_v is vary and always larger than COUNT_WBC_MIN_V at sometime
-//		if(nWBC_Count < 30)
-//		{			
-//			if((nCurTicks - nTempTicks) >= 1)
-//			{
-//				nWBC_Count++;
-//				nTempTicks = nCurTicks;
-//				wbc_v = Get_XK_V_Value();
-//				if(wbc_v < COUNT_WBC_TOUCH_CHECK_V)
-//				{
-//					nWBC_Val++;
-//				}
-//				if(nWBC_Count == 30)
-//				{
-//					if(nWBC_Val < 5)
-//					{
-//						printf("\r\nCount Error: wbc_v error, ticks=%08d,adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, prss=%09d\r\n",\
-//						(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-//						(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)wbc_v, (int)HW_ADC_SpiGetPress());
-//						collect_return_hdl(COLLECT_RET_FAIL_WBC_ELECTRODE);
-//#ifdef DEBUG_INFO_UP_LOAD	
-//						sprintf((char*)sTempInfo, "\r\nCount Error: wbc_v error, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, prss=%09d\r\n",\
-//						(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-//						(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)wbc_v, (int)HW_ADC_SpiGetPress());
-//						Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-//						*pDILen = nDILen;
-//#endif				
-//						HW_End_WBC();
-//						Send_Last_FIFO_Data();
-//						collect_return_hdl(COLLECT_RET_FAIL_WBC_ELECTRODE);
-//						return e_Feedback_Error;
-//					}
-//				}				
-//			}			
-//		}
+		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_SEND_FPGA_DATA);
+		Data_Circle_Handle(eMode);
 		//------get wbc data every 500ms------
 		if((nCurTicks - nTempTicks1) >= 500) // 1ms per time
 		{
@@ -2622,7 +2611,7 @@ UINT8 MSG_TestingFunc(void)
 		nCurTicks = IT_SYS_GetTicks();	
     }
 	//------after count, stop all--------
-	HW_Disable_Data_Channel(nChannel);//HW_End_WBC();
+	HW_Disable_Data_Channel(eMode);//HW_End_WBC();
 	Send_Last_FIFO_Data();
 	HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
     HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
@@ -2707,7 +2696,6 @@ _EXT_ UINT8 MT_X_IN_Self_Check(CALL_STYLE_E eCall)
 	}
     return e_Feedback_Fail;
 }
-
 
 // out press
 _EXT_ UINT8 MT_X_OUT_Self_Check(CALL_STYLE_E eCall)
@@ -3065,6 +3053,205 @@ _EXT_ UINT8 Pump_Self_Check(void)
 }
 
 
+UINT8 Set_CRP_Param(UINT16 nTime, UINT16 nHZ)
+{
+	UINT8 nRet;
+	g_Record_Param.nTime 		= nTime;
+	g_Record_Param.nHZ  	 	= nHZ;
+	g_Record_Param.nTotal_Num 	= g_Record_Param.nTime*g_Record_Param.nHZ;
+	printf("CRP Param Set: nTime=%d,nHz=%d, nTotal=%d\r\n", g_Record_Param.nTime,\
+												g_Record_Param.nHZ, g_Record_Param.nTotal_Num);
+	nRet = Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+	if(nRet == e_Feedback_Success){
+		printf("save CRP param success\r\n");
+		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_CRP_PARAM_SET, e_Feedback_Success);
+	}else{
+		printf("save CRP param failure\r\n");
+		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_CRP_PARAM_SET, e_Feedback_Fail);
+	}
+	return nRet;
+}
+
+UINT8 Set_Press_Add(UINT16 nAdd)
+{
+	UINT8 nRet;
+	g_Record_Param.nAddPress = nAdd*PRESS_PRECISION_FACTOR;
+	g_Record_Param.nFlag = FLASH_INIT_FLAG;
+	printf("Set add=%d, addpress=%010d\r\n", nAdd, (int)g_Record_Param.nAddPress);
+	nRet = Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+	if(nRet == e_Feedback_Success){
+		printf("save press add param success\r\n");
+		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_PRESS_ADD, e_Feedback_Success);
+	}else{
+		printf("save press add param failure\r\n");
+		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_PRESS_ADD, e_Feedback_Fail);
+	}
+	return nRet;
+}
+
+
+UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal)
+{
+	UINT8 nRet;
+	HW_ADJ_SetResistor(nIndex, nVal);
+	// todo
+	switch(nIndex)
+	{
+		case EN_REGISTER_WBC:
+		{
+			g_Record_Param.nRegister_WBC =  nVal;
+			printf("Set WBC register Value=%d\r\n", g_Record_Param.nRegister_WBC);
+			
+		}
+		break;
+		case EN_REGISTER_RBC:
+		{
+			g_Record_Param.nRegister_RBC =  nVal;
+			printf("Set RBC register Value=%d\r\n", g_Record_Param.nRegister_RBC);		
+		}
+		break;
+		case EN_REGISTER_PLT:
+		{
+			g_Record_Param.nRegister_PLT =  nVal;
+			printf("Set PLT register Value=%d\r\n", g_Record_Param.nRegister_PLT);		
+		}
+		break;
+		case EN_REGISTER_HGB:
+		{
+			g_Record_Param.nRegister_HGB =  nVal;
+			printf("Set HGB register Value=%d\r\n", g_Record_Param.nRegister_HGB);		
+		}
+		break;
+		case EN_REGISTER_CRP:
+		{
+			g_Record_Param.nRegister_CRP =  nVal;
+			printf("Set CRP register Value=%d\r\n", g_Record_Param.nRegister_CRP);		
+		}
+		break;
+		case EN_REGISTER_RBC_PLT:
+		{
+			g_Record_Param.nRegister_RBC_PLT =  nVal;
+			printf("Set RBC PLT register Value=%d\r\n", g_Record_Param.nRegister_RBC_PLT);		
+		}
+		break;
+		default:break;
+	
+	}
+	HW_ADJ_SetResistor(nIndex, nVal);
+	printf("set register(index=%d, val=%d)\r\n", nIndex, nVal);
+	nRet = Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+	if(nRet == e_Feedback_Success){
+		printf("save register(index=%d, val=%d) param success\r\n", nIndex, nVal);
+		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_PRESS_ADD, e_Feedback_Success);
+	}else{
+		printf("save register(index=%d, val=%d) param failure\r\n", nIndex, nVal);
+		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_PRESS_ADD, e_Feedback_Fail);
+	}
+	return nRet;
+}
+
+void Cmd_Wave_Exec(UINT8 nFlag)
+{
+	if (0 == nFlag)
+	{
+		HW_Valve_Off(nFlag);
+	}
+	else
+	{
+		HW_Valve_On(nFlag);
+	}
+}
+
+
+// yaolan_
+UINT8 HW_Enable_Data_Channel(eTestMode eMode)
+{
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+			HW_Start_WBC();			
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+		
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+		
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+		
+		}
+		break;
+		default:break;
+	}
+	return 0;
+}
+
+// yaolan_
+UINT8 HW_Disable_Data_Channel(eTestMode eMode)
+{
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+			HW_End_WBC();
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+		
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+		
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+		
+		}
+		break;
+		default:break;
+	}
+	return 0;
+}
+
+UINT8 HW_Clear_Data_Channel(eTestMode eMode)
+{
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+		
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+		
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+		
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+		
+		}
+		break;
+		default:break;
+	}
+	
+	return 0;
+}
 
 
 #endif

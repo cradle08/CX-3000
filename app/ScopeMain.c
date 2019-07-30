@@ -40,8 +40,11 @@ void start_run(void)
 	}
 //	Flash_Read_Param(&g_Record_Param, sizeof(RECORD_PARAM));
 	
-	printf("Param: wbc=%d, addstep=%d, addpress=%010d\r\n",\
-			g_Record_Param.nWBC, g_Record_Param.nXAddStep, (int)g_Record_Param.nAddPress);
+	printf("Param: wbc register=%d, addstep=%d, addpress=%010d\r\n",\
+			g_Record_Param.nRegister_WBC, g_Record_Param.nXAddStep, (int)g_Record_Param.nAddPress);
+	printf("CRP Param: Time=%d, HZ=%d, Total_Num=%d\r\n",\
+			g_Record_Param.nTime, g_Record_Param.nHZ, (int)g_Record_Param.nTotal_Num);
+	
 	//Msg_Return_Handle_32(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nWBC);
 	//Msg_Return_Handle_32(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nXAddStep);
 	//Msg_Return_Handle_32(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nAddPress);
@@ -50,7 +53,7 @@ void start_run(void)
     //HW_ADJ_SetResistor(0, 255);  /*  */
 	
 	printf("wbc ticks=%d\n", (int)IT_SYS_GetTicks());
-	HW_ADJ_SetResistor(0, g_Record_Param.nWBC); // (0-50K)-->(0-255)
+	HW_ADJ_SetResistor(0, g_Record_Param.nRegister_WBC); // (0-50K)-->(0-255)
     //HW_ADJ_SetResistor(0, 128);
 	HW_ADJ_SetResistor(1, 255);  /*  */
     HW_ADJ_SetResistor(2, 255);  /*  */

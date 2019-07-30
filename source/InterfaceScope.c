@@ -10,6 +10,34 @@
 
 #include "KernelHeader.h"
 
+UINT16 g_Debug_Data[256] = {
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x1F4,0x5DC,0x898,0x3E8,0x12C,0x00,0x00,0x00,0x00,0x00, /*500,1500,2200,1000,300*/
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00
+};
 
 //-----------------------------------------------------------------------------------------
 
@@ -1547,13 +1575,40 @@ UINT32 HW_Get_Press(UINT8 Index)
 void HW_EN_ADC_HGB(enum eFlag flag)
 {
 	// e_True  e_False
+	if(flag == e_True)
+	{
+		// switch on : WBC and RBC
+		HW_SW_AdcWBC(e_True);
+		HW_SW_AdcRBC(e_True);
+		// get the ADC data
+		HW_EN_WBC(e_True);
+	}else if(flag == e_False){
+		// switch off : WBC and RBC
+		HW_SW_AdcWBC(e_False);
+		HW_SW_AdcRBC(e_False);
+		// close the ADC channel
+		HW_EN_WBC(e_False);
+	}
 }
 
 // yaolan_
 void HW_EN_ADC_CRP(enum eFlag flag)
 {
-	
-
+	// e_True  e_False
+	if(flag == e_True)
+	{
+		// switch on : WBC and RBC
+		HW_SW_AdcWBC(e_True);
+		HW_SW_AdcRBC(e_True);
+		// get the ADC data
+		HW_EN_WBC(e_True);
+	}else if(flag == e_False){
+		// switch off : WBC and RBC
+		HW_SW_AdcWBC(e_False);
+		HW_SW_AdcRBC(e_False);
+		// close the ADC channel
+		HW_EN_WBC(e_False);
+	}
 }
 
 UINT16  HW_Get_ADC_HGB(void)
@@ -1561,17 +1616,20 @@ UINT16  HW_Get_ADC_HGB(void)
 	UINT16 nRet;
 #if 0
 	// todo...(real)
+	srand(IT_SYS_GetTicks);
+	nRet = rand()% ADC_RESOLUTION_24;
 #else
-	nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+	nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup), 3=press, */ 
 #endif
 	return nRet;
 }
 
 UINT32  HW_Get_ADC_CRP(void)
 {
-	UINT16  nRet;
+	UINT32  nRet;
 #if 0
-	// todo...(real)
+	srand(IT_SYS_GetTicks);
+	nRet = rand()%ADC_RESOLUTION_12;
 #else
 	nRet = HW_ADC_SpiGetADC(2);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 #endif
@@ -1599,164 +1657,84 @@ UINT32  Get_CRP_Value(void)
 	return nRet;
 }
 
-// yaolan_
-UINT8 HW_Enable_Data_Channel(UINT8 Index)
-{
-	switch(Index)
-	{
-		case EN_Data_CHANNEL_WBC:
-		{
-			
-		}
-		break;
-		case EN_Data_CHANNEL_RBC:
-		{
-		
-		}
-		break;
-		case EN_Data_CHANNEL_PLT:
-		{
-		
-		}
-		break;
-		case EN_Data_CHANNEL_RBC_PLT:
-		{
-		
-		}
-		break;
-		default:break;
-	}
-	return 0;
-}
 
-// yaolan_
-UINT8 HW_Disable_Data_Channel(UINT8 Index)
-{
-	switch(Index)
-	{
-		case EN_Data_CHANNEL_WBC:
-		{
-		
-		}
-		break;
-		case EN_Data_CHANNEL_RBC:
-		{
-		
-		}
-		break;
-		case EN_Data_CHANNEL_PLT:
-		{
-		
-		}
-		break;
-		case EN_Data_CHANNEL_RBC_PLT:
-		{
-		
-		}
-		break;
-		default:break;
-	}
-	return 0;
-}
-
-UINT8 HW_Clear_Data_Channel(UINT8 Index)
-{
-	switch(Index)
-	{
-		case EN_Data_CHANNEL_WBC:
-		{
-		
-		}
-		break;
-		case EN_Data_CHANNEL_RBC:
-		{
-		
-		}
-		break;
-		case EN_Data_CHANNEL_PLT:
-		{
-		
-		}
-		break;
-		case EN_Data_CHANNEL_RBC_PLT:
-		{
-		
-		}
-		break;
-		default:break;
-	}
-	
-	return 0;
-}
-
-UINT8 Send_Data_HGB(UINT16* pData, UINT16 nLen)
+UINT8 Send_Data_HGB(UINT32 nCmd, UINT16* pData, UINT16 nLen)
 {
     //  net data feedback(big-end)
-	UINT8 chReturn, i;
+	UINT8 chReturn, i, pos = 0;
 	UINT16 nData;
 	// head
     s_anBufNet[0] = 0x5344;
     s_anBufNet[1] = 0x4457;
 	// cmd
-	s_anBufNet[2] = 0x0030;
-	s_anBufNet[3] = 0x0505;
+	s_anBufNet[2] = (((nCmd >> 24)&0x00FF) | ((nCmd >> 8)&0xFF00));
+	s_anBufNet[3] = (((nCmd >> 8)&0x00FF) | ((nCmd << 8)&0xFF00));
 	
 	// black value
-	s_anBufNet[4] = HGB_BLACK_VALUE;
-	
-	// get/copy send data
-    //chReturn = HW_DATA_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+	if(nCmd == CMD_DATA_TEST_HGB)
+	{
+		s_anBufNet[4] = HGB_BLACK_VALUE;
+		pos = 5;
+	}else if(nCmd == CMD_DATA_CALIBRATE_HGB){
+		pos = 4;	
+	}
+	// data
 	for(i = 0; i < nLen; i++)
 	{
 		nData = *(pData + i);
-		printf("\r\nsend HGB_V: %d=0x%x", nData, nData);
-		s_anBufNet[5+i] = (nData>>8)|(nData<<8);
+		//printf("send HGB_V: %d=0x%x\r\n", nData, nData);
+		s_anBufNet[pos+i] = (nData>>8)|(nData<<8);
 	}
 	// send data
-//    if (e_Feedback_Success == chReturn)
-//    {			
-		chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen + 5) * 2));
-		if (e_Feedback_Fail == chReturn)
-		{
-			printf("HGB Msg Send Fail\r\n");
-		}
-//	}
-	return 0;
+	chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen + pos) * 2));
+	if (e_Feedback_Fail == chReturn)
+	{
+		IT_SYS_DlyMs(10);
+		udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen + pos) * 2));
+		printf("HGB Msg Send Fail\r\n");
+	}
+	return chReturn;
 }
 
-UINT8 Send_Data_CRP(IO_ UINT16* pData, UINT16 nLen)
+UINT8 Send_Data_CRP(UINT32 nCmd, IO_ UINT32* pData, UINT16 nLen)
 {
     //  net data feedback(big-end)
 	UINT8 chReturn;
-	UINT16 i, nData;
+	UINT16 i, j, pos;
+	UINT32 nData;
 	// head
     s_anBufNet[0] = 0x5344;
     s_anBufNet[1] = 0x4457;
 	// cmd
-	s_anBufNet[2] = 0x0030;
-	s_anBufNet[3] = 0x0605;
+	s_anBufNet[2] = (((nCmd >> 24)&0x00FF) | ((nCmd >> 8)&0xFF00));
+	s_anBufNet[3] = (((nCmd >> 8)&0x00FF) | ((nCmd << 8)&0xFF00));
 	
-	nData =  nLen*2;
-	//printf("len_1=%d\r\n", nData);
-	s_anBufNet[4] = (nData >> 8)|(nData << 8);
-	//printf("len_2=%d\r\n", s_anBufNet[4]);
-	
-	// copy data
-    //chReturn = HW_DATA_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
-	for(i = 0; i < nLen; i++)
+	if(nCmd == CMD_DATA_TEST_CRP)
+	{
+		nData =  nLen*4;
+		s_anBufNet[4] = (nData >> 8)|(nData << 8);
+		pos = 5;
+	}else if(nCmd == CMD_DATA_CALIBRATE_CRP){
+		pos = 4;
+	}
+	//
+	for(i = 0, j = 0; i < nLen; i++)
 	{
 		nData = *(pData + i);
-		s_anBufNet[5+i] = (nData >> 8)|(nData << 8);
+		s_anBufNet[pos+j] = (((nData >> 24)&0x00FF) | ((nData >> 8)&0xFF00));
+		j++;
+		s_anBufNet[pos+j] = (((nData >> 8)&0x00FF) | ((nData << 8)&0xFF00));
+		j++;
 	}
-	// send data
-//    if (e_Feedback_Success == chReturn)
-//   {			
-		chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen + 5) * 2));
-		if (e_Feedback_Fail == chReturn)
-		{
-			printf("HGB Msg Send Fail\r\n");
-		}
-//	}
+	//
+	chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen*2 + pos) * 2));
+	if (e_Feedback_Fail == chReturn)
+	{
+		IT_SYS_DlyMs(10);
+		udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen*2 + pos) * 2));
+		printf("HGB Msg Send Fail\r\n");
+	}
+
 	return 0;
 }
 
@@ -2197,7 +2175,122 @@ _EXT_ UINT8  HW_LWIP_Working_Recv_Handle(UINT32 nTickList, UINT32 nTickAdc)
     return chReturn;
 }
 
-//------------------------------
+
+UINT8 HW_WBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
+{
+	
+	return 0;
+}
+
+UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
+{
+#if RBC_DEBUG_FLAG
+	memmove(pData, &g_Debug_Data, 256);
+#else 
+	
+#endif
+	return 0;
+}
+
+UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
+{
+#if PLT_DEBUG_FLAG
+	memmove(pData, &g_Debug_Data, 256);
+#else 
+	
+#endif
+	
+	return 0;
+}
+
+UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
+{
+#if RBC_PLT_DEBUG_FLAG
+	memmove(pData, &g_Debug_Data, 256);
+#else 
+	
+#endif
+	
+	return 0;
+}
+
+
+
+UINT8 Data_Circle_Handle(eTestMode eMode)
+{
+	UINT8 nRet;
+	UINT32 nCmd;
+	
+	LwIP_Periodic_Handle(IT_SYS_GetTicks());
+	//
+	s_anBufNet[0] = 0x5344;
+	s_anBufNet[1] = 0x4457;
+	//
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+			nCmd = CMD_DATA_TEST_WBC;
+			s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
+			s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
+			//nRet = HW_WBC_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+			nRet = HW_DATA_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+			nCmd = CMD_DATA_TEST_RBC;
+			s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
+			s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
+			nRet = HW_RBC_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+			nCmd = CMD_DATA_TEST_PLT;
+			s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
+			s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
+			nRet = HW_PLT_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+			nCmd = CMD_DATA_TEST_RBC_PLT;
+			s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
+			s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
+			nRet = HW_RBC_PLT_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+		}
+		break;
+		case EN_MODE_END:
+		{
+			;
+		}
+		break;
+		default:break;
+	}
+	//
+	if (e_Feedback_Success == nRet)
+    {
+		g_Frame_Count++;
+		s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
+		s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
+		nRet = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
+		if (e_Feedback_Fail == nRet)
+		{
+			g_Send_Fail++;
+			//IT_SYS_DlyMs(1);
+		}//else if(eFlag == EN_DROP_FPGA_DATA){// else do not send to app
+			
+//		}
+//      //debug..., printf the get data via serial , 20190315
+//      PL_COM_SendNChar(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
+    }else{
+		g_Frame_Count++;
+	}
+	return 0;
+}
+
+
 //
 UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag)
 {
@@ -2232,6 +2325,7 @@ UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFl
     // 2. data feedback
     s_anBufNet[0] = 0x5344;
     s_anBufNet[1] = 0x4457;
+	// cmd
 	s_anBufNet[2] = 0x00;
 	s_anBufNet[3] = 0x00;
 	
@@ -2244,15 +2338,13 @@ UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFl
 		if(eFlag == EN_SEND_FPGA_DATA){
 			
 			g_Udp_Count++;
-			if(g_Udp_Count == 1) printf("\r\n ticks=%d, udp=%d\r\n", (int)nTickList, (int)g_Udp_Count);
-			if(g_Udp_Count == 2) printf("\r\n ticks=%d, udp=%d\r\n", (int)nTickAdc, (int)g_Udp_Count);
-			s_anBufNet[2] = (UINT16)(((g_Udp_Count&0xFF000000) >> 24) | ((g_Udp_Count&0x00FF0000) >> 8));
-			s_anBufNet[3] = (UINT16)(((g_Udp_Count&0x000000FF) << 8) | ((g_Udp_Count&0x0000FF00)>>8));
+			s_anBufNet[2] = (((g_Udp_Count>>24)&0x00FF)|((g_Udp_Count>>8)&0xFF00));
+			s_anBufNet[3] = (((g_Udp_Count>>8)&0x00FF) |((g_Udp_Count<<8)&0xFF00));
 			chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
 			if (e_Feedback_Fail == chReturn)
 			{
 				g_Send_Fail++;
-				IT_SYS_DlyMs(1);
+				//IT_SYS_DlyMs(1);
 			}
 		}
 //		else if(eFlag == EN_DROP_FPGA_DATA){// else do not send to app

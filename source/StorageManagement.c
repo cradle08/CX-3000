@@ -11,8 +11,6 @@ RECORD_PARAM g_Record_Param;
 
 
 
-
-
 //UINT8 XRAM_ g_const_ach[4] = 
 //{
 //    0x12,
@@ -37,15 +35,50 @@ UINT16 STMFLASH_GetFlashSector(UINT32 addr)
 	return FLASH_Sector_11;	
 }
 
+
 void Set_Default_Param(RECORD_PARAM *pParam)
 {
-	pParam->nFlag     = FLASH_INIT_FLAG;
-	pParam->nWBC      = 20; // wbc garter value
-	pParam->nXAddStep = 0;  // add step for moto x go home
-	pParam->nAddPress = 0;     
+	pParam->nFlag    		   = FLASH_INIT_FLAG;
+	pParam->nRegister_WBC      = 128; //wbc garter value
+	pParam->nRegister_RBC      = 128; //rbc garter value
+	pParam->nRegister_PLT      = 128; //plt garter value
+	pParam->nRegister_RBC_PLT  = 128; //rbc plt garter value
+	pParam->nRegister_HGB      = 128; //hgb garter value
+	pParam->nRegister_CRP      = 128; //crp garter value
+	pParam->nXAddStep 		   = 0;  // add step for moto x go home
+	pParam->nAddPress 		   = 0;     
+	// CRP
+	pParam->nTime 	           = 120;
+	pParam->nHZ   	           = 10;
+	pParam->nTotal_Num         = 1200;
+	// CRC
+	pParam->nCrc               = 1;  // this value need to compute
+}
+
+void Set_Default_Param_Machine(RECORD_PARAM *pParam)
+{
+	pParam->nFlag    		   = FLASH_INIT_FLAG;
+	pParam->nRegister_WBC      = 128; //wbc garter value
+	pParam->nRegister_RBC      = 128; //rbc garter value
+	pParam->nRegister_PLT      = 128; //plt garter value
+	pParam->nRegister_RBC_PLT  = 128; //rbc plt garter value
+	pParam->nRegister_HGB      = 128; //hgb garter value
+	pParam->nRegister_CRP      = 128; //crp garter value
+	pParam->nXAddStep 		   = 0;   // add step for moto x go home
+	pParam->nAddPress 		   = 0;      
+	// CRC
 	pParam->nCrc      = 1;  // this value need to compute
 }
 
+
+void Set_Default_Param_CRP(RECORD_PARAM *pParam)
+{
+	pParam->nTime 	  = 120;
+	pParam->nHZ   	  = 10;
+	pParam->nTotal_Num = 1200;
+	// CRC
+	pParam->nCrc      = 1;  // this value need to compute
+}
 
 UINT8 Flash_Read_Param(RECORD_PARAM *pParam, UINT32 nLen)
 {

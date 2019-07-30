@@ -69,21 +69,21 @@ void IRQ_SysTimer(void)
 			{							
 				g_CRP_Data.nIndex++;
 				g_CRP_Data.nTotal++;
-				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_2BYTE)%2 == 0)
+				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 0)
 				{
-					g_CRP_Data.crpBuffer[g_CRP_Data.nIndex] = Get_CRP_Value();
+					g_CRP_Data.crpBuffer[g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
 					//printf("CRP V:%d, t=%d, i=%d\r\n", g_CRP_Data.crpBuffer[g_CRP_Data.nIndex], g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_2BYTE - 1)
+					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_4BYTE - 1)
 					{
 						g_CRP_Data.eSend  = e_True;
 						//printf("send true\r\n");
 						g_CRP_Data.nIndex = 0;
 					}
-				}else if((g_CRP_Data.nTotal/DATA_FRAME_NUM_2BYTE)%2 == 1)
+				}else if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 1)
 				{
-					g_CRP_Data.crpBuffer[DATA_FRAME_NUM_2BYTE + g_CRP_Data.nIndex] = Get_CRP_Value();
-					//printf("CRP V:%d, t=%d, i=%d\r\n", g_CRP_Data.crpBuffer[DATA_FRAME_NUM_2BYTE + g_CRP_Data.nIndex], g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_2BYTE - 1)
+					g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
+					//printf("CRP V:%d, t=%d, i=%d\r\n", g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex], g_CRP_Data.nTotal, g_CRP_Data.nIndex);
+					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_4BYTE - 1)
 					{
 						g_CRP_Data.eSend  = e_True;
 						//printf("send true\r\n");
