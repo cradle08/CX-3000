@@ -59,7 +59,7 @@ void IRQ_SysTimer(void)
 		
         //----------------------------------------------
         // 1. protocol timeout process
-    	if( 0 == (s_count % 10) )   // 100ms
+    	if( 0 == (s_count % 5) )   // 100ms
         {
 			// sampling port timeout
     	    SPG_IsrTime();
@@ -67,8 +67,7 @@ void IRQ_SysTimer(void)
 			// timer get CRP data per 100ms
 			if(g_CRP_Data.eEnable == e_True)
 			{							
-				g_CRP_Data.nIndex++;
-				g_CRP_Data.nTotal++;
+				printf("T=%d, total=%d, index=%d\r\n", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 0)
 				{
 					g_CRP_Data.crpBuffer[g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
@@ -90,6 +89,8 @@ void IRQ_SysTimer(void)
 						g_CRP_Data.nIndex = 0;
 					}
 				}
+				g_CRP_Data.nIndex++;
+				g_CRP_Data.nTotal++;
 			}
         }	
         

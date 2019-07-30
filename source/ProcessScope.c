@@ -1947,7 +1947,7 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 
 UINT8 HGB_Test_Exec(eTestMode eMode)
 {
-	UINT16 nVal = 0, i, buffer[HGB_CALIBRATE_DATA_NUM] = {0};
+	UINT16 nVal = 0, i, nTemp, buffer[HGB_CALIBRATE_DATA_NUM] = {0};
 	
 	printf("HGB_Test_Exec Start\r\n");
 	// check postion 
@@ -1976,7 +1976,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 	{
 		// get HGB adc data
 		printf("HGB_Test_Exec:");
-	#if HGB_DEBUG_FLAG
+#if HGB_DEBUG_FLAG
 		for(i = 0; i < 10; i++)
 		{
 			nTemp = HW_Get_ADC_HGB();
@@ -1987,11 +1987,11 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		printf("\r\nHGB ADC_Ave: %d", nVal);
 		nVal = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
 		printf("\r\nHGB_V: %d=0x%x", nVal, nVal);
-	#else
+#else
 		srand(IT_SYS_GetTicks());
 		nVal = rand()%5000;
 		printf("\r\nHGB_V: %d=0x%x", nVal, nVal);
-	#endif
+#endif
 		// send HGB data
 		Send_Data_HGB(CMD_DATA_TEST_HGB, &nVal, 1);
 
@@ -2000,7 +2000,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_HGB();
-			printf("HGB ADC=%d\r\n", buffer[i]);
+			printf("HGB ADC=%d, V=%d\r\n", buffer[i], buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
 			IT_SYS_DlyMs(100);
 		}
 		// send HGB data
@@ -2053,7 +2053,6 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		g_CRP_Data.eEnable = e_True;
 		while(g_CRP_Data.nTotal <= g_Record_Param.nTotal_Num)
 		{
-			printf("send=%d, total=%d, index=%d\r\n", g_CRP_Data.eSend, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 			if(g_CRP_Data.eSend == e_True)
 			{
 				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 0) //crpBuffer[0-511]
@@ -2106,7 +2105,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		for(i = 0; i < CRP_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_CRP();
-			printf("CRP ADC=%d\r\n", (int)buffer[i]);
+			printf("CRP ADC=%d, V=%d\r\n", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
 			IT_SYS_DlyMs(100);
 		}
 		// send CRP data

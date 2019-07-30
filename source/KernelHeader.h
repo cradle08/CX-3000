@@ -16,8 +16,8 @@
 #include "StorageManagement.h"
 
 
-#define HGB_DEBUG_FLAG			0
-#define CRP_DEBUG_FLAG			0
+#define HGB_DEBUG_FLAG			1
+#define CRP_DEBUG_FLAG			1
 #define WBC_DEBUG_FLAG			1
 #define RBC_DEBUG_FLAG			1
 #define PLT_DEBUG_FLAG			1
