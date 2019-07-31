@@ -236,6 +236,8 @@ _EXT_ UINT8  HW_LWIP_MainLine(void);
 _EXT_ UINT8  HW_LWIP_Working_Recv_Handle(UINT32 nTickList, UINT32 nTickAdc);
 
 _EXT_ UINT8  Send_Packet_Test(void);
+UINT8 ADC_Send(UINT32 nId, UINT16 * pData); ////////////////////
+
 
 //-----------------------------------------------------------------------------------------
 // reset by software 

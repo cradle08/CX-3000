@@ -2179,7 +2179,7 @@ _EXT_ UINT8  HW_LWIP_Working_Recv_Handle(UINT32 nTickList, UINT32 nTickAdc)
 UINT8 HW_WBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 {
 	
-	return 0;
+	return e_Feedback_Success;
 }
 
 UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
@@ -2189,7 +2189,7 @@ UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 #else 
 	
 #endif
-	return 0;
+	return e_Feedback_Success;
 }
 
 UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
@@ -2200,7 +2200,7 @@ UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	
 #endif
 	
-	return 0;
+	return e_Feedback_Success;
 }
 
 UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
@@ -2211,7 +2211,7 @@ UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	
 #endif
 	
-	return 0;
+	return e_Feedback_Success;
 }
 
 
@@ -2290,6 +2290,19 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 	return 0;
 }
 
+
+UINT8 ADC_Send(UINT32 nId, UINT16 * pData)
+{
+	LwIP_Periodic_Handle(IT_SYS_GetTicks());
+	s_anBufNet[0] = 0x5344;
+    s_anBufNet[1] = 0x4457;
+	s_anBufNet[2] = (((nId>>24)&0x00FF)|((nId>>8)&0xFF00));
+	s_anBufNet[3] = (((nId>>8)&0x00FF) |((nId<<8)&0xFF00));
+
+	memmove(&s_anBufNet[4], pData, 256);
+	
+	udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((256 + 4) * 2));
+}
 
 //
 UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag)
