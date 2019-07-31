@@ -2403,8 +2403,8 @@ UINT8 MSG_TestingFunc(void)
 				memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 				*pDILen = nDILen;
 #endif			
-				collect_return_hdl(COLLECT_RET_FAIL_WBC_BSK);
-				return e_Feedback_Error;
+////				collect_return_hdl(COLLECT_RET_FAIL_WBC_BSK);
+////				return e_Feedback_Error;
 			}
 		}
     }
@@ -2433,8 +2433,8 @@ UINT8 MSG_TestingFunc(void)
 		*pDILen = nDILen;
 #endif
 		collect_return_hdl(COLLECT_RET_FAIL_WBC_TOUCH);
-		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		return e_Feedback_Error;	
+////		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+/////		return e_Feedback_Error;	
 	}
 	// -----check wbc elec v before count-----------
 	if(EN_WBC_V_LOW != Get_WBC_V_Status(COUNT_WBC_TOUCH_CHECK_V)) // the wbc_v is not low than COUNT_WBC_MIN_V(1.8v)
@@ -2449,8 +2449,8 @@ UINT8 MSG_TestingFunc(void)
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		*pDILen = nDILen;
 #endif
-		collect_return_hdl(COLLECT_RET_FAIL_WBC_ELECTRODE);
-		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+/////		collect_return_hdl(COLLECT_RET_FAIL_WBC_ELECTRODE);
+/////		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
 		return e_Feedback_Error;
 	}
 
@@ -2590,9 +2590,7 @@ UINT8 MSG_TestingFunc(void)
 		if(nPress <= COUNT_MIN_PRESS)
 		{
 			HW_End_WBC();
-			Send_Last_FIFO_Data();
-			collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE); 
-			
+			Send_Last_FIFO_Data();	
 			printf("\r\nCount Error: press error, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
 				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)nPress);
@@ -2605,6 +2603,8 @@ UINT8 MSG_TestingFunc(void)
 			*pDILen = nDILen;
 #endif
 			printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
+			
+			collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE); 
 			return e_Feedback_Error;
 		}
 		nCurTicks = IT_SYS_GetTicks();	
@@ -2649,24 +2649,26 @@ UINT8 MSG_TestingFunc(void)
 		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 		*pDILen = nDILen;
 #endif
-        collect_return_hdl(COLLECT_RET_FAIL_TIMEOVER);  /* 采集异常 */
+        
 #ifdef DEBUG_INFO_UP_LOAD
 	   sprintf((char*)sTempInfo, "------------------End Count: num=%d, q=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)g_Frame_Count, (int)IT_LIST_GetTicks(), nDILen);
 	   Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	   *pDILen = nDILen;
 #endif		
-		printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
-        return e_Feedback_Error;
+	   printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
+       collect_return_hdl(COLLECT_RET_FAIL_TIMEOVER);  /* 采集异常 */
+	   return e_Feedback_Error;
     }
 	
 	// ------ count success------------
-    collect_return_hdl(COLLECT_RET_SUCESS);  /* 采集完成 */
+    
 	printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
 #ifdef DEBUG_INFO_UP_LOAD
 //	sprintf((char*)sTempInfo, "------------------End Count: num=%d, udp=%d, q=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)IT_LIST_GetTicks(), nDILen);
 //	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 //	*pDILen = nDILen;
 #endif
+	collect_return_hdl(COLLECT_RET_SUCESS);  /* 采集完成 */
     return e_Feedback_Success;
 }
 
