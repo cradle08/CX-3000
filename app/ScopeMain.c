@@ -7,16 +7,16 @@
 #include "Scope_It.h"
 #include "stm32f4xx_adc.h"
 
-typedef struct{
-	UINT8 nSFlag;
-	UINT16 nPos;
-	UINT32 nID;
-}ADC_Status_InitTypeDef;
+//typedef struct{
+//	UINT8 nSFlag;
+//	UINT16 nPos;
+//	UINT32 nID;
+//}ADC_Status_InitTypeDef;
 
-IO_ ADC_Status_InitTypeDef ADC_Status = {0};
-IO_ UINT8 ADC_Send_Flag = 0;
-#define ADC_BUFFER_LEN	512
-UINT16 g_ADC_Buffer[ADC_BUFFER_LEN] = {0};
+//IO_ ADC_Status_InitTypeDef ADC_Status = {0};
+//IO_ UINT8 ADC_Send_Flag = 0;
+//#define ADC_BUFFER_LEN	512
+//UINT16 g_ADC_Buffer[ADC_BUFFER_LEN] = {0};
 
 
 void start_run(void)
@@ -200,7 +200,7 @@ void DMA2_Stream0_IRQHandler(void)
 		ADC_Status.nSFlag = 1;
 		ADC_Status.nID++;
 		ADC_Status.nPos   = DMA_GetCurrDataCounter(DMA2_Stream0);
-		printf("%d-%d,", (int)IT_SYS_GetTicks(), ADC_Status.nPos);
+//		printf("%d-%d,", (int)IT_SYS_GetTicks(), ADC_Status.nPos);
 		//DMA_ClearFlag(DMA2_Stream0, DMA_FLAG_HTIF0); 
 	}
 	// all
@@ -211,7 +211,7 @@ void DMA2_Stream0_IRQHandler(void)
 		ADC_Status.nSFlag = 2;
 		ADC_Status.nID++;
 		ADC_Status.nPos   = DMA_GetCurrDataCounter(DMA2_Stream0);
-		printf("%d-%d\r\n", (int)IT_SYS_GetTicks(), ADC_Status.nPos);
+//		printf("%d-%d\r\n", (int)IT_SYS_GetTicks(), ADC_Status.nPos);
 		//DMA_ClearFlag(DMA2_Stream0, DMA_FLAG_TCIF0); 
 	}	
 }
@@ -240,22 +240,26 @@ int main(void)
 	ADC1_Init();
 	//ADC1_DMA_Config((UINT32)&ADC1->DR, (UINT32)g_ADC_Buffer, ADC_BUFFER_LEN);
 
-	ADC_SoftwareStartConv(ADC1);
+//	ADC_SoftwareStartConv(ADC1);
 	 printf("A\r\n");
-
+	
 	while(1)
 	{
 		HW_LWIP_MainLine();	
 		
-		//LwIP_Periodic_Handle(IT_SYS_GetTicks());
-		if(ADC_Status.nSFlag == 1)
-		{
-			ADC_Send(ADC_Status.nID, g_ADC_Buffer);
-			ADC_Status.nSFlag = 0xFF;
-		}else if(ADC_Status.nSFlag == 2){
+
+//		LwIP_Periodic_Handle(IT_SYS_GetTicks());
+//		//LwIP_Periodic_Handle(IT_SYS_GetTicks());
+//		if(ADC_Status.nSFlag == 1)
+//		{
+//			ADC_Send(ADC_Status.nID, g_ADC_Buffer);
+//			ADC_Status.nSFlag = 0xFF;
+//		}else if(ADC_Status.nSFlag == 2){
 //			ADC_Send(ADC_Status.nID, &g_ADC_Buffer[ADC_BUFFER_LEN/2]);	
-			ADC_Status.nSFlag = 0xFF;
-		}
+//			ADC_Status.nSFlag = 0xFF;
+//		}
+//		printf("A\r\n");
+//		IT_SYS_DlyMs(800);
 	}
 	return 0;
 }

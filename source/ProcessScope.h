@@ -130,6 +130,18 @@
 
 //-------------------------------------------------------------------------------------------
 //yaolan_start
+
+typedef struct{
+	UINT8 nSFlag;
+	UINT16 nPos;
+	UINT32 nID;
+}ADC_Status_InitTypeDef;
+#define ADC_BUFFER_LEN	512
+
+extern IO_ ADC_Status_InitTypeDef ADC_Status;
+extern UINT16 g_ADC_Buffer[ADC_BUFFER_LEN];
+
+
 #define ADC_PRESS_INDEX       	0
 #define ADC_ELEC_INDEX        	1
 #define ADC_TEMP_INDEX     	  	2
@@ -207,6 +219,10 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode);
 UINT8 HW_Disable_Data_Channel(eTestMode eMode);
 UINT8 HW_Clear_Data_Channel(eTestMode eMode);
 UINT8 Data_Circle_Handle(eTestMode eMode);
+
+
+
+
 
 //yaolan_end
 //----------------------------------------------------------------------------------------------

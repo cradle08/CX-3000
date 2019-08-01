@@ -2293,13 +2293,19 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 
 UINT8 ADC_Send(UINT32 nId, UINT16 * pData)
 {
+	UINT16 i;
+	
 	LwIP_Periodic_Handle(IT_SYS_GetTicks());
 	s_anBufNet[0] = 0x5344;
     s_anBufNet[1] = 0x4457;
 	s_anBufNet[2] = (((nId>>24)&0x00FF)|((nId>>8)&0xFF00));
 	s_anBufNet[3] = (((nId>>8)&0x00FF) |((nId<<8)&0xFF00));
 
-	memmove(&s_anBufNet[4], pData, 256);
+	//memmove(&s_anBufNet[4], pData, 256);
+	for(i = 0; i < 256; i++)
+	{
+		s_anBufNet[4 + i] = *(pData + i);
+	}
 	
 	udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((256 + 4) * 2));
 }

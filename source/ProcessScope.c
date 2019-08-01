@@ -6,6 +6,9 @@
 #include "KernelHeader.h"
 #include "stdlib.h"
 
+IO_ ADC_Status_InitTypeDef ADC_Status = {0};
+UINT16 g_ADC_Buffer[ADC_BUFFER_LEN] = {0};
+
 
 
 
@@ -737,11 +740,17 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_NET_TEST:
 			{
-				nShort = PL_UnionTwoBytes(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
-				nWord  = PL_UnionFourBytes(*(pchCmdBuf + 10),*(pchCmdBuf + 11),\
-											*(pchCmdBuf + 12),*(pchCmdBuf + 13));
-				printf("Send Packet Test: time=%d, num=%d\r\n", nShort, (int)nWord);
-				Send_Packets_Test(nShort, nWord);
+//				nShort = PL_UnionTwoBytes(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+//				nWord  = PL_UnionFourBytes(*(pchCmdBuf + 10),*(pchCmdBuf + 11),\
+//											*(pchCmdBuf + 12),*(pchCmdBuf + 13));
+//				printf("Send Packet Test: time=%d, num=%d\r\n", nShort, (int)nWord);
+//				Send_Packets_Test(nShort, nWord);
+				
+				
+				ADC_SoftwareStartConv(ADC1);
+				IT_SYS_DlyMs(100);
+				ADC_Send(0x1234,  g_ADC_Buffer);
+				
 			}
 			break;
             default:
