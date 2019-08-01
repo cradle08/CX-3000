@@ -1643,7 +1643,7 @@ UINT32  HW_Get_ADC_CRP(void)
 	srand(IT_SYS_GetTicks);
 	nRet = rand()%ADC_RESOLUTION_12;
 #else
-	nRet = HW_ADC_SpiGetADC(2);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+	nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 #endif
 	return nRet;
 }

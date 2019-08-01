@@ -1935,16 +1935,6 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 }
 
 
-//UINT8 HGB_Calibrate_Exec(void)
-//{
-
-//}
-
-//UINT8 CRP_Calibate_Exec(void)
-//{
-
-//}
-
 UINT8 HGB_Test_Exec(eTestMode eMode)
 {
 	UINT16 nVal = 0, i, nTemp, buffer[HGB_CALIBRATE_DATA_NUM] = {0};
@@ -2000,7 +1990,9 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_HGB();
-			printf("HGB ADC=%d, V=%d\r\n", buffer[i], buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
+			printf("HGB5 ADC=%d, V=%d | ", buffer[i], buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
+			printf("HGB10 ADC=%d, V=%d | ", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
+			printf("Press ADC=%d, V=%d\r\n", (int)buffer[i], (int)HW_ADC_SpiGetADC(2)*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
 			IT_SYS_DlyMs(100);
 		}
 		// send HGB data
@@ -2015,6 +2007,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 	printf("HGB_Test_Exec End\r\n");
 	return 0;
 }
+
 
 UINT8 CRP_Test_Exec(eTestMode eMode)
 {
@@ -2092,7 +2085,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		{
 			for(j = 0; j < DATA_FRAME_NUM_4BYTE; j++)
 			{
-				g_CRP_Data.crpBuffer[j] = rand()%ADC_RESOLUTION_24;
+				g_CRP_Data.crpBuffer[j] = rand()%ADC_RESOLUTION_12;
 			}
 			Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_4BYTE);
 		}

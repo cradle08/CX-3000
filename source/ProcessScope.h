@@ -150,9 +150,12 @@
 #define DATA_FRAME_NUM_2BYTE	256			// send data number a time
 #define DATA_FRAME_NUM_1BYTE	512			// send data number a time
 
-#define ADC_V_REF_VALUE_3_3	  	3300   		// 3300mv=3.3v
+
 #define ADC_V_REF_VALUE_48	  	48000  		// 48000mv=48v
+#define ADC_V_REF_VALUE_10	  	10000	 	// 10000mv=10v
 #define ADC_V_REF_VALUE_5	  	5000	 	// 5000mv=5v
+#define ADC_V_REF_VALUE_3_3	  	3300   		// 3300mv=3.3v
+#define ADC_V_REF_VALUE_2_5	  	2500	 	// 2500mv=2.5v
 #define ADC_RESOLUTION_12     	4095		// 12b adc resolution
 #define ADC_RESOLUTION_24     	16777215	// 24b adc resolution
 #define ELEC_TRIGGER_THRESHOLD  3722  		// 3/3.3*4095 = 3722(3v)
