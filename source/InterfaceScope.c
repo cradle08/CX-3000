@@ -1644,6 +1644,7 @@ UINT32  HW_Get_ADC_CRP(void)
 	nRet = rand()%ADC_RESOLUTION_12;
 #else
 	nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+	printf("ADC=%04d,V=%d\r\n", (int)nRet, (int)nRet*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
 #endif
 	return nRet;
 }

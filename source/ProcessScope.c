@@ -1975,12 +1975,11 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		}
 		nVal /= 10;
 		printf("\r\nHGB ADC_Ave: %d", nVal);
-		nVal = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
-		printf("\r\nHGB_V: %d=0x%x", nVal, nVal);
+		printf("\r\nHGB 5V-10V: %d,%d\r\n", nVal, nVal*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
 #else
 		srand(IT_SYS_GetTicks());
 		nVal = rand()%5000;
-		printf("\r\nHGB_V: %d=0x%x", nVal, nVal);
+		printf("\r\nHGB_V: %d=0d\r\n", nVal);
 #endif
 		// send HGB data
 		Send_Data_HGB(CMD_DATA_TEST_HGB, &nVal, 1);
@@ -2061,7 +2060,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 				g_CRP_Data.eSend = e_False;
 				printf("send end\r\n");
 			}
-			IT_SYS_DlyMs(5);
+			IT_SYS_DlyMs(2);
 		}
 		// send the last data
 		if(g_CRP_Data.nIndex != 0)
