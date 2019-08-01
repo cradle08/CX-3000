@@ -1673,11 +1673,12 @@ UINT32  Get_CRP_Value(void)
 UINT8 Send_Data_HGB(UINT32 nCmd, UINT16* pData, UINT16 nLen)
 {
     //  net data feedback(big-end)
-	UINT8 chReturn, i, pos = 0;
+	UINT8 chReturn, i;
+	IO_ UINT16 pos;
 	UINT16 nData;
 	// head
-    s_anBufNet[0] = 0x5344;
-    s_anBufNet[1] = 0x4457;
+    s_anBufNet[0] = 0x4243;
+    s_anBufNet[1] = 0x5757;
 	// cmd
 	s_anBufNet[2] = (((nCmd >> 24)&0x00FF) | ((nCmd >> 8)&0xFF00));
 	s_anBufNet[3] = (((nCmd >> 8)&0x00FF) | ((nCmd << 8)&0xFF00));
@@ -1712,11 +1713,15 @@ UINT8 Send_Data_CRP(UINT32 nCmd, IO_ UINT32* pData, UINT16 nLen)
 {
     //  net data feedback(big-end)
 	UINT8 chReturn;
-	UINT16 i, j, pos;
+	UINT16 i, j;
+	IO_ UINT16 pos;
 	UINT32 nData;
+	
+	LwIP_Periodic_Handle(IT_SYS_GetTicks());
+	
 	// head
-    s_anBufNet[0] = 0x5344;
-    s_anBufNet[1] = 0x4457;
+    s_anBufNet[0] = 0x4243;
+    s_anBufNet[1] = 0x5757;
 	// cmd
 	s_anBufNet[2] = (((nCmd >> 24)&0x00FF) | ((nCmd >> 8)&0xFF00));
 	s_anBufNet[3] = (((nCmd >> 8)&0x00FF) | ((nCmd << 8)&0xFF00));

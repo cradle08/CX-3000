@@ -2044,23 +2044,24 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 #if CRP_DEBUG_FLAG
 		memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
 		g_CRP_Data.eEnable = e_True;
-		while(g_CRP_Data.nTotal <= g_Record_Param.nTotal_Num)
+		while(g_CRP_Data.nTotal < g_Record_Param.nTotal_Num)
 		{
 			if(g_CRP_Data.eSend == e_True)
 			{
-				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 0) //crpBuffer[0-511]
+				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 1) //crpBuffer[0-511]
 				{
 					printf("Send one Frame: ticks=%d,total=%d, index=%d\r\n", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 					Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_4BYTE);
-				}else{ //crpBuffer[512-1024]
+					memset((void*)&g_CRP_Data.crpBuffer[0], 0, DATA_FRAME_NUM_4BYTE*4);
+				}else if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 0){ //crpBuffer[512-1024]
 					printf("Send one Frame: ticks=%d,total=%d, index=%d\r\n", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-					Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[DATA_FRAME_NUM_2BYTE], DATA_FRAME_NUM_4BYTE);
+					Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE], DATA_FRAME_NUM_4BYTE);
+					memset((void*)&g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE], 0, DATA_FRAME_NUM_4BYTE*4);
 				}
 				g_CRP_Data.eSend = e_False;
-				printf("send false\r\n");
+				printf("send end\r\n");
 			}
-			IT_SYS_DlyMs(10);
-			//printf("f\r\n");
+			IT_SYS_DlyMs(5);
 		}
 		// send the last data
 		if(g_CRP_Data.nIndex != 0)
@@ -2073,10 +2074,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 				Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE], g_CRP_Data.nIndex);
 				printf("Send one Frame: ticks=%d,total=%d, index=%d", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 			}
-		}
-		memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
-		g_CRP_Data.eEnable = e_False;
-		
+		}		
 #else
 		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
 		g_CRP_Data.eEnable = e_False;
@@ -2089,9 +2087,9 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 			}
 			Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_4BYTE);
 		}
+#endif	
 		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
-		g_CRP_Data.eEnable = e_False;
-#endif		
+		g_CRP_Data.eEnable = e_False;		
 		
 	}else if(eMode == EN_CRP_CALIBRATE){
 		printf("CRP Calibrate\r\n");

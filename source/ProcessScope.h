@@ -194,7 +194,7 @@ struct CRP_DataType{
 	UINT8 eSend;
 	UINT16 nTotal;
 	UINT16 nIndex;
-	UINT32 crpBuffer[DATA_FRAME_NUM_4BYTE*2]; // 256*2*2=1024
+	UINT32 crpBuffer[DATA_FRAME_NUM_4BYTE*2]; // 128*4*2=512*2
 };
 extern IO_ struct CRP_DataType g_CRP_Data;
 

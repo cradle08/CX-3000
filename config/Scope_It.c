@@ -52,23 +52,20 @@ void IRQ_SysTimer(void)
 		// disable TIM2 counter
         TIM_Cmd(TIM2, DISABLE);
 
-        //----------------------------------------------
-		//----------------------------------------------
 		// period: 10ms
 		s_count++;
 		
         //----------------------------------------------
         // 1. protocol timeout process
-    	if( 0 == (s_count % 5) )   // 100ms
+    	if( 0 == (s_count % 5))   // 100ms
         {
 			// sampling port timeout
     	    SPG_IsrTime();
-			
 			// timer get CRP data per 100ms
 			if(g_CRP_Data.eEnable == e_True)
 			{							
 				printf("T=%d, total=%d, index=%d\r\n", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 0)
+				if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 0)
 				{
 					g_CRP_Data.crpBuffer[g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
 					//printf("CRP V:%d, t=%d, i=%d\r\n", g_CRP_Data.crpBuffer[g_CRP_Data.nIndex], g_CRP_Data.nTotal, g_CRP_Data.nIndex);
@@ -77,9 +74,9 @@ void IRQ_SysTimer(void)
 						g_CRP_Data.eSend  = e_True;
 						//printf("send true\r\n");
 						g_CRP_Data.nIndex = 0;
+						g_CRP_Data.nTotal++;
 					}
-				}else if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 1)
-				{
+				}else if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 1){
 					g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
 					//printf("CRP V:%d, t=%d, i=%d\r\n", g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex], g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_4BYTE - 1)
@@ -87,10 +84,14 @@ void IRQ_SysTimer(void)
 						g_CRP_Data.eSend  = e_True;
 						//printf("send true\r\n");
 						g_CRP_Data.nIndex = 0;
+						g_CRP_Data.nTotal++;
 					}
 				}
-				g_CRP_Data.nIndex++;
-				g_CRP_Data.nTotal++;
+				if(g_CRP_Data.eSend  == e_False)
+				{
+					g_CRP_Data.nIndex++;
+					g_CRP_Data.nTotal++;
+				}
 			}
         }	
         
