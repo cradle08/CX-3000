@@ -333,7 +333,7 @@ extern UINT8 EVAL_InputGetState(Input_TypeDef eIn);
 // timer interrupt
 _EXT_ UINT8  PF_InitTimer2(void);
 
-
+void Adc_Init(void);
 
 
 #endif

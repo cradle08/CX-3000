@@ -1975,7 +1975,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		}
 		nVal /= 10;
 		printf("\r\nHGB ADC_Ave: %d", nVal);
-		printf("\r\nHGB 5V-10V: %d,%d\r\n", nVal, nVal*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
+		printf("\r\nHGB 3.3V-10V: %d,%d\r\n", nVal, nVal*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
 #else
 		srand(IT_SYS_GetTicks());
 		nVal = rand()%5000;
@@ -1989,7 +1989,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_HGB();
-			printf("HGB5 ADC=%d, V=%d | ", buffer[i], buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
+			printf("HGB3.3 ADC=%d, V=%d | ", buffer[i], buffer[i]*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
 			printf("HGB10 ADC=%d, V=%d | ", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
 			printf("Press ADC=%d, V=%d\r\n", (int)buffer[i], (int)HW_ADC_SpiGetADC(2)*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
 			IT_SYS_DlyMs(100);
@@ -2095,7 +2095,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		for(i = 0; i < CRP_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_CRP();
-			printf("CRP ADC=%d, V=%d\r\n", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
+			printf("CRP ADC=%d, 3.3V=%d\r\n", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
 			IT_SYS_DlyMs(100);
 		}
 		// send CRP data

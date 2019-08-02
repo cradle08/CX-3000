@@ -277,12 +277,10 @@ void EVAL_Init(void)
 	//-------------------------------------------
 	// 8. Initialize the spi-flash 
     // SPI_FLASH_Init();
-    
     //-------------------------------------------
 	// 9. the timer of the system messages
 	PF_InitTimer2();
-
-
+	Adc_Init();
 }
 
 
@@ -408,6 +406,50 @@ UINT8 EVAL_InputGetState(Input_TypeDef eIn)
 {
     return GPIO_ReadInputDataBit(IN_PORT[eIn], IN_PIN[eIn]);
 }
+
+
+void  Adc_Init(void)
+{    
+  GPIO_InitTypeDef  GPIO_InitStructure;
+  ADC_CommonInitTypeDef ADC_CommonInitStructure;
+  ADC_InitTypeDef       ADC_InitStructure;
+	
+  ADC_DeInit();
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);//使能GPIOA时钟
+  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE); //使能ADC1时钟
+
+  //先初始化ADC1通道5 IO口
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;//PA5 通道5
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;//模拟输入
+  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;//不带上下拉
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(GPIOA, &GPIO_InitStructure);//初始化  
+ 
+  RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1,ENABLE);	  //ADC1复位
+  RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1,DISABLE);	//复位结束	 
+ 
+  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;//独立模式
+  ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;//两个采样阶段之间的延迟5个时钟
+  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled; //DMA失能
+  ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div4;//预分频4分频。ADCCLK=PCLK2/4=84/4=21Mhz,ADC时钟最好不要超过36Mhz 
+  ADC_CommonInit(&ADC_CommonInitStructure);//初始化
+	
+  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;//12位模式
+  ADC_InitStructure.ADC_ScanConvMode = DISABLE;//非扫描模式	
+  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;//关闭连续转换
+  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;//禁止触发检测，使用软件触发
+  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConvEdge_None;//ADC_ExternalTrigConv_None; ///
+  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;//右对齐	
+  ADC_InitStructure.ADC_NbrOfConversion = 1;//1个转换在规则序列中 也就是只转换规则序列1 
+  ADC_Init(ADC1, &ADC_InitStructure);//ADC初始化
+	
+ 
+  ADC_Cmd(ADC1, ENABLE);//开启AD转换器	
+ // ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+
+}	
+
 
 
 //-----------------------------------------------------------------------------------------

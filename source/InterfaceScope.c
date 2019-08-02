@@ -1631,7 +1631,11 @@ UINT16  HW_Get_ADC_HGB(void)
 	srand(IT_SYS_GetTicks);
 	nRet = rand()% ADC_RESOLUTION_24;
 #else
-	nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup), 3=press, */ 
+	//nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup), 3=press, */ 
+		ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+	ADC_SoftwareStartConv(ADC1);		//使能指定的ADC1的软件转换启动功能	
+	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));//等待转换结束
+	nRet = ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
 #endif
 	return nRet;
 }
@@ -1643,8 +1647,13 @@ UINT32  HW_Get_ADC_CRP(void)
 	srand(IT_SYS_GetTicks);
 	nRet = rand()%ADC_RESOLUTION_12;
 #else
-	nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
-	printf("ADC=%04d,V=%d\r\n", (int)nRet, (int)nRet*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
+	//nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+	ADC_SoftwareStartConv(ADC1);		//使能指定的ADC1的软件转换启动功能	
+	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));//等待转换结束
+	nRet = ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
+	//ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
+	//printf("ADC=%04d,V=%05d\r\n", (int)nRet, (int)nRet*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
 #endif
 	return nRet;
 }
