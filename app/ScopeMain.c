@@ -104,7 +104,6 @@ void test(void)
 
 #if 1
 
-
 void ADC1_DMA_Config(UINT32 par, UINT32 mar, UINT16 ndtr)
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -137,8 +136,8 @@ void ADC1_DMA_Config(UINT32 par, UINT32 mar, UINT16 ndtr)
 	DMA_ITConfig(DMA2_Stream0,DMA_IT_HT,ENABLE);	
 		
 	NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream0_IRQn; 
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02;   
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x01;                      
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x01;   
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x00;                      
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	
@@ -156,10 +155,11 @@ void ADC1_Init(void)
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 	// PA5
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_5;
+	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_6;//GPIO_Pin_5, PA5, PA6
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
+	
 	
 	//ADC1
 	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, ENABLE);
@@ -174,16 +174,18 @@ void ADC1_Init(void)
 	ADC_InitStructure.ADC_ScanConvMode  = DISABLE;
 	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
-	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
+	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;//ADC_DataAlign_Left;//ADC_DataAlign_Right;
 	ADC_InitStructure.ADC_NbrOfConversion = 1;
 	ADC_Init(ADC1, &ADC_InitStructure);	
+	ADC_Cmd(ADC1, ENABLE);
 	
 	ADC1_DMA_Config((UINT32)&ADC1->DR, (UINT32)g_ADC_Buffer, ADC_BUFFER_LEN);
-	
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_480Cycles); //ADC_SampleTime_3Cycles
-	ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
 	ADC_DMACmd(ADC1, ENABLE);
-	ADC_Cmd(ADC1, ENABLE);
+	
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_15Cycles); //ADC_SampleTime_3Cycles
+	ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
+	
+	
 }
 
 
@@ -197,9 +199,10 @@ void DMA2_Stream0_IRQHandler(void)
 	{
 		DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_HTIF0);
 		//ADC_Send_Flag = 1;
-		ADC_Status.nSFlag = 1;
 		ADC_Status.nID++;
-		ADC_Status.nPos   = DMA_GetCurrDataCounter(DMA2_Stream0);
+		ADC_Status.nSFlag = 1;
+		
+//		ADC_Status.nPos   = DMA_GetCurrDataCounter(DMA2_Stream0);
 //		printf("%d-%d,", (int)IT_SYS_GetTicks(), ADC_Status.nPos);
 		//DMA_ClearFlag(DMA2_Stream0, DMA_FLAG_HTIF0); 
 	}
@@ -208,9 +211,9 @@ void DMA2_Stream0_IRQHandler(void)
 	{
 		DMA_ClearITPendingBit(DMA2_Stream0, DMA_IT_TCIF0);
 		//ADC_Send_Flag = 2;
-		ADC_Status.nSFlag = 2;
 		ADC_Status.nID++;
-		ADC_Status.nPos   = DMA_GetCurrDataCounter(DMA2_Stream0);
+		ADC_Status.nSFlag = 2;
+//		ADC_Status.nPos   = DMA_GetCurrDataCounter(DMA2_Stream0);
 //		printf("%d-%d\r\n", (int)IT_SYS_GetTicks(), ADC_Status.nPos);
 		//DMA_ClearFlag(DMA2_Stream0, DMA_FLAG_TCIF0); 
 	}	
@@ -252,10 +255,10 @@ int main(void)
 //		//LwIP_Periodic_Handle(IT_SYS_GetTicks());
 //		if(ADC_Status.nSFlag == 1)
 //		{
-//			ADC_Send(ADC_Status.nID, g_ADC_Buffer);
+//			ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, g_ADC_Buffer);
 //			ADC_Status.nSFlag = 0xFF;
 //		}else if(ADC_Status.nSFlag == 2){
-//			ADC_Send(ADC_Status.nID, &g_ADC_Buffer[ADC_BUFFER_LEN/2]);	
+//			ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, &g_ADC_Buffer[ADC_BUFFER_LEN/2]);	
 //			ADC_Status.nSFlag = 0xFF;
 //		}
 //		printf("A\r\n");

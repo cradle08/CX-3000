@@ -504,7 +504,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			case CMD_CTRL_TEST_RBC:
 			case CMD_CTRL_TEST_PLT:
 			case CMD_CTRL_TEST_RBC_PLT:
-            case CMD_CTRL_TEST_WBC: // count func
+            case CMD_CTRL_NET_TEST://CMD_CTRL_TEST_WBC: // count func
             {
 				eMode  = GetTestMode(nCommand);// which cmd was be exec
                 nCommand  = CMD_CTRL_TEST_WBC;
@@ -738,7 +738,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				MT_X_IN_Self_Check(e_SelfCheck_Call);
 			}
 			break;
-			case CMD_CTRL_NET_TEST:
+			case CMD_CTRL_TEST_WBC://CMD_CTRL_NET_TEST
 			{
 //				nShort = PL_UnionTwoBytes(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
 //				nWord  = PL_UnionFourBytes(*(pchCmdBuf + 10),*(pchCmdBuf + 11),\
@@ -746,10 +746,61 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 //				printf("Send Packet Test: time=%d, num=%d\r\n", nShort, (int)nWord);
 //				Send_Packets_Test(nShort, nWord);
 				
+				//ADC1_Init();
+		
+				//ADC_SoftwareStartConv(ADC1);
+				memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
+				printf("ADC Start Ticks=%d\r\n", (int)IT_SYS_GetTicks());
 				
+				//ADC_DMACmd(ADC1, ENABLE);
+				//ADC_Cmd(ADC1, ENABLE);
+				
+				ADC1_Init();
+				IT_SYS_DlyMs(2);
 				ADC_SoftwareStartConv(ADC1);
-				IT_SYS_DlyMs(100);
-				ADC_Send(0x1234,  g_ADC_Buffer);
+				while(ADC_Status.nID < 40000)
+				{
+					if(ADC_Status.nSFlag == 1)
+					{
+						//ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, g_ADC_Buffer);
+						ADC_Send(CMD_DATA_TEST_WBC, ADC_Status.nID, g_ADC_Buffer);
+						ADC_Status.nSFlag = 0xFF;
+						//printf()
+						memset(g_ADC_Buffer, 0, ADC_BUFFER_LEN_HALF);
+						ADC_Status.nSendID++;
+					}else if(ADC_Status.nSFlag == 2){
+						//ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, &g_ADC_Buffer[ADC_BUFFER_LEN/2]);	
+						ADC_Send(CMD_DATA_TEST_WBC, ADC_Status.nID, &g_ADC_Buffer[ADC_BUFFER_LEN_HALF]);
+						ADC_Status.nSFlag = 0xFF;
+						memset(&g_ADC_Buffer[ADC_BUFFER_LEN_HALF], 0, ADC_BUFFER_LEN_HALF);
+						ADC_Status.nSendID++;
+					}
+				}
+				IT_SYS_DlyMs(5);
+				collect_return_hdl(COLLECT_RET_SUCESS);
+				printf("adc end: id=%d, sendid=%d, T=%d\r\n", \
+						(int)ADC_Status.nID, (int)ADC_Status.nSendID, (int)IT_SYS_GetTicks());
+				
+				DMA_Cmd(DMA2_Stream0, ENABLE);
+				ADC_DMACmd(ADC1, DISABLE);
+				ADC_Cmd(ADC1, DISABLE);
+				//
+				nParaLen = 0;
+				pchFbkBuf[nParaLen++] = 0x44; pchFbkBuf[nParaLen++] = 0x53; pchFbkBuf[nParaLen++] = 0x57; 
+				pchFbkBuf[nParaLen++] = 0x44; pchFbkBuf[nParaLen++] = 0x30; pchFbkBuf[nParaLen++] = 0x00;
+				pchFbkBuf[nParaLen++] = 0x02; pchFbkBuf[nParaLen++] = 0x01;
+				pchFbkBuf[nParaLen++] = 0x00; pchFbkBuf[nParaLen++] = 0x00;
+				
+				nParaLen = 15;
+				strncpy((char*)&pchFbkBuf[10],"wbc adc test\r\n", nParaLen);
+				pchFbkBuf[8]  = (nParaLen - 10) >> 8;
+				pchFbkBuf[9] = (nParaLen - 10);
+				if(e_Feedback_Fail == udp_echoserver_senddata((UINT8 *)pchFbkBuf, nParaLen))
+				{
+					IT_SYS_DlyMs(1);
+				}
+				printf("debug msg len: %d\r\n", nParaLen);
+				nParaLen = 0;
 				
 			}
 			break;
@@ -2177,8 +2228,8 @@ UINT8 MSG_TestingFunc(void)
 		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 		*pDILen = nDILen;
 #endif
-        collect_return_hdl(COLLECT_RET_FAIL_NONE_HOME);  /* 未执行进仓操作 */
-        return e_Feedback_Error;
+//        collect_return_hdl(COLLECT_RET_FAIL_NONE_HOME);  /* 未执行进仓操作 */
+//        return e_Feedback_Error;
     }
 
 	// check the ELECTRODE status
@@ -2192,8 +2243,8 @@ UINT8 MSG_TestingFunc(void)
 		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 		*pDILen = nDILen;
 #endif
-		collect_return_hdl(COLLECT_RET_FAIL_ELECTRODE);  /* 采集异常 */
-        return e_Feedback_Error;
+//		collect_return_hdl(COLLECT_RET_FAIL_ELECTRODE);  /* 采集异常 */
+//        return e_Feedback_Error;
     }
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
@@ -2272,8 +2323,8 @@ UINT8 MSG_TestingFunc(void)
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
 #endif
-            collect_return_hdl(COLLECT_RET_FAIL_PUMP);  /* 采集异常 */
-            return e_Feedback_Error;     
+//            collect_return_hdl(COLLECT_RET_FAIL_PUMP);  /* 采集异常 */
+//            return e_Feedback_Error;     
         }
     }
     else
@@ -2307,8 +2358,8 @@ UINT8 MSG_TestingFunc(void)
 		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 		*pDILen = nDILen;
 #endif
-        collect_return_hdl(COLLECT_RET_FAIL_ELECTRODE);  /* 采集异常 */
-        return e_Feedback_Error;
+//        collect_return_hdl(COLLECT_RET_FAIL_ELECTRODE);  /* 采集异常 */
+//        return e_Feedback_Error;
     }
 
 	// first
@@ -2377,8 +2428,8 @@ UINT8 MSG_TestingFunc(void)
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
 #endif
-            collect_return_hdl(COLLECT_RET_FAIL_ELECTRODE);  /* 采集异常 */
-            return e_Feedback_Error;
+//            collect_return_hdl(COLLECT_RET_FAIL_ELECTRODE);  /* 采集异常 */
+//            return e_Feedback_Error;
         }
 		// to check press
 		nPress = 0;
@@ -2394,8 +2445,8 @@ UINT8 MSG_TestingFunc(void)
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
 #endif
-            collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
-            return e_Feedback_Error;
+//            collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
+//            return e_Feedback_Error;
 		}
 		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
 		nCurTicks = IT_SYS_GetTicks();
@@ -2412,8 +2463,8 @@ UINT8 MSG_TestingFunc(void)
 				memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 				*pDILen = nDILen;
 #endif			
-				collect_return_hdl(COLLECT_RET_FAIL_WBC_BSK);
-				return e_Feedback_Error;
+//				collect_return_hdl(COLLECT_RET_FAIL_WBC_BSK);
+//				return e_Feedback_Error;
 			}
 		}
     }
@@ -2441,9 +2492,9 @@ UINT8 MSG_TestingFunc(void)
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		*pDILen = nDILen;
 #endif
-		collect_return_hdl(COLLECT_RET_FAIL_WBC_TOUCH);
 		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		return e_Feedback_Error;	
+//		collect_return_hdl(COLLECT_RET_FAIL_WBC_TOUCH);
+//		return e_Feedback_Error;	
 	}
 	// -----check wbc elec v before count-----------
 	if(EN_WBC_V_LOW != Get_WBC_V_Status(COUNT_WBC_TOUCH_CHECK_V)) // the wbc_v is not low than COUNT_WBC_MIN_V(1.8v)
@@ -2458,9 +2509,9 @@ UINT8 MSG_TestingFunc(void)
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		*pDILen = nDILen;
 #endif
-		collect_return_hdl(COLLECT_RET_FAIL_WBC_ELECTRODE);
 		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		return e_Feedback_Error;
+//		collect_return_hdl(COLLECT_RET_FAIL_WBC_ELECTRODE);
+//		return e_Feedback_Error;
 	}
 
 	//-------second 3s stop-----------
@@ -2512,8 +2563,8 @@ UINT8 MSG_TestingFunc(void)
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
 #endif
-            collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
-            return e_Feedback_Error;
+//            collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
+//            return e_Feedback_Error;
 		}
 		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }

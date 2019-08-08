@@ -108,7 +108,7 @@
 #define    CMD_DATA_TEST_CRP   			0x30000506
 #define    CMD_DATA_CALIBRATE_HGB   	0x30000507
 #define    CMD_DATA_CALIBRATE_CRP   	0x30000508
-
+#define    CMD_DATA_NET_TEST   		    0x30000808
 
 #define  COLLECT_RET_SUCESS            	0x0000      /* 采集成功 */
 #define  COLLECT_RET_FAIL_TIMEOVER     	0x0001      /* 因超时导致采集失败 */
@@ -135,8 +135,10 @@ typedef struct{
 	UINT8 nSFlag;
 	UINT16 nPos;
 	UINT32 nID;
+	UINT32 nSendID;
 }ADC_Status_InitTypeDef;
-#define ADC_BUFFER_LEN	512
+#define ADC_BUFFER_LEN		512
+#define ADC_BUFFER_LEN_HALF	256
 
 extern IO_ ADC_Status_InitTypeDef ADC_Status;
 extern UINT16 g_ADC_Buffer[ADC_BUFFER_LEN];
@@ -379,7 +381,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode);
 //UINT8 HGB_Calibrate_Exec(void);
 //UINT8 CRP_Calibate_Exec(void);
 UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag);
-
+void ADC1_Init(void);
 //yaolan_end
 
 eTestMode GetTestMode(UINT32 nCmd);

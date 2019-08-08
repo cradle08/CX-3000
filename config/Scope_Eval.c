@@ -204,12 +204,18 @@ PUTCHAR_PROTOTYPE
 void EVAL_Init(void)
 {
     USART_InitTypeDef USART_InitStructure;	
-
+	RCC_ClocksTypeDef  Rcc_Clock;
+	
 	//-------------------------------------------
     // 1. update the system's clock
     SystemCoreClockUpdate();
 	printf("\r\n--- SystemCoreClock = %d ---\r\n", SystemCoreClock);
-
+	
+	RCC_GetClocksFreq(&Rcc_Clock);
+	printf("--Sysclk=%d\r\n", Rcc_Clock.SYSCLK_Frequency);
+	printf("---HCLK=%d\r\n", Rcc_Clock.HCLK_Frequency);
+	printf("---PCLK1=%d\r\n", Rcc_Clock.PCLK1_Frequency);
+	printf("---PCLK2=%d\r\n", Rcc_Clock.PCLK2_Frequency);
     //-------------------------------------------
     // 2. Initialize and start the SysTick counter and its interrupt. 
     //    take attention: when want to use IRQ_DelayMs(), this must be called first !!!
