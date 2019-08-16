@@ -1626,16 +1626,20 @@ void HW_EN_ADC_CRP(enum eFlag flag)
 UINT16  HW_Get_ADC_HGB(void)
 {
 	UINT16 nRet;
-#if 0
-	// todo...(real)
-	srand(IT_SYS_GetTicks);
-	nRet = rand()% ADC_RESOLUTION_24;
-#else
+	
+#if HGB_BEBUG_FPGA
+	nRet = HW_Get_ADC_Perip(0); // hgb
+	
+#else	
 	//nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup), 3=press, */ 
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
 	ADC_SoftwareStartConv(ADC1);		//使能指定的ADC1的软件转换启动功能	
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));//等待转换结束
 	nRet = ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
+
+//		// todo...(real)
+//	srand(IT_SYS_GetTicks);
+//	nRet = rand()% ADC_RESOLUTION_24;
 #endif
 	return nRet;
 }
@@ -1643,17 +1647,22 @@ UINT16  HW_Get_ADC_HGB(void)
 UINT32  HW_Get_ADC_CRP(void)
 {
 	UINT32  nRet;
-#if 0
-	srand(IT_SYS_GetTicks);
-	nRet = rand()%ADC_RESOLUTION_12;
-#else
+	
+#if CRP_BEBUG_FPGA
+	nRet = HW_Get_ADC_Perip(2); //crp
+	
+#else	
 	//nRet = HW_ADC_SpiGetADC(0);	/* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
 	ADC_SoftwareStartConv(ADC1);		//使能指定的ADC1的软件转换启动功能	
 	while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));//等待转换结束
 	nRet = ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
 	//ADC_ClearFlag(ADC1, ADC_FLAG_EOC);
 	//printf("ADC=%04d,V=%05d\r\n", (int)nRet, (int)nRet*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
+
+	//srand(IT_SYS_GetTicks);
+	//nRet = rand()%ADC_RESOLUTION_12;
+	
 #endif
 	return nRet;
 }

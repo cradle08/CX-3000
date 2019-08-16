@@ -1959,7 +1959,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 	// open LED
 	HW_LED_On(LED_HGB_INDEX);
 	// enable LED ADC Channel
-	HW_EN_ADC_HGB(e_True);
+//	HW_EN_ADC_HGB(e_True);
 	IT_SYS_DlyMs(100);
 	//
 	if(eMode ==  EN_HGB_TEST)
@@ -1998,7 +1998,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		Send_Data_HGB(CMD_DATA_CALIBRATE_HGB, buffer, HGB_CALIBRATE_DATA_NUM);
 	}
 	// enable LED ADC Channel
-	HW_EN_ADC_HGB(e_False);
+//	HW_EN_ADC_HGB(e_False);
 	// close LED
 	HW_LED_Off(LED_HGB_INDEX);
 	// send finished flag
@@ -2033,7 +2033,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 	// open LED
 	HW_LED_On(LED_CRP_INDEX);
 	// enable LED ADC Channel
-	HW_EN_ADC_CRP(e_True);
+//	HW_EN_ADC_CRP(e_True);
 	IT_SYS_DlyMs(50);
 	// get CRP adc data
 	printf("CRP_Test_Exec:");
@@ -2103,7 +2103,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 	}
 	
 	// enable LED ADC Channel
-	HW_EN_ADC_CRP(e_False);
+//	HW_EN_ADC_CRP(e_False);
 	// close LED
 	HW_LED_Off(LED_CRP_INDEX);
 	// send finished flag
