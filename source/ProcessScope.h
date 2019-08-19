@@ -166,6 +166,7 @@
 #define ELEC_STATUS_CLOSE    	0
 
 #define HGB_CALIBRATE_DATA_NUM	10
+#define DISCARD_DATA_NUM		2
 #define CRP_CALIBRATE_DATA_NUM  10
 typedef enum {
 	EN_HGB_TEST			= 0,

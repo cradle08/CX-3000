@@ -1935,9 +1935,10 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 }
 
 
+
 UINT8 HGB_Test_Exec(eTestMode eMode)
 {
-	UINT16 nVal = 0, i, nTemp, buffer[HGB_CALIBRATE_DATA_NUM] = {0};
+	UINT16 nVal = 0, i, j, buffer[HGB_CALIBRATE_DATA_NUM] = {0};
 	
 	printf("HGB_Test_Exec Start\r\n");
 	// check postion 
@@ -1967,13 +1968,32 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		// get HGB adc data
 		printf("HGB_Test_Exec:");
 #if HGB_DEBUG_FLAG
-		for(i = 0; i < 10; i++)
+		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
-			nTemp = HW_Get_ADC_HGB();
-			nVal += nTemp;
-			printf("ADC=%d,", nTemp);
+			buffer[i] = HW_Get_ADC_HGB();
+			printf("ADC=%d,", buffer[i]);
+			IT_SYS_DlyMs(100);
 		}
-		nVal /= 10;
+		//
+		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
+		{
+			for(j = i; j < HGB_CALIBRATE_DATA_NUM; j++)
+			{
+				if(buffer[i] > buffer[j])
+				{
+					nVal = buffer[i];
+					buffer[i] = buffer[j];
+					buffer[j] = nVal;
+				}
+			}
+		}
+		nVal = 0;
+		for(i = DISCARD_DATA_NUM; i < HGB_CALIBRATE_DATA_NUM - DISCARD_DATA_NUM; i++)
+		{
+			nVal += buffer[i];
+		}
+		
+		nVal /= (HGB_CALIBRATE_DATA_NUM - DISCARD_DATA_NUM*2);
 		printf("\r\nHGB ADC_Ave: %d", nVal);
 		printf("\r\nHGB 3.3V-10V: %d,%d\r\n", nVal, nVal*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
 #else
