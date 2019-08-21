@@ -1975,34 +1975,14 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 			IT_SYS_DlyMs(100);
 		}
 		//
-		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
-		{
-			for(j = i; j < HGB_CALIBRATE_DATA_NUM; j++)
-			{
-				if(buffer[i] > buffer[j])
-				{
-					nVal = buffer[i];
-					buffer[i] = buffer[j];
-					buffer[j] = nVal;
-				}
-			}
-		}
-		nVal = 0;
-		for(i = DISCARD_DATA_NUM; i < HGB_CALIBRATE_DATA_NUM - DISCARD_DATA_NUM; i++)
-		{
-			nVal += buffer[i];
-		}
-		
-		nVal /= (HGB_CALIBRATE_DATA_NUM - DISCARD_DATA_NUM*2);
-		printf("\r\nHGB ADC_Ave: %d", nVal);
-		printf("\r\nHGB 3.3V-10V: %d,%d\r\n", nVal, nVal*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
 #else
 		srand(IT_SYS_GetTicks());
 		nVal = rand()%5000;
 		printf("\r\nHGB_V: %d=0d\r\n", nVal);
 #endif
 		// send HGB data
-		Send_Data_HGB(CMD_DATA_TEST_HGB, &nVal, 1);
+		//Send_Data_HGB(CMD_DATA_TEST_HGB, &nVal, 1);
+		Send_Data_HGB(CMD_DATA_TEST_HGB, buffer, HGB_CALIBRATE_DATA_NUM);
 
 	}else if(eMode == EN_HGB_CALIBRATE){
 		printf("HGB Calibrate\r\n");
