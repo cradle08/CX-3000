@@ -45,7 +45,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>..\obj\</OutputDirectory>
-          <OutputName>CX-3000_SLA_V001</OutputName>
+          <OutputName>CX-3000_SLA_V007</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -307,12 +307,12 @@
               <OCR_RVCT4>
                 <Type>1</Type>
                 <StartAddress>0x8000000</StartAddress>
-                <Size>0x7fff</Size>
+                <Size>0x3fff</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
                 <Type>1</Type>
-                <StartAddress>0x800c000</StartAddress>
-                <Size>0x74000</Size>
+                <StartAddress>0x8008000</StartAddress>
+                <Size>0x3ffff</Size>
               </OCR_RVCT5>
               <OCR_RVCT6>
                 <Type>0</Type>

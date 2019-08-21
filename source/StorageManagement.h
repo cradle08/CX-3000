@@ -53,7 +53,7 @@
 #define ADDR_FLASH_SECTOR_11    ((u32)0x080E0000) 	//扇区11起始地址,128 Kbytes  
 
  //sector 2 ,0x08008000-0x0800BFFF=16k, 0x08008000-0x0800BFFF=12k
-#define FLASH_SAVE_ADDR    0x08009000
+#define FLASH_SAVE_ADDR    0x08004000
 #define FLASH_INIT_FLAG    0x1234
 #define RECORD_PARAM_LEN  (sizeof(RECORD_PARAM))
 typedef struct {

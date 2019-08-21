@@ -1655,7 +1655,7 @@ UINT32  HW_Get_ADC_CRP(void)
 #else	
 	for(i = 0; i < 5; i++)
 	{
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_144Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+		ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
 		ADC_SoftwareStartConv(ADC1);		//使能指定的ADC1的软件转换启动功能	
 		while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));//等待转换结束
 		nRet += ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
@@ -1704,7 +1704,7 @@ UINT8 Send_Data_HGB(UINT32 nCmd, UINT16* pData, UINT16 nLen)
 	if(nCmd == CMD_DATA_TEST_HGB)
 	{
 		s_anBufNet[4] = HGB_BLACK_VALUE;
-		pos = 5;
+		pos = 4;
 	}else if(nCmd == CMD_DATA_CALIBRATE_HGB){
 		pos = 4;	
 	}
