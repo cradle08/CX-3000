@@ -1623,10 +1623,10 @@ void HW_EN_ADC_CRP(enum eFlag flag)
 	}
 }
 
-UINT16  HW_Get_ADC_HGB(void)
+UINT32 HW_Get_ADC_HGB(void)
 {
 	UINT8 i;
-	UINT16 nRet;
+	UINT32 nRet;
 	
 #if HGB_BEBUG_FPGA
 	nRet = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
@@ -1653,14 +1653,14 @@ UINT32  HW_Get_ADC_CRP(void)
 	nRet = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 	
 #else	
-	for(i = 0; i < 5; i++)
-	{
+//	for(i = 0; i < 5; i++)
+//	{
 		ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
 		ADC_SoftwareStartConv(ADC1);		//使能指定的ADC1的软件转换启动功能	
 		while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));//等待转换结束
-		nRet += ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
-	}
-	nRet /= 5;
+		nRet = ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
+//	}
+//	nRet /= 5;
 #endif
 	return nRet;
 }
@@ -1687,11 +1687,11 @@ UINT32  Get_CRP_Value(void)
 }
 
 
-UINT8 Send_Data_HGB(UINT32 nCmd, UINT16* pData, UINT16 nLen)
+UINT8 Send_Data_HGB(UINT32 nCmd, UINT32* pData, UINT16 nLen)
 {
     //  net data feedback(big-end)
-	UINT8 chReturn, i;
-	IO_ UINT16 pos;
+	UINT8 chReturn;
+	IO_ UINT16 pos, i = 0, j = 0;
 	UINT16 nData;
 	// head
     s_anBufNet[0] = 0x4243;
@@ -1709,18 +1709,24 @@ UINT8 Send_Data_HGB(UINT32 nCmd, UINT16* pData, UINT16 nLen)
 		pos = 4;	
 	}
 	// data
-	for(i = 0; i < nLen; i++)
+	for(i = 0, j = 0; i < nLen; i++)
 	{
+//		nData = *(pData + i);
+//		//printf("send HGB_V: %d=0x%x\r\n", nData, nData);
+//		s_anBufNet[pos+i] = (nData>>8)|(nData<<8);
+		
 		nData = *(pData + i);
-		//printf("send HGB_V: %d=0x%x\r\n", nData, nData);
-		s_anBufNet[pos+i] = (nData>>8)|(nData<<8);
+		s_anBufNet[pos+j] = (((nData >> 24)&0x00FF) | ((nData >> 8)&0xFF00));
+		j++;
+		s_anBufNet[pos+j] = (((nData >> 8)&0x00FF) | ((nData << 8)&0xFF00));
+		j++;
 	}
 	// send data
-	chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen + pos) * 2));
+	chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen*2 + pos) * 2));
 	if (e_Feedback_Fail == chReturn)
 	{
 		IT_SYS_DlyMs(10);
-		udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen + pos) * 2));
+		udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((nLen*2 + pos) * 2));
 		printf("HGB Msg Send Fail\r\n");
 	}
 	return chReturn;
@@ -1730,7 +1736,7 @@ UINT8 Send_Data_CRP(UINT32 nCmd, IO_ UINT32* pData, UINT16 nLen)
 {
     //  net data feedback(big-end)
 	UINT8 chReturn;
-	UINT16 i, j;
+	UINT16 i, j = 0;
 	IO_ UINT16 pos;
 	UINT32 nData;
 	
@@ -2210,41 +2216,159 @@ _EXT_ UINT8  HW_LWIP_Working_Recv_Handle(UINT32 nTickList, UINT32 nTickAdc)
 }
 
 
-UINT8 HW_WBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
+UINT8 ADC_Send(UINT32 nCmd, UINT32 nId, UINT16 * pData)
 {
+	UINT16 i, nData;
+
+	LwIP_Periodic_Handle(IT_SYS_GetTicks());
+	s_anBufNet[0] = 0x5344;
+    s_anBufNet[1] = 0x4457;
+#if 0 //cx2000
+	s_anBufNet[2] = (((nId>>24)&0x00FF)|((nId>>8)&0xFF00));
+	s_anBufNet[3] = (((nId>>8)&0x00FF) |((nId<<8)&0xFF00));
+
+	//memmove(&s_anBufNet[4], pData, 256);
+	for(i = 0; i < 256; i++)
+	{
+//		nData = *(pData + i);
+//		s_anBufNet[4 + i] = (nData>>8)|(nData<<8);
+		s_anBufNet[4 + i] = *(pData + i);
+		
+//		s_anBufNet[6 + i] = *(pData + i);;
+	}
+	udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((256 + 4) * 2));
 	
+#else //cx3000
+	
+	s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
+	s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
+	
+	s_anBufNet[4] = (((nId>>24)&0x00FF)|((nId>>8)&0xFF00));
+	s_anBufNet[5] = (((nId>>8)&0x00FF) |((nId<<8)&0xFF00));
+
+	//memmove(&s_anBufNet[4], pData, 256);
+	for(i = 0; i < 256; i++)
+	{
+		nData = *(pData + i);
+		s_anBufNet[6 + i] = ((nData&0XFF00)>>8)|((nData&0x00FF)<<8);
+		
+//		s_anBufNet[6 + i] = *(pData + i);;
+	}
+	udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((256 + 6) * 2));
+#endif
 	return 0;
 }
 
+
+void Poll_SendDMA_ADC_Data(void)
+{
+//	memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
+//	ADC1_Init();
+//	ADC_SoftwareStartConv(ADC1);
+//	while(ADC_Status.nID < 40000)
+//	{
+		if(ADC_Status.nSFlag == 1)
+		{
+			//ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, g_ADC_Buffer);
+			ADC_Send(CMD_DATA_TEST_WBC, ADC_Status.nID, g_ADC_Buffer);
+			ADC_Status.nSFlag = 0xFF;
+			//printf()
+			memset(g_ADC_Buffer, 0, ADC_BUFFER_LEN_HALF);
+			ADC_Status.nSendID++;
+		}else if(ADC_Status.nSFlag == 2){
+			ADC_Send(CMD_DATA_TEST_WBC, ADC_Status.nID, &g_ADC_Buffer[ADC_BUFFER_LEN_HALF]);
+			ADC_Status.nSFlag = 0xFF;
+			memset(&g_ADC_Buffer[ADC_BUFFER_LEN_HALF], 0, ADC_BUFFER_LEN_HALF);
+			ADC_Status.nSendID++;
+		}	
+//	}
+//	ADC_Cmd(ADC1, DISABLE);
+//	ADC_DMACmd(ADC1, DISABLE);
+//	DMA_Cmd(DMA2_Stream0, DISABLE);
+	
+//	//IT_SYS_DlyMs(2);
+//	collect_return_hdl(COLLECT_RET_SUCESS);
+	printf("adc end: id=%d, sendid=%d, T=%d\r\n", \
+			(int)ADC_Status.nID, (int)ADC_Status.nSendID, (int)IT_SYS_GetTicks());
+//	
+//	//
+//	nParaLen = 0;
+//	pchFbkBuf[nParaLen++] = 0x44; pchFbkBuf[nParaLen++] = 0x53; pchFbkBuf[nParaLen++] = 0x57; 
+//	pchFbkBuf[nParaLen++] = 0x44; pchFbkBuf[nParaLen++] = 0x30; pchFbkBuf[nParaLen++] = 0x00;
+//	pchFbkBuf[nParaLen++] = 0x02; pchFbkBuf[nParaLen++] = 0x01;
+//	pchFbkBuf[nParaLen++] = 0x00; pchFbkBuf[nParaLen++] = 0x00;
+//	
+//	nParaLen = 15;
+//	strncpy((char*)&pchFbkBuf[10],"wbc adc test\r\n", nParaLen);
+//	pchFbkBuf[8]  = (nParaLen - 10) >> 8;
+//	pchFbkBuf[9] = (nParaLen - 10);
+//	if(e_Feedback_Fail == udp_echoserver_senddata((UINT8 *)pchFbkBuf, nParaLen))
+//	{
+//		IT_SYS_DlyMs(1);
+//	}
+//	printf("debug msg len: %d\r\n", nParaLen);
+//	nParaLen = 0;
+
+}
+
+UINT8 HW_WBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
+{
+#if	SIMUATION_TEST
+	memmove(pData, &g_Debug_Data, 512);
+	*pLen = 256;
+#else	
+	#if WBC_DEBUG_FPGA
+
+	#else 
+		Poll_SendDMA_ADC_Data();
+	#endif
+#endif
+	return 0;
+}
+
+
 UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 {
-#if RBC_DEBUG_FLAG
-	memmove(pData, &g_Debug_Data, 256);
-#else 
-	
+#if	SIMUATION_TEST
+		memmove(pData, &g_Debug_Data, 512);
+		*pLen = 256;
+#else
+	#if RBC_DEBUG_FPGA
+		
+	#else 
+		Poll_SendDMA_ADC_Data();
+	#endif
 #endif
 	return 0;
 }
 
 UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 {
-#if PLT_DEBUG_FLAG
-	memmove(pData, &g_Debug_Data, 256);
-#else 
-	
+#if	SIMUATION_TEST
+	memmove(pData, &g_Debug_Data, 512);
+	*pLen = 256;
+#else	
+	#if PLT_DEBUG_FPGA
+		Poll_SendDMA_ADC_Data();
+	#else 
+		
+	#endif
 #endif
-	
 	return 0;
 }
 
 UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 {
-#if RBC_PLT_DEBUG_FLAG
-	memmove(pData, &g_Debug_Data, 256);
-#else 
-	
+#if	SIMUATION_TEST
+	memmove(pData, &g_Debug_Data, 512);
+	*pLen = 256;
+#else	
+	#if RBC_PLT_DEBUG_FPGA
+
+	#else 
+		Poll_SendDMA_ADC_Data();
+	#endif
 #endif
-	
 	return 0;
 }
 
@@ -2267,8 +2391,8 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 			nCmd = CMD_DATA_TEST_WBC;
 			s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
 			s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
-			//nRet = HW_WBC_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
-			nRet = HW_DATA_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+			nRet = HW_WBC_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+			//nRet = HW_DATA_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
 		}
 		break;
 		case EN_RBC_TEST:
@@ -2305,10 +2429,10 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 	//
 	if (e_Feedback_Success == nRet)
     {
-		g_Frame_Count++;
-		s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
-		s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
-		nRet = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
+		g_Udp_Count++;
+		s_anBufNet[4] = (((g_Udp_Count>>24)&0x00FF)|((g_Udp_Count>>8)&0xFF00));
+		s_anBufNet[5] = (((g_Udp_Count>>8)&0x00FF) |((g_Udp_Count<<8)&0xFF00));
+		nRet = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 6) * 2));
 		if (e_Feedback_Fail == nRet)
 		{
 			g_Send_Fail++;
@@ -2319,7 +2443,7 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 //      //debug..., printf the get data via serial , 20190315
 //      PL_COM_SendNChar(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
     }else{
-		g_Frame_Count++;
+		g_Send_Fail++;
 	}
 	return 0;
 }

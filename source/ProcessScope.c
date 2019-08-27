@@ -6,7 +6,10 @@
 #include "KernelHeader.h"
 #include "stdlib.h"
 
+IO_ ADC_Status_InitTypeDef ADC_Status = {0};
+//UINT16 g_ADC_Buffer[ADC_BUFFER_LEN] = {0};
 
+UINT16 g_ADC_Buffer[ADC_BUFFER_LEN_HALF] = {0};
 
 
 ////===================================================
@@ -504,31 +507,37 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
             case CMD_CTRL_TEST_WBC: // count func
             {
 				eMode  = GetTestMode(nCommand);// which cmd was be exec
-                nCommand  = CMD_CTRL_TEST_WBC;
-                // bSendBack = e_True;
-#ifdef DEBUG_INFO_UP_LOAD
-                if(e_Feedback_Success != MSG_TestingFunc(pchFbkBuf, &nParaLen, eMode))
-				{
-#else
-				if(e_Feedback_Success != MSG_TestingFunc())
-				{
-#endif
-					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-					HW_Valve_Off(INDEX_VALVE_PUMP);
-					HW_Valve_Off(INDEX_VALVE_WBC);
-				}
-#ifdef DEBUG_INFO_UP_LOAD
-				// send debug info for count
-				pchFbkBuf[8]  = (nParaLen - 10) >> 8;
-				pchFbkBuf[9] = (nParaLen - 10);
-				if(e_Feedback_Fail == udp_echoserver_senddata((UINT8 *)pchFbkBuf, nParaLen))
-				{
-					IT_SYS_DlyMs(1);
-				}
-				printf("debug msg len: %d\r\n", nParaLen);
+#if SIMUATION_TEST
 				nParaLen = 0;
-#endif              
+				Simulation_Data((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode);
+#else
+					// bSendBack = e_True;
+	#ifdef DEBUG_INFO_UP_LOAD
+					if(e_Feedback_Success != MSG_TestingFunc((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode))
+					{
+	#else
+					if(e_Feedback_Success != MSG_TestingFunc())
+					{
+	#endif
+						HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
+						HW_Valve_Off(INDEX_VALVE_PUMP);
+						HW_Valve_Off(INDEX_VALVE_WBC);
+					}
+					
+	#ifdef DEBUG_INFO_UP_LOAD
+					// send debug info for count
+					g_achFbkSdLogBuf[8]  = (nParaLen - 10) >> 8;
+					g_achFbkSdLogBuf[9] = (nParaLen - 10);
+					if(e_Feedback_Fail == udp_echoserver_senddata((UINT8 *)g_achFbkSdLogBuf, nParaLen))
+					{
+						IT_SYS_DlyMs(1);
+					}
+					printf("debug msg len: %d\r\n", nParaLen);
+					nParaLen = 0;
+	#endif          
+#endif					
 				Reset_Udp_Count(0);
+					
 			}
 			break;
 			case CMD_CTRL_TEST_HGB:
@@ -1938,7 +1947,8 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 
 UINT8 HGB_Test_Exec(eTestMode eMode)
 {
-	UINT16 nVal = 0, i, j, buffer[HGB_CALIBRATE_DATA_NUM] = {0};
+	UINT16 nVal = 0, i, j;
+    UINT32 buffer[HGB_CALIBRATE_DATA_NUM] = {0};
 	
 	printf("HGB_Test_Exec Start\r\n");
 	// check postion 
@@ -1971,7 +1981,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_HGB();
-			printf("ADC=%d,", buffer[i]);
+			printf("ADC=%d,", (int)buffer[i]);
 			IT_SYS_DlyMs(100);
 		}
 		//
@@ -1989,7 +1999,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_HGB();
-			printf("HGB3.3 ADC=%d, V=%d | ", buffer[i], buffer[i]*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
+			printf("HGB3.3 ADC=%d, V=%d | ", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
 			printf("HGB10 ADC=%d, V=%d | ", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
 			printf("Press ADC=%d, V=%d\r\n", (int)buffer[i], (int)HW_ADC_SpiGetADC(2)*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
 			IT_SYS_DlyMs(100);
@@ -2111,6 +2121,45 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 	printf("CRP_Test_Exec End\r\n");
 	return 0;
 }
+
+void Simulation_Data(UINT8 *pDInfo, UINT16 *pDILen,eTestMode eMode)
+{
+	UINT16 nDILen;
+	UINT32 nCurTicks, nTempTicks, i, j;
+    nCurTicks = IT_SYS_GetTicks();
+	nTempTicks = nCurTicks;
+	IT_ADC_SetTicks(0);
+	IT_LIST_SetTicks(4500);
+	
+	Reset_Udp_Count(0);
+	for(i = 0; i < 40000; i++)
+	{
+		//Add_Udp_Count();
+		//----------getting data and send ------------------------------
+		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_SEND_FPGA_DATA);
+		Data_Circle_Handle(eMode);
+	    //nCurTicks = IT_SYS_GetTicks();
+		for(j = 0; j < 4500; j++);
+	}	
+	collect_return_hdl(COLLECT_RET_SUCESS);
+	
+	nDILen = 0;
+	pDInfo[nDILen++] = 0x44; pDInfo[nDILen++] = 0x53; pDInfo[nDILen++] = 0x57; 
+	pDInfo[nDILen++] = 0x44; pDInfo[nDILen++] = 0x30; pDInfo[nDILen++] = 0x00;
+	pDInfo[nDILen++] = 0x02; pDInfo[nDILen++] = 0x01;
+	pDInfo[nDILen++] = 0x00; pDInfo[nDILen++] = 0x00;
+	
+	nDILen = 30;
+	strncpy((char*)&pDInfo[10],"simulation test!!!\r\n", nDILen);
+	pDInfo[8]  = (nDILen - 10) >> 8;
+	pDInfo[9] = (nDILen - 10);
+	if(e_Feedback_Fail == udp_echoserver_senddata((UINT8 *)pDInfo, nDILen))
+	{
+		IT_SYS_DlyMs(1);
+	}
+	printf("simulation msg len: %d\r\n", nDILen);
+}
+
 
 //
 #ifdef DEBUG_INFO_UP_LOAD
@@ -2542,24 +2591,24 @@ UINT8 MSG_TestingFunc(void)
 		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_SEND_FPGA_DATA);
 		Data_Circle_Handle(eMode);
 		//------get wbc data every 500ms------
-		if((nCurTicks - nTempTicks1) >= 500) // 1ms per time
-		{
-			wbc_v = Get_XK_V_Value();
-			printf("%d,", (int)wbc_v);
-#ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo,"%d,", (int)wbc_v);
-			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-			*pDILen = nDILen;
-#endif
-			nTempTicks1 = nCurTicks;
-		}	
+//		if((nCurTicks - nTempTicks1) >= 500) // 1ms per time
+//		{
+//			wbc_v = Get_XK_V_Value();
+//			printf("%d,", (int)wbc_v);
+//#ifdef DEBUG_INFO_UP_LOAD
+//			sprintf((char*)sTempInfo,"%d,", (int)wbc_v);
+//			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//			*pDILen = nDILen;
+//#endif
+//			nTempTicks1 = nCurTicks;
+//		}	
 		
 		//------to check the ELECTRODE------
 		//nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
 		nTemp = HW_Status_Elec(ADC_ELEC_INDEX);
         if (ELEC_STATUS_CLOSE == nTemp)  /* 流程正常结束 */
         {
-			HW_End_WBC();
+			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
 			Send_Last_FIFO_Data();
 			printf("\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
@@ -2579,7 +2628,7 @@ UINT8 MSG_TestingFunc(void)
 		nPress =  Get_Press_Value(GET_PRESS_NUM_THREE);
 		if(nPress <= COUNT_MIN_PRESS)
 		{
-			HW_End_WBC();
+			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
 			Send_Last_FIFO_Data();	
 			printf("\r\nCount Error: press error, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
@@ -3133,10 +3182,10 @@ UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal)
 	nRet = Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
 	if(nRet == e_Feedback_Success){
 		printf("save register(index=%d, val=%d) param success\r\n", nIndex, nVal);
-		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_PRESS_ADD, e_Feedback_Success);
+		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_WBC_SET, e_Feedback_Success);
 	}else{
 		printf("save register(index=%d, val=%d) param failure\r\n", nIndex, nVal);
-		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_PRESS_ADD, e_Feedback_Fail);
+		Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_WBC_SET, e_Feedback_Fail);
 	}
 	return nRet;
 }
@@ -3157,6 +3206,7 @@ void Cmd_Wave_Exec(UINT8 nFlag)
 // yaolan_
 UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 {
+#if WBC_DEBUG_FPGA || RBC_DEBUG_FPGA || PLT_DEBUG_FPGA || RBC_PLT_DEBUG_FPGA
 	switch(eMode)
 	{
 		case EN_WBC_TEST:
@@ -3181,12 +3231,22 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 		break;
 		default:break;
 	}
+#else 
+	memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
+	ADC1_Init();
+	ADC_SoftwareStartConv(ADC1);
+#endif
 	return 0;
 }
 
 // yaolan_
 UINT8 HW_Disable_Data_Channel(eTestMode eMode)
 {
+#if WBC_DEBUG_FPGA || RBC_DEBUG_FPGA || PLT_DEBUG_FPGA || RBC_PLT_DEBUG_FPGA
+	ADC_Cmd(ADC1, DISABLE);
+	ADC_DMACmd(ADC1, DISABLE);
+	DMA_Cmd(DMA2_Stream0, DISABLE);
+#else
 	switch(eMode)
 	{
 		case EN_WBC_TEST:
@@ -3211,6 +3271,7 @@ UINT8 HW_Disable_Data_Channel(eTestMode eMode)
 		break;
 		default:break;
 	}
+#endif
 	return 0;
 }
 

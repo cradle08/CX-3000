@@ -6,6 +6,22 @@
 #include  "MyType.h"
 //#include "InterfaceScope.h"
 
+
+typedef struct{
+	UINT8 nSFlag;
+	UINT16 nPos;
+	UINT32 nID;
+	UINT32 nSendID;
+}ADC_Status_InitTypeDef;
+#define ADC_BUFFER_LEN		512
+#define ADC_BUFFER_LEN_HALF	 (ADC_BUFFER_LEN/2)
+
+extern IO_ ADC_Status_InitTypeDef ADC_Status;
+//extern UINT16 g_ADC_Buffer[ADC_BUFFER_LEN];
+extern UINT16 g_ADC_Buffer[ADC_BUFFER_LEN_HALF];
+
+void ADC1_Init(void);
+
 //----- control --------------------------------------
 #define    CMD_CTRL_VALVE         0x00000000
 #define    CMD_CTRL_PUMP          0x00000001
@@ -130,6 +146,7 @@
 
 //-------------------------------------------------------------------------------------------
 //yaolan_start
+
 #define ADC_PRESS_INDEX       	0
 #define ADC_ELEC_INDEX        	1
 #define ADC_TEMP_INDEX     	  	2
@@ -423,6 +440,10 @@ _EXT_ UINT8 MSG_TestingFunc(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode);
 #else
 _EXT_ UINT8 MSG_TestingFunc(void);
 #endif
+
+void Simulation_Data(UINT8 *pDInfo, UINT16 *pDILen,eTestMode eMode);
+
+
 
 void Part_Test_Exec(UINT8 nNo, UINT32 nNum);
 void Part_Test_Moto_X(UINT8 nNo, UINT32 nNum);

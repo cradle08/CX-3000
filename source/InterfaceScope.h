@@ -129,11 +129,11 @@ void HW_EN_ADC_HGB(enum eFlag flag);
 void HW_EN_ADC_CRP(enum eFlag flag);
 
 // get HGB CRP adc data
-UINT16  HW_Get_ADC_HGB(void);
+UINT32  HW_Get_ADC_HGB(void);
 UINT32  HW_Get_ADC_CRP(void);
 UINT16  Get_HGB_Value(void);
 UINT32  Get_CRP_Value(void);
-UINT8 Send_Data_HGB(UINT32 nCmd, UINT16* pData, UINT16 nLen);
+UINT8 Send_Data_HGB(UINT32 nCmd, UINT32* pData, UINT16 nLen);
 UINT8 Send_Data_CRP(UINT32 nCmd, IO_ UINT32* pData, UINT16 nLen);
 
 UINT8 HW_WBC_GetData(UINT16* pnData, UINT16* pnLen, UINT16* pnStatus);

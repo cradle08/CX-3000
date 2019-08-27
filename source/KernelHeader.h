@@ -22,10 +22,11 @@
 #define CRP_DEBUG_FLAG			1
 #define CRP_BEBUG_FPGA			0
 
-#define WBC_DEBUG_FLAG			1
-#define RBC_DEBUG_FLAG			1
-#define PLT_DEBUG_FLAG			1
-#define RBC_PLT_DEBUG_FLAG		1
+#define SIMUATION_TEST          1
+#define WBC_DEBUG_FPGA			0
+#define RBC_DEBUG_FPGA			0
+#define PLT_DEBUG_FPGA			0
+#define RBC_PLT_DEBUG_FPGA		0
 
 
 

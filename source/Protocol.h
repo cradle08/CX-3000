@@ -74,6 +74,7 @@ _EXT_ IO_ UINT8 XRAM_ g_NET_achCmdRvBuf[PROTOCOL_RECV_BUF_LENGTH];    //  receiv
 //
 _EXT_ IO_ UINT8 XRAM_ g_achFbkSdBuf[PROTOCOL_SEND_BUF_LENGTH];    //  transmitted buffer
 
+_EXT_ IO_ UINT8 XRAM_ g_achFbkSdLogBuf[PROTOCOL_SEND_BUF_LENGTH];
 
 //-----------------------------------------------------------------------------------------
 // function declaration: status
