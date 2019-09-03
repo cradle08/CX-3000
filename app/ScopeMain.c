@@ -146,7 +146,7 @@ void ADC1_Init(void)
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
+	//PA6
 	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_6;//GPIO_Pin_5, PA5, PA6
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
@@ -230,7 +230,9 @@ int main(void)
     //MT_ALL_Init();          /* the comtrol's interfece of motor */  //yaolan_20190715
 
     start_run();
-	//ADC1_Init();
+#if  USE_STM32F407_ONLY
+	ADC1_Init();
+#endif
     /* test(); */
     printf("\r\n ...... Readying ......\r\n");
 //	Clear_FPGA_FIFO_Data();

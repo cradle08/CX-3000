@@ -1626,20 +1626,20 @@ void HW_EN_ADC_CRP(enum eFlag flag)
 UINT32 HW_Get_ADC_HGB(void)
 {
 	UINT8 i;
-	UINT32 nRet;
+	UINT32 nRet = 0;
 	
-#if HGB_BEBUG_FPGA
+#if USE_STM32F407_ONLY
+	for(i = 0; i < 30; i++)
+	{
+		ADC_RegularChannelConfig(ADC2, ADC_Channel_2, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+		ADC_SoftwareStartConv(ADC2);		//使能指定的ADC1的软件转换启动功能	
+		while(!ADC_GetFlagStatus(ADC2, ADC_FLAG_EOC ));//等待转换结束
+		nRet += ADC_GetConversionValue(ADC2);	//返回最近一次ADC1规则组的转换结果
+	}
+	nRet /= 30;	
+#else	
 	nRet = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 	
-#else	
-	for(i = 0; i < 5; i++)
-	{
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
-		ADC_SoftwareStartConv(ADC1);		//使能指定的ADC1的软件转换启动功能	
-		while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));//等待转换结束
-		nRet += ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
-	}
-	nRet /= 5;
 #endif
 	return nRet;
 }
@@ -1647,20 +1647,19 @@ UINT32 HW_Get_ADC_HGB(void)
 UINT32  HW_Get_ADC_CRP(void)
 {
 	UINT8 i;
-	UINT32  nRet;
+	UINT32  nRet = 0;
 	
-#if CRP_BEBUG_FPGA
-	nRet = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
-	
+#if USE_STM32F407_ONLY
+	for(i = 0; i < 30; i++)
+	{
+		ADC_RegularChannelConfig(ADC2, ADC_Channel_3, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+		ADC_SoftwareStartConv(ADC2);		//使能指定的ADC1的软件转换启动功能	
+		while(!ADC_GetFlagStatus(ADC2, ADC_FLAG_EOC ));//等待转换结束
+		nRet = ADC_GetConversionValue(ADC2);	//返回最近一次ADC1规则组的转换结果
+	}
+	nRet /= 30;
 #else	
-//	for(i = 0; i < 5; i++)
-//	{
-		ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
-		ADC_SoftwareStartConv(ADC1);		//使能指定的ADC1的软件转换启动功能	
-		while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));//等待转换结束
-		nRet = ADC_GetConversionValue(ADC1);	//返回最近一次ADC1规则组的转换结果
-//	}
-//	nRet /= 5;
+	nRet = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 #endif
 	return nRet;
 }
@@ -2317,10 +2316,10 @@ UINT8 HW_WBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	memmove(pData, &g_Debug_Data, 512);
 	*pLen = 256;
 #else	
-	#if WBC_DEBUG_FPGA
-
-	#else 
+	#if USE_STM32F407_ONLY
 		Poll_SendDMA_ADC_Data();
+	#else 
+		
 	#endif
 #endif
 	return 0;
@@ -2333,10 +2332,10 @@ UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 		memmove(pData, &g_Debug_Data, 512);
 		*pLen = 256;
 #else
-	#if RBC_DEBUG_FPGA
-		
-	#else 
+	#if USE_STM32F407_ONLY
 		Poll_SendDMA_ADC_Data();
+	#else 
+		
 	#endif
 #endif
 	return 0;
@@ -2348,7 +2347,7 @@ UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	memmove(pData, &g_Debug_Data, 512);
 	*pLen = 256;
 #else	
-	#if PLT_DEBUG_FPGA
+	#if USE_STM32F407_ONLY
 		Poll_SendDMA_ADC_Data();
 	#else 
 		
@@ -2363,10 +2362,10 @@ UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	memmove(pData, &g_Debug_Data, 512);
 	*pLen = 256;
 #else	
-	#if RBC_PLT_DEBUG_FPGA
-
-	#else 
+	#if USE_STM32F407_ONLY
 		Poll_SendDMA_ADC_Data();
+	#else 
+		
 	#endif
 #endif
 	return 0;

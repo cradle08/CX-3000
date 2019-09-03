@@ -511,30 +511,27 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				nParaLen = 0;
 				Simulation_Data((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode);
 #else
-					// bSendBack = e_True;
-	#ifdef DEBUG_INFO_UP_LOAD
-					if(e_Feedback_Success != MSG_TestingFunc((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode))
-					{
+
+	#if DATA_TEST_ONLY
+			    MSG_DataTesting((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode);
 	#else
-					if(e_Feedback_Success != MSG_TestingFunc())
-					{
+				if(e_Feedback_Success != MSG_TestingFunc((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode)) //if(e_Feedback_Success != MSG_TestingFunc())
+				{
+					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
+					HW_Valve_Off(INDEX_VALVE_PUMP);
+					HW_Valve_Off(INDEX_VALVE_WBC);
+				}
 	#endif
-						HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-						HW_Valve_Off(INDEX_VALVE_PUMP);
-						HW_Valve_Off(INDEX_VALVE_WBC);
-					}
-					
-	#ifdef DEBUG_INFO_UP_LOAD
-					// send debug info for count
-					g_achFbkSdLogBuf[8]  = (nParaLen - 10) >> 8;
-					g_achFbkSdLogBuf[9] = (nParaLen - 10);
-					if(e_Feedback_Fail == udp_echoserver_senddata((UINT8 *)g_achFbkSdLogBuf, nParaLen))
-					{
-						IT_SYS_DlyMs(1);
-					}
-					printf("debug msg len: %d\r\n", nParaLen);
-					nParaLen = 0;
-	#endif          
+				// send debug info for count
+				g_achFbkSdLogBuf[8]  = (nParaLen - 10) >> 8;
+				g_achFbkSdLogBuf[9] = (nParaLen - 10);
+				if(e_Feedback_Fail == udp_echoserver_senddata((UINT8 *)g_achFbkSdLogBuf, nParaLen))
+				{
+					IT_SYS_DlyMs(1);
+				}
+				printf("debug msg len: %d\r\n", nParaLen);
+				nParaLen = 0;
+         
 #endif					
 				Reset_Udp_Count(0);
 					
@@ -1947,7 +1944,7 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 
 UINT8 HGB_Test_Exec(eTestMode eMode)
 {
-	UINT16 nVal = 0, i, j;
+	UINT16 nVal = 0, i;
     UINT32 buffer[HGB_CALIBRATE_DATA_NUM] = {0};
 	
 	printf("HGB_Test_Exec Start\r\n");
@@ -2020,7 +2017,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 
 UINT8 CRP_Test_Exec(eTestMode eMode)
 {
-	UINT16 i, j;
+	UINT16 i;
 	UINT32 buffer[CRP_CALIBRATE_DATA_NUM] = {0};
 	printf("CRP_Test_Exec Start\r\n");
 	// check postion 
@@ -2160,6 +2157,26 @@ void Simulation_Data(UINT8 *pDInfo, UINT16 *pDILen,eTestMode eMode)
 	printf("simulation msg len: %d\r\n", nDILen);
 }
 
+
+void MSG_DataTesting(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode)
+{
+	IO_ INT8 sTempInfo[100] = {0};
+	IO_ UINT16 nDILen = 0;
+		
+	*pDILen = nDILen;
+	
+	HW_Enable_Data_Channel(eMode);
+	Data_Circle_Handle(eMode);
+	HW_Disable_Data_Channel(eMode);
+	printf("Data Test: id=%d, sendid=%d\r\n", (int)ADC_Status.nID, (int)ADC_Status.nSendID);
+#ifdef DEBUG_INFO_UP_LOAD
+		sprintf((char*)sTempInfo, "Data Test: id=%d, sendid=%d\r\n", (int)ADC_Status.nID, (int)ADC_Status.nSendID);
+		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+		memset((char*)sTempInfo, 0, 100);
+		*pDILen = nDILen;
+#endif
+	memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
+}
 
 //
 #ifdef DEBUG_INFO_UP_LOAD
@@ -3206,7 +3223,12 @@ void Cmd_Wave_Exec(UINT8 nFlag)
 // yaolan_
 UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 {
-#if WBC_DEBUG_FPGA || RBC_DEBUG_FPGA || PLT_DEBUG_FPGA || RBC_PLT_DEBUG_FPGA
+#if USE_STM32F407_ONLY
+	memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
+	ADC1_Init();
+	ADC_SoftwareStartConv(ADC1);
+
+#else 
 	switch(eMode)
 	{
 		case EN_WBC_TEST:
@@ -3231,10 +3253,7 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 		break;
 		default:break;
 	}
-#else 
-	memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
-	ADC1_Init();
-	ADC_SoftwareStartConv(ADC1);
+
 #endif
 	return 0;
 }
@@ -3242,7 +3261,8 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 // yaolan_
 UINT8 HW_Disable_Data_Channel(eTestMode eMode)
 {
-#if WBC_DEBUG_FPGA || RBC_DEBUG_FPGA || PLT_DEBUG_FPGA || RBC_PLT_DEBUG_FPGA
+#if USE_STM32F407_ONLY
+	
 	ADC_Cmd(ADC1, DISABLE);
 	ADC_DMACmd(ADC1, DISABLE);
 	DMA_Cmd(DMA2_Stream0, DISABLE);
