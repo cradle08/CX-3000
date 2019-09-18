@@ -141,7 +141,8 @@ UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
 UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
 UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
 UINT8 Data_Circle_Handle(eTestMode eMode);
-
+void Poll_SendDMA_ADC1_Data(UINT32 nCmd);
+void Poll_SendDMA_ADC2_Data(UINT32 nCmd);
 
 // yaolan_end
 //-----------------------------------------------------------------------------------------

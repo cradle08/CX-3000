@@ -309,6 +309,19 @@ typedef enum
 //-----------------------------------------------------------------------------------------
 // global variables
 
+// adc1 and2 use dma, adc3 not
+typedef enum{
+	EN_ADC1 = 0,
+	EN_ADC2 = 1,
+	EN_ADC3 = 3
+} EN_TypeADC;
+	
+//void APP_ADC_Init(EN_TypeADC eType);
+//void APP_ADC_DMA_Config(EN_TypeADC eType);
+//void APP_ADC1_Init(void);
+//void APP_ADC2_Init(void);
+//void APP_ADC3_Init(void);
+
 //-----------------------------------------------------------------------------------------
 // total initialization for the code block
 extern void EVAL_Init(void);
@@ -333,7 +346,9 @@ extern UINT8 EVAL_InputGetState(Input_TypeDef eIn);
 // timer interrupt
 _EXT_ UINT8  PF_InitTimer2(void);
 
-void Adc_Init(void);
+
+
+
 
 
 #endif

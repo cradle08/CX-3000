@@ -250,8 +250,8 @@ void EVAL_Init(void)
 	//-------------------------------------------
 	// 5. Initialize  IO output  
 	// led and the reset pin of the FPGA 
-    EVAL_OutputInit(O_STATUS_LED_1);
-	EVAL_OutputInit(O_STATUS_LED_2);
+    // EVAL_OutputInit(O_STATUS_LED_1);
+	//EVAL_OutputInit(O_STATUS_LED_2);
 	EVAL_OutputInit(O_MCU_LED_1);
 	EVAL_OutputInit(O_MCU_LED_2);
 	EVAL_OutputInit(O_LAN8720_RST);
@@ -261,9 +261,10 @@ void EVAL_Init(void)
 	//-------------------------------------------
     // 6. FPGA init
     IT_SYS_DlyMs(500); // attention: waiting the FPGA to be ready
+#if !USE_STM32F407_ONLY
 	FPGA_Init();
 	FPGA_ResetHardware();
- 
+ #endif
 
 	//-------------------------------------------
 	// 7. initialize  IO input --- normal and exti interrupt 
@@ -272,8 +273,9 @@ void EVAL_Init(void)
 	//EVAL_InputInit(I_HOME_Y, IN_MODEL_GPIO);      // //yaolan_20190715
 	//EVAL_InputInit(I_HOME_Z, IN_MODEL_GPIO);      // //yaolan_20190715
 	//EVAL_InputInit(I_HOME_M, IN_MODEL_GPIO);      // //yaolan_20190715
+#if !USE_STM32F407_ONLY
 	EVAL_InputInit(I_FEEDBACK_1, IN_MODEL_EXTI);  //EXTI15-10 PB13// EXTI9_5_IRQn  EXTI_Line7
-
+#endif
 	//-------------------------------------------
 	// 8. Initialize the spi-flash 
     // SPI_FLASH_Init();
@@ -281,7 +283,17 @@ void EVAL_Init(void)
 	// 9. the timer of the system messages
 	PF_InitTimer2();
 #if USE_STM32F407_ONLY
-	Adc_Init();
+	ADC1_Init();//APP_ADC_Init(EN_ADC1);
+	ADC2_Init();//APP_ADC_Init(EN_ADC2);
+	ADC3_Init();//APP_ADC_Init(EN_ADC3);
+	
+//	Elec_Init();
+//	Beep_Init();
+//	Pump_init();
+//	Valve_Init();
+//	OC_Init();
+//	Fix_Motor_Init();
+//	OutIn_Motor_Init();
 #endif
 }
 
@@ -410,53 +422,66 @@ UINT8 EVAL_InputGetState(Input_TypeDef eIn)
 }
 
 
-// adc for cur check
-void  Adc_Init(void)
-{    
-  GPIO_InitTypeDef  GPIO_InitStructure;
-  ADC_CommonInitTypeDef ADC_CommonInitStructure;
-  ADC_InitTypeDef       ADC_InitStructure;
-	
-  ADC_DeInit();
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);//使能GPIOA时钟
-  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE); //ADC2
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;//PC2_CH2  HGB
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStructure);
-	
-  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;//PC3_CH3  CRP
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_Init(GPIOC, &GPIO_InitStructure);
- 
-  RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2,ENABLE);	  //ADC2复位
-  RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2,DISABLE);	//复位结束	 
- 
-  ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;//独立模式
-  ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;//两个采样阶段之间的延迟5个时钟
-  ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled; //DMA失能
-  ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div4;//预分频4分频。ADCCLK=PCLK2/4=84/4=21Mhz,ADC时钟最好不要超过36Mhz 
-  ADC_CommonInit(&ADC_CommonInitStructure);//初始化
-	
-  ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;//12位模式
-  ADC_InitStructure.ADC_ScanConvMode = DISABLE;//非扫描模式	
-  ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;//关闭连续转换
-  ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;//禁止触发检测，使用软件触发
-  ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConvEdge_None;//ADC_ExternalTrigConv_None; ///
-  ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;//右对齐	
-  ADC_InitStructure.ADC_NbrOfConversion = 1;//1个转换在规则序列中 也就是只转换规则序列1 
-  ADC_Init(ADC2, &ADC_InitStructure);//ADC初始化
-	
- 
-  ADC_Cmd(ADC2, ENABLE);//开启AD转换器	
- // ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+//// adc for cur check
+//void  Adc_Init(EN_TypeADC eType)
+//{    
+//	GPIO_InitTypeDef  GPIO_InitStructure;
+//	ADC_CommonInitTypeDef ADC_CommonInitStructure;
+//	ADC_InitTypeDef       ADC_InitStructure;
 
-}	
+//	ADC_DeInit();
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC|RCC_AHB1Periph_GPIOF, ENABLE);//使能GPIOA时钟
+//	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+//	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1 | RCC_APB2Periph_ADC2, ENABLE); //ADC1 2
+//	if(eType == EN_ADC1)
+//	{
+//		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;//PC2_CH2  HGB
+//		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+//		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+//		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//		GPIO_Init(GPIOC, &GPIO_InitStructure);
 
+//		GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;//PC3_CH3  CRP
+//		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+//		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
+//		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+//		GPIO_Init(GPIOC, &GPIO_InitStructure);
+//		
+//		RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1,ENABLE);	  //ADC1复位
+//		RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1,DISABLE);	//复位结束	 
+//	}else if(eType == EN_ADC2){
+//		
+//		RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2,ENABLE);	  //ADC2复位
+//		RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2,DISABLE);	//复位结束	 
+//	}else if(eType == EN_ADC3){
+
+//	}
+//	ADC_CommonInitStructure.ADC_Mode = ADC_Mode_Independent;//独立模式
+//	ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;//两个采样阶段之间的延迟5个时钟
+//	ADC_CommonInitStructure.ADC_DMAAccessMode = ADC_DMAAccessMode_Disabled; //DMA失能
+//	ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div4;//预分频4分频。ADCCLK=PCLK2/4=84/4=21Mhz,ADC时钟最好不要超过36Mhz 
+//	ADC_CommonInit(&ADC_CommonInitStructure);//初始化
+//	//
+//	ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;//12位模式
+//	ADC_InitStructure.ADC_ScanConvMode = DISABLE;//非扫描模式	
+//	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;//关闭连续转换
+//	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;//禁止触发检测，使用软件触发
+//	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConvEdge_None;//ADC_ExternalTrigConv_None; ///
+//	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;//右对齐	
+//	ADC_InitStructure.ADC_NbrOfConversion = 1;//1个转换在规则序列中 也就是只转换规则序列1 
+//	//
+//	if(eType == EN_ADC1)
+//	{
+//		ADC_Init(ADC1, &ADC_InitStructure);//ADC初始化
+//		ADC_Cmd(ADC1, ENABLE);//开启AD转换器	
+//	}else if(eType == EN_ADC2){
+//		ADC_Init(ADC2, &ADC_InitStructure);//ADC初始化
+//		ADC_Cmd(ADC2, ENABLE);//开启AD转换器	
+//	}else if(eType == EN_ADC3){
+//		// ...
+//	}
+//	// ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
+//}	
 
 
 //-----------------------------------------------------------------------------------------

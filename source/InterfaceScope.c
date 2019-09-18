@@ -1060,118 +1060,148 @@ UINT8  HW_Valve_On(UINT8 chIndex)
     return e_Feedback_Success;
 }
 
-//
-UINT8  HW_Valve_Off(UINT8 chIndex)
-{
-    IO_ UINT8  XRAM_ chOffset = 0;
-    IO_ UINT32 IRAM_  nAddr 	= 0;
-    IO_ UINT16 IRAM_  anBuffer[2];
 
-    // attention: 0-on, 1-off.
 
-    // fpga
-    /* if( (chIndex >= 0) && (chIndex <= 5) )    // 0 ~ 5 */
-    if (chIndex <= 5)
-    {
-        /* if( (chIndex >= 0) && (chIndex <= 15) ) */
-        if (chIndex <= 15)
-        {
-            chOffset = chIndex - 0;
-            m_nIoValves |= ((UINT16)1 << chOffset);
-            //m_nIoValves &= ~((UINT16)1 << chOffset);
-            // address
-            nAddr = (UINT32)FPGA_WR_VALVE_01_06;
-            // value
-            anBuffer[0] = m_nIoValves;
-        }
-        // write to the fpga
-        FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-        //
-        printf("valve %d off\r\n", chIndex);
-    }
-    // main mcu
-    else if ((chIndex >= 6) && (chIndex <= 20))
-    {
-        // keep
-    }
-    // error
-    else
-    {
-        SYS_ErrorMark((UINT8)ERR_COMMAND_NO_VALID, chIndex);
-        return e_Feedback_Error;
-    }
+#if USE_STM32F407_ONLY
+	UINT8  HW_Valve_Off(UINT8 chIndex)
+	{
+		if(chIndex == EN_VALVE_LIQUID)
+		{
+			Valve_Liquid_Exec(EN_CLOSE);
+		}else if(chIndex == EN_VALVE_AIR){
+			Valve_Air_Exec(EN_CLOSE);
+		}
+	}		
+#else
+	UINT8  HW_Valve_Off(UINT8 chIndex)
+	{
+		IO_ UINT8  XRAM_ chOffset = 0;
+		IO_ UINT32 IRAM_  nAddr 	= 0;
+		IO_ UINT16 IRAM_  anBuffer[2];
 
-    return e_Feedback_Success;
-}
+		// attention: 0-on, 1-off.
 
+		// fpga
+		/* if( (chIndex >= 0) && (chIndex <= 5) )    // 0 ~ 5 */
+		if (chIndex <= 5)
+		{
+			/* if( (chIndex >= 0) && (chIndex <= 15) ) */
+			if (chIndex <= 15)
+			{
+				chOffset = chIndex - 0;
+				m_nIoValves |= ((UINT16)1 << chOffset);
+				//m_nIoValves &= ~((UINT16)1 << chOffset);
+				// address
+				nAddr = (UINT32)FPGA_WR_VALVE_01_06;
+				// value
+				anBuffer[0] = m_nIoValves;
+			}
+			// write to the fpga
+			FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+			//
+			printf("valve %d off\r\n", chIndex);
+		}
+		// main mcu
+		else if ((chIndex >= 6) && (chIndex <= 20))
+		{
+			// keep
+		}
+		// error
+		else
+		{
+			SYS_ErrorMark((UINT8)ERR_COMMAND_NO_VALID, chIndex);
+			return e_Feedback_Error;
+		}
+
+		return e_Feedback_Success;
+	}
+
+#endif //UINT8  HW_Valve_Off(UINT8 chIndex)
 
 
 //------------------------------
 // DC motor control
 /* 有效频率范围15K - 25KHz */
-UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
-{
-    IO_ UINT32 IRAM_  nAddr 	= 0;
-    IO_ UINT16 IRAM_  anBuffer[2];
-    //
-    IO_ UINT32 XRAM_  nFqCnt    = 0;
-
-    //----- 1. direction -----
-    // address
-    nAddr = (UINT32)FPGA_WR_PUMP_DIR;
-    // value
-    if (e_Dir_Neg == eDir)
-    {
-        anBuffer[0] = 0x00000000;
-    }
-    else
-    {
-        anBuffer[0] = 0x00000001;
-    }
-    // write the fpga
-    FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-    //----- 2. frequence -----
-    // address
-    nAddr = (UINT32)FPGA_WR_PUMP_FQ_CNT;
-    // value
-    // attentio: the fpga's sysclk = 25000000Hz
-#if 0  // 2015_04_08-11shi-changed by LHT	
-    nFqCnt = 12500000 / (nFreq + 1);      // nFreq != 0, half-freq-count, 12.5MHz/nFreq
+#if USE_STM32F407_ONLY
+	UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
+	{	
+		// 25000
+		if(nFreq > PUMP_PWM_LEVEL_HIGHEST)  nFreq = PUMP_PWM_LEVEL_HIGHEST;
+		////if(nDir != e_Dir_Neg || nDir != e_Dir_Pos) return;
+		if(eDir == e_Dir_Pos){
+			Pump_AntiClockWise();
+		}else if(eDir == e_Dir_Neg){
+			Pump_ClockWise();
+		}
+		Pump_Speed_Set(nFreq);
+	}
+	
 #else
-    if (nFreq >= 25000)
-    {
-        nFqCnt = 25000;
-    }
-    else
-    {
-        nFqCnt = nFreq;
-    }
-#endif
-    anBuffer[0] = (UINT16)(nFqCnt & 0xFFFF);
-    anBuffer[1] = (UINT16)((nFqCnt >> 16) & 0xFFFF);
-    // write the fpga
-    FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 2); // 2 half-word
-    //----- 3. run or stop -----
-    // address
-    nAddr = (UINT32)FPGA_WR_PUMP_RUN;
-    // value
-    if (0 == nFreq)  // stop
-    {
-        anBuffer[0] = 0x00000000;
-        //
-        printf("pump off\r\n");
-    }
-    else             // run
-    {
-        anBuffer[0] = 0x00000001;
-        //
-        printf("pump on at %0.5d ticks per ms (total 25000 ticks per ms)\r\n", (int)nFqCnt);
-    }
-    // write the fpga
-    FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+	
+	UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
+	{
+		IO_ UINT32 IRAM_  nAddr 	= 0;
+		IO_ UINT16 IRAM_  anBuffer[2];
+		//
+		IO_ UINT32 XRAM_  nFqCnt    = 0;
 
-    return e_Feedback_Success;
-}
+		//----- 1. direction -----
+		// address
+		nAddr = (UINT32)FPGA_WR_PUMP_DIR;
+		// value
+		if (e_Dir_Neg == eDir)
+		{
+			anBuffer[0] = 0x00000000;
+		}
+		else
+		{
+			anBuffer[0] = 0x00000001;
+		}
+		// write the fpga
+		FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+		//----- 2. frequence -----
+		// address
+		nAddr = (UINT32)FPGA_WR_PUMP_FQ_CNT;
+		// value
+		// attentio: the fpga's sysclk = 25000000Hz
+	#if 0  // 2015_04_08-11shi-changed by LHT	
+		nFqCnt = 12500000 / (nFreq + 1);      // nFreq != 0, half-freq-count, 12.5MHz/nFreq
+	#else
+		if (nFreq >= 25000)
+		{
+			nFqCnt = 25000;
+		}
+		else
+		{
+			nFqCnt = nFreq;
+		}
+	#endif
+		anBuffer[0] = (UINT16)(nFqCnt & 0xFFFF);
+		anBuffer[1] = (UINT16)((nFqCnt >> 16) & 0xFFFF);
+		// write the fpga
+		FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 2); // 2 half-word
+		//----- 3. run or stop -----
+		// address
+		nAddr = (UINT32)FPGA_WR_PUMP_RUN;
+		// value
+		if (0 == nFreq)  // stop
+		{
+			anBuffer[0] = 0x00000000;
+			//
+			printf("pump off\r\n");
+		}
+		else             // run
+		{
+			anBuffer[0] = 0x00000001;
+			//
+			printf("pump on at %0.5d ticks per ms (total 25000 ticks per ms)\r\n", (int)nFqCnt);
+		}
+		// write the fpga
+		FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+
+		return e_Feedback_Success;
+	}
+#endif
 
 //
 UINT32 HW_PUMP_GetFeedbackPulse(void)
@@ -1631,10 +1661,10 @@ UINT32 HW_Get_ADC_HGB(void)
 #if USE_STM32F407_ONLY
 	for(i = 0; i < 30; i++)
 	{
-		ADC_RegularChannelConfig(ADC2, ADC_Channel_2, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
-		ADC_SoftwareStartConv(ADC2);		//使能指定的ADC1的软件转换启动功能	
-		while(!ADC_GetFlagStatus(ADC2, ADC_FLAG_EOC ));//等待转换结束
-		nRet += ADC_GetConversionValue(ADC2);	//返回最近一次ADC1规则组的转换结果
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_480Cycles ); 
+		ADC_SoftwareStartConv(ADC3);	
+		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+		nRet += ADC_GetConversionValue(ADC3);	
 	}
 	nRet /= 30;	
 #else	
@@ -1652,10 +1682,10 @@ UINT32  HW_Get_ADC_CRP(void)
 #if USE_STM32F407_ONLY
 	for(i = 0; i < 30; i++)
 	{
-		ADC_RegularChannelConfig(ADC2, ADC_Channel_3, 1, ADC_SampleTime_480Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
-		ADC_SoftwareStartConv(ADC2);		//使能指定的ADC1的软件转换启动功能	
-		while(!ADC_GetFlagStatus(ADC2, ADC_FLAG_EOC ));//等待转换结束
-		nRet = ADC_GetConversionValue(ADC2);	//返回最近一次ADC1规则组的转换结果
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_480Cycles ); 
+		ADC_SoftwareStartConv(ADC3);		
+		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+		nRet = ADC_GetConversionValue(ADC3);	
 	}
 	nRet /= 30;
 #else	
@@ -2259,26 +2289,26 @@ UINT8 ADC_Send(UINT32 nCmd, UINT32 nId, UINT16 * pData)
 }
 
 
-void Poll_SendDMA_ADC_Data(void)
+void Poll_SendDMA_ADC1_Data(UINT32 nCmd)
 {
 //	memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
 //	ADC1_Init();
 //	ADC_SoftwareStartConv(ADC1);
 //	while(ADC_Status.nID < 40000)
 //	{
-		if(ADC_Status.nSFlag == 1)
+		if(ADC1_Status.nSFlag == 1)
 		{
 			//ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, g_ADC_Buffer);
-			ADC_Send(CMD_DATA_TEST_WBC, ADC_Status.nID, g_ADC_Buffer);
-			ADC_Status.nSFlag = 0xFF;
+			ADC_Send(nCmd, ADC1_Status.nID, g_ADC1_Buffer);
+			ADC1_Status.nSFlag = 0xFF;
 			//printf()
-			memset(g_ADC_Buffer, 0, ADC_BUFFER_LEN_HALF);
-			ADC_Status.nSendID++;
-		}else if(ADC_Status.nSFlag == 2){
-			ADC_Send(CMD_DATA_TEST_WBC, ADC_Status.nID, &g_ADC_Buffer[ADC_BUFFER_LEN_HALF]);
-			ADC_Status.nSFlag = 0xFF;
-			memset(&g_ADC_Buffer[ADC_BUFFER_LEN_HALF], 0, ADC_BUFFER_LEN_HALF);
-			ADC_Status.nSendID++;
+			memset(g_ADC1_Buffer, 0, ADC1_BUFFER_LEN_HALF);
+			ADC1_Status.nSendID++;
+		}else if(ADC1_Status.nSFlag == 2){
+			ADC_Send(nCmd, ADC1_Status.nID, &g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF]);
+			ADC1_Status.nSFlag = 0xFF;
+			memset(&g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF], 0, ADC1_BUFFER_LEN_HALF);
+			ADC1_Status.nSendID++;
 		}	
 //	}
 //	ADC_Cmd(ADC1, DISABLE);
@@ -2287,8 +2317,8 @@ void Poll_SendDMA_ADC_Data(void)
 	
 //	//IT_SYS_DlyMs(2);
 //	collect_return_hdl(COLLECT_RET_SUCESS);
-	printf("adc end: id=%d, sendid=%d, T=%d\r\n", \
-			(int)ADC_Status.nID, (int)ADC_Status.nSendID, (int)IT_SYS_GetTicks());
+//	printf("adc end: id=%d, sendid=%d, T=%d\r\n", \
+			(int)ADC1_Status.nID, (int)ADC1_Status.nSendID, (int)IT_SYS_GetTicks());
 //	
 //	//
 //	nParaLen = 0;
@@ -2307,7 +2337,27 @@ void Poll_SendDMA_ADC_Data(void)
 //	}
 //	printf("debug msg len: %d\r\n", nParaLen);
 //	nParaLen = 0;
+}
 
+void Poll_SendDMA_ADC2_Data(UINT32 nCmd)
+{
+
+	if(ADC2_Status.nSFlag == 1)
+	{
+		//ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, g_ADC_Buffer);
+		ADC_Send(nCmd, ADC2_Status.nID, g_ADC2_Buffer);
+		ADC1_Status.nSFlag = 0xFF;
+		//printf()
+		memset(g_ADC2_Buffer, 0, ADC2_BUFFER_LEN_HALF);
+		ADC2_Status.nSendID++;
+	}else if(ADC2_Status.nSFlag == 2){
+		ADC_Send(nCmd, ADC2_Status.nID, &g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF]);
+		ADC1_Status.nSFlag = 0xFF;
+		memset(&g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF], 0, ADC2_BUFFER_LEN_HALF);
+		ADC2_Status.nSendID++;
+	}	
+	//printf("adc1 end: id=%d, sendid=%d, T=%d\r\n", \
+			(int)ADC2_Status.nID, (int)ADC2_Status.nSendID, (int)IT_SYS_GetTicks());
 }
 
 UINT8 HW_WBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
@@ -2317,9 +2367,9 @@ UINT8 HW_WBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		Poll_SendDMA_ADC_Data();
+		Poll_SendDMA_ADC1_Data(CMD_DATA_TEST_WBC);
 	#else 
-		
+		Poll_SendDMA_ADC1_Data(CMD_DATA_TEST_WBC);
 	#endif
 #endif
 	return 0;
@@ -2333,9 +2383,9 @@ UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 		*pLen = 256;
 #else
 	#if USE_STM32F407_ONLY
-		Poll_SendDMA_ADC_Data();
+		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC);
 	#else 
-		
+		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC);
 	#endif
 #endif
 	return 0;
@@ -2348,9 +2398,9 @@ UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		Poll_SendDMA_ADC_Data();
+		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_PLT);
 	#else 
-		
+		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_PLT);
 	#endif
 #endif
 	return 0;
@@ -2363,9 +2413,9 @@ UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		Poll_SendDMA_ADC_Data();
+		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT);  
 	#else 
-		
+		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT); 
 	#endif
 #endif
 	return 0;

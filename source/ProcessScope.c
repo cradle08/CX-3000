@@ -6,11 +6,13 @@
 #include "KernelHeader.h"
 #include "stdlib.h"
 
-IO_ ADC_Status_InitTypeDef ADC_Status = {0};
-//UINT16 g_ADC_Buffer[ADC_BUFFER_LEN] = {0};
+// ADC1
+IO_ ADC_Status_InitTypeDef ADC1_Status = {0};
+UINT16 g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF] = {0};
 
-UINT16 g_ADC_Buffer[ADC_BUFFER_LEN_HALF] = {0};
-
+// ADC2
+IO_ ADC_Status_InitTypeDef ADC2_Status = {0};
+UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF] = {0};
 
 ////===================================================
 ////
@@ -511,17 +513,16 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				nParaLen = 0;
 				Simulation_Data((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode);
 #else
-
-	#if DATA_TEST_ONLY
-			    MSG_DataTesting((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode);
-	#else
 				if(e_Feedback_Success != MSG_TestingFunc((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode)) //if(e_Feedback_Success != MSG_TestingFunc())
 				{
 					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
 					HW_Valve_Off(INDEX_VALVE_PUMP);
 					HW_Valve_Off(INDEX_VALVE_WBC);
 				}
-	#endif
+				printf("adc1 end: id=%d, sendid=%d\r\n", \
+						(int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
+				printf("adc2 end: id=%d, sendid=%d\r\n", \
+						(int)ADC2_Status.nID, (int)ADC2_Status.nSendID);
 				// send debug info for count
 				g_achFbkSdLogBuf[8]  = (nParaLen - 10) >> 8;
 				g_achFbkSdLogBuf[9] = (nParaLen - 10);
@@ -529,10 +530,11 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				{
 					IT_SYS_DlyMs(1);
 				}
+#endif				
 				printf("debug msg len: %d\r\n", nParaLen);
 				nParaLen = 0;
          
-#endif					
+					
 				Reset_Udp_Count(0);
 					
 			}
@@ -573,8 +575,16 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;					
             case CMD_CTRL_VALVE: //
             {
-				Cmd_Wave_Exec(*(pchCmdBuf + 8));
-                //
+				//Cmd_Wave_Exec(*(pchCmdBuf + 8));
+                if (0 == (*(pchCmdBuf + 9)))
+				{
+					//#if USE_STM32F407_ONLY
+					HW_Valve_Off(*(pchCmdBuf + 8));
+				}
+				else
+				{
+					HW_Valve_On(*(pchCmdBuf + 8));
+				}
             }
 			break;
             case CMD_CTRL_PUMP:
@@ -1974,7 +1984,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 	{
 		// get HGB adc data
 		printf("HGB_Test_Exec:");
-#if HGB_DEBUG_FLAG
+#if USE_STM32F407_ONLY
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_HGB();
@@ -2047,7 +2057,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 	
 	if(eMode ==  EN_CRP_TEST)
 	{
-#if CRP_DEBUG_FLAG
+#if USE_STM32F407_ONLY
 		memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
 		g_CRP_Data.eEnable = e_True;
 		while(g_CRP_Data.nTotal < g_Record_Param.nTotal_Num)
@@ -2168,14 +2178,14 @@ void MSG_DataTesting(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode)
 	HW_Enable_Data_Channel(eMode);
 	Data_Circle_Handle(eMode);
 	HW_Disable_Data_Channel(eMode);
-	printf("Data Test: id=%d, sendid=%d\r\n", (int)ADC_Status.nID, (int)ADC_Status.nSendID);
+	printf("Data Test: id=%d, sendid=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
 #ifdef DEBUG_INFO_UP_LOAD
-		sprintf((char*)sTempInfo, "Data Test: id=%d, sendid=%d\r\n", (int)ADC_Status.nID, (int)ADC_Status.nSendID);
+		sprintf((char*)sTempInfo, "Data Test: id=%d, sendid=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		memset((char*)sTempInfo, 0, 100);
 		*pDILen = nDILen;
 #endif
-	memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
+	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
 }
 
 //
@@ -2796,13 +2806,16 @@ INT32 Build_Press_Self_Check(void)
 //        return e_Feedback_Error;
 //    }
 
-    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-//	HW_Valve_On(INDEX_VALVE_PUMP);
-//	HW_Valve_On(INDEX_VALVE_WBC);   // WBC
-//  IT_SYS_DlyMs(1000);
-	HW_Valve_Off(INDEX_VALVE_PUMP);  /* all the air way  CKP CHANGED 20171219*/
-    HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
-    //==================
+	#if USE_STM32F407_ONLY
+		Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+		Valve_Air_Exec(EN_CLOSE);
+		Valve_Liquid_Exec(EN_CLOSE);	
+	#else
+		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+		HW_Valve_Off(INDEX_VALVE_PUMP);  /* all the air way  CKP CHANGED 20171219*/
+		HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
+	#endif
+	
     // 1. build the pressure
    // nPress = HW_ADC_SpiGetPress();  /* »ñÈ¡±ÃÑ¹ */
 	nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
@@ -2811,9 +2824,15 @@ INT32 Build_Press_Self_Check(void)
 	printf("Build start: tick=%08d, press=%010d, addpress=%010d\r\n", (int)(nCurTicks - nStartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
     if (nPress < BUILD_PRESS_RIGHT)
     {
-        HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);  // on, 25000 ticks per ms
-        HW_Valve_On(INDEX_VALVE_PUMP);    // all the air way
-        HW_Valve_Off(INDEX_VALVE_WBC);    // WBC
+		#if USE_STM32F407_ONLY
+			Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_BEST);
+			Valve_Air_Exec(EN_OPEN);
+			Valve_Liquid_Exec(EN_CLOSE);	
+		#else
+			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);     // off
+			HW_Valve_Off(EN_OPEN);  /* all the air way  CKP CHANGED 20171219*/
+			HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
+		#endif
         // detect the press 1 and press 2 all the time
         nCurTicks = IT_SYS_GetTicks();
         nLstTicks = nCurTicks;
@@ -2835,9 +2854,15 @@ INT32 Build_Press_Self_Check(void)
 				//
                 if (nPress >=  (INT32)BUILD_PRESS_RIGHT /*&& nPress <= BUILD_PRESS_MAX*/)
                 {
-					HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
-					HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
-					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
+					#if USE_STM32F407_ONLY
+						Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+						Valve_Air_Exec(EN_CLOSE);
+						Valve_Liquid_Exec(EN_CLOSE);	
+					#else
+						HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+						HW_Valve_Off(EN_CLOSE);  /* all the air way  CKP CHANGED 20171219*/
+						HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
+					#endif
                     break;
                 }
 				printf("Building Press tick=%08d, press=%010d, addpress=%010d\r\n", (int)(nCurTicks - nStartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
@@ -2847,9 +2872,15 @@ INT32 Build_Press_Self_Check(void)
         }
         // turn off
        
-        HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
-        HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
-		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
+		#if USE_STM32F407_ONLY
+			Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+			Valve_Air_Exec(EN_CLOSE);
+			Valve_Liquid_Exec(EN_CLOSE);	
+		#else
+			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+			HW_Valve_Off(EN_CLOSE);  /* all the air way  CKP CHANGED 20171219*/
+			HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
+		#endif
         //-----------
         // to check the preeure
         //nPress = HW_ADC_SpiGetPress();
@@ -2908,8 +2939,13 @@ UINT8 AirLight_Self_Check(CALL_STYLE_E eCall)
 	printf("AirLight start: ticks=%08d, press=%010d, addpress=%010d\r\n", (int)nCurTicks, (int)nPress, (int)g_Record_Param.nAddPress);
 	if(eCall == e_PartTest_Call) // for part test
 	{
-		HW_Valve_Off(INDEX_VALVE_PUMP); 
-		HW_Valve_On(INDEX_VALVE_WBC); 
+		#if USE_STM32F407_ONLY
+			Valve_Air_Exec(EN_CLOSE);
+			Valve_Liquid_Exec(EN_OPEN);
+		#else
+			HW_Valve_Off(INDEX_VALVE_PUMP); 
+			HW_Valve_On(INDEX_VALVE_WBC); 
+		#endif
 	}
 	while(nCurTicks <= (nLstTicks + TIME_AIRLIGHT_CHECK))
 	{
@@ -2932,8 +2968,13 @@ UINT8 AirLight_Self_Check(CALL_STYLE_E eCall)
 	}
 	if(eCall == e_PartTest_Call) // for part test
 	{
-		HW_Valve_Off(INDEX_VALVE_PUMP); 
-        HW_Valve_Off(INDEX_VALVE_WBC); 
+		#if USE_STM32F407_ONLY
+			Valve_Air_Exec(EN_CLOSE);
+			Valve_Liquid_Exec(EN_CLOSE);
+		#else
+			HW_Valve_Off(INDEX_VALVE_PUMP); 
+			HW_Valve_Off(INDEX_VALVE_WBC); 
+		#endif
 	}
 	/////////////
 	//Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_AIRLIGHT_PRESS, nCurPress);
@@ -2984,11 +3025,16 @@ _EXT_ UINT8 Negative_Pressure_Self_Check(void)
 	INT32 nPress;
 	UINT32 StartTicks, EndTicks;
 	
-	//HW_Valve_On(VALVE_PRESSSURE);
-	//IT_SYS_DlyMs(10);
-	HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);  // on, 25000 ticks per ms
-	HW_Valve_On(INDEX_VALVE_PUMP);    // all the air way
-	HW_Valve_Off(INDEX_VALVE_WBC);    // WBC
+	
+	#if USE_STM32F407_ONLY
+		Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_BEST);
+		Valve_Air_Exec(EN_OPEN);
+		Valve_Liquid_Exec(EN_CLOSE);	
+	#else
+		HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);  // on, 25000 ticks per ms
+		HW_Valve_On(INDEX_VALVE_PUMP);    // all the air way
+		HW_Valve_Off(INDEX_VALVE_WBC);    // WBC
+	#endif
 	
 	StartTicks = IT_SYS_GetTicks();
 	EndTicks = StartTicks;
@@ -2998,17 +3044,30 @@ _EXT_ UINT8 Negative_Pressure_Self_Check(void)
 		nPress = Get_Press_Value(GET_PRESS_NUM_FIVE); 
 		if(nPress >= PRESS_BUILD)
 		{
-			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
-            HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
-            HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
+			#if USE_STM32F407_ONLY
+				Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+				Valve_Air_Exec(EN_CLOSE);
+				Valve_Liquid_Exec(EN_CLOSE);
+			#else
+				HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
+				HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
+				HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
+
+			#endif
 			break;
 		}
 	}
 	if((EndTicks - StartTicks) > TIME_OVER_TS_BUILD_PRESS)
 	{
-		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
-		HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
-		HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
+		#if USE_STM32F407_ONLY
+			Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+			Valve_Air_Exec(EN_CLOSE);
+			Valve_Liquid_Exec(EN_CLOSE);
+		#else
+			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
+			HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
+			HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
+		#endif
 		return e_Feedback_Fail;
 		
 	}
@@ -3016,11 +3075,28 @@ _EXT_ UINT8 Negative_Pressure_Self_Check(void)
 }
 
 
+_EXT_ UINT32 Get_WBC_V_Value(void)
+{
+	UINT16 nWord;
+	UINT32 nValue;
+	#if USE_STM32F407_ONLY
+		nWord = Get_XK_ADC();	
+		nValue = nWord*3300/4096;
+	#else
+		nWord = HW_ADC_SpiGetADC(INDEX_ADC_48V);
+		nValue = nWord*10000/4096;
+	#endif
+	
+//	printf("WBC_V: adc=%d, wbc_v=%d\r\n", nWord, (int)nValue);
+	return nValue;
+}
+
+
 _EXT_ UINT32 WBC_48V_Self_Check(void)
 {
 	UINT32 nVCheck, nVIn;
 	// adc
-	nVCheck = Get_XK_V_Value();
+	nVCheck = Get_XK_V_Value(); //Get_WBC_V_Value();// Get_XK_V_Value();
 	nVIn = nVCheck*422/22;
 	
 //	Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_WBC_48V, nWord);
@@ -3029,7 +3105,7 @@ _EXT_ UINT32 WBC_48V_Self_Check(void)
 	
     printf("WBC_48V Slef Check: wbc_v=%d, 48v=%d\r\n",\
 					 (int)nVCheck, (int)nVIn);
-	if(nVIn >= 45000 && nVIn <= 55000)
+	if(nVIn >= 40000 && nVIn <= 60000)
 	{
 		Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_WBC_48V, e_Feedback_Success);
 	}else{ // error
@@ -3207,27 +3283,65 @@ UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal)
 	return nRet;
 }
 
-void Cmd_Wave_Exec(UINT8 nFlag)
+//void Cmd_Wave_Exec(UINT8 nFlag)
+//{
+//	if (0 == nFlag)
+//	{
+//		HW_Valve_Off(nFlag);
+//	}
+//	else
+//	{
+//		HW_Valve_On(nFlag);
+//	}
+//}
+
+
+
+
+void Eable_ADC(EN_TypeADC eType)
 {
-	if (0 == nFlag)
-	{
-		HW_Valve_Off(nFlag);
-	}
-	else
-	{
-		HW_Valve_On(nFlag);
+	if(eType == EN_ADC1){
+		memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));	
+		ADC1_Init(); //APP_ADC_Init(EN_ADC1);
+		ADC_SoftwareStartConv(ADC1);
+	}else if(eType == EN_ADC2){
+		memset((void*)&ADC2_Status, 0, sizeof(ADC_Status_InitTypeDef));	
+		ADC2_Init(); //APP_ADC_Init(EN_ADC2);
+		ADC_SoftwareStartConv(ADC2);
+	}else if(eType == EN_ADC3){
+		
 	}
 }
-
 
 // yaolan_
 UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 {
-#if USE_STM32F407_ONLY
-	memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
-	ADC1_Init();
-	ADC_SoftwareStartConv(ADC1);
-
+#if 1 //#if USE_STM32F407_ONLY
+	
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+			Eable_ADC(EN_ADC1);
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+			Eable_ADC(EN_ADC2);
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+			Eable_ADC(EN_ADC2);
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+			Eable_ADC(EN_ADC2);
+		}
+		break;
+		default:break;
+	}
 #else 
 	switch(eMode)
 	{
@@ -3238,17 +3352,17 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 		break;
 		case EN_RBC_TEST:
 		{
-		
+			HW_Start_WBC();	
 		}
 		break;
 		case EN_PLT_TEST:
 		{
-		
+			HW_Start_WBC();	
 		}
 		break;
 		case EN_RBC_PLT_TEST:
 		{
-		
+			HW_Start_WBC();	
 		}
 		break;
 		default:break;
@@ -3258,14 +3372,52 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 	return 0;
 }
 
+void Disable_ADC(EN_TypeADC eType)
+{
+	if(eType == EN_ADC1){
+		ADC_Cmd(ADC1, DISABLE);
+		ADC_DMACmd(ADC1, DISABLE);
+		DMA_Cmd(DMA2_Stream0, DISABLE);
+		
+	}else if(eType == EN_ADC2){
+		ADC_Cmd(ADC2, DISABLE);
+		ADC_DMACmd(ADC2, DISABLE);
+		DMA_Cmd(DMA2_Stream3, DISABLE);
+		
+	}else if(eType == EN_ADC3){
+		//
+	}
+}
+
 // yaolan_
 UINT8 HW_Disable_Data_Channel(eTestMode eMode)
 {
-#if USE_STM32F407_ONLY
-	
-	ADC_Cmd(ADC1, DISABLE);
-	ADC_DMACmd(ADC1, DISABLE);
-	DMA_Cmd(DMA2_Stream0, DISABLE);
+
+#if 1  // #if USE_STM32F407_ONLY
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+			Disable_ADC(EN_ADC1);
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+			Disable_ADC(EN_ADC2);
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+			Disable_ADC(EN_ADC2);
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+			Disable_ADC(EN_ADC2);
+		}
+		break;
+		default:break;
+	}
 #else
 	switch(eMode)
 	{
@@ -3276,17 +3428,17 @@ UINT8 HW_Disable_Data_Channel(eTestMode eMode)
 		break;
 		case EN_RBC_TEST:
 		{
-		
+			HW_End_WBC();
 		}
 		break;
 		case EN_PLT_TEST:
 		{
-		
+			HW_End_WBC();
 		}
 		break;
 		case EN_RBC_PLT_TEST:
 		{
-		
+			HW_End_WBC();
 		}
 		break;
 		default:break;

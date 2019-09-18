@@ -362,7 +362,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx, USE_CHAIN_SCOPE, USE_STDPERIPH_DRIVER, USE_FULL_ASSERT, SAMPLE_CHIP_95UM,MOTO_DOBULE_ENABLE,MOTO_Y_VERSION_V4</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\HwLib\core;..\..\HwLib\driver\inc;..\..\HwLib\ETH_Driver\inc;..\..\lwip-1.4.1\src\include;..\..\lwip-1.4.1\src\include\lwip;..\..\lwip-1.4.1\src\include\ipv4;..\..\lwip-1.4.1\src\include\netif;..\..\lwip-1.4.1\port\STM32F4x7;..\..\lwip-1.4.1\port\STM32F4x7\Standalone;..\..\lwip_app;..\..\config;..\..\source;..\..\app</IncludePath>
+              <IncludePath>..\..\HwLib\core;..\..\HwLib\driver\inc;..\..\HwLib\ETH_Driver\inc;..\..\lwip-1.4.1\src\include;..\..\lwip-1.4.1\src\include\lwip;..\..\lwip-1.4.1\src\include\ipv4;..\..\lwip-1.4.1\src\include\netif;..\..\lwip-1.4.1\port\STM32F4x7;..\..\lwip-1.4.1\port\STM32F4x7\Standalone;..\..\config;..\..\lwip_app;..\..\source;..\..\app</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -694,6 +694,11 @@
               <FileName>SpiFlash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\config\SpiFlash.c</FilePath>
+            </File>
+            <File>
+              <FileName>driver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\config\driver.c</FilePath>
             </File>
           </Files>
         </Group>
