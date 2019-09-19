@@ -153,14 +153,14 @@ typedef enum
 #define OUT_STATUS_LED2_GPIO_PIN            GPIO_Pin_8
 #define OUT_STATUS_LED2_GPIO_PORT           GPIOF
 #define OUT_STATUS_LED2_GPIO_CLK            RCC_AHB1Periph_GPIOF  
-// PF9  mcu_led_1   // testing
-#define OUT_MCU_LED1_GPIO_PIN               GPIO_Pin_9
-#define OUT_MCU_LED1_GPIO_PORT              GPIOF
-#define OUT_MCU_LED1_GPIO_CLK               RCC_AHB1Periph_GPIOF 
-// PF10 mcu_led_2   // testing
-#define OUT_MCU_LED2_GPIO_PIN               GPIO_Pin_10
-#define OUT_MCU_LED2_GPIO_PORT              GPIOF
-#define OUT_MCU_LED2_GPIO_CLK               RCC_AHB1Periph_GPIOF 
+// PF9  mcu_led_1   // testing ===> PE4
+#define OUT_MCU_LED1_GPIO_PIN               GPIO_Pin_4 //GPIO_Pin_9
+#define OUT_MCU_LED1_GPIO_PORT              GPIOE //GPIOF
+#define OUT_MCU_LED1_GPIO_CLK               RCC_AHB1Periph_GPIOE  //RCC_AHB1Periph_GPIOF 
+// PF10 mcu_led_2   // testing ===> PE5
+#define OUT_MCU_LED2_GPIO_PIN               GPIO_Pin_5 //GPIO_Pin_10
+#define OUT_MCU_LED2_GPIO_PORT              GPIOE //GPIOF
+#define OUT_MCU_LED2_GPIO_CLK               RCC_AHB1Periph_GPIOE  //RCC_AHB1Periph_GPIOF 
 
 // 2. the pin to reset the LAN8720
 // PD3  

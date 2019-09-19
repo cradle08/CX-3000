@@ -1653,68 +1653,6 @@ void HW_EN_ADC_CRP(enum eFlag flag)
 	}
 }
 
-UINT32 HW_Get_ADC_HGB(void)
-{
-	UINT8 i;
-	UINT32 nRet = 0;
-	
-#if USE_STM32F407_ONLY
-	for(i = 0; i < 30; i++)
-	{
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_480Cycles ); 
-		ADC_SoftwareStartConv(ADC3);	
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nRet += ADC_GetConversionValue(ADC3);	
-	}
-	nRet /= 30;	
-#else	
-	nRet = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
-	
-#endif
-	return nRet;
-}
-
-UINT32  HW_Get_ADC_CRP(void)
-{
-	UINT8 i;
-	UINT32  nRet = 0;
-	
-#if USE_STM32F407_ONLY
-	for(i = 0; i < 30; i++)
-	{
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_480Cycles ); 
-		ADC_SoftwareStartConv(ADC3);		
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nRet = ADC_GetConversionValue(ADC3);	
-	}
-	nRet /= 30;
-#else	
-	nRet = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
-#endif
-	return nRet;
-}
-
-UINT16  Get_HGB_Value(void)
-{
-	UINT16  nRet;
-	UINT32  nVal;
-	
-	nVal = HW_Get_ADC_CRP();
-	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
-	printf("HGB: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
-	return nRet;
-}
-
-UINT32  Get_CRP_Value(void)
-{
-	UINT32 nVal, nRet;
-	
-	nVal = HW_Get_ADC_CRP();
-	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24;
-	//printf("CRP: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
-	return nRet;
-}
-
 
 UINT8 Send_Data_HGB(UINT32 nCmd, UINT32* pData, UINT16 nLen)
 {

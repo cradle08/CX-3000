@@ -447,13 +447,17 @@ void ADC3_GPIO_Init(void){
 		ADC3_DMA_Config();
 		//ADC_DMACmd(ADC3, ENABLE);
 		// 
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_3Cycles); 
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_5, 2, ADC_SampleTime_3Cycles);
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_7, 3, ADC_SampleTime_3Cycles);
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_10, 4, ADC_SampleTime_3Cycles);
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 5, ADC_SampleTime_3Cycles);
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_13, 6, ADC_SampleTime_3Cycles);
-		
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_3Cycles);  // CRP HGB
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_5, 2, ADC_SampleTime_3Cycles);  // LED cur
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_7, 3, ADC_SampleTime_3Cycles);  // 56v cur
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_10, 4, ADC_SampleTime_3Cycles); // temperature
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 5, ADC_SampleTime_3Cycles); // press
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_13, 6, ADC_SampleTime_3Cycles); // XK
+
+
+
+
+
 		ADC_DMARequestAfterLastTransferCmd(ADC3, ENABLE); 
 		ADC_DMACmd(ADC3, ENABLE);
 		ADC_Cmd(ADC3, ENABLE);
@@ -491,12 +495,12 @@ void ADC3_GPIO_Init(void){
 		ADC_Init(ADC3, &ADC_InitStructure);	
 		ADC_Cmd(ADC3, ENABLE);
 		
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_3Cycles); 
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_5, 2, ADC_SampleTime_3Cycles);
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_7, 3, ADC_SampleTime_3Cycles);
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_10, 4, ADC_SampleTime_3Cycles);
+//		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_3Cycles);  // CRP HGB
+//		ADC_RegularChannelConfig(ADC3, ADC_Channel_5, 2, ADC_SampleTime_3Cycles);  // LED cur
+//		ADC_RegularChannelConfig(ADC3, ADC_Channel_7, 3, ADC_SampleTime_3Cycles);  // 56v cur
+//		ADC_RegularChannelConfig(ADC3, ADC_Channel_10, 4, ADC_SampleTime_3Cycles); // temperature
 //		ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 5, ADC_SampleTime_3Cycles); // press
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_13, 6, ADC_SampleTime_3Cycles);
+//		ADC_RegularChannelConfig(ADC3, ADC_Channel_13, 6, ADC_SampleTime_3Cycles); // XK
 
 		//ADC2_DMA_Config();
 		//ADC_DMACmd(ADC3, ENABLE);
@@ -512,6 +516,7 @@ void ADC3_GPIO_Init(void){
 	
 #endif //ADC3_INIT_WITH_DMA
 
+//
 UINT16 Get_Press_ADC(void)
 {
 	UINT16 nVal = 0, i;
@@ -523,16 +528,17 @@ UINT16 Get_Press_ADC(void)
 	ADC_Cmd(ADC3,ENABLE);
 	for(i = 0; i < 5; i++)
 	{
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 1, ADC_SampleTime_3Cycles ); //ADC1,ADC通道,480个周期,提高采样时间可以提高精确度		
-		ADC_SoftwareStartConv(ADC3);		//使能指定的ADC1的软件转换启动功能	
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));//等待转换结束
-		nVal += ADC_GetConversionValue(ADC3);	//返回最近一次ADC1规则组的转换结果
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 1, ADC_SampleTime_3Cycles );
+		ADC_SoftwareStartConv(ADC3);		
+		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+		nVal += ADC_GetConversionValue(ADC3);	
 	}
 	nVal /= 5;
 #endif
 	return nVal;
 }
 
+//
 UINT16 Get_XK_ADC(void)
 {
 	UINT16 nVal = 0, i;
@@ -554,6 +560,115 @@ UINT16 Get_XK_ADC(void)
 	return nVal;
 }
 
+//
+UINT16 Get_56V_Cur_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	//nVal = g_ADC3_Value[1];
+#else
+	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
+	ADC_Cmd(ADC3,ENABLE);
+	for(i = 0; i < 5; i++)
+	{
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_7, 1, ADC_SampleTime_3Cycles ); 
+		ADC_SoftwareStartConv(ADC3);		
+		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+		nVal += ADC_GetConversionValue(ADC3);	
+	}
+	nVal /= 5;
+#endif
+	return nVal;
+}
+
+//
+UINT16 Get_LED_Cur_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	//nVal = g_ADC3_Value[1];
+#else
+	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
+	ADC_Cmd(ADC3,ENABLE);
+	for(i = 0; i < 5; i++)
+	{
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_5, 1, ADC_SampleTime_3Cycles ); 
+		ADC_SoftwareStartConv(ADC3);		
+		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+		nVal += ADC_GetConversionValue(ADC3);	
+	}
+	nVal /= 5;
+#endif
+	return nVal;
+}
+
+//
+UINT32 HW_Get_ADC_HGB(void)
+{
+	UINT8 i;
+	UINT32 nRet = 0;
+	
+#if USE_STM32F407_ONLY
+	for(i = 0; i < 30; i++)
+	{
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_480Cycles ); 
+		ADC_SoftwareStartConv(ADC3);	
+		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+		nRet += ADC_GetConversionValue(ADC3);	
+	}
+	nRet /= 30;	
+#else	
+	nRet = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+	
+#endif
+	return nRet;
+}
+
+//
+UINT32  HW_Get_ADC_CRP(void)
+{
+	UINT8 i;
+	UINT32  nRet = 0;
+	
+#if USE_STM32F407_ONLY
+	for(i = 0; i < 30; i++)
+	{
+		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_480Cycles ); 
+		ADC_SoftwareStartConv(ADC3);		
+		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+		nRet = ADC_GetConversionValue(ADC3);	
+	}
+	nRet /= 30;
+#else	
+	nRet = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+#endif
+	return nRet;
+}
+
+//
+UINT16  Get_HGB_Value(void)
+{
+	UINT16  nRet;
+	UINT32  nVal;
+	
+	nVal = HW_Get_ADC_CRP();
+	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
+	printf("HGB: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
+	return nRet;
+}
+
+//
+UINT32  Get_CRP_Value(void)
+{
+	UINT32 nVal, nRet;
+	
+	nVal = HW_Get_ADC_CRP();
+	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24;
+	//printf("CRP: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
+	return nRet;
+}
 
 void Reset_Elec_Status(void)
 {
@@ -570,17 +685,17 @@ UINT8 Get_Elec_Status(void)
 	return g_Elec_Status;
 }
 
-void ELEC_EXIT_FUNC(void)
-{
-	
-	IT_SYS_DlyMs(2);
-	if(ELEC_READ == 0) // low triggle
-	{
-		Set_Elec_Status();
-	}		 
-	EXTI_ClearITPendingBit(ELEC_EXIT_LINE);
-	printf("Elec Exit Func triggle, v=%d, status=%d\r\n", ELEC_READ, Get_Elec_Status());
-}
+//void ELEC_EXIT_FUNC(void)
+//{
+//	
+//	IT_SYS_DlyMs(2);
+//	if(ELEC_READ == 0) // low triggle
+//	{
+//		Set_Elec_Status();
+//	}		 
+//	EXTI_ClearITPendingBit(ELEC_EXIT_LINE);
+//	printf("Elec Exit Func triggle, v=%d, status=%d\r\n", ELEC_READ, Get_Elec_Status());
+//}
 
 void Elec_Init(void)
 {
@@ -830,195 +945,356 @@ UINT8 Get_In_OC_Status(void)
 	return GPIO_ReadInputDataBit(IN_OC_CLK_PORT, IN_OC_CLK_PIN);
 }
 
-// fix motor
-void Fix_Motor_Init(void)
+void LED_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(FIX_MOTOR_EN_SRC|FIX_MOTOR_DIR_SRC|FIX_MOTOR_CLK_SRC, ENABLE);
-	// en
-	GPIO_InitStructure.GPIO_Pin = FIX_MOTOR_EN_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	RCC_AHB1PeriphClockCmd(LED1_CLK_SRC|LED2_CLK_SRC|LED3_CLK_SRC|LED4_CLK_SRC|LED5_CLK_SRC \
+		|LED6_CLK_SRC|LED7_CLK_SRC|LED8_CLK_SRC|LED_CUR_SWITCH_SRC, ENABLE);
+	// LED1
+	GPIO_InitStructure.GPIO_Pin   = LED1_PIN; 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(FIX_MOTOR_EN_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(FIX_MOTOR_EN_PORT, FIX_MOTOR_EN_PIN);
-	// dir
-	GPIO_InitStructure.GPIO_Pin = FIX_MOTOR_DIR_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_Init(LED1_PORT, &GPIO_InitStructure);
+	//LED2
+	GPIO_InitStructure.GPIO_Pin   = LED2_PIN; 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(FIX_MOTOR_DIR_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(FIX_MOTOR_DIR_PORT, FIX_MOTOR_DIR_PIN);
-	// clk
-	GPIO_InitStructure.GPIO_Pin = FIX_MOTOR_CLK_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_Init(LED2_PORT, &GPIO_InitStructure);
+	// LED3
+	GPIO_InitStructure.GPIO_Pin   = LED3_PIN; 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(FIX_MOTOR_CLK_PORT, &GPIO_InitStructure);
+	GPIO_Init(LED3_PORT, &GPIO_InitStructure);
+	//LED4
+	GPIO_InitStructure.GPIO_Pin   = LED4_PIN; 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_Init(LED4_PORT, &GPIO_InitStructure);
+	// LED5
+	GPIO_InitStructure.GPIO_Pin   = LED5_PIN; 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_Init(LED5_PORT, &GPIO_InitStructure);
+	//LED6
+	GPIO_InitStructure.GPIO_Pin   = LED6_PIN; 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_Init(LED6_PORT, &GPIO_InitStructure);
+	// LED7
+	GPIO_InitStructure.GPIO_Pin   = LED7_PIN; 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_Init(LED7_PORT, &GPIO_InitStructure);
+	//LED8
+	GPIO_InitStructure.GPIO_Pin   = LED8_PIN; 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_Init(LED8_PORT, &GPIO_InitStructure);
+	// Control Switch
+	GPIO_InitStructure.GPIO_Pin   = LED_CUR_SWITCH_PIN; 
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_Init(LED_CUR_SWITCH_PORT, &GPIO_InitStructure);
+	// LED Cur Adjust, DAC
+	LEC_Cur_Adjust_DAC_Init();
 	
-	GPIO_ResetBits(FIX_MOTOR_EN_PORT, FIX_MOTOR_EN_PIN);
-	GPIO_ResetBits(FIX_MOTOR_DIR_PORT, FIX_MOTOR_DIR_PIN);
-	GPIO_ResetBits(FIX_MOTOR_CLK_PORT, FIX_MOTOR_CLK_PIN);
 }
 
-void Fix_Motor_Enable(void)
+void LEC_Cur_Adjust_DAC_Init(void)
 {
-	GPIO_ResetBits(FIX_MOTOR_EN_PORT, FIX_MOTOR_EN_PIN);
-}
-
-void Fix_Motor_Disable(void)
-{
-	GPIO_SetBits(FIX_MOTOR_EN_PORT, FIX_MOTOR_EN_PIN);
-}
-
-void Fix_Motor_AntiClockWise(void) // fixable
-{
-	GPIO_SetBits(FIX_MOTOR_DIR_PORT, FIX_MOTOR_DIR_PIN);
-}
-
-void Fix_Motor_ClockWise(void) // free
-{
-	GPIO_ResetBits(FIX_MOTOR_DIR_PORT, FIX_MOTOR_DIR_PIN);
-}
-
-void Fix_Motor_Run(UINT16 nUp, UINT16 nDown)
-{
-	GPIO_SetBits(FIX_MOTOR_CLK_PORT, FIX_MOTOR_CLK_PIN);
-	Delay_US(nUp);
-	GPIO_ResetBits(FIX_MOTOR_CLK_PORT, FIX_MOTOR_CLK_PIN);
-	Delay_US(nDown);
-}
-
-
-void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc)
-{
-	// TIM3_CH3
-	GPIO_InitTypeDef GPIO_InitStructure;
-	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
-	TIM_OCInitTypeDef  TIM_OCInitStructure;
-
-	RCC_APB1PeriphClockCmd(OUTIN_MOTOR_PWM_TIM_SRC,ENABLE);  	//TIM14时钟使能    
-	RCC_AHB1PeriphClockCmd(OUTIN_MOTOR_CLK_SRC, ENABLE); 	//使能PORTF时钟	
-	GPIO_PinAFConfig(OUTIN_MOTOR_CLK_PORT,OUTIN_MOTOR_CLK_PIN_AF, OUTIN_MOTOR_CLK_PORT_AF); 
-
-	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_CLK_PIN;           //GPIOC8
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        //复用功能
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	//速度100MHz
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;      //推挽复用输出
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;        //上拉
-	GPIO_Init(OUTIN_MOTOR_CLK_PORT, &GPIO_InitStructure);        
-	GPIO_SetBits(OUTIN_MOTOR_CLK_PORT, PUMP_CLK_PIN);
-	
-	TIM_DeInit(OUTIN_MOTOR_PWM_TIM);
-	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  //定时器分频
-	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; //向上计数模式
-	TIM_TimeBaseStructure.TIM_Period=Arr;   //自动重装载值
-	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
-	TIM_TimeBaseInit(OUTIN_MOTOR_PWM_TIM,&TIM_TimeBaseStructure);//初始化定时器14
-
-	//初始化TIM3 Channel1 PWM模式	 
-	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; //选择定时器模式:TIM脉冲宽度调制模式2
-	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
-	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
-	//TIM_OCInitStructure.TIM_Pulse = ;
-	TIM_OC3Init(OUTIN_MOTOR_PWM_TIM, &TIM_OCInitStructure);  
-
-	TIM_OC3PreloadConfig(OUTIN_MOTOR_PWM_TIM, TIM_OCPreload_Enable); 
-	TIM_ARRPreloadConfig(OUTIN_MOTOR_PWM_TIM,ENABLE);
-	TIM_Cmd(OUTIN_MOTOR_PWM_TIM, ENABLE);  //
-}
-	
-
-// Out_In Motor
-void OutIn_Motor_Init(void)
-{
-	GPIO_InitTypeDef  GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(OUTIN_MOTOR_EN_SRC|OUTIN_MOTOR_DIR_SRC|OUTIN_MOTOR_CLK_SRC, ENABLE);
-	// en
-	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_EN_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(OUTIN_MOTOR_EN_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(OUTIN_MOTOR_EN_PORT, OUTIN_MOTOR_EN_PIN);
-	// dir
-	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_DIR_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(OUTIN_MOTOR_DIR_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(OUTIN_MOTOR_DIR_PORT, OUTIN_MOTOR_DIR_PIN);
-	// clk
-	#if OUTIN_MOTOR_USE_PWM
-		OutIn_Motor_PWM_Init(OUTIN_MOTOR_PWM_TIM_ARR, OUTIN_MOTOR_PWM_TIM_PSC); //84M/42=2M, 1M/25000=59.52
-	#else
-		GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_CLK_PIN; 
-		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-		GPIO_Init(OUTIN_MOTOR_CLK_PORT, &GPIO_InitStructure);
-		GPIO_ResetBits(OUTIN_MOTOR_CLK_PORT, OUTIN_MOTOR_CLK_PIN);
-	#endif
-}
-
-void OutIn_Motor_Enable(void)
-{
-	GPIO_ResetBits(OUTIN_MOTOR_EN_PORT, OUTIN_MOTOR_EN_PIN);
-}
-
-void OutIn_Motor_Disable(void)
-{
-	GPIO_SetBits(OUTIN_MOTOR_EN_PORT, OUTIN_MOTOR_EN_PIN);
-}
-
-void OutIn_Motor_AntiClockWise(void) // out
-{
-	GPIO_SetBits(OUTIN_MOTOR_DIR_PORT, OUTIN_MOTOR_DIR_PIN);
-}
-
-void OutIn_Motor_ClockWise(void) // in
-{
-	GPIO_ResetBits(OUTIN_MOTOR_DIR_PORT, OUTIN_MOTOR_DIR_PIN);
-}
-
-void OutIn_Motor_Run(UINT16 nUp, UINT16 nDown)
-{
-	GPIO_SetBits(OUTIN_MOTOR_CLK_PORT, OUTIN_MOTOR_CLK_PIN);
-	Delay_US(nUp);
-	GPIO_ResetBits(OUTIN_MOTOR_CLK_PORT, OUTIN_MOTOR_CLK_PIN);
-	Delay_US(nDown);
-}
-
-
-void OutIn_Motor_Speed_Set(UINT16 nSpeed) // 0-499
-{
-	if(nSpeed > OUTIN_MOTOR_PWM_LEVEL_HIGHEST){
-		TIM_SetCompare3(OUTIN_MOTOR_PWM_TIM, OUTIN_MOTOR_PWM_LEVEL_HIGHEST);
-	}else{
-		TIM_SetCompare3(OUTIN_MOTOR_PWM_TIM, nSpeed);
-	}
-}
-
-void OutIn_Motor_Exec(UINT8 nDir, UINT16 nFreq)
-{
-	if(nFreq > PUMP_PWM_TIM_ARR) return;
-	///////if(nDir != e_Dir_Neg || nDir != e_Dir_Pos) return;
-	
-	if(nDir == e_Dir_Pos){
-		OutIn_Motor_AntiClockWise(); // out
-	}else if(nDir == e_Dir_Neg){
-		OutIn_Motor_ClockWise(); //in
-	}
 	//
-	//Pump_init();
-	OutIn_Motor_Speed_Set(nFreq);
+
 }
+
+void LED_Cur_Switch(UINT8 nOpt)
+{
+	if(nOpt == EN_OPEN){
+		GPIO_SetBits(LED_CUR_SWITCH_PORT, LED_CUR_SWITCH_PIN);
+	}else if(nOpt == EN_CLOSE){
+		GPIO_ResetBits(LED_CUR_SWITCH_PORT, LED_CUR_SWITCH_PIN);
+	}	
+}
+
+
+void LED_Exec(UINT8 nIndex, UINT8 nOpt)
+{
+	switch(nIndex)
+	{
+		case EN_LED1:
+		{
+			if(nOpt == EN_OPEN){
+				GPIO_SetBits(LED1_PORT, LED1_PIN);
+			}else if(nOpt == EN_CLOSE){
+				GPIO_ResetBits(LED1_PORT, LED1_PIN);
+			}
+		}
+		break;
+		case EN_LED2:
+		{
+			if(nOpt == EN_OPEN){
+				GPIO_SetBits(LED2_PORT, LED2_PIN);
+			}else if(nOpt == EN_CLOSE){
+				GPIO_ResetBits(LED2_PORT, LED2_PIN);
+			}
+		}
+		break;
+		case EN_LED3:
+		{
+			if(nOpt == EN_OPEN){
+				GPIO_SetBits(LED3_PORT, LED3_PIN);
+			}else if(nOpt == EN_CLOSE){
+				GPIO_ResetBits(LED3_PORT, LED3_PIN);
+			}		
+		}
+		break;
+		case EN_LED4:
+		{
+			if(nOpt == EN_OPEN){
+				GPIO_SetBits(LED4_PORT, LED4_PIN);
+			}else if(nOpt == EN_CLOSE){
+				GPIO_ResetBits(LED4_PORT, LED4_PIN);
+			}
+		}
+		break;
+		case EN_LED5:
+		{
+			if(nOpt == EN_OPEN){
+				GPIO_SetBits(LED5_PORT, LED5_PIN);
+			}else if(nOpt == EN_CLOSE){
+				GPIO_ResetBits(LED5_PORT, LED5_PIN);
+			}
+		}
+		break;
+		case EN_LED6:
+		{
+			if(nOpt == EN_OPEN){
+				GPIO_SetBits(LED6_PORT, LED6_PIN);
+			}else if(nOpt == EN_CLOSE){
+				GPIO_ResetBits(LED6_PORT, LED6_PIN);
+			}
+		}
+		break;
+		case EN_LED7:
+		{
+			if(nOpt == EN_OPEN){
+				GPIO_SetBits(LED7_PORT, LED7_PIN);
+			}else if(nOpt == EN_CLOSE){
+				GPIO_ResetBits(LED7_PORT, LED7_PIN);
+			}			
+		}
+		break;
+		case EN_LED8:
+		{
+			if(nOpt == EN_OPEN){
+				GPIO_SetBits(LED8_PORT, LED8_PIN);
+			}else if(nOpt == EN_CLOSE){
+				GPIO_ResetBits(LED8_PORT, LED8_PIN);
+			}
+		}
+		break;	
+		default:break;	
+	}
+}
+
+
+//// fix motor
+//void Fix_Motor_Init(void)
+//{
+//	GPIO_InitTypeDef  GPIO_InitStructure;
+//	RCC_AHB1PeriphClockCmd(FIX_MOTOR_EN_SRC|FIX_MOTOR_DIR_SRC|FIX_MOTOR_CLK_SRC, ENABLE);
+//	// en
+//	GPIO_InitStructure.GPIO_Pin = FIX_MOTOR_EN_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+//	GPIO_Init(FIX_MOTOR_EN_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(FIX_MOTOR_EN_PORT, FIX_MOTOR_EN_PIN);
+//	// dir
+//	GPIO_InitStructure.GPIO_Pin = FIX_MOTOR_DIR_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+//	GPIO_Init(FIX_MOTOR_DIR_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(FIX_MOTOR_DIR_PORT, FIX_MOTOR_DIR_PIN);
+//	// clk
+//	GPIO_InitStructure.GPIO_Pin = FIX_MOTOR_CLK_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+//	GPIO_Init(FIX_MOTOR_CLK_PORT, &GPIO_InitStructure);
+//	
+//	GPIO_ResetBits(FIX_MOTOR_EN_PORT, FIX_MOTOR_EN_PIN);
+//	GPIO_ResetBits(FIX_MOTOR_DIR_PORT, FIX_MOTOR_DIR_PIN);
+//	GPIO_ResetBits(FIX_MOTOR_CLK_PORT, FIX_MOTOR_CLK_PIN);
+//}
+
+//void Fix_Motor_Enable(void)
+//{
+//	GPIO_ResetBits(FIX_MOTOR_EN_PORT, FIX_MOTOR_EN_PIN);
+//}
+
+//void Fix_Motor_Disable(void)
+//{
+//	GPIO_SetBits(FIX_MOTOR_EN_PORT, FIX_MOTOR_EN_PIN);
+//}
+
+//void Fix_Motor_AntiClockWise(void) // fixable
+//{
+//	GPIO_SetBits(FIX_MOTOR_DIR_PORT, FIX_MOTOR_DIR_PIN);
+//}
+
+//void Fix_Motor_ClockWise(void) // free
+//{
+//	GPIO_ResetBits(FIX_MOTOR_DIR_PORT, FIX_MOTOR_DIR_PIN);
+//}
+
+//void Fix_Motor_Run(UINT16 nUp, UINT16 nDown)
+//{
+//	GPIO_SetBits(FIX_MOTOR_CLK_PORT, FIX_MOTOR_CLK_PIN);
+//	Delay_US(nUp);
+//	GPIO_ResetBits(FIX_MOTOR_CLK_PORT, FIX_MOTOR_CLK_PIN);
+//	Delay_US(nDown);
+//}
+
+
+//void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc)
+//{
+//	// TIM3_CH3
+//	GPIO_InitTypeDef GPIO_InitStructure;
+//	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+//	TIM_OCInitTypeDef  TIM_OCInitStructure;
+
+//	RCC_APB1PeriphClockCmd(OUTIN_MOTOR_PWM_TIM_SRC,ENABLE);  	//TIM14时钟使能    
+//	RCC_AHB1PeriphClockCmd(OUTIN_MOTOR_CLK_SRC, ENABLE); 	//使能PORTF时钟	
+//	GPIO_PinAFConfig(OUTIN_MOTOR_CLK_PORT,OUTIN_MOTOR_CLK_PIN_AF, OUTIN_MOTOR_CLK_PORT_AF); 
+
+//	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_CLK_PIN;           //GPIOC8
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        //复用功能
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	//速度100MHz
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;      //推挽复用输出
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;        //上拉
+//	GPIO_Init(OUTIN_MOTOR_CLK_PORT, &GPIO_InitStructure);        
+//	GPIO_SetBits(OUTIN_MOTOR_CLK_PORT, PUMP_CLK_PIN);
+//	
+//	TIM_DeInit(OUTIN_MOTOR_PWM_TIM);
+//	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  //定时器分频
+//	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; //向上计数模式
+//	TIM_TimeBaseStructure.TIM_Period=Arr;   //自动重装载值
+//	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
+//	TIM_TimeBaseInit(OUTIN_MOTOR_PWM_TIM,&TIM_TimeBaseStructure);//初始化定时器14
+
+//	//初始化TIM3 Channel1 PWM模式	 
+//	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; //选择定时器模式:TIM脉冲宽度调制模式2
+//	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
+//	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
+//	//TIM_OCInitStructure.TIM_Pulse = ;
+//	TIM_OC3Init(OUTIN_MOTOR_PWM_TIM, &TIM_OCInitStructure);  
+
+//	TIM_OC3PreloadConfig(OUTIN_MOTOR_PWM_TIM, TIM_OCPreload_Enable); 
+//	TIM_ARRPreloadConfig(OUTIN_MOTOR_PWM_TIM,ENABLE);
+//	TIM_Cmd(OUTIN_MOTOR_PWM_TIM, ENABLE);  //
+//}
+//	
+
+//// Out_In Motor
+//void OutIn_Motor_Init(void)
+//{
+//	GPIO_InitTypeDef  GPIO_InitStructure;
+//	RCC_AHB1PeriphClockCmd(OUTIN_MOTOR_EN_SRC|OUTIN_MOTOR_DIR_SRC|OUTIN_MOTOR_CLK_SRC, ENABLE);
+//	// en
+//	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_EN_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+//	GPIO_Init(OUTIN_MOTOR_EN_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(OUTIN_MOTOR_EN_PORT, OUTIN_MOTOR_EN_PIN);
+//	// dir
+//	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_DIR_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+//	GPIO_Init(OUTIN_MOTOR_DIR_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(OUTIN_MOTOR_DIR_PORT, OUTIN_MOTOR_DIR_PIN);
+//	// clk
+//	#if OUTIN_MOTOR_USE_PWM
+//		OutIn_Motor_PWM_Init(OUTIN_MOTOR_PWM_TIM_ARR, OUTIN_MOTOR_PWM_TIM_PSC); //84M/42=2M, 1M/25000=59.52
+//	#else
+//		GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_CLK_PIN; 
+//		GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//		GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//		GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//		GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+//		GPIO_Init(OUTIN_MOTOR_CLK_PORT, &GPIO_InitStructure);
+//		GPIO_ResetBits(OUTIN_MOTOR_CLK_PORT, OUTIN_MOTOR_CLK_PIN);
+//	#endif
+//}
+
+//void OutIn_Motor_Enable(void)
+//{
+//	GPIO_ResetBits(OUTIN_MOTOR_EN_PORT, OUTIN_MOTOR_EN_PIN);
+//}
+
+//void OutIn_Motor_Disable(void)
+//{
+//	GPIO_SetBits(OUTIN_MOTOR_EN_PORT, OUTIN_MOTOR_EN_PIN);
+//}
+
+//void OutIn_Motor_AntiClockWise(void) // out
+//{
+//	GPIO_SetBits(OUTIN_MOTOR_DIR_PORT, OUTIN_MOTOR_DIR_PIN);
+//}
+
+//void OutIn_Motor_ClockWise(void) // in
+//{
+//	GPIO_ResetBits(OUTIN_MOTOR_DIR_PORT, OUTIN_MOTOR_DIR_PIN);
+//}
+
+//void OutIn_Motor_Run(UINT16 nUp, UINT16 nDown)
+//{
+//	GPIO_SetBits(OUTIN_MOTOR_CLK_PORT, OUTIN_MOTOR_CLK_PIN);
+//	Delay_US(nUp);
+//	GPIO_ResetBits(OUTIN_MOTOR_CLK_PORT, OUTIN_MOTOR_CLK_PIN);
+//	Delay_US(nDown);
+//}
+
+
+//void OutIn_Motor_Speed_Set(UINT16 nSpeed) // 0-499
+//{
+//	if(nSpeed > OUTIN_MOTOR_PWM_LEVEL_HIGHEST){
+//		TIM_SetCompare3(OUTIN_MOTOR_PWM_TIM, OUTIN_MOTOR_PWM_LEVEL_HIGHEST);
+//	}else{
+//		TIM_SetCompare3(OUTIN_MOTOR_PWM_TIM, nSpeed);
+//	}
+//}
+
+//void OutIn_Motor_Exec(UINT8 nDir, UINT16 nFreq)
+//{
+//	if(nFreq > PUMP_PWM_TIM_ARR) return;
+//	///////if(nDir != e_Dir_Neg || nDir != e_Dir_Pos) return;
+//	
+//	if(nDir == e_Dir_Pos){
+//		OutIn_Motor_AntiClockWise(); // out
+//	}else if(nDir == e_Dir_Neg){
+//		OutIn_Motor_ClockWise(); //in
+//	}
+//	//
+//	//Pump_init();
+//	OutIn_Motor_Speed_Set(nFreq);
+//}
 
 
 
@@ -1260,44 +1536,44 @@ void Driver_Debug(UINT8 nIndex)
 		case 4:  // fix motor
 		{
 			printf("Fix Motor start\r\n");
-			for(i = 0; i < 10; i++)
-			{
-				Fix_Motor_Enable();
-				Fix_Motor_ClockWise();
-				IT_SYS_DlyMs(200);
-				Fix_Motor_AntiClockWise();
-				Fix_Motor_Disable();
-				IT_SYS_DlyMs(200);
-			}
-			Fix_Motor_AntiClockWise();
-			Fix_Motor_Disable();
-			for(i = 0; i < 2000; i++)
-			{
-				Fix_Motor_Run(300, 600);
-			}
-			printf("Fix Motor end\r\n");
+//			for(i = 0; i < 10; i++)
+//			{
+//				Fix_Motor_Enable();
+//				Fix_Motor_ClockWise();
+//				IT_SYS_DlyMs(200);
+//				Fix_Motor_AntiClockWise();
+//				Fix_Motor_Disable();
+//				IT_SYS_DlyMs(200);
+//			}
+//			Fix_Motor_AntiClockWise();
+//			Fix_Motor_Disable();
+//			for(i = 0; i < 2000; i++)
+//			{
+//				Fix_Motor_Run(300, 600);
+//			}
+//			printf("Fix Motor end\r\n");
 			
 		}
 		break;
 		case 5: // out in motor
 		{
 			printf("OutIn start\r\n");
-			for(i = 0; i < 10; i++)
-			{
-				OutIn_Motor_Enable();
-				OutIn_Motor_ClockWise();
-				IT_SYS_DlyMs(200);
-				OutIn_Motor_Disable();
-				OutIn_Motor_AntiClockWise();
-				IT_SYS_DlyMs(200);
-			}
-			OutIn_Motor_Disable();
-			OutIn_Motor_ClockWise();
-			for(i = 0; i < 2000; i++)
-			{
-				OutIn_Motor_Run(300, 500);
-			}
-			printf("OutIn end\r\n");
+//			for(i = 0; i < 10; i++)
+//			{
+//				OutIn_Motor_Enable();
+//				OutIn_Motor_ClockWise();
+//				IT_SYS_DlyMs(200);
+//				OutIn_Motor_Disable();
+//				OutIn_Motor_AntiClockWise();
+//				IT_SYS_DlyMs(200);
+//			}
+//			OutIn_Motor_Disable();
+//			OutIn_Motor_ClockWise();
+//			for(i = 0; i < 2000; i++)
+//			{
+//				OutIn_Motor_Run(300, 500);
+//			}
+//			printf("OutIn end\r\n");
 		}
 		break;
 		case 6: // elec
@@ -1307,47 +1583,47 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 7:
 		{
-			printf("start\r\n");
-			OutIn_Motor_Enable();
-			for(i = 0; i < 5; i++)
-			{
-				OutIn_Motor_Exec(e_Dir_Pos,  OUTIN_MOTOR_PWM_LEVEL_BEST);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				OutIn_Motor_Exec(e_Dir_Neg,  OUTIN_MOTOR_PWM_LEVEL_BEST);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-			}
-			OutIn_Motor_Exec(e_Dir_Neg,  OUTIN_MOTOR_PWM_LEVEL_CLOSE);
-//			printf("2\r\n");
-			IT_SYS_DlyMs(500);
-			IT_SYS_DlyMs(500);
+//			printf("start\r\n");
+//			OutIn_Motor_Enable();
+//			for(i = 0; i < 5; i++)
+//			{
+//				OutIn_Motor_Exec(e_Dir_Pos,  OUTIN_MOTOR_PWM_LEVEL_BEST);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				OutIn_Motor_Exec(e_Dir_Neg,  OUTIN_MOTOR_PWM_LEVEL_BEST);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//			}
+//			OutIn_Motor_Exec(e_Dir_Neg,  OUTIN_MOTOR_PWM_LEVEL_CLOSE);
+////			printf("2\r\n");
 //			IT_SYS_DlyMs(500);
+//			IT_SYS_DlyMs(500);
+////			IT_SYS_DlyMs(500);
 //			printf("3\r\n");
 //			for(i = 0; i < 6000; i++)
 //			{
 //				OutIn_Motor_Run(70, 70);
 //			}
-			OutIn_Motor_Disable();
-			printf("end\r\n");
+//			OutIn_Motor_Disable();
+//			printf("end\r\n");
 
 		}
 		break;
 		case 8:
 		{
 			//MT_X_Home(e_NormalCheck_Call); 
-			
-			nCurTime = IT_SYS_GetTicks();
-			nTempTime = nCurTime;
-			OutIn_Motor_Enable();
-			OutIn_Motor_Exec(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST);
-			while(nCurTime <= nTempTime + 50)
-			{
-				IT_SYS_DlyMs(1);
-				nCurTime = IT_SYS_GetTicks();
-			}
-			printf("end: sTime=%d, eTime=%d\r\n", (int)nTempTime, (int)nCurTime);
-			OutIn_Motor_Exec(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE);			
+//			
+//			nCurTime = IT_SYS_GetTicks();
+//			nTempTime = nCurTime;
+//			OutIn_Motor_Enable();
+//			OutIn_Motor_Exec(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST);
+//			while(nCurTime <= nTempTime + 50)
+//			{
+//				IT_SYS_DlyMs(1);
+//				nCurTime = IT_SYS_GetTicks();
+//			}
+//			printf("end: sTime=%d, eTime=%d\r\n", (int)nTempTime, (int)nCurTime);
+//			OutIn_Motor_Exec(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE);			
 		}
 		break;
 		case 9:
