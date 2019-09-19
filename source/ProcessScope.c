@@ -2027,7 +2027,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 
 UINT8 CRP_Test_Exec(eTestMode eMode)
 {
-	UINT16 i;
+	UINT16 i, j;
 	UINT32 buffer[CRP_CALIBRATE_DATA_NUM] = {0};
 	printf("CRP_Test_Exec Start\r\n");
 	// check postion 
