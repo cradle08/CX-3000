@@ -7,8 +7,14 @@
 #include <stdio.h>        // for "printf" debug
 
 
+#define PRESS_SENSOR_ADC_TYPE				0
+#if PRESS_SENSOR_ADC_TYPE
+	#define ADC3_CHECK_NUM			7
+#else
+	#define ADC3_CHECK_NUM			6
+#endif
+
 #define ADC2_CHECK_NUM			2
-#define ADC3_CHECK_NUM			5
 #define ADC3_INIT_WITH_DMA		0
 
 extern IO_ UINT8 g_Elec_Status;
@@ -137,7 +143,6 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 //	#define OUTIN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOD
 //#endif
 
-
 // OC for fix motor(cx2000) | OC for cang2(cx3000), PG3
 #define FIX_OC_CLK_PORT						GPIOG
 #define FIX_OC_CLK_PIN						GPIO_Pin_3
@@ -153,21 +158,49 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define IN_OC_CLK_PIN						GPIO_Pin_5
 #define IN_OC_CLK_SRC						RCC_AHB1Periph_GPIOG
 
-// Digital Register(SPI2), PI2_CLK,PI3_MOSI,PI0_CS
-#define D_REGISTER_CLK_PORT					GPIOI
-#define D_REGISTER_CLK_PIN					GPIO_Pin_2
-#define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOC
+#if 1
+	//cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS
+	#define D_REGISTER_CLK_PORT					GPIOI
+	#define D_REGISTER_CLK_PIN					GPIO_Pin_1
+	#define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOI
+	#define D_REGISTER_CLK_AF_SRC 				GPIO_PinSource1
 
-#define D_REGISTER_MOSI_PORT				GPIOI
-#define D_REGISTER_MOSI_PIN					GPIO_Pin_3
-#define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOC
+	#define D_REGISTER_MOSI_PORT				GPIOI
+	#define D_REGISTER_MOSI_PIN					GPIO_Pin_3
+	#define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOI
+	#define D_REGISTER_MOSI_AF_SRC 				GPIO_PinSource3
 
-#define D_REGISTER_CS_PORT					GPIOI
-#define D_REGISTER_CS_PIN					GPIO_Pin_0
-#define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOC
-#define D_REGISTER_SPI						SPI3
-#define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI2
-//#define D_REGISTER_CLK_SPI_PINSRC 
+	#define D_REGISTER_CS_PORT					GPIOI
+	#define D_REGISTER_CS_PIN					GPIO_Pin_0
+	#define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOI
+	#define D_REGISTER_CS_AF_SRC 				GPIO_PinSource0
+
+	#define D_REGISTER_SPI						SPI2
+	#define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI2
+	#define D_REGISTER_SPI_AF 					GPIO_AF_SPI2
+#else
+	//cx2000 Digital Register(SPI3), 
+	// SPI3_CLK_PC10,SPI3_MOSI_PC12,SPI3_CS_PC13
+	#define D_REGISTER_CLK_PORT					GPIOC
+	#define D_REGISTER_CLK_PIN					GPIO_Pin_10
+	#define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOC
+	#define D_REGISTER_CLK_AF_SRC 				GPIO_PinSource10
+
+	#define D_REGISTER_MOSI_PORT				GPIOC
+	#define D_REGISTER_MOSI_PIN					GPIO_Pin_12
+	#define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOC
+	#define D_REGISTER_MOSI_AF_SRC 				GPIO_PinSource12
+
+	#define D_REGISTER_CS_PORT					GPIOC
+	#define D_REGISTER_CS_PIN					GPIO_Pin_13
+	#define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOC
+	#define D_REGISTER_CS_AF_SRC 				GPIO_PinSource13
+
+	#define D_REGISTER_SPI						SPI3
+	#define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI3
+	#define D_REGISTER_SPI_AF 					GPIO_AF_SPI3
+
+#endif
 
 // LED1-8, PI4--PI11
 // LED1
@@ -209,9 +242,78 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 // LED Cur adjust, DAC, PA4
 #define LED_CUR_ADJUST_PORT					GPIOA
 #define LED_CUR_ADJUST_PIN					GPIO_Pin_4
-#define LED_CUR_ADJUST_SRC					RCC_AHB1Periph_GPIOB
+#define LED_CUR_ADJUST_SRC					RCC_AHB1Periph_GPIOA  
+#define LED_CUR_ADJUST_DAC_CH				DAC_Channel_1
+// LED Cur ADC, PF6_ADC3_CH4
+#define LED_CUR_ADC_PORT					GPIOF
+#define LED_CUR_ADC_PIN						GPIO_Pin_6
+#define LED_CUR_ADC_SRC						RCC_AHB1Periph_GPIOF
+#define LED_CUR_ADC_CHANNEL					ADC_Channel_4
+// LED Select group, PH13-A0, PH14-A1, PH15-A2
+#define LED_SELECT_A0_PORT					GPIOH
+#define LED_SELECT_A0_PIN					GPIO_Pin_13
+#define LED_SELECT_A0_SRC					RCC_AHB1Periph_GPIOH
+// LED Select group, PH14-A1
+#define LED_SELECT_A1_PORT					GPIOH
+#define LED_SELECT_A1_PIN					GPIO_Pin_14
+#define LED_SELECT_A1_SRC					RCC_AHB1Periph_GPIOH
+// LED Select group, PH15-A2
+#define LED_SELECT_A2_PORT					GPIOH
+#define LED_SELECT_A2_PIN					GPIO_Pin_15
+#define LED_SELECT_A2_SRC					RCC_AHB1Periph_GPIOH
 
-// press check, I2C
+
+// XK ADC, PC3_ADC3_IN13	
+#define XK_ADC_PORT							GPIOC
+#define XK_ADC_PIN							GPIO_Pin_3
+#define XK_ADC_SRC							RCC_AHB1Periph_GPIOC
+#define XK_ADC_CHANNEL						ADC_Channel_13
+
+//  PF9_ADC3_IN7, 56V_CUR
+#define CUR_56V_ADC_PORT					GPIOF
+#define CUR_56V_ADC_PIN						GPIO_Pin_9
+#define CUR_56V_ADC_SRC						RCC_AHB1Periph_GPIOF
+#define CUR_56V_ADC_CHANNEL					ADC_Channel_7
+
+// PC0_ADC123_IN10, Temperature
+#define TEMP_ADC_PORT						GPIOC
+#define TEMP_ADC_PIN						GPIO_Pin_0
+#define TEMP_ADC_SRC						RCC_AHB1Periph_GPIOC
+#define TEMP_ADC_CHANNEL					ADC_Channel_10
+
+// PC2_ADC123_IN12 , Press
+
+#if PRESS_SENSOR_ADC_TYPE
+	#define PRESS_ADC_PORT					GPIOC
+	#define PRESS_ADC_PIN					GPIO_Pin_2
+	#define PRESS_ADC_SRC					RCC_AHB1Periph_GPIOC
+	#define PRESS_ADC_CHANNEL				ADC_Channel_12
+#endif
+
+// Optical path Signal acquisiton ADC,   SIG1 ==> PF7_ADC3_IN5 ,CRP
+#define SIG1_ADC_PORT						GPIOF
+#define SIG1_ADC_PIN						GPIO_Pin_7
+#define SIG1_ADC_SRC						RCC_AHB1Periph_GPIOF
+#define SIG1_ADC_CHANNEL					ADC_Channel_5
+
+// Optical path Signal acquisiton ADC,   SIG2 ==> PA0_ADC3_IN0 ,HGB
+#define SIG2_ADC_PORT						GPIOA
+#define SIG2_ADC_PIN						GPIO_Pin_0
+#define SIG2_ADC_SRC						RCC_AHB1Periph_GPIOA
+#define SIG2_ADC_CHANNEL					ADC_Channel_0
+
+
+// press check, PH4_SCl, PH5_SDA I2C, I2C
+// PH4
+#define PRESS_I2C_SCL_PORT					GPIOH
+#define PRESS_I2C_SCL_PIN					GPIO_Pin_4
+#define PRESS_I2C_SCL_SCLCLK_SRC			RCC_AHB1Periph_GPIOH
+// PH5
+#define PRESS_I2C_SDA_PORT					GPIOH
+#define PRESS_I2C_SDA_PIN					GPIO_Pin_5
+#define PRESS_I2C_SDA_SCLCLK_SRC			RCC_AHB1Periph_GPIOH
+
+
 
 
 #define FIX_MOTOR_PULSE_UP_TIME				155
@@ -266,7 +368,6 @@ UINT32  HW_Get_ADC_CRP(void);
 UINT16  Get_HGB_Value(void);
 UINT32  Get_CRP_Value(void);
 
-
 void Reset_Elec_Status(void);
 void Set_Elec_Status(void);
 UINT8 Get_Elec_Status(void);
@@ -295,9 +396,13 @@ UINT8 Get_Out_OC_Status(void);
 UINT8 Get_In_OC_Status(void);
 
 void LED_Init(void);
-void LEC_Cur_Adjust_DAC_Init(void);
 void LED_Cur_Switch(UINT8 nOpt);
+void LED_Cur_DAC_Init(void);
+void LED_Cur_DAC_Set(UINT16 nVal);
+void LED_Cur_Auto_Adjust(void);
+void LED_Switch(UINT8 nOpt);
 void LED_Exec(UINT8 nIndex, UINT8 nOpt);
+
 
 void DResistor_Init(void);
 void DResistor_Set(UINT8 nIndex, UINT8 nVal);

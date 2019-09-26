@@ -67,8 +67,6 @@ void Delay_US(UINT32 us)
 }
 
 
-
-
 void ADC1_DMA_Config()
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -326,44 +324,64 @@ u16 Get_Adc(UINT8 nCh, UINT8 nTime)
 void ADC3_GPIO_Init(void){
 	
 	GPIO_InitTypeDef GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC|RCC_AHB1Periph_GPIOF, ENABLE);
 	
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_0;//GPIO_Pin_5, PF6_ADC3_CH5, LED_CUR
+	#if PRESS_SENSOR_ADC_TYPE
+		RCC_AHB1PeriphClockCmd(TEMP_ADC_SRC|CUR_56V_ADC_SRC|XK_ADC_SRC| \
+				LED_CUR_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC|PRESS_ADC_SRC, ENABLE);
+	#else
+		RCC_AHB1PeriphClockCmd(TEMP_ADC_SRC|CUR_56V_ADC_SRC|XK_ADC_SRC| \
+				LED_CUR_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC, ENABLE);
+	#endif
+	
+	GPIO_InitStructure.GPIO_Pin		= LED_CUR_ADC_PIN;  // PF6_ADC3_CH4, LED_CUR
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOF, &GPIO_InitStructure);
+	GPIO_Init(LED_CUR_ADC_PORT, &GPIO_InitStructure);
 	
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_3;//GPIO_Pin_3, PC3_ADC3_IN13, XK
+	GPIO_InitStructure.GPIO_Pin		= XK_ADC_PIN;		// PC3_ADC3_IN13, XK
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_Init(XK_ADC_PORT, &GPIO_InitStructure);
 	
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_3;//GPIO_Pin_9, PF9_ADC3_IN7, 56V_CUR
+	GPIO_InitStructure.GPIO_Pin		= CUR_56V_ADC_PIN;	// PF9_ADC3_IN7, 56V_CUR
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOF, &GPIO_InitStructure);
+	GPIO_Init(CUR_56V_ADC_PORT, &GPIO_InitStructure);
 	
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_0;//GPIO_Pin_0, PC0_ADC123_IN10, Temperature
+	GPIO_InitStructure.GPIO_Pin		= TEMP_ADC_PIN;		// PC0_ADC123_IN10, Temperature
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_Init(TEMP_ADC_PORT, &GPIO_InitStructure);
 	
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_0;//GPIO_Pin_0, PA0_ADC3_IN0, CRP or HGB
+	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_0;		// PA0_ADC3_IN0, HGB
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_2; // PC2_ADC123_IN12 , Press
+							
+	GPIO_InitStructure.GPIO_Pin		= SIG1_ADC_PIN;		// SIG1 ==> PF7_ADC3_IN5 ,CRP
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-		
+	GPIO_Init(SIG1_ADC_PORT, &GPIO_InitStructure);
+	
+	GPIO_InitStructure.GPIO_Pin		= SIG2_ADC_PIN;		// SIG2 ==> PA0_ADC3_IN0 ,HGB
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(SIG2_ADC_PORT, &GPIO_InitStructure);
+	
+	#if PRESS_SENSOR_ADC_TYPE
+		GPIO_InitStructure.GPIO_Pin		= PRESS_ADC_PIN; // PC2_ADC123_IN12 , Press
+		GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+		GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+		GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+		GPIO_Init(PRESS_ADC_PORT, &GPIO_InitStructure);
+	#endif	
 }
 
 #if ADC3_INIT_WITH_DMA
@@ -445,18 +463,17 @@ void ADC3_GPIO_Init(void){
 		//ADC_Cmd(ADC3, ENABLE);
 		
 		ADC3_DMA_Config();
-		//ADC_DMACmd(ADC3, ENABLE);
-		// 
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_3Cycles);  // CRP HGB
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_5, 2, ADC_SampleTime_3Cycles);  // LED cur
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_7, 3, ADC_SampleTime_3Cycles);  // 56v cur
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_10, 4, ADC_SampleTime_3Cycles); // temperature
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 5, ADC_SampleTime_3Cycles); // press
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_13, 6, ADC_SampleTime_3Cycles); // XK
-
-
-
-
+		//ADC_DMACmd(ADC3, ENABLE);		// 
+		
+		ADC_RegularChannelConfig(ADC3, LED_CUR_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles);  // LED cur
+		ADC_RegularChannelConfig(ADC3, CUR_56V_ADC_CHANNEL, 2, ADC_SampleTime_3Cycles);  // 56v cur
+		ADC_RegularChannelConfig(ADC3, TEMP_ADC_CHANNEL, 3, ADC_SampleTime_3Cycles);     // temperature
+		ADC_RegularChannelConfig(ADC3, XK_ADC_CHANNEL, 4, ADC_SampleTime_3Cycles); 		 // XK
+		ADC_RegularChannelConfig(ADC3, SIG1_ADC_CHANNEL, 5, ADC_SampleTime_3Cycles);  	 // CRP
+		ADC_RegularChannelConfig(ADC3, SIG2_ADC_CHANNEL, 6, ADC_SampleTime_3Cycles);  	 // HGB
+		#if PRESS_SENSOR_ADC_TYPE
+			ADC_RegularChannelConfig(ADC3, PRESS_ADC_CHANNEL, 7, ADC_SampleTime_3Cycles);	 // press
+		#endif
 
 		ADC_DMARequestAfterLastTransferCmd(ADC3, ENABLE); 
 		ADC_DMACmd(ADC3, ENABLE);
@@ -495,12 +512,17 @@ void ADC3_GPIO_Init(void){
 		ADC_Init(ADC3, &ADC_InitStructure);	
 		ADC_Cmd(ADC3, ENABLE);
 		
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_3Cycles);  // CRP HGB
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_5, 2, ADC_SampleTime_3Cycles);  // LED cur
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_7, 3, ADC_SampleTime_3Cycles);  // 56v cur
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_10, 4, ADC_SampleTime_3Cycles); // temperature
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 5, ADC_SampleTime_3Cycles); // press
-//		ADC_RegularChannelConfig(ADC3, ADC_Channel_13, 6, ADC_SampleTime_3Cycles); // XK
+		
+//		ADC_RegularChannelConfig(ADC3, LED_CUR_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles);  // LED cur
+//		ADC_RegularChannelConfig(ADC3, CUR_56V_ADC_CHANNEL, 2, ADC_SampleTime_3Cycles);  // 56v cur
+//		ADC_RegularChannelConfig(ADC3, TEMP_ADC_CHANNEL, 3, ADC_SampleTime_3Cycles);     // temperature
+//		ADC_RegularChannelConfig(ADC3, XK_ADC_CHANNEL, 4, ADC_SampleTime_3Cycles); 		 // XK
+//		ADC_RegularChannelConfig(ADC3, SIG1_ADC_CHANNEL, 5, ADC_SampleTime_3Cycles);  	 // CRP
+//		ADC_RegularChannelConfig(ADC3, SIG2_ADC_CHANNEL, 6, ADC_SampleTime_3Cycles);  	 // HGB
+//		#if PRESS_SENSOR_ADC_TYPE
+//			ADC_RegularChannelConfig(ADC3, PRESS_ADC_CHANNEL, 7, ADC_SampleTime_3Cycles);	 // press
+//		#endif
+
 
 		//ADC2_DMA_Config();
 		//ADC_DMACmd(ADC3, ENABLE);
@@ -524,16 +546,21 @@ UINT16 Get_Press_ADC(void)
 #if ADC3_INIT_WITH_DMA
 	nVal = g_ADC3_Value[0];
 #else
-	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
-	ADC_Cmd(ADC3,ENABLE);
-	for(i = 0; i < 5; i++)
-	{
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 1, ADC_SampleTime_3Cycles );
-		ADC_SoftwareStartConv(ADC3);		
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nVal += ADC_GetConversionValue(ADC3);	
-	}
-	nVal /= 5;
+	#if PRESS_SENSOR_ADC_TYPE
+		ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
+		ADC_Cmd(ADC3,ENABLE);
+		for(i = 0; i < 5; i++)
+		{
+			ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 1, ADC_SampleTime_3Cycles );
+			ADC_SoftwareStartConv(ADC3);		
+			while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+			nVal += ADC_GetConversionValue(ADC3);	
+		}
+		nVal /= 5;
+	#else
+		// IIC API ...
+		
+	#endif
 #endif
 	return nVal;
 }
@@ -550,7 +577,7 @@ UINT16 Get_XK_ADC(void)
 	ADC_Cmd(ADC3,ENABLE);
 	for(i = 0; i < 5; i++)
 	{
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_13, 1, ADC_SampleTime_3Cycles ); 
+		ADC_RegularChannelConfig(ADC3, XK_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles ); 
 		ADC_SoftwareStartConv(ADC3);		
 		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
 		nVal += ADC_GetConversionValue(ADC3);	
@@ -572,7 +599,7 @@ UINT16 Get_56V_Cur_ADC(void)
 	ADC_Cmd(ADC3,ENABLE);
 	for(i = 0; i < 5; i++)
 	{
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_7, 1, ADC_SampleTime_3Cycles ); 
+		ADC_RegularChannelConfig(ADC3, CUR_56V_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles ); 
 		ADC_SoftwareStartConv(ADC3);		
 		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
 		nVal += ADC_GetConversionValue(ADC3);	
@@ -594,7 +621,7 @@ UINT16 Get_LED_Cur_ADC(void)
 	ADC_Cmd(ADC3,ENABLE);
 	for(i = 0; i < 5; i++)
 	{
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_5, 1, ADC_SampleTime_3Cycles ); 
+		ADC_RegularChannelConfig(ADC3, LED_CUR_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles ); 
 		ADC_SoftwareStartConv(ADC3);		
 		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
 		nVal += ADC_GetConversionValue(ADC3);	
@@ -613,7 +640,7 @@ UINT32 HW_Get_ADC_HGB(void)
 #if USE_STM32F407_ONLY
 	for(i = 0; i < 30; i++)
 	{
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_480Cycles ); 
+		ADC_RegularChannelConfig(ADC3, SIG2_ADC_CHANNEL, 1, ADC_SampleTime_480Cycles ); 
 		ADC_SoftwareStartConv(ADC3);	
 		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
 		nRet += ADC_GetConversionValue(ADC3);	
@@ -635,7 +662,7 @@ UINT32  HW_Get_ADC_CRP(void)
 #if USE_STM32F407_ONLY
 	for(i = 0; i < 30; i++)
 	{
-		ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 1, ADC_SampleTime_480Cycles ); 
+		ADC_RegularChannelConfig(ADC3, SIG1_ADC_CHANNEL, 1, ADC_SampleTime_480Cycles ); 
 		ADC_SoftwareStartConv(ADC3);		
 		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
 		nRet = ADC_GetConversionValue(ADC3);	
@@ -1005,13 +1032,48 @@ void LED_Init(void)
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_Init(LED_CUR_SWITCH_PORT, &GPIO_InitStructure);
 	// LED Cur Adjust, DAC
-	LEC_Cur_Adjust_DAC_Init();
+	LED_Cur_Adjust_DAC_Init();
 	
 }
 
-void LEC_Cur_Adjust_DAC_Init(void)
+void LED_Cur_DAC_Init(void)
 {
-	//
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	DAC_InitTypeDef DAC_InitType;
+	
+	RCC_AHB1PeriphClockCmd(LED_CUR_ADJUST_SRC, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
+	   
+	GPIO_InitStructure.GPIO_Pin = LED_CUR_ADJUST_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	GPIO_Init(LED_CUR_ADJUST_PORT, &GPIO_InitStructure);
+
+	DAC_InitType.DAC_Trigger=DAC_Trigger_None;
+	DAC_InitType.DAC_WaveGeneration=DAC_WaveGeneration_None;
+	DAC_InitType.DAC_LFSRUnmask_TriangleAmplitude=DAC_LFSRUnmask_Bit0;
+	DAC_InitType.DAC_OutputBuffer=DAC_OutputBuffer_Disable ;
+	DAC_Init(LED_CUR_ADJUST_DAC_CH,&DAC_InitType);	 
+	DAC_Cmd(LED_CUR_ADJUST_DAC_CH, ENABLE);  
+	DAC_SetChannel1Data(DAC_Align_12b_R, 0);  
+}
+
+void LED_Cur_DAC_Set(UINT16 nVal)
+{
+	UINT16 nTemp;
+	nTemp = nVal*4095 / 3300;
+	DAC_SetChannel1Data(DAC_Align_12b_R, nTemp);
+}
+
+//
+void LED_Cur_Auto_Adjust(void)
+{
+	UINT16 nVal;
+	LED_Cur_Switch(EN_OPEN);
+	DAC_SetChannel1Data(DAC_Align_12b_R, 0);  
+	nVal = Get_LED_Cur_ADC();
+	//////
+	
 
 }
 
@@ -1394,31 +1456,37 @@ void DRegister_SPI_Init(void)
 		
 	  RCC_AHB1PeriphClockCmd(D_REGISTER_CLK_SRC|D_REGISTER_MOSI_SRC|D_REGISTER_CS_SRC, ENABLE);
 	  RCC_APB1PeriphClockCmd(D_REGISTER_SPI_SRC, ENABLE); 
+	
 		// clk
-	  GPIO_InitStructure.GPIO_Pin = D_REGISTER_CLK_PIN; 
-	  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	  GPIO_InitStructure.GPIO_Pin	 = D_REGISTER_CLK_PIN; 
+	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
+	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
 	  GPIO_Init(D_REGISTER_CLK_PORT, &GPIO_InitStructure);
 	  // mosi
-	  GPIO_InitStructure.GPIO_Pin = D_REGISTER_MOSI_PIN; 
-	  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	  GPIO_InitStructure.GPIO_Pin	 = D_REGISTER_MOSI_PIN; 
+	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
+	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
 	  GPIO_Init(D_REGISTER_MOSI_PORT, &GPIO_InitStructure);
 	  // cs
-	  GPIO_InitStructure.GPIO_Pin = D_REGISTER_CS_PIN; 
-	  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	  GPIO_InitStructure.GPIO_Pin	 = D_REGISTER_CS_PIN; 
+	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
+	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
 	  GPIO_Init(D_REGISTER_CS_PORT, &GPIO_InitStructure);
 	
-	  //GPIO_PinAFConfig(D_REGISTER_CLK_PORT,GPIO_PinSource3,GPIO_AF_SPI1); //PB3复用为 SPI1
-	  //GPIO_PinAFConfig(D_REGISTER_MOSI_PORT,GPIO_PinSource4,GPIO_AF_SPI1); //PB4复用为 SPI1
+	  //GPIO_PinAFConfig(D_REGISTER_CLK_PORT,GPIO_PinSource3,GPIO_AF_SPI1); 
+	  //GPIO_PinAFConfig(D_REGISTER_MOSI_PORT,GPIO_PinSource4,GPIO_AF_SPI1); 
+	  GPIO_PinAFConfig(D_REGISTER_CLK_PORT,  D_REGISTER_CLK_AF_SRC,	 D_REGISTER_SPI_AF); 
+	  GPIO_PinAFConfig(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_AF_SRC, D_REGISTER_SPI_AF);
+	  GPIO_PinAFConfig(D_REGISTER_CS_PORT,   D_REGISTER_CS_AF_SRC,   D_REGISTER_SPI_AF); 
  
-	  //这里只针对SPI口初始化
-	  RCC_APB1PeriphResetCmd(D_REGISTER_SPI_SRC,ENABLE);//复位SPI1
-	  RCC_APB1PeriphResetCmd(D_REGISTER_SPI_SRC,DISABLE);//停止复位SPI1
+	  RCC_APB1PeriphResetCmd(D_REGISTER_SPI_SRC,ENABLE);
+	  RCC_APB1PeriphResetCmd(D_REGISTER_SPI_SRC,DISABLE);
 
 	  SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx;  //设置SPI单向或者双向的数据模式:SPI设置为双线双向全双工
 	  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;		//设置SPI工作模式:设置为主SPI
@@ -1428,7 +1496,7 @@ void DRegister_SPI_Init(void)
 	  SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;		//NSS信号由硬件（NSS管脚）还是软件（使用SSI位）管理:内部NSS信号有SSI位控制
 	  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;		//定义波特率预分频的值:波特率预分频值为256
 	  SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	//指定数据传输从MSB位还是LSB位开始:数据传输从MSB位开始
-	  SPI_InitStructure.SPI_CRCPolynomial = 7;	//CRC值计算的多项式
+	  SPI_InitStructure.SPI_CRCPolynomial = 10;	//CRC值计算的多项式
 	  SPI_Init(D_REGISTER_SPI, &SPI_InitStructure);  //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
 	 
 	  SPI_Cmd(D_REGISTER_SPI, ENABLE); //使能SPI外设
@@ -1442,18 +1510,10 @@ void DResistor_Init(void)
 
 }
 
-void DRegister_SetSpeed(u8 SPI_BaudRatePrescaler)
-{
-//  assert_param(IS_SPI_BAUDRATE_PRESCALER(SPI_BaudRatePrescaler));//判断有效性
-	SPI1->CR1&=0XFFC7;//位3-5清零，用来设置波特率
-	SPI1->CR1|=SPI_BaudRatePrescaler;	//设置SPI1速度 
-	SPI_Cmd(SPI3,ENABLE); //使能SPI1
-} 
-
 void DRegister_Write(UINT16 nCmd)
 {		 			 
-    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET){}//等待发送区空  
-	SPI_I2S_SendData(SPI3, nCmd);	    
+    while (SPI_I2S_GetFlagStatus(D_REGISTER_SPI, SPI_I2S_FLAG_TXE) == RESET){}//等待发送区空  
+	SPI_I2S_SendData(D_REGISTER_SPI, nCmd);	    
 }
 
 void DResistor_Set(UINT8 nIndex, UINT8 nVal)
@@ -1462,7 +1522,6 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal)
 	
 	nCmd = ((1 << 15) | ( nVal << 7));
 	DRegister_Write(nCmd);
-
 }
 
 
@@ -1610,7 +1669,7 @@ void Driver_Debug(UINT8 nIndex)
 		}
 		break;
 		case 8:
-		{
+		{	
 			//MT_X_Home(e_NormalCheck_Call); 
 //			
 //			nCurTime = IT_SYS_GetTicks();
@@ -1626,7 +1685,7 @@ void Driver_Debug(UINT8 nIndex)
 //			OutIn_Motor_Exec(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE);			
 		}
 		break;
-		case 9:
+		case 9: // pump, wave
 		{
 			
 			//WBC_48V_Self_Check();
@@ -1653,7 +1712,6 @@ void Driver_Debug(UINT8 nIndex)
 			Valve_Liquid_Exec(EN_CLOSE);
 			TIM_SetCompare2(PUMP_PWM_TIM, PUMP_PWM_LEVEL_CLOSE);//Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
 
-			
 			//----------- out in
 //			OutIn_Motor_Enable();
 //			OutIn_Motor_AntiClockWise();
@@ -1669,6 +1727,22 @@ void Driver_Debug(UINT8 nIndex)
 			//Pump_Self_Check();
 			printf(" end\r\n");
 			//Get_Press_Value(5);
+		}
+		break;
+		case 10: // DAC
+		{
+			LED_Cur_Adjust_DAC_Init();
+			for(i = 0; i < 4095;)
+			{
+				//v = 3300*i/4095;
+				printf("i = %d, v = %d, V = %d\r\n", i, i*3300/4095, DAC_GetDataOutputValue(DAC_Channel_1));
+				DAC_SetChannel1Data(DAC_Align_12b_R, i);//LED_Cur_Adjust_Set(i);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				i += 100;
+			}
 		}
 		break;
 		default:break;	

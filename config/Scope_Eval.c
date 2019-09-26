@@ -236,7 +236,7 @@ void EVAL_Init(void)
 
     /*******************************************/
     // 4. initialize  com 
-	  USART_InitStructure.USART_BaudRate = 115200;
+	USART_InitStructure.USART_BaudRate = 115200;
     USART_InitStructure.USART_WordLength = USART_WordLength_8b;
     USART_InitStructure.USART_StopBits = USART_StopBits_1;
     USART_InitStructure.USART_Parity = USART_Parity_No;
@@ -283,9 +283,9 @@ void EVAL_Init(void)
 	// 9. the timer of the system messages
 	PF_InitTimer2();
 #if USE_STM32F407_ONLY
-	ADC1_Init();//APP_ADC_Init(EN_ADC1);
-	ADC2_Init();//APP_ADC_Init(EN_ADC2);
-	ADC3_Init();//APP_ADC_Init(EN_ADC3);
+//	ADC1_Init();//APP_ADC_Init(EN_ADC1);
+//	ADC2_Init();//APP_ADC_Init(EN_ADC2);
+//	ADC3_Init();//APP_ADC_Init(EN_ADC3);
 	
 //	Elec_Init();
 //	Beep_Init();

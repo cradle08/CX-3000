@@ -655,6 +655,12 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				Part_Test_Exec(*(pchCmdBuf + 8), nWord);			
 			}
 			break;
+			case CMD_CTRL_DEBUG_TEST:
+			{
+				printf("index: %d\r\n", *(pchCmdBuf +  8));
+				Driver_Debug(*(pchCmdBuf +  8));
+			}
+			break;
 					
 
             //*******************************************************
