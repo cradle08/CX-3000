@@ -875,7 +875,30 @@ void Pump_Exec(UINT8 nDir, UINT16 nFreq)
 	Pump_Speed_Set(nFreq);
 }
 
+// mixing motor
+void Mixing_Motor_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHB1PeriphClockCmd(MIXING_DIR_SRC, ENABLE);
+	//
+	GPIO_InitStructure.GPIO_Pin = MIXING_DIR_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(MIXING_DIR_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
+}
 
+void Mixing_Motor_Run(void)
+{
+	GPIO_SetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
+}
+
+void Mixing_Motor_Stop(void)
+{
+	GPIO_ResetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
+}
 
 // valve
 void Valve_Init(void)
@@ -932,31 +955,100 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt)
 
 }
 
+void Turn_Motor_Init(void)
+{
+
+}
+
+void Turn_Motor_Reset(void)
+{
+
+}
+
+void Turn_Motor_Select_LED(UINT8 nIndex)
+{
+	switch(nIndex)
+	{
+		case EN_LED1:
+		{
+		
+		}
+		break;
+		case EN_LED2:
+		{
+		
+		}
+		break;
+		case EN_LED3:
+		{
+		
+		}
+		break;
+		case EN_LED4:
+		{
+		
+		}
+		break;
+		case EN_LED5:
+		{
+		
+		}
+		break;
+		case EN_LED6:
+		{
+		
+		}
+		break;
+		case EN_LED7:
+		{
+		
+		}
+		break;
+		case EN_LED8:
+		{
+		
+		}
+		break;
+		default:break;
+	}
+}
+
 // OC for fix motor, OC for out_in motor
 void OC_Init(void)
 {
-  GPIO_InitTypeDef  GPIO_InitStructure;
-  RCC_AHB1PeriphClockCmd(FIX_OC_CLK_SRC|OUT_OC_CLK_SRC|IN_OC_CLK_SRC, ENABLE);
-  // fix oc
-  GPIO_InitStructure.GPIO_Pin = FIX_OC_CLK_PIN; 
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-  GPIO_Init(FIX_OC_CLK_PORT, &GPIO_InitStructure);
-  // oc for out
-  GPIO_InitStructure.GPIO_Pin = OUT_OC_CLK_PIN; 
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-  GPIO_Init(OUT_OC_CLK_PORT, &GPIO_InitStructure);
-  // oc for in
-  GPIO_InitStructure.GPIO_Pin = IN_OC_CLK_PIN; 
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-  GPIO_Init(IN_OC_CLK_PORT, &GPIO_InitStructure);
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHB1PeriphClockCmd(MICRO_OC_CLK_SRC|FIX_OC_CLK_SRC|OUT_OC_CLK_SRC|IN_OC_CLK_SRC, ENABLE);
+	// micro switch
+	GPIO_InitStructure.GPIO_Pin = MICRO_OC_CLK_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(MICRO_OC_CLK_PORT, &GPIO_InitStructure);
+	// fix oc
+	GPIO_InitStructure.GPIO_Pin = FIX_OC_CLK_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(FIX_OC_CLK_PORT, &GPIO_InitStructure);
+	// oc for out
+	GPIO_InitStructure.GPIO_Pin = OUT_OC_CLK_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(OUT_OC_CLK_PORT, &GPIO_InitStructure);
+	// oc for in
+	GPIO_InitStructure.GPIO_Pin = IN_OC_CLK_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(IN_OC_CLK_PORT, &GPIO_InitStructure);
 }
 
+UINT8 Get_Micro_OC_Status(void)
+{
+	return GPIO_ReadInputDataBit(MICRO_OC_CLK_PORT, MICRO_OC_CLK_PIN);
+}
+	
 UINT8 Get_Fix_OC_Status(void)
 {
 	return GPIO_ReadInputDataBit(FIX_OC_CLK_PORT, FIX_OC_CLK_PIN);
@@ -1032,7 +1124,7 @@ void LED_Init(void)
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_Init(LED_CUR_SWITCH_PORT, &GPIO_InitStructure);
 	// LED Cur Adjust, DAC
-	LED_Cur_Adjust_DAC_Init();
+	LED_Cur_DAC_Init();
 	
 }
 
@@ -1060,21 +1152,35 @@ void LED_Cur_DAC_Init(void)
 
 void LED_Cur_DAC_Set(UINT16 nVal)
 {
-	UINT16 nTemp;
-	nTemp = nVal*4095 / 3300;
-	DAC_SetChannel1Data(DAC_Align_12b_R, nTemp);
+//	UINT16 nTemp;
+//	nTemp = nVal*4095 / 3300;
+	DAC_SetChannel1Data(DAC_Align_12b_R, nVal);
 }
 
 //
-void LED_Cur_Auto_Adjust(void)
+void LED_Cur_Auto_Adjust(UINT16 nVal)
 {
-	UINT16 nVal;
+	UINT16 nTempADC, nTempV;
+	UINT32 nCurTick, nTempTick;
+	
 	LED_Cur_Switch(EN_OPEN);
 	DAC_SetChannel1Data(DAC_Align_12b_R, 0);  
-	nVal = Get_LED_Cur_ADC();
-	//////
 	
-
+	nCurTick = IT_SYS_GetTicks();
+	nTempTick = nCurTick;
+	nTempADC = Get_LED_Cur_ADC();
+	//nTempV = nTempADC*3300/4095;
+	while(nCurTick < nTempTick + 3000)
+	{
+		if(nTempADC - nVal > 3)
+		{
+			LED_Cur_DAC_Set(nTempADC - 3);
+		}else if(nTempADC - nVal < 3){
+			LED_Cur_DAC_Set(nTempADC + 3);
+		}else{
+			// not need to adjust
+		}
+	}
 }
 
 void LED_Cur_Switch(UINT8 nOpt)
@@ -1731,7 +1837,7 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 10: // DAC
 		{
-			LED_Cur_Adjust_DAC_Init();
+			LED_Cur_DAC_Init();
 			for(i = 0; i < 4095;)
 			{
 				//v = 3300*i/4095;

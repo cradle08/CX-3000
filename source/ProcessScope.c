@@ -78,10 +78,13 @@ UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF] = {0};
 
 IO_ UINT32  g_Udp_Count, g_Frame_Count, g_Send_Fail;
 IO_ UINT8 g_AirLight_Flag;
-const UINT8 softver_edtion[] = "0.0.7";
+const UINT8 softver_edtion[] = "0.0.1";
 
 IO_ struct CRP_DataType g_CRP_Data;
 
+//
+IO_ UINT8 g_Test_Mode = 0xFF;
+IO_ UINT8 g_Micro_Switch = 0xFF;
 
 #ifdef DEBUG_INFO_UP_LOAD
 //	_STA_ IO_ UINT16 XRAM_ pDInfo[DEBUG_INFO_UP_LEN];
@@ -500,6 +503,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 	// 1.
     if (PROTOCOL_HEAD_RECV_WR == chType) // cntrol cmd
     {
+		Micro_Switch_Check();
         switch (nCommand)
         {
             //
@@ -537,6 +541,13 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 					
 				Reset_Udp_Count(0);
 					
+			}
+			break;
+			case CMD_CTRL_TEST_MODE_SET:
+			{
+				g_Test_Mode = *(pchCmdBuf + 8);
+				printf("Test Mode = %d\r\n", g_Test_Mode);
+				LED_Mode_Set(g_Test_Mode);
 			}
 			break;
 			case CMD_CTRL_TEST_HGB:
@@ -1933,6 +1944,45 @@ void Send_Packets_Test(UINT16 Time, UINT32 Num)
 		}
 }
 
+//  CRP 
+void Micro_Switch_Check(void)
+{
+	if(EN_CRP_TEST ==g_Test_Mode)
+	{
+		if(g_Micro_Switch == EN_CLOSE) // had checked cuvette put in
+		{
+			CRP_Test_Exec(EN_CRP_CALIBRATE);
+		}
+	}
+}
+
+UINT8 LED_Mode_Set(UINT8 nIndex)
+{
+	switch(nIndex)
+	{
+		case EN_HGB_TEST:
+		{
+			g_Test_Mode = EN_HGB_TEST;
+			LED_Cur_Switch(EN_OPEN);
+			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
+			Turn_Motor_Select_LED(EN_LED1);
+			LED_Exec(EN_LED1, EN_OPEN);
+		}
+		break;
+		case EN_CRP_TEST:
+		{
+			g_Test_Mode = EN_CRP_TEST;
+			LED_Cur_Switch(EN_OPEN);
+			LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE);
+			Turn_Motor_Select_LED(EN_LED2);
+			LED_Exec(EN_LED2, EN_OPEN);
+			
+		}
+		break;
+		default:break;	
+	}
+}
+
 
 UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 {
@@ -1963,49 +2013,52 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 	UINT16 nVal = 0, i;
     UINT32 buffer[HGB_CALIBRATE_DATA_NUM] = {0};
 	
-	printf("HGB_Test_Exec Start\r\n");
 	// check postion 
-	if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
-    {
-		printf("Count Error: MT x not at home position\r\n");
-        collect_return_hdl(COLLECT_RET_FAIL_NONE_HOME);  /* 未执行进仓操作 */
-        return e_Feedback_Error;
-    }
-#if 0
-	// check HGB current
-	if(Get_V_HGB_LED() < HGB_MIX_THRESHOLD_V)
-	{
-		printf("Count Error: HGB V is wrong\r\n");
-        collect_return_hdl(COLLECT_RET_FAIL_HGB_V);  /* 未执行进仓操作 */
-        return e_Feedback_Error;
-	}
-#endif
+//	if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
+//    {
+//		printf("Count Error: MT x not at home position\r\n");
+//        collect_return_hdl(COLLECT_RET_FAIL_NONE_HOME);  /* 未执行进仓操作 */
+//        return e_Feedback_Error;
+//    }
+//#if 0
+//	// check HGB current
+//	if(Get_V_HGB_LED() < HGB_MIX_THRESHOLD_V)
+//	{
+//		printf("Count Error: HGB V is wrong\r\n");
+//        collect_return_hdl(COLLECT_RET_FAIL_HGB_V);  /* 未执行进仓操作 */
+//        return e_Feedback_Error;
+//	}
+//#endif
 	// open LED
-	HW_LED_On(LED_HGB_INDEX);
+//	HW_LED_On(LED_HGB_INDEX);
 	// enable LED ADC Channel
 //	HW_EN_ADC_HGB(e_True);
-	IT_SYS_DlyMs(100);
+//	IT_SYS_DlyMs(100);
 	//
 	if(eMode ==  EN_HGB_TEST)
 	{
 		// get HGB adc data
-		printf("HGB_Test_Exec:");
-#if USE_STM32F407_ONLY
+		printf("HGB_Test_Exec Start\r\n");
+#if SIMUATION_TEST
+		srand(IT_SYS_GetTicks());
+		nVal = rand()%5000;
+		printf("\r\nHGB_V: %d=0d\r\n", nVal);
+#else				
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
+			if(Get_In_OC_Status() == EN_OPEN){ // cuvette out
+				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+			}
 			buffer[i] = HW_Get_ADC_HGB();
 			printf("ADC=%d,", (int)buffer[i]);
 			IT_SYS_DlyMs(100);
 		}
-		//
-#else
-		srand(IT_SYS_GetTicks());
-		nVal = rand()%5000;
-		printf("\r\nHGB_V: %d=0d\r\n", nVal);
 #endif
 		// send HGB data
 		//Send_Data_HGB(CMD_DATA_TEST_HGB, &nVal, 1);
 		Send_Data_HGB(CMD_DATA_TEST_HGB, buffer, HGB_CALIBRATE_DATA_NUM);
+		collect_return_hdl(COLLECT_RET_SUCESS);
+		printf("HGB_Test_Exec End\r\n");
 
 	}else if(eMode == EN_HGB_CALIBRATE){
 		printf("HGB Calibrate\r\n");
@@ -2023,10 +2076,10 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 	// enable LED ADC Channel
 //	HW_EN_ADC_HGB(e_False);
 	// close LED
-	HW_LED_Off(LED_HGB_INDEX);
+//	HW_LED_Off(LED_HGB_INDEX);
 	// send finished flag
-	 collect_return_hdl(COLLECT_RET_SUCESS);
-	printf("HGB_Test_Exec End\r\n");
+//	 collect_return_hdl(COLLECT_RET_SUCESS);
+	
 	return 0;
 }
 
@@ -2035,39 +2088,56 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 {
 	UINT16 i, j;
 	UINT32 buffer[CRP_CALIBRATE_DATA_NUM] = {0};
-	printf("CRP_Test_Exec Start\r\n");
+	UINT32 nCurTicks, nTempTicks;
+//	printf("CRP_Test_Exec Start\r\n");
 	// check postion 
-    if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
-    {
-		printf("Count Error: MT x not at home position\r\n");
-        collect_return_hdl(COLLECT_RET_FAIL_NONE_HOME);  /* 未执行进仓操作 */
-        return e_Feedback_Error;
-    }
-#if 0
-	// check CRP current
-	if(Get_V_CRP_LED() < CRP_MIX_THRESHOLD_V)
-	{
-		printf("Count Error: CRP V is wrong\r\n");
-        collect_return_hdl(COLLECT_RET_FAIL_CRP_V);  /* 未执行进仓操作 */
-        return e_Feedback_Error;
-	}
-#endif
+//    if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
+//    {
+//		printf("Count Error: MT x not at home position\r\n");
+//        collect_return_hdl(COLLECT_RET_FAIL_NONE_HOME);  /* 未执行进仓操作 */
+//        return e_Feedback_Error;
+//    }
+//#if 0
+//	// check CRP current
+//	if(Get_V_CRP_LED() < CRP_MIX_THRESHOLD_V)
+//	{
+//		printf("Count Error: CRP V is wrong\r\n");
+//        collect_return_hdl(COLLECT_RET_FAIL_CRP_V);  /* 未执行进仓操作 */
+//        return e_Feedback_Error;
+//	}
+//#endif
 	// enable CRP adc channel
 	// open LED
-	HW_LED_On(LED_CRP_INDEX);
+//	HW_LED_On(LED_CRP_INDEX);
 	// enable LED ADC Channel
 //	HW_EN_ADC_CRP(e_True);
-	IT_SYS_DlyMs(50);
+//	IT_SYS_DlyMs(50);
 	// get CRP adc data
-	printf("CRP_Test_Exec:");
+//	printf("CRP_Test_Exec:");
 	
 	if(eMode ==  EN_CRP_TEST)
 	{
-#if USE_STM32F407_ONLY
+		printf("CRP_Test_Exec Start\r\n");
+#if SIMUATION_TEST
+		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
+		g_CRP_Data.eEnable = e_False;
+		srand(IT_SYS_GetTicks());
+		for(i = 0; i < 5; i++ )
+		{
+			for(j = 0; j < DATA_FRAME_NUM_4BYTE; j++)
+			{
+				g_CRP_Data.crpBuffer[j] = rand()%ADC_RESOLUTION_12;
+			}
+			Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_4BYTE);
+		}		
+#else
 		memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
 		g_CRP_Data.eEnable = e_True;
 		while(g_CRP_Data.nTotal < g_Record_Param.nTotal_Num)
 		{
+			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+			}
 			if(g_CRP_Data.eSend == e_True)
 			{
 				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 1) //crpBuffer[0-511]
@@ -2083,7 +2153,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 				g_CRP_Data.eSend = e_False;
 				printf("send end\r\n");
 			}
-			IT_SYS_DlyMs(2);
+			IT_SYS_DlyMs(5);
 		}
 		// send the last data
 		if(g_CRP_Data.nIndex != 0)
@@ -2096,42 +2166,50 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 				Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE], g_CRP_Data.nIndex);
 				printf("Send one Frame: ticks=%d,total=%d, index=%d", (int)IT_SYS_GetTicks(), g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 			}
-		}		
-#else
-		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
-		g_CRP_Data.eEnable = e_False;
-		srand(IT_SYS_GetTicks());
-		for(i = 0; i < 5; i++ )
-		{
-			for(j = 0; j < DATA_FRAME_NUM_4BYTE; j++)
-			{
-				g_CRP_Data.crpBuffer[j] = rand()%ADC_RESOLUTION_12;
-			}
-			Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_4BYTE);
 		}
 #endif	
 		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
-		g_CRP_Data.eEnable = e_False;		
-		
+		g_CRP_Data.eEnable = e_False;	
+		collect_return_hdl(COLLECT_RET_SUCESS);		
+		printf("CRP_Test_Exec End\r\n");
 	}else if(eMode == EN_CRP_CALIBRATE){
-		printf("CRP Calibrate\r\n");
+		printf("CRP Calibrate Start\r\n");
+		// check micro switch status
+		if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
+		{
+			collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+		}
+		// mixing
+		nCurTicks = IT_SYS_GetTicks();
+		nTempTicks = nCurTicks;
+		Mixing_Motor_Run();
+		while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 3s
+			IT_SYS_DlyMs(10);
+		}
+		Mixing_Motor_Stop();
+		// get data
+		IT_SYS_DlyMs(500);
 		for(i = 0; i < CRP_CALIBRATE_DATA_NUM; i++)
 		{
+			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+			}
 			buffer[i] = HW_Get_ADC_CRP();
 			printf("CRP ADC=%d, 3.3V=%d\r\n", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
 			IT_SYS_DlyMs(100);
 		}
 		// send CRP data
-		Send_Data_CRP(CMD_DATA_CALIBRATE_CRP, buffer, CRP_CALIBRATE_DATA_NUM);			
+		Send_Data_CRP(CMD_DATA_CALIBRATE_CRP, buffer, CRP_CALIBRATE_DATA_NUM);	
+		printf("CRP Calibrate End\r\n");
 	}
 	
 	// enable LED ADC Channel
 //	HW_EN_ADC_CRP(e_False);
 	// close LED
-	HW_LED_Off(LED_CRP_INDEX);
+//	HW_LED_Off(LED_CRP_INDEX);
 	// send finished flag
-	collect_return_hdl(COLLECT_RET_SUCESS);
-	printf("CRP_Test_Exec End\r\n");
+//	collect_return_hdl(COLLECT_RET_SUCESS);
+	//printf("CRP_Test_Exec End\r\n");
 	return 0;
 }
 

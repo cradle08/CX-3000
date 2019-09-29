@@ -34,7 +34,7 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 //----- control --------------------------------------
 #define    CMD_CTRL_VALVE         0x00000000
 #define    CMD_CTRL_PUMP          0x00000001
-#define    CMD_CTRL_LED          0x00000002
+#define    CMD_CTRL_LED           0x00000002
 
 #define    CMD_CTRL_MOT_IN        0x00000100
 #define    CMD_CTRL_MOT_OUT       0x00000101
@@ -60,6 +60,7 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_CTRL_PRESS_CONFIG  		0x00000600 
 #define    CMD_CTRL_PRESS_ADD     		0x00000601 
 #define    CMD_CTRL_CRP_PARAM_SET     	0x00000602
+#define    CMD_CTRL_TEST_MODE_SET     	0x00000603
 #define    CMD_CTRL_MOT_OUT_CHECK 		0x00000700 
 #define    CMD_CTRL_MOT_IN_CHECK  		0x00000701 // yaolan_20190220
 #define    CMD_CTRL_WBC_48V_CHECK 		0x00000702 
@@ -150,6 +151,7 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define  COLLECT_RET_FAIL_OTHER        	0x0050      /* 因其他异常导致采集失败 */
 #define  COLLECT_RET_FAIL_HGB_V			0x000b      // the HGB current v is low
 #define  COLLECT_RET_FAIL_CRP_V			0x000b      // the CRP current v is low
+#define  COLLECT_RET_FAIL_CUVETTE_OUT	0x000c      // cuvette out error when testing
 //#define  COLLECT_RET_SUCCESS_AIRLIGHT     0x1001      /* 密闭性好 */  // yaolan
 
 #define PUMP_SELF_CHECK_TIME           5000
@@ -312,6 +314,7 @@ UINT8 Data_Circle_Handle(eTestMode eMode);
 #define PRESS_PRECISION_FACTOR         (0xF4240)  //1000000
 
 #define PART_TEST_CHECK_DELAY			200 //ms
+#define MIXING_OVER_TIME				3000
 
 enum {
 	MOTO_OUT_IN_TEST    	= 0, // only test moto out and in  at the normal count presss
@@ -368,6 +371,7 @@ typedef enum {
 _EXT_ IO_ UINT32 g_Udp_Count, g_Frame_Count, g_Send_Fail;
 _EXT_ IO_ UINT8 g_AirLight_Flag;
 
+
 UINT32 Get_Udp_Count(void);
 void Reset_Udp_Count(UINT32 nVal);
 void Add_Udp_Count(void);
@@ -389,6 +393,16 @@ void Append_Debug_Info(INT8 *pInfo, INT8 *pTemp, UINT16 *pInfoLen);
 //-----------------------------------------------------------------------------------------
 
 // yaolan_start
+_EXT_ IO_ UINT8 g_Test_Mode;
+_EXT_ IO_ UINT8 g_Micro_Switch;
+
+//enum {
+//	TEST_MODE_HGB	= 0,
+//	TEST_MODE_CRP	= 1,
+//	TEST_MODE_END	= 2,
+//};
+void Micro_Switch_Check(void);
+UINT8 LED_Mode_Set(UINT8 nIndex);
 UINT8 HGB_Test_Exec(eTestMode eMode);
 UINT8 CRP_Test_Exec(eTestMode eMode);
 //UINT8 HGB_Calibrate_Exec(void);

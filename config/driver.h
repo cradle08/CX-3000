@@ -50,10 +50,15 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define PUMP_PWM_LEVEL_CLOSE				0
 #define PUMP_PWM_LEVEL_BEST					10000
 #define PUMP_PWM_LEVEL_HIGHEST				25000
-
+//
 #define PUMP_DIR_PORT						GPIOD
 #define PUMP_DIR_PIN						GPIO_Pin_4
 #define PUMP_DIR_SRC						RCC_AHB1Periph_GPIOD
+
+// mixing motor, PB10
+#define MIXING_DIR_PORT						GPIOB
+#define MIXING_DIR_PIN						GPIO_Pin_10
+#define MIXING_DIR_SRC						RCC_AHB1Periph_GPIOB
 
 //switch 1_PF11, 2_PH6
 #define VALVE_AIR_PORT						GPIOF
@@ -143,20 +148,26 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 //	#define OUTIN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOD
 //#endif
 
-// OC for fix motor(cx2000) | OC for cang2(cx3000), PG3
-#define FIX_OC_CLK_PORT						GPIOG
-#define FIX_OC_CLK_PIN						GPIO_Pin_3
-#define FIX_OC_CLK_SRC						RCC_AHB1Periph_GPIOG
 
-// OC for out motor(cx2000), | OC for cang2(cx3000), PG4
-#define OUT_OC_CLK_PORT						GPIOG
-#define OUT_OC_CLK_PIN						GPIO_Pin_4
-#define OUT_OC_CLK_SRC						RCC_AHB1Periph_GPIOG
+// OC for micro switch(cx3000), PD6
+#define MICRO_OC_CLK_PORT				GPIOD
+#define MICRO_OC_CLK_PIN				GPIO_Pin_6
+#define MICRO_OC_CLK_SRC				RCC_AHB1Periph_GPIOD
 
-// OC for in motor(cx2000), | OC for motor(cx3000), PG5
-#define IN_OC_CLK_PORT						GPIOG
-#define IN_OC_CLK_PIN						GPIO_Pin_5
-#define IN_OC_CLK_SRC						RCC_AHB1Periph_GPIOG
+// OC for turn motor to check LED, PB6?????
+#define FIX_OC_CLK_PORT						GPIOB
+#define FIX_OC_CLK_PIN						GPIO_Pin_6
+#define FIX_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
+
+// OC  for Out(cx3000), PB6
+#define OUT_OC_CLK_PORT						GPIOB
+#define OUT_OC_CLK_PIN						GPIO_Pin_6
+#define OUT_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
+
+// OC for in (cx3000), PB7
+#define IN_OC_CLK_PORT						GPIOB
+#define IN_OC_CLK_PIN						GPIO_Pin_7
+#define IN_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
 
 #if 1
 	//cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS
@@ -323,6 +334,9 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 
 #define	OUTIN_MOTOR_HOME_TIME				10000
 
+#define HGB_LED_CUR_ADJUST_VALUE					8
+#define CRP_LED_CUR_ADJUST_VALUE					8
+
 // for oc, 0-in, 1-lift
 enum{
 	EN_CLOSE	= 0,
@@ -384,23 +398,32 @@ void Pump_AntiClockWise(void);
 void Pump_ClockWise(void);
 void Pump_Exec(UINT8 nDir, UINT16 nFreq);
 
+// mixing motor
+void Mixing_Motor_Init(void);
+void Mixing_Motor_Run(void);
+void Mixing_Motor_Stop(void);
+
 void Valve_Init(void);
 void Valve_Air_Exec(UINT8 nOpt);
 void Valve_Liquid_Exec(UINT8 nOpt);
 void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 
+// turn motor 
+void Turn_Motor_Init(void);
+void Turn_Motor_Reset(void);
+void Turn_Motor_Select_LED(UINT8 nIndex);
 
 void OC_Init(void);
+UINT8 Get_Micro_OC_Status(void);
 UINT8 Get_Fix_OC_Status(void);
 UINT8 Get_Out_OC_Status(void);
 UINT8 Get_In_OC_Status(void);
 
 void LED_Init(void);
-void LED_Cur_Switch(UINT8 nOpt);
 void LED_Cur_DAC_Init(void);
-void LED_Cur_DAC_Set(UINT16 nVal);
-void LED_Cur_Auto_Adjust(void);
-void LED_Switch(UINT8 nOpt);
+void LED_Cur_Switch(UINT8 nOpt);
+void LED_Cur_DAC_Set(UINT16 nVal); // adc
+void LED_Cur_Auto_Adjust(UINT16 nVal); // adc
 void LED_Exec(UINT8 nIndex, UINT8 nOpt);
 
 
