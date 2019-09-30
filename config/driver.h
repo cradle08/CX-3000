@@ -149,15 +149,20 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 //#endif
 
 
-// OC for micro switch(cx3000), PD6
-#define MICRO_OC_CLK_PORT				GPIOD
-#define MICRO_OC_CLK_PIN				GPIO_Pin_6
-#define MICRO_OC_CLK_SRC				RCC_AHB1Periph_GPIOD
-
-// OC for turn motor to check LED, PB6?????
+// OC for turn motor reset, and than select LED, PB6?????
 #define FIX_OC_CLK_PORT						GPIOB
 #define FIX_OC_CLK_PIN						GPIO_Pin_6
 #define FIX_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
+
+// OC for micro switch(cx3000), PD6
+#define MICRO_OC_PORT					GPIOD
+#define MICRO_OC_PIN					GPIO_Pin_6
+#define MICRO_OC_SRC					RCC_AHB1Periph_GPIOD
+#define MICRO_OC_EXIT_PORT				EXTI_PortSourceGPIOD
+#define MICRO_OC_EXIT_PIN				EXTI_PinSource6
+#define MICRO_OC_EXIT_LINE				EXTI_Line6
+#define MICRO_OC_EXIT_FUNC				EXTI9_5_IRQHandler
+#define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
 
 // OC  for Out(cx3000), PB6
 #define OUT_OC_CLK_PORT						GPIOB
@@ -169,49 +174,55 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define IN_OC_CLK_PIN						GPIO_Pin_7
 #define IN_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
 
-#if 1
-	//cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS
-	#define D_REGISTER_CLK_PORT					GPIOI
-	#define D_REGISTER_CLK_PIN					GPIO_Pin_1
-	#define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOI
-	#define D_REGISTER_CLK_AF_SRC 				GPIO_PinSource1
 
-	#define D_REGISTER_MOSI_PORT				GPIOI
-	#define D_REGISTER_MOSI_PIN					GPIO_Pin_3
-	#define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOI
-	#define D_REGISTER_MOSI_AF_SRC 				GPIO_PinSource3
+//cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS
+#define D_REGISTER_CLK_PORT					GPIOI
+#define D_REGISTER_CLK_PIN					GPIO_Pin_1
+#define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOI
+#define D_REGISTER_CLK_AF_SRC 				GPIO_PinSource1
 
-	#define D_REGISTER_CS_PORT					GPIOI
-	#define D_REGISTER_CS_PIN					GPIO_Pin_0
-	#define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOI
-	#define D_REGISTER_CS_AF_SRC 				GPIO_PinSource0
+#define D_REGISTER_MOSI_PORT				GPIOI
+#define D_REGISTER_MOSI_PIN					GPIO_Pin_3
+#define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOI
+#define D_REGISTER_MOSI_AF_SRC 				GPIO_PinSource3
 
-	#define D_REGISTER_SPI						SPI2
-	#define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI2
-	#define D_REGISTER_SPI_AF 					GPIO_AF_SPI2
-#else
-	//cx2000 Digital Register(SPI3), 
-	// SPI3_CLK_PC10,SPI3_MOSI_PC12,SPI3_CS_PC13
-	#define D_REGISTER_CLK_PORT					GPIOC
-	#define D_REGISTER_CLK_PIN					GPIO_Pin_10
-	#define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOC
-	#define D_REGISTER_CLK_AF_SRC 				GPIO_PinSource10
+#define D_REGISTER_CS_PORT					GPIOI
+#define D_REGISTER_CS_PIN					GPIO_Pin_0
+#define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOI
+#define D_REGISTER_CS_AF_SRC 				GPIO_PinSource0
 
-	#define D_REGISTER_MOSI_PORT				GPIOC
-	#define D_REGISTER_MOSI_PIN					GPIO_Pin_12
-	#define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOC
-	#define D_REGISTER_MOSI_AF_SRC 				GPIO_PinSource12
+#define D_REGISTER_SPI						SPI2
+#define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI2
+#define D_REGISTER_SPI_AF 					GPIO_AF_SPI2
 
-	#define D_REGISTER_CS_PORT					GPIOC
-	#define D_REGISTER_CS_PIN					GPIO_Pin_13
-	#define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOC
-	#define D_REGISTER_CS_AF_SRC 				GPIO_PinSource13
+	
+// AD7799 for 24bits HGB and CRP data, SPI3_CLK_PC10, SPI3_MOSI_PB5(PC12),
+// SPI3_MISO_PB4(PC11)	SPI3_CS_PA15(PC13)
+#define ADC24BIT_CLK_PORT					GPIOC
+#define ADC24BIT_CLK_PIN					GPIO_Pin_10
+#define ADC24BIT_CLK_SRC					RCC_AHB1Periph_GPIOC
+#define ADC24BIT_CLK_AF_SRC 				GPIO_PinSource10
 
-	#define D_REGISTER_SPI						SPI3
-	#define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI3
-	#define D_REGISTER_SPI_AF 					GPIO_AF_SPI3
+#define ADC24BIT_MOSI_PORT					GPIOB
+#define ADC24BIT_MOSI_PIN					GPIO_Pin_5
+#define ADC24BIT_MOSI_SRC					RCC_AHB1Periph_GPIOB
+#define ADC24BIT_MOSI_AF_SRC 				GPIO_PinSource5
 
-#endif
+#define ADC24BIT_MISO_PORT					GPIOB
+#define ADC24BIT_MISO_PIN					GPIO_Pin_4
+#define ADC24BIT_MISO_SRC					RCC_AHB1Periph_GPIOB
+#define ADC24BIT_MISO_AF_SRC 				GPIO_PinSource4
+
+#define ADC24BIT_CS_PORT					GPIOA
+#define ADC24BIT_CS_PIN						GPIO_Pin_15
+#define ADC24BIT_CS_SRC						RCC_AHB1Periph_GPIOA
+#define ADC24BIT_CS_AF_SRC 					GPIO_PinSource15
+
+#define ADC24BIT_SPI						SPI3
+#define ADC24BIT_SPI_SRC 					RCC_APB1Periph_SPI3
+#define ADC24BIT_SPI_AF 					GPIO_AF_SPI3
+
+
 
 // LED1-8, PI4--PI11
 // LED1
@@ -413,12 +424,14 @@ void Turn_Motor_Init(void);
 void Turn_Motor_Reset(void);
 void Turn_Motor_Select_LED(UINT8 nIndex);
 
+//
 void OC_Init(void);
 UINT8 Get_Micro_OC_Status(void);
 UINT8 Get_Fix_OC_Status(void);
 UINT8 Get_Out_OC_Status(void);
 UINT8 Get_In_OC_Status(void);
 
+//
 void LED_Init(void);
 void LED_Cur_DAC_Init(void);
 void LED_Cur_Switch(UINT8 nOpt);
@@ -426,8 +439,14 @@ void LED_Cur_DAC_Set(UINT16 nVal); // adc
 void LED_Cur_Auto_Adjust(UINT16 nVal); // adc
 void LED_Exec(UINT8 nIndex, UINT8 nOpt);
 
+//
+void ADC24Bit_Init(void);
+void ADC24Bit_SPI_Init(void);
+UINT32 ADC24Bit_Get_ADC(void);
 
+// 
 void DResistor_Init(void);
+void DRegister_SPI_Init(void);
 void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 
 

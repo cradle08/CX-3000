@@ -137,7 +137,7 @@ void IRQ_SysTimer(void)
     return;
 }
 
-//
+#if !USE_STM32F407_ONLY
 void IRQ_MotorStatus(void)
 {
     IO_ UINT32 IRAM_  nStatus = 0;  
@@ -171,7 +171,7 @@ void IRQ_MotorStatus(void)
 	// 
 	return;
 }
-
+#endif
 
 //--------------------------------------------------
 // handling the exti-interrupts of the OC input ?

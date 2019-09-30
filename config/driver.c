@@ -104,7 +104,7 @@ void ADC1_DMA_Config()
 		
 	NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream0_IRQn; 
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02;   
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x02;                      
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x01;                      
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	//DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TCIF0);
@@ -252,7 +252,7 @@ void ADC2_DMA_Config()
 		
 	NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream3_IRQn; 
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02;   
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x02;                      
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x01;                      
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	//DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TCIF0);
@@ -724,6 +724,8 @@ UINT8 Get_Elec_Status(void)
 //	printf("Elec Exit Func triggle, v=%d, status=%d\r\n", ELEC_READ, Get_Elec_Status());
 //}
 
+
+
 void Elec_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -957,7 +959,40 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt)
 
 void Turn_Motor_Init(void)
 {
-
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHB1PeriphClockCmd(TURN_MOTOR_SRC_1|TURN_MOTOR_SRC_2|TURN_MOTOR_SRC_3|TURN_MOTOR_SRC_4, ENABLE);
+	// turn pin 1
+	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_1; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(TURN_MOTOR_PORT_1, &GPIO_InitStructure);
+	GPIO_ResetBits(TURN_MOTOR_PORT_1, TURN_MOTOR_PIN_1);
+	// turn pin 2
+	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_2; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(TURN_MOTOR_PORT_2, &GPIO_InitStructure);
+	GPIO_ResetBits(TURN_MOTOR_PORT_2, TURN_MOTOR_PIN_2);
+	// turn pin 3
+	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_3; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(TURN_MOTOR_PORT_3, &GPIO_InitStructure);
+	GPIO_ResetBits(TURN_MOTOR_PORT_3, TURN_MOTOR_PIN_3);
+	// turn pin 4
+	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_4; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(TURN_MOTOR_PORT_4, &GPIO_InitStructure);
+	GPIO_ResetBits(TURN_MOTOR_PORT_4, TURN_MOTOR_PIN_4);
 }
 
 void Turn_Motor_Reset(void)
@@ -1013,40 +1048,79 @@ void Turn_Motor_Select_LED(UINT8 nIndex)
 	}
 }
 
+// for micro oc exit interrupt
+void MICRO_OC_EXIT_FUNC(void)
+{
+	// read micro oc status
+	if(GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN) == EN_CLOSE)
+	{
+		g_Micro_Switch = EN_CLOSE;
+	}
+}
+
+void Micro_OC_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	NVIC_InitTypeDef   NVIC_InitStructure;
+	EXTI_InitTypeDef   EXTI_InitStructure;
+	
+	RCC_AHB1PeriphClockCmd(MICRO_OC_SRC, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	// micro switch, with EXIT interupt
+	GPIO_InitStructure.GPIO_Pin = MICRO_OC_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(MICRO_OC_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
+	
+	SYSCFG_EXTILineConfig(MICRO_OC_EXIT_PORT, MICRO_OC_EXIT_PIN);
+	EXTI_InitStructure.EXTI_Line = MICRO_OC_EXIT_LINE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising; // or down ????
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+	
+	NVIC_InitStructure.NVIC_IRQChannel = MICRO_OC_EXIT_IRQ;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_Init(&NVIC_InitStructure);
+}
+
 // OC for fix motor, OC for out_in motor
 void OC_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(MICRO_OC_CLK_SRC|FIX_OC_CLK_SRC|OUT_OC_CLK_SRC|IN_OC_CLK_SRC, ENABLE);
-	// micro switch
-	GPIO_InitStructure.GPIO_Pin = MICRO_OC_CLK_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(MICRO_OC_CLK_PORT, &GPIO_InitStructure);
+	RCC_AHB1PeriphClockCmd(FIX_OC_CLK_SRC|OUT_OC_CLK_SRC|IN_OC_CLK_SRC, ENABLE);
 	// fix oc
 	GPIO_InitStructure.GPIO_Pin = FIX_OC_CLK_PIN; 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(FIX_OC_CLK_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(FIX_OC_CLK_PORT, FIX_OC_CLK_PIN);
 	// oc for out
 	GPIO_InitStructure.GPIO_Pin = OUT_OC_CLK_PIN; 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(OUT_OC_CLK_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(OUT_OC_CLK_PORT, OUT_OC_CLK_PIN);
 	// oc for in
 	GPIO_InitStructure.GPIO_Pin = IN_OC_CLK_PIN; 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(IN_OC_CLK_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(IN_OC_CLK_PORT, IN_OC_CLK_PIN);
+	// micro oc
+	Micro_OC_Init();
 }
 
 UINT8 Get_Micro_OC_Status(void)
 {
-	return GPIO_ReadInputDataBit(MICRO_OC_CLK_PORT, MICRO_OC_CLK_PIN);
+	return GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN);
 }
 	
 UINT8 Get_Fix_OC_Status(void)
@@ -1553,6 +1627,82 @@ void LED_Exec(UINT8 nIndex, UINT8 nOpt)
 //	
 //	return e_Feedback_Success;
 //}
+
+
+
+void ADC24Bit_Init(void)
+{
+	ADC24Bit_SPI_Init();
+}
+
+void ADC24Bit_SPI_Init(void)
+{
+	  GPIO_InitTypeDef  GPIO_InitStructure;
+	  SPI_InitTypeDef  SPI_InitStructure;
+		
+	  RCC_AHB1PeriphClockCmd(ADC24BIT_CLK_SRC|ADC24BIT_MOSI_SRC|ADC24BIT_MISO_SRC|ADC24BIT_CS_SRC, ENABLE);
+	  RCC_APB1PeriphClockCmd(ADC24BIT_SPI_SRC, ENABLE); 
+	  // clk
+	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_CLK_PIN; 
+	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
+	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
+	  GPIO_Init(ADC24BIT_CLK_PORT, &GPIO_InitStructure);
+	  // mosi
+	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_MOSI_PIN; 
+	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
+	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
+	  GPIO_Init(ADC24BIT_MOSI_PORT, &GPIO_InitStructure);
+	  // miso
+	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_MISO_PIN; 
+	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
+	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
+	  GPIO_Init(ADC24BIT_MISO_PORT, &GPIO_InitStructure);
+	  // cs
+	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_CS_PIN; 
+	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
+	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
+	  GPIO_Init(ADC24BIT_CS_PORT, &GPIO_InitStructure);
+	
+	  //GPIO_PinAFConfig(D_REGISTER_CLK_PORT,GPIO_PinSource3,GPIO_AF_SPI1); 
+	  //GPIO_PinAFConfig(D_REGISTER_MOSI_PORT,GPIO_PinSource4,GPIO_AF_SPI1); 
+	  GPIO_PinAFConfig(ADC24BIT_CLK_PORT,  ADC24BIT_CLK_AF_SRC,	   ADC24BIT_SPI_AF); 
+	  GPIO_PinAFConfig(ADC24BIT_MOSI_PORT, ADC24BIT_MOSI_AF_SRC,   ADC24BIT_SPI_AF);
+	  GPIO_PinAFConfig(ADC24BIT_MISO_PORT, ADC24BIT_MISO_AF_SRC,   ADC24BIT_SPI_AF); 
+ 	  GPIO_PinAFConfig(ADC24BIT_CS_PORT,   ADC24BIT_CS_AF_SRC,     ADC24BIT_SPI_AF); 
+	  
+	  RCC_APB1PeriphResetCmd(ADC24BIT_SPI_SRC,ENABLE);
+	  RCC_APB1PeriphResetCmd(ADC24BIT_SPI_SRC,DISABLE);
+
+	  SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Rx;  //设置SPI单向或者双向的数据模式:SPI设置为双线双向全双工
+	  SPI_InitStructure.SPI_Mode = SPI_Mode_Master;		//设置SPI工作模式:设置为主SPI
+	  SPI_InitStructure.SPI_DataSize = SPI_DataSize_16b;		//设置SPI的数据大小:SPI发送接收8位帧结构
+	  SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;		//串行同步时钟的空闲状态为高电平
+	  SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;	//串行同步时钟的第二个跳变沿（上升或下降）数据被采样
+	  SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;		//NSS信号由硬件（NSS管脚）还是软件（使用SSI位）管理:内部NSS信号有SSI位控制
+	  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;		//定义波特率预分频的值:波特率预分频值为256
+	  SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	//指定数据传输从MSB位还是LSB位开始:数据传输从MSB位开始
+	  SPI_InitStructure.SPI_CRCPolynomial = 24;	//CRC值计算的多项式
+	  SPI_Init(ADC24BIT_SPI, &SPI_InitStructure);  //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
+	 
+	  SPI_Cmd(ADC24BIT_SPI, ENABLE); //使能SPI外设
+}
+
+
+UINT32 ADC24Bit_Get_ADC(void)
+{
+	UINT16 nLow, nHigh;
+    while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_RXNE) == RESET){}//等待发送区空  
+	SPI_I2S_ReceiveData(ADC24BIT_SPI);	   	
+}
+
 
 // Digital Register
 void DRegister_SPI_Init(void)

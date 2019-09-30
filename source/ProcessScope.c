@@ -545,9 +545,8 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_TEST_MODE_SET:
 			{
-				g_Test_Mode = *(pchCmdBuf + 8);
-				printf("Test Mode = %d\r\n", g_Test_Mode);
-				LED_Mode_Set(g_Test_Mode);
+				printf("Test Mode = %d\r\n", *(pchCmdBuf + 8));
+				LED_Mode_Set(*(pchCmdBuf + 8));
 			}
 			break;
 			case CMD_CTRL_TEST_HGB:
@@ -1944,7 +1943,7 @@ void Send_Packets_Test(UINT16 Time, UINT32 Num)
 		}
 }
 
-//  CRP 
+// CRP 
 void Micro_Switch_Check(void)
 {
 	if(EN_CRP_TEST ==g_Test_Mode)
@@ -1952,38 +1951,42 @@ void Micro_Switch_Check(void)
 		if(g_Micro_Switch == EN_CLOSE) // had checked cuvette put in
 		{
 			CRP_Test_Exec(EN_CRP_CALIBRATE);
+			g_Micro_Switch = EN_OPEN;
 		}
 	}
 }
 
+// 
 UINT8 LED_Mode_Set(UINT8 nIndex)
 {
 	switch(nIndex)
 	{
-		case EN_HGB_TEST:
+		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
 			g_Test_Mode = EN_HGB_TEST;
 			LED_Cur_Switch(EN_OPEN);
 			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
-			Turn_Motor_Select_LED(EN_LED1);
-			LED_Exec(EN_LED1, EN_OPEN);
+			LED_Exec(EN_LED1, EN_OPEN); // open led
 		}
 		break;
-		case EN_CRP_TEST:
+		case EN_CRP_TEST: // CRP need select LED and adjust LED Cur
 		{
 			g_Test_Mode = EN_CRP_TEST;
-			LED_Cur_Switch(EN_OPEN);
-			LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE);
-			Turn_Motor_Select_LED(EN_LED2);
-			LED_Exec(EN_LED2, EN_OPEN);
-			
+			LED_Cur_Switch(EN_OPEN); // open cur
+			LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); // adjust cur
+			Turn_Motor_Select_LED(EN_LED2); // select led 
+			LED_Exec(EN_LED2, EN_OPEN);		// open led
 		}
 		break;
-		default:break;	
+		default:
+		{
+			printf("Test Mode Prameter Error\r\n");
+		}
+		break;	
 	}
 }
 
-
+//
 UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 {
 	if(nFlag == LED_STATUS_OPEN) // HGB LED

@@ -225,7 +225,7 @@ void EVAL_Init(void)
     
     //-------------------------------------------
 	// 3. priority setting
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_3);  
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_3);
 	
     //-------------------------------------------   
 	// Disable the JTAG interface and enable the SWJ interface. // GPIO_Remap_SWJ_JTAGDisable	
