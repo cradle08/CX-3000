@@ -561,7 +561,106 @@ void SystemCoreClockUpdate(void)
   * @param  None
   * @retval None
   */
-#if 1
+
+void HSI_Init(void)
+{
+  __IO uint32_t HSIStartUpStatus = 0;
+  
+  RCC_DeInit();
+ 
+  //set HSI
+  RCC_HSICmd(ENABLE);
+ 
+  HSIStartUpStatus = RCC->CR & RCC_CR_HSIRDY;
+ 
+  if (HSIStartUpStatus == RCC_CR_HSIRDY)
+  {    
+    /* Select regulator voltage output Scale 1 mode */
+     RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+     PWR->CR |= PWR_CR_VOS;
+ 
+     // HCLK = SYSCLK / 1
+     RCC_HCLKConfig(RCC_SYSCLK_Div1);
+ 
+    /* HCLK = SYSCLK / 1*/
+    RCC->CFGR |= RCC_CFGR_HPRE_DIV1;
+ 
+#if defined(STM32F40_41xxx) || defined(STM32F427_437xx) || defined(STM32F429_439xx) ||  defined(STM32F412xG) || defined(STM32F446xx) || defined(STM32F469_479xx)    
+    /* PCLK2 = HCLK / 2*/
+    RCC->CFGR |= RCC_CFGR_PPRE2_DIV2;
+    
+    /* PCLK1 = HCLK / 4*/
+    RCC->CFGR |= RCC_CFGR_PPRE1_DIV4;
+#endif /* STM32F40_41xxx || STM32F427_437x || STM32F429_439xx  || STM32F412xG || STM32F446xx || STM32F469_479xx */
+ 
+#if defined(STM32F401xx) || defined(STM32F413_423xx)
+    /* PCLK2 = HCLK / 1*/
+    RCC->CFGR |= RCC_CFGR_PPRE2_DIV1;
+    
+    /* PCLK1 = HCLK / 2*/
+    RCC->CFGR |= RCC_CFGR_PPRE1_DIV2;
+#endif /* STM32F401xx || STM32F413_423xx */
+ 
+    #if defined(STM32F40_41xxx) || defined(STM32F427_437xx) || defined(STM32F429_439xx) || defined(STM32F401xx) || defined(STM32F469_479xx)    
+    /* Configure the main PLL */
+    RCC->PLLCFGR = 16 | (336 << 6) | (((2 >> 1) -1) << 16) |
+                   (RCC_PLLCFGR_PLLSRC_HSI) | (4 << 24);
+#endif /* STM32F40_41xxx || STM32F401xx || STM32F427_437x || STM32F429_439xx || STM32F469_479xx */
+ 
+#if  defined(STM32F412xG) || defined(STM32F413_423xx) || defined(STM32F446xx)
+    /* Configure the main PLL */
+    RCC->PLLCFGR = HSI_PLL_M | (PLL_N << 6) | (((PLL_P >> 1) -1) << 16) |
+                   (RCC_PLLCFGR_PLLSRC_HSI) | (PLL_Q << 24) | (PLL_R << 28);
+#endif /* STM32F412xG || STM32F413_423xx || STM32F446xx */
+    
+    /* Enable the main PLL */
+    RCC->CR |= RCC_CR_PLLON;
+    /* Wait till the main PLL is ready */
+    while (RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET) {
+    }
+ 
+    #if defined(STM32F427_437xx) || defined(STM32F429_439xx) || defined(STM32F446xx) || defined(STM32F469_479xx)
+    /* Enable the Over-drive to extend the clock frequency to 180 Mhz */
+    PWR->CR |= PWR_CR_ODEN;
+    while((PWR->CSR & PWR_CSR_ODRDY) == 0)
+    {
+    }
+    PWR->CR |= PWR_CR_ODSWEN;
+    while((PWR->CSR & PWR_CSR_ODSWRDY) == 0)
+    {
+    }      
+    /* Configure Flash prefetch, Instruction cache, Data cache and wait state */
+    FLASH->ACR = FLASH_ACR_PRFTEN | FLASH_ACR_ICEN |FLASH_ACR_DCEN |FLASH_ACR_LATENCY_5WS;
+#endif /* STM32F427_437x || STM32F429_439xx || STM32F446xx || STM32F469_479xx */
+ 
+#if defined(STM32F40_41xxx)  || defined(STM32F412xG)  
+    /* Configure Flash prefetch, Instruction cache, Data cache and wait state */
+    FLASH->ACR = FLASH_ACR_PRFTEN | FLASH_ACR_ICEN |FLASH_ACR_DCEN |FLASH_ACR_LATENCY_5WS;
+#endif /* STM32F40_41xxx  || STM32F412xG */
+ 
+#if defined(STM32F413_423xx)  
+    /* Configure Flash prefetch, Instruction cache, Data cache and wait state */
+    FLASH->ACR = FLASH_ACR_PRFTEN | FLASH_ACR_ICEN |FLASH_ACR_DCEN |FLASH_ACR_LATENCY_3WS;
+#endif /* STM32F413_423xx */
+ 
+#if defined(STM32F401xx)
+    /* Configure Flash prefetch, Instruction cache, Data cache and wait state */
+    FLASH->ACR = FLASH_ACR_PRFTEN | FLASH_ACR_ICEN |FLASH_ACR_DCEN |FLASH_ACR_LATENCY_2WS;
+#endif /* STM32F401xx */
+ 
+    /* Select the main PLL as system clock source */
+    RCC->CFGR &= (uint32_t)((uint32_t)~(RCC_CFGR_SW));
+    RCC->CFGR |= RCC_CFGR_SW_PLL;
+ 
+    /* Wait till the main PLL is used as system clock source */
+    while ((RCC->CFGR & (uint32_t)RCC_CFGR_SWS ) != RCC_CFGR_SWS_PLL);
+    {
+    }
+  }
+
+}
+
+#if 0
 	static void SetSysClock(void)
 	{
 		RCC_DeInit();
@@ -710,7 +809,10 @@ static void SetSysClock(void)
   else
   { /* If HSE fails to start-up, the application will have wrong clock
          configuration. User can add here some code to deal with this error */
-  }
+  
+		HSI_Init();
+		
+	}
 #elif defined (STM32F411xE)
 #if defined (USE_HSE_BYPASS) 
 /******************************************************************************/

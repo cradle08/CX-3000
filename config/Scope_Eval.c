@@ -227,12 +227,20 @@ void HSI_Sysclock_Init(void)
 void EVAL_Init(void)
 {
     USART_InitTypeDef USART_InitStructure;	
-
+	  RCC_ClocksTypeDef  tClockTree;
+	
 	//-------------------------------------------
     // 1. update the system's clock
-    //SystemCoreClockUpdate();
-	printf("\r\n--- SystemCoreClock = %d ---\r\n", SystemCoreClock);
-
+   HSI_Sysclock_Init(); //SystemCoreClockUpdate();
+	 RCC_GetClocksFreq(&tClockTree);
+#if 1
+    // printf("\r\n--- SystemCoreClock = %d ---\r\n", SystemCoreClock);
+    printf("\r\n sys-clk = %d", tClockTree.SYSCLK_Frequency);
+    printf("\r\n AHB-clk = %d", tClockTree.HCLK_Frequency);
+    printf("\r\n APB1-clk = %d", tClockTree.PCLK1_Frequency);
+    printf("\r\n APB2-clk = %d", tClockTree.PCLK2_Frequency);
+    printf("\r\n ");
+#endif
     //-------------------------------------------
     // 2. Initialize and start the SysTick counter and its interrupt. 
     //    take attention: when want to use IRQ_DelayMs(), this must be called first !!!
