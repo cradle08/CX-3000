@@ -4,7 +4,7 @@
 #define    __SCOPE_EVAL_C__
 
 #include "ChainHeader.h"
-
+#include "stm32f4xx_rcc.h"
 
 //-----------------------------------------------------------------------------------------
 // definition
@@ -200,6 +200,28 @@ PUTCHAR_PROTOTYPE
 
 
 
+void HSI_Sysclock_Init(void)
+{
+	RCC_DeInit();
+	RCC_HSICmd(ENABLE);
+	while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
+
+	RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+	PWR->CR |= PWR_CR_VOS;
+	
+	RCC_HCLKConfig(RCC_SYSCLK_Div1);
+	RCC_PCLK2Config(RCC_HCLK_Div2);
+	RCC_PCLK1Config(RCC_HCLK_Div4);
+	
+	RCC_PLLCmd(DISABLE);
+	RCC_PLLConfig(RCC_PLLSource_HSI, 16, 336, 2, 4);
+	RCC_PLLCmd(ENABLE);
+	while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
+	
+	RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+	while(RCC_GetSYSCLKSource() != 0x08);
+}
+
 //-----------------------------------------------------------------------------------------
 // initialization for the code block
 void EVAL_Init(void)
@@ -208,7 +230,7 @@ void EVAL_Init(void)
 
 	//-------------------------------------------
     // 1. update the system's clock
-    SystemCoreClockUpdate();
+    //SystemCoreClockUpdate();
 	printf("\r\n--- SystemCoreClock = %d ---\r\n", SystemCoreClock);
 
     //-------------------------------------------

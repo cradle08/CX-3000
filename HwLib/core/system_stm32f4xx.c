@@ -564,6 +564,9 @@ void SystemCoreClockUpdate(void)
 #if 1
 	static void SetSysClock(void)
 	{
+		RCC_DeInit();
+		RCC_HSICmd(ENABLE);
+		while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
 
 	 //------------------------------
 		 /* Select regulator voltage output Scale 1 mode */
@@ -574,16 +577,16 @@ void SystemCoreClockUpdate(void)
 		RCC->CFGR |= RCC_CFGR_HPRE_DIV1;
 
 		/* PCLK2 = HCLK / 2*/
-		RCC->CFGR |= RCC_CFGR_PPRE2_DIV1;
+		RCC->CFGR |= RCC_CFGR_PPRE2_DIV2;
 		
 		/* PCLK1 = HCLK / 4*/
-		RCC->CFGR |= RCC_CFGR_PPRE1_DIV2;
+		RCC->CFGR |= RCC_CFGR_PPRE1_DIV4;
 
 		/* Configure the main PLL */
 		//RCC->PLLCFGR = PLL_M | (PLL_N << 6) | (((PLL_P >> 1) -1) << 16) |
 		//			   (RCC_PLLCFGR_PLLSRC_HSI) | (PLL_Q << 24);
 		
-		RCC->PLLCFGR = 16 | (336 << 6)|(((PLL_P >> 1) -1) << 16) | (RCC_PLLCFGR_PLLSRC_HSI) | (PLL_Q << 24);
+		RCC->PLLCFGR = 16 | (336 << 6)|(((PLL_P >> 1) -1) << 16) | (RCC_PLLCFGR_PLLSRC_HSI) | (4 << 24);
 		/* Enable the main PLL */
 		RCC->CR |= RCC_CR_PLLON;
 
