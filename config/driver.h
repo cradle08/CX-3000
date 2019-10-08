@@ -86,68 +86,24 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define TURN_MOTOR_PIN_4					GPIO_Pin_15
 #define TURN_MOTOR_SRC_4					RCC_AHB1Periph_GPIOB
 
+#define TURN_MOTOR_PORT						GPIOB
 
 // out in motor, not sure by now
-#define OUTIN_MOTOR_PORT_1					GPIO*
-#define OUTIN_MOTOR_PIN_1					GPIO_Pin_*
-#define OUTIN_MOTOR_SRC_1					RCC_AHB1Periph_GPIO*
+//#define OUTIN_MOTOR_PORT_1					GPIO*
+//#define OUTIN_MOTOR_PIN_1					GPIO_Pin_*
+//#define OUTIN_MOTOR_SRC_1					RCC_AHB1Periph_GPIO*
 
-#define OUTIN_MOTOR_PORT_2					GPIO*
-#define OUTIN_MOTOR_PIN_2					GPIO_Pin_*
-#define OUTIN_MOTOR_SRC_2					RCC_AHB1Periph_GPIO*
+//#define OUTIN_MOTOR_PORT_2					GPIO*
+//#define OUTIN_MOTOR_PIN_2					GPIO_Pin_*
+//#define OUTIN_MOTOR_SRC_2					RCC_AHB1Periph_GPIO*
 
-#define OUTIN_MOTOR_PORT_3					GPIO*
-#define OUTIN_MOTOR_PIN_3					GPIO_Pin_*
-#define OUTIN_MOTOR_SRC_3					RCC_AHB1Periph_GPIO*
+//#define OUTIN_MOTOR_PORT_3					GPIO*
+//#define OUTIN_MOTOR_PIN_3					GPIO_Pin_*
+//#define OUTIN_MOTOR_SRC_3					RCC_AHB1Periph_GPIO*
 
-#define OUTIN_MOTOR_PORT_4					GPIO*
-#define OUTIN_MOTOR_PIN_4					GPIO_Pin_*
-#define OUTIN_MOTOR_SRC_4					RCC_AHB1Periph_GPIO*
-
-
-//// fix motor, PD0_EN, PD1_Dir, PD2_CLK
-//#define FIX_MOTOR_EN_PORT					GPIOD
-//#define FIX_MOTOR_EN_PIN					GPIO_Pin_0
-//#define FIX_MOTOR_EN_SRC					RCC_AHB1Periph_GPIOD
-
-//#define FIX_MOTOR_DIR_PORT					GPIOD
-//#define FIX_MOTOR_DIR_PIN					GPIO_Pin_1
-//#define FIX_MOTOR_DIR_SRC					RCC_AHB1Periph_GPIOD
-
-//#define FIX_MOTOR_CLK_PORT					GPIOD
-//#define FIX_MOTOR_CLK_PIN					GPIO_Pin_2
-//#define FIX_MOTOR_CLK_SRC					RCC_AHB1Periph_GPIOD
-
-//// out_in motor, PD10_EN, PD11_Dir, (PD12_CLK or PC8_CLK_PWM_CH3)
-//#define OUTIN_MOTOR_EN_PORT					GPIOD
-//#define OUTIN_MOTOR_EN_PIN					GPIO_Pin_10
-//#define OUTIN_MOTOR_EN_SRC					RCC_AHB1Periph_GPIOD
-
-//#define OUTIN_MOTOR_DIR_PORT				GPIOD
-//#define OUTIN_MOTOR_DIR_PIN 				GPIO_Pin_11
-//#define OUTIN_MOTOR_DIR_SRC					RCC_AHB1Periph_GPIOD
-
-//// PD12_CLK or PC8_CLK_PWM_CH3
-//#define OUTIN_MOTOR_USE_PWM					1
-//#if OUTIN_MOTOR_USE_PWM
-//	#define OUTIN_MOTOR_CLK_PORT			GPIOC
-//	#define OUTIN_MOTOR_CLK_PIN				GPIO_Pin_8
-//	#define OUTIN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOC
-//	#define OUTIN_MOTOR_CLK_PIN_AF			GPIO_PinSource8
-//	#define OUTIN_MOTOR_CLK_PORT_AF			GPIO_AF_TIM3
-//	#define OUTIN_MOTOR_PWM_TIM				TIM3
-//	#define OUTIN_MOTOR_PWM_TIM_SRC			RCC_APB1Periph_TIM3
-//	#define OUTIN_MOTOR_PWM_TIM_ARR			1000 //25000
-//	#define OUTIN_MOTOR_PWM_TIM_PSC			11   //42    //84M/12=4M, 7M/1000=7k
-//	#define OUTIN_MOTOR_PWM_LEVEL_CLOSE		0
-//	#define OUTIN_MOTOR_PWM_LEVEL_BEST		500
-//	#define OUTIN_MOTOR_PWM_LEVEL_HIGHEST	1000
-//#else
-//	#define OUTIN_MOTOR_CLK_PORT			GPIOD
-//	#define OUTIN_MOTOR_CLK_PIN				GPIO_Pin_12
-//	#define OUTIN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOD
-//#endif
-
+//#define OUTIN_MOTOR_PORT_4					GPIO*
+//#define OUTIN_MOTOR_PIN_4					GPIO_Pin_*
+//#define OUTIN_MOTOR_SRC_4					RCC_AHB1Periph_GPIO*
 
 // OC for turn motor reset, and than select LED, PB6?????
 #define FIX_OC_CLK_PORT						GPIOB
@@ -344,7 +300,12 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define OUTIN_MOTOR_PULSE_DOWN_TIME			60
 
 #define	OUTIN_MOTOR_HOME_TIME				10000
-
+// turn motor 
+#define TURN_MOTOR_MAX_ANTI_CLOCKWISE_STEP		5000
+#define TURN_MOTOR_MAX_CLOCKWISE_STEP			5000
+#define TURN_MOTOR_MAX_DELAY					4000
+#define TURN_MOTOR_MIN_DELAY					3000
+// led cur adjust
 #define HGB_LED_CUR_ADJUST_VALUE					8
 #define CRP_LED_CUR_ADJUST_VALUE					8
 
@@ -373,6 +334,17 @@ enum{
 	EN_LED6 = 6,
 	EN_LED7 = 7,
 	EN_LED8 = 8
+};
+
+enum {
+	EN_LED1_POSTION		= 300,
+	EN_LED2_POSTION		= 600,
+	EN_LED3_POSTION		= 900,
+	EN_LED4_POSTION		= 1200,
+	EN_LED5_POSTION		= 1500,
+	EN_LED6_POSTION		= 1800,
+	EN_LED7_POSTION		= 2100,
+	EN_LED8_POSTION		= 2400,	
 };
 
 typedef enum{
@@ -414,14 +386,16 @@ void Mixing_Motor_Init(void);
 void Mixing_Motor_Run(void);
 void Mixing_Motor_Stop(void);
 
+// valve
 void Valve_Init(void);
 void Valve_Air_Exec(UINT8 nOpt);
 void Valve_Liquid_Exec(UINT8 nOpt);
 void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 
-// turn motor 
+// turn motor
 void Turn_Motor_Init(void);
-void Turn_Motor_Reset(void);
+UINT8 Turn_Motor_Reset(void);
+void Turn_Motor_Goto_Postion(UINT32 nStep);
 void Turn_Motor_Select_LED(UINT8 nIndex);
 
 //

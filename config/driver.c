@@ -10,6 +10,8 @@ IO_ UINT8 g_Elec_Status = 0;
 //IO_ UINT16 g_ADC2_Value[ADC2_CHECK_NUM] = {0};
 IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM] = {0};
 
+const unsigned int g_Turn_Motor_Table[4]={0xC000,0x6000,0x3000,0x9000};
+
 //IO_ static UINT32  fac_us=0;							//us延时倍乘数			   
 //IO_ static UINT32  fac_ms=0;	
 //void delay_init()
@@ -995,53 +997,96 @@ void Turn_Motor_Init(void)
 	GPIO_ResetBits(TURN_MOTOR_PORT_4, TURN_MOTOR_PIN_4);
 }
 
-void Turn_Motor_Reset(void)
+
+UINT8 Turn_Motor_Reset(void)
 {
+	UINT32 nStep = 0, nOutStatus, nTurnStep, DelayTime;
+	
+	DelayTime = TURN_MOTOR_MAX_DELAY;
+	nStep = TURN_MOTOR_MAX_ANTI_CLOCKWISE_STEP;
+	while(nStep)
+	{
+		if(Get_Fix_OC_Status() == EN_CLOSE)
+		{
+			return e_Feedback_Success;
+		}
+		nOutStatus = TURN_MOTOR_PORT->IDR;
+		nOutStatus &= 0x0FFF;
+		nTurnStep = (nStep & 0x03);
+		
+		TURN_MOTOR_PORT->ODR = nOutStatus|g_Turn_Motor_Table[nTurnStep];
+		
+		if(DelayTime > TURN_MOTOR_MIN_DELAY) DelayTime -= 10;
+		Delay_US(DelayTime);
+		nStep--;
+	}
+	return e_Feedback_Fail;
+}
+
+//
+void Turn_Motor_Goto_Postion(UINT32 nStep)
+{
+	UINT32 nTemp = 0, nOutStatus, nTurnStep, DelayTime;
+	
+	DelayTime = TURN_MOTOR_MAX_DELAY;
+	while(nTemp < nStep)
+	{
+		nOutStatus = TURN_MOTOR_PORT->IDR;
+		nOutStatus &= 0x0FFF;
+		nTurnStep = (nTemp & 0x03);
+		
+		TURN_MOTOR_PORT->ODR = nOutStatus|g_Turn_Motor_Table[nTurnStep];
+		
+		if(DelayTime > TURN_MOTOR_MIN_DELAY) DelayTime -= 10;
+		Delay_US(DelayTime);
+		nTemp++;
+	}
 
 }
 
 void Turn_Motor_Select_LED(UINT8 nIndex)
 {
+	Turn_Motor_Reset();
 	switch(nIndex)
 	{
 		case EN_LED1:
 		{
-		
+			Turn_Motor_Goto_Postion(EN_LED1_POSTION);
 		}
 		break;
 		case EN_LED2:
 		{
-		
+			Turn_Motor_Goto_Postion(EN_LED2_POSTION);
 		}
 		break;
 		case EN_LED3:
 		{
-		
+			Turn_Motor_Goto_Postion(EN_LED3_POSTION);
 		}
 		break;
 		case EN_LED4:
 		{
-		
+			Turn_Motor_Goto_Postion(EN_LED4_POSTION);
 		}
 		break;
 		case EN_LED5:
 		{
-		
+			Turn_Motor_Goto_Postion(EN_LED5_POSTION);
 		}
 		break;
 		case EN_LED6:
 		{
-		
+			Turn_Motor_Goto_Postion(EN_LED6_POSTION);
 		}
 		break;
 		case EN_LED7:
 		{
-		
+			Turn_Motor_Goto_Postion(EN_LED7_POSTION);
 		}
 		break;
 		case EN_LED8:
 		{
-		
+			Turn_Motor_Goto_Postion(EN_LED8_POSTION);
 		}
 		break;
 		default:break;
@@ -1694,6 +1739,8 @@ void ADC24Bit_SPI_Init(void)
 	 
 	  SPI_Cmd(ADC24BIT_SPI, ENABLE); //使能SPI外设
 }
+
+
 
 
 UINT32 ADC24Bit_Get_ADC(void)
