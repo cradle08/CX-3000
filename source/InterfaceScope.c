@@ -1594,12 +1594,22 @@ INT32 Get_Press_Value(UINT8 nNum)
 // yaolan_
 UINT32 HW_Get_Press(UINT8 Index)
 {
+#if 1
+	Get_Press_I2C();
+#else
+	Get_Press_ADC();
+#endif
+
+}
+
+// form fpga
+UINT32 HW_Get_Press_ADC(UINT8 Index)
+{
 	UINT16 nAd    = 0;
     UINT32 nValue = 0;
     double fValue = 0;
-
+	
     nAd = HW_Get_ADC_Perip(Index);  // 0: HGB, 1: press1
-    //
 
     fValue = nAd * ((double)s_nK);
     if (fValue <= (double)s_nB)
@@ -1612,6 +1622,7 @@ UINT32 HW_Get_Press(UINT8 Index)
     return nValue;
 
 }
+
 
 // yaolan_
 void HW_EN_ADC_HGB(enum eFlag flag)

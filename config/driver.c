@@ -543,22 +543,168 @@ void ADC3_GPIO_Init(void){
 
 void Press_Init(void)
 {
-    GPIO_InitTypeDef GPIO_InitStructure;
-    EXTI_InitTypeDef EXTI_InitStructure;
-    NVIC_InitTypeDef NVIC_InitStructure;
-  
-    // 1. enable the input pin Clock 
-    RCC_AHB1PeriphClockCmd(ELEC_SRC, ENABLE);
-	
-    // 2. configure the pin as input floating 
-	GPIO_InitStructure.GPIO_Pin = ELEC_PIN;  
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;   
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; //100M
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; 
-    GPIO_Init(ELEC_PORT, &GPIO_InitStructure); 
+	Press_I2C_Init();
 }
+
+// i2c interface init
+void Press_I2C_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHB1PeriphClockCmd(PRESS_I2C_SCL_SCLCLK_SRC|PRESS_I2C_SDA_SCLCLK_SRC, ENABLE);//使能GPIOB时钟
+	// i2c scl
+	GPIO_InitStructure.GPIO_Pin = PRESS_I2C_SCL_PIN ;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(PRESS_I2C_SCL_PORT, &GPIO_InitStructure);
+	// i2c sda
+	GPIO_InitStructure.GPIO_Pin = PRESS_I2C_SDA_PIN ;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(PRESS_I2C_SDA_PORT, &GPIO_InitStructure);
 	
+	PRESS_I2C_SCL = 1;
+	PRESS_I2C_SDA = 1;
+}
+
+void Press_I2C_Start(void)
+{
+	PRESS_I2C_SDA_OUT();     //sda线输出
+	PRESS_I2C_SDA=1;
+	Delay_US(4);	
+	PRESS_I2C_SCL=1;
+	Delay_US(4);
+ 	PRESS_I2C_SDA=0;//START:when CLK is high,DATA change form high to low 
+	Delay_US(4);
+}
+
+void Press_I2C_Stop(void)
+{
+	PRESS_I2C_SDA_OUT();//sda线输出
+	//PRESS_I2C_SCL=0;
+	PRESS_I2C_SDA=0;
+ 	Delay_US(4); 
+	PRESS_I2C_SCL=1;//STOP:when CLK is high DATA change form low to high
+ 	Delay_US(4); 
+	PRESS_I2C_SDA=1;//发送I2C总线结束信号 
+}
+
+UINT8 Press_I2C_Wait_Ack(void)
+{
+	u8 ucErrTime=0;
+	PRESS_I2C_SDA_IN();      //SDA设置为输入  
+	PRESS_I2C_SDA=1;Delay_US(1);	   
+	PRESS_I2C_SCL=1;Delay_US(1);	 
+	while(PRESS_I2C_READ_SDA)
+	{
+		ucErrTime++;
+		if(ucErrTime>250)
+		{
+			Press_I2C_Stop();
+			return 1;
+		}
+	}
+	PRESS_I2C_SCL=0;//时钟输出0 	   
+	return 0; 
+}
+
+void Press_I2C_Ack(void)
+{
+	PRESS_I2C_SCL=0;
+	PRESS_I2C_SDA_OUT();
+	PRESS_I2C_SDA=0;
+	Delay_US(2);
+	PRESS_I2C_SCL=1;
+	Delay_US(2);
+	PRESS_I2C_SCL=0;
+}
+
+void Press_I2C_NAck(void)
+{
+	PRESS_I2C_SCL=0;
+	PRESS_I2C_SDA_OUT();
+	PRESS_I2C_SDA=1;
+	Delay_US(2);
+	PRESS_I2C_SCL=1;
+	Delay_US(2);
+	PRESS_I2C_SCL=0;
+}
+
+void Press_I2C_Send_Byte(UINT8 nVal)
+{
+    u8 t;   
+	PRESS_I2C_SDA_OUT(); 	    
+    PRESS_I2C_SCL=0;//拉低时钟开始数据传输
+    for(t=0;t<8;t++)
+    {              
+        PRESS_I2C_SDA=(nVal&0x80)>>7;
+        nVal<<=1; 	  
+		Delay_US(2);   //对TEA5767这三个延时都是必须的
+		PRESS_I2C_SCL=1;
+		Delay_US(2); 
+		PRESS_I2C_SCL=0;	
+		Delay_US(2);
+    }
+}
+
+UINT8 Press_I2C_Read_Byte(UINT8 nAck)
+{
+	unsigned char i,receive=0;
+	PRESS_I2C_SDA_IN();//SDA设置为输入
+    for(i=0;i<8;i++ )
+	{
+        PRESS_I2C_SCL=0; 
+        Delay_US(2);
+		PRESS_I2C_SCL=1;
+        receive<<=1;
+        if(PRESS_I2C_READ_SDA)receive++;   
+		Delay_US(1); 
+    }					 
+    if (!nAck)
+        Press_I2C_NAck();//发送nACK
+    else
+        Press_I2C_Ack(); //发送ACK   
+    return receive;
+}
+
+INT32 Get_Press_I2C(void)
+{
+	UINT8 I2c_Address = 0x29;
+	UINT8 Read_Commond = 0xAA;
+	UINT8 DLHR_DATA[7] = {0x00};
+	UINT8 Status;
+	UINT32 Pressure_data,Tempertaure_data;
 	
+	Press_I2C_Init();
+	Press_I2C_Start();
+	Press_I2C_Send_Byte((I2c_Address)<<1|0);//write
+	Press_I2C_Ack();
+	Press_I2C_Send_Byte(Read_Commond);//1mps
+	Press_I2C_Wait_Ack();
+	Press_I2C_Stop();
+	
+	IT_SYS_DlyMs(10);
+	Press_I2C_Start();
+	Press_I2C_Send_Byte((I2c_Address)<<1|1);//read
+	Press_I2C_Wait_Ack();
+	DLHR_DATA[0] = Press_I2C_Read_Byte(1);//STATUS[7:0]
+	DLHR_DATA[1] = Press_I2C_Read_Byte(1);//PRESSURE[23:16]
+	DLHR_DATA[2] = Press_I2C_Read_Byte(1);//PRESSURE[15:8]
+	DLHR_DATA[3] = Press_I2C_Read_Byte(1);//PRESSURE[7:0]
+	DLHR_DATA[4] = Press_I2C_Read_Byte(1);//TEMPERATURE[23:16]
+	DLHR_DATA[5] = Press_I2C_Read_Byte(1);//TEMPERATURE[15:8]
+	DLHR_DATA[6] = Press_I2C_Read_Byte(0);//TEMPERATURE[7:0]
+	Press_I2C_Stop();	
+	Status = DLHR_DATA[0];
+	Pressure_data = (DLHR_DATA[1]<<16)|(DLHR_DATA[2]<<8)|DLHR_DATA[3];
+	Tempertaure_data = (DLHR_DATA[4]<<16)|(DLHR_DATA[5]<<8)|DLHR_DATA[6];
+	
+	return Pressure_data;
+}
+
 //
 UINT16 Get_Press_ADC(void)
 {
@@ -1935,26 +2081,15 @@ void Driver_Debug(UINT8 nIndex)
 		
 		}
 		break;
-		case 4:  // fix motor
+		case 4:
 		{
-			printf("Fix Motor start\r\n");
-//			for(i = 0; i < 10; i++)
-//			{
-//				Fix_Motor_Enable();
-//				Fix_Motor_ClockWise();
-//				IT_SYS_DlyMs(200);
-//				Fix_Motor_AntiClockWise();
-//				Fix_Motor_Disable();
-//				IT_SYS_DlyMs(200);
-//			}
-//			Fix_Motor_AntiClockWise();
-//			Fix_Motor_Disable();
-//			for(i = 0; i < 2000; i++)
-//			{
-//				Fix_Motor_Run(300, 600);
-//			}
-//			printf("Fix Motor end\r\n");
-			
+			printf("I2C press start\r\n");
+			for(i = 0; i < 10; i++)
+			{
+				printf("press value = %d\r\n", (int)Get_Press_I2C());
+				
+			}
+			printf("I2C press end\r\n");
 		}
 		break;
 		case 5: // out in motor
@@ -2088,6 +2223,27 @@ void Driver_Debug(UINT8 nIndex)
 			}
 		}
 		break;
+		case 11:  // fix motor
+		{
+			printf("Fix Motor start\r\n");
+//			for(i = 0; i < 10; i++)
+//			{
+//				Fix_Motor_Enable();
+//				Fix_Motor_ClockWise();
+//				IT_SYS_DlyMs(200);
+//				Fix_Motor_AntiClockWise();
+//				Fix_Motor_Disable();
+//				IT_SYS_DlyMs(200);
+//			}
+//			Fix_Motor_AntiClockWise();
+//			Fix_Motor_Disable();
+//			for(i = 0; i < 2000; i++)
+//			{
+//				Fix_Motor_Run(300, 600);
+//			}
+//			printf("Fix Motor end\r\n");
+			
+		}
 		default:break;	
 	}	
 }

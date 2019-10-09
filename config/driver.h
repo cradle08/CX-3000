@@ -290,16 +290,21 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define PRESS_I2C_SDA_PORT					GPIOH
 #define PRESS_I2C_SDA_PIN					GPIO_Pin_5
 #define PRESS_I2C_SDA_SCLCLK_SRC			RCC_AHB1Periph_GPIOH
+//
+#define PRESS_I2C_SDA_IN()  {PRESS_I2C_SDA_PORT->MODER&=~(3<<(5*2));PRESS_I2C_SDA_PORT->MODER|=0<<5*2;}	//PB9输入模式
+#define PRESS_I2C_SDA_OUT() {PRESS_I2C_SDA_PORT->MODER&=~(3<<(5*2));PRESS_I2C_SDA_PORT->MODER|=1<<5*2;} //PB9输出模式
+//
+#define PRESS_I2C_SCL    					 PHout(4) //SCL 
+#define PRESS_I2C_SDA   	 				 PHout(5) //SDA	 
+#define PRESS_I2C_READ_SDA  				 PHin(5)  //SDA 
 
+// parameter define
+#define FIX_MOTOR_PULSE_UP_TIME					155
+#define FIX_MOTOR_PULSE_DOWN_TIME				155
+#define OUTIN_MOTOR_PULSE_UP_TIME				60
+#define OUTIN_MOTOR_PULSE_DOWN_TIME				60
 
-
-
-#define FIX_MOTOR_PULSE_UP_TIME				155
-#define FIX_MOTOR_PULSE_DOWN_TIME			155
-#define OUTIN_MOTOR_PULSE_UP_TIME			60
-#define OUTIN_MOTOR_PULSE_DOWN_TIME			60
-
-#define	OUTIN_MOTOR_HOME_TIME				10000
+#define	OUTIN_MOTOR_HOME_TIME					10000
 // turn motor 
 #define TURN_MOTOR_MAX_ANTI_CLOCKWISE_STEP		5000
 #define TURN_MOTOR_MAX_CLOCKWISE_STEP			5000
@@ -358,7 +363,17 @@ void ADC3_Init(void);
 UINT16 Get_XK_ADC(void);
 
 void Press_Init(void);
-UINT16 Get_Press(void);
+void Press_I2C_Init(void);
+void Press_I2C_Start(void);
+void Press_I2C_Stop(void);
+UINT8 Press_I2C_Wait_Ack(void);
+void Press_I2C_Ack(void);
+void Press_I2C_NAck(void);
+void Press_I2C_Send_Byte(UINT8 nVal);
+UINT8 Press_I2C_Read_Byte(UINT8 nAck);
+INT32 Get_Press_I2C(void);
+
+//UINT16 Get_Press(void);
 UINT16 Get_Press_ADC(void);
 
 UINT16 Get_56V_Cur_ADC(void);
@@ -427,7 +442,7 @@ void DResistor_Init(void);
 void DRegister_SPI_Init(void);
 void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 
-
+//
 void Driver_Debug(UINT8 nIndex);
 
 
