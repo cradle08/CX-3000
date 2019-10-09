@@ -318,11 +318,11 @@ void EVAL_Init(void)
 //	ADC2_Init();//APP_ADC_Init(EN_ADC2);
 //	ADC3_Init();//APP_ADC_Init(EN_ADC3);
 	
-//	Elec_Init();
-//	Beep_Init();
-//	Pump_init();
-//	Valve_Init();
-//	OC_Init();
+///	Elec_Init();
+	Beep_Init();
+	Pump_init();
+	Valve_Init();
+	OC_Init();
 //	Fix_Motor_Init();
 //	OutIn_Motor_Init();
 #endif

@@ -356,7 +356,11 @@ void ADC1_Init(void);
 void ADC2_Init(void);
 void ADC3_Init(void);
 UINT16 Get_XK_ADC(void);
+
+void Press_Init(void);
+UINT16 Get_Press(void);
 UINT16 Get_Press_ADC(void);
+
 UINT16 Get_56V_Cur_ADC(void);
 UINT16 Get_LED_Cur_ADC(void);
 UINT32  HW_Get_ADC_HGB(void);

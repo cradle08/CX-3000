@@ -540,6 +540,25 @@ void ADC3_GPIO_Init(void){
 	
 #endif //ADC3_INIT_WITH_DMA
 
+
+void Press_Init(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+    EXTI_InitTypeDef EXTI_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+  
+    // 1. enable the input pin Clock 
+    RCC_AHB1PeriphClockCmd(ELEC_SRC, ENABLE);
+	
+    // 2. configure the pin as input floating 
+	GPIO_InitStructure.GPIO_Pin = ELEC_PIN;  
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;   
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; //100M
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; 
+    GPIO_Init(ELEC_PORT, &GPIO_InitStructure); 
+}
+	
+	
 //
 UINT16 Get_Press_ADC(void)
 {
@@ -784,6 +803,7 @@ void Beep(UINT16 nDelay)
 	GPIO_SetBits(BEEP_PORT, BEEP_PIN);
 	IT_SYS_DlyMs(nDelay);
 	GPIO_ResetBits(BEEP_PORT, BEEP_PIN);
+	IT_SYS_DlyMs(nDelay);
 }
 
 // pump
@@ -791,18 +811,18 @@ void Pump_init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	RCC_AHB1PeriphClockCmd(PUMP_CLK_SRC|PUMP_DIR_SRC, ENABLE);
-	// dir
-	GPIO_InitStructure.GPIO_Pin = PUMP_DIR_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; //GPIO_PuPd_DOWN
-	GPIO_Init(PUMP_DIR_PORT, &GPIO_InitStructure);
-	GPIO_SetBits(PUMP_DIR_PORT, PUMP_DIR_PIN);
+//	// dir
+//	GPIO_InitStructure.GPIO_Pin = PUMP_DIR_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; //GPIO_PuPd_DOWN
+//	GPIO_Init(PUMP_DIR_PORT, &GPIO_InitStructure);
+//	GPIO_SetBits(PUMP_DIR_PORT, PUMP_DIR_PIN);
 	
 	Pump_PWM_Init(PUMP_PWM_TIM_ARR, PUMP_PWM_TIM_PSC); //84M/42=2M, 1M/25000=59.52
 	//Pump_Speed_Set(24998);
-	Pump_Speed_Set(PUMP_PWM_LEVEL_CLOSE);
+//	Pump_Speed_Set(PUMP_PWM_LEVEL_CLOSE);
 	//TIM_SetCompare2(PUMP_PWM_TIM, PUMP_PWM_LEVEL_CLOSE);
 }
 
@@ -823,25 +843,25 @@ void Pump_PWM_Init(UINT32 Arr, UINT32 Psc)
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;      //推挽复用输出
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;        //上拉
 	GPIO_Init(PUMP_CLK_PORT, &GPIO_InitStructure);        
-	GPIO_SetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
-	
-	TIM_DeInit(PUMP_PWM_TIM);
-	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  //定时器分频
-	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; //向上计数模式
-	TIM_TimeBaseStructure.TIM_Period=Arr;   //自动重装载值
-	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
-	TIM_TimeBaseInit(PUMP_PWM_TIM,&TIM_TimeBaseStructure);//初始化定时器14
+	GPIO_ResetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
+//	
+//	TIM_DeInit(PUMP_PWM_TIM);
+//	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  //定时器分频
+//	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; //向上计数模式
+//	TIM_TimeBaseStructure.TIM_Period=Arr;   //自动重装载值
+//	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
+//	TIM_TimeBaseInit(PUMP_PWM_TIM,&TIM_TimeBaseStructure);//初始化定时器14
 
-	//初始化TIM14 Channel1 PWM模式	 
-	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; //选择定时器模式:TIM脉冲宽度调制模式2
-	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
-	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
-	//TIM_OCInitStructure.TIM_Pulse = ;
-	TIM_OC2Init(PUMP_PWM_TIM, &TIM_OCInitStructure);  
+//	//初始化TIM14 Channel1 PWM模式	 
+//	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; //选择定时器模式:TIM脉冲宽度调制模式2
+//	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
+//	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
+//	//TIM_OCInitStructure.TIM_Pulse = ;
+//	TIM_OC2Init(PUMP_PWM_TIM, &TIM_OCInitStructure);  
 
-	TIM_OC2PreloadConfig(PUMP_PWM_TIM, TIM_OCPreload_Enable); 
-	TIM_ARRPreloadConfig(PUMP_PWM_TIM,ENABLE);
-	TIM_Cmd(PUMP_PWM_TIM, ENABLE);  //
+//	TIM_OC2PreloadConfig(PUMP_PWM_TIM, TIM_OCPreload_Enable); 
+//	TIM_ARRPreloadConfig(PUMP_PWM_TIM,ENABLE);
+//	TIM_Cmd(PUMP_PWM_TIM, ENABLE);  //
 }
 		
 
@@ -924,8 +944,8 @@ void Valve_Init(void)
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_Init(VALVE_LIQUID_PORT, &GPIO_InitStructure);
 	//
-	GPIO_SetBits(VALVE_AIR_PORT, VALVE_AIR_PIN);
-	GPIO_SetBits(VALVE_LIQUID_PORT, VALVE_LIQUID_PIN);
+	GPIO_ResetBits(VALVE_AIR_PORT, VALVE_AIR_PIN);
+	GPIO_ResetBits(VALVE_LIQUID_PORT, VALVE_LIQUID_PIN);
 }
 
 void Valve_Air_Exec(UINT8 nOpt)
@@ -1836,50 +1856,70 @@ void Driver_Debug(UINT8 nIndex)
 	{
 		case 0: //beep
 		{
+			printf("Beep start\r\n");
 			Beep(200);
+			printf("Beep end\r\n");
 		}
 		break;
 		case 1: // pump
 		{
+			GPIO_InitTypeDef  GPIO_InitStructure;
+			RCC_AHB1PeriphClockCmd(PUMP_CLK_SRC, ENABLE);
+			// valve air
+			GPIO_InitStructure.GPIO_Pin = PUMP_CLK_PIN; 
+			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+			GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+			GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+			GPIO_Init(PUMP_CLK_PORT, &GPIO_InitStructure);
 			printf("PUMP start\r\n");
-			for(i = 0; i < 10; i++)
+			for(i = 0; i < 50; i++)
 			{
-				Pump_ClockWise();
-				IT_SYS_DlyMs(100);
-				Pump_AntiClockWise();
-				IT_SYS_DlyMs(100);
+				GPIO_ResetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
+				IT_SYS_DlyMs(500);
+				printf("PUMP i=%d\r\n", i);
+				GPIO_SetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
+				IT_SYS_DlyMs(500);
 			}
-			Pump_ClockWise();
-			val = 50;
-			for(i = 0; i < 9; i++)
-			{
-				printf("PUMP val =%d\r\n", val);
-				Pump_Speed_Set(280);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				val += 50;
-			}
+//			for(i = 0; i < 10; i++)
+//			{
+//				Pump_ClockWise();
+//				IT_SYS_DlyMs(100);
+//				Pump_AntiClockWise();
+//				IT_SYS_DlyMs(100);
+//			}
+//			Pump_ClockWise();
+//			val = 50;
+//			for(i = 0; i < 9; i++)
+//			{
+//				printf("PUMP val =%d\r\n", val);
+//				Pump_Speed_Set(280);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				val += 50;
+//			}
 			printf("PUMP end\r\n");
 		}
 		break;
 		case 2: // valve
 		{
 			printf("Valve start\r\n");
-			Valve_Air_Exec(EN_OPEN);
-			IT_SYS_DlyMs(500);
-			IT_SYS_DlyMs(500);
-			Valve_Air_Exec(EN_CLOSE);
-			IT_SYS_DlyMs(500);
-			IT_SYS_DlyMs(500);
-			Valve_Liquid_Exec(EN_OPEN);
-			IT_SYS_DlyMs(500);
-			IT_SYS_DlyMs(500);
-			Valve_Liquid_Exec(EN_CLOSE);
-			IT_SYS_DlyMs(500);
-			IT_SYS_DlyMs(500);
-			printf("Valve start\r\n");
+			Valve_Init();
+			for(i = 0; i < 10; i++)
+			{
+				Valve_Air_Exec(EN_OPEN);
+				Valve_Liquid_Exec(EN_OPEN);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				printf("Valve i =%d\r\n", i);
+				Valve_Air_Exec(EN_CLOSE);
+				Valve_Liquid_Exec(EN_CLOSE);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+			}
+			printf("Valve end\r\n");
 		
 		}
 		break;
