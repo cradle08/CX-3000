@@ -329,49 +329,49 @@ void ADC3_GPIO_Init(void){
 	
 	#if PRESS_SENSOR_ADC_TYPE
 		RCC_AHB1PeriphClockCmd(TEMP_ADC_SRC|CUR_56V_ADC_SRC|XK_ADC_SRC| \
-				LED_CUR_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC|PRESS_ADC_SRC, ENABLE);
+				LED_CUR_ADC_SRC|ELEC_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC|PRESS_ADC_SRC, ENABLE);
 	#else
 		RCC_AHB1PeriphClockCmd(TEMP_ADC_SRC|CUR_56V_ADC_SRC|XK_ADC_SRC| \
-				LED_CUR_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC, ENABLE);
+				LED_CUR_ADC_SRC|ELEC_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC, ENABLE);
 	#endif
-	
-	GPIO_InitStructure.GPIO_Pin		= LED_CUR_ADC_PIN;  // PF6_ADC3_CH4, LED_CUR
+	// PF6_ADC3_IN4, LED_CUR
+	GPIO_InitStructure.GPIO_Pin		= LED_CUR_ADC_PIN;  
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(LED_CUR_ADC_PORT, &GPIO_InitStructure);
-	
-	GPIO_InitStructure.GPIO_Pin		= XK_ADC_PIN;		// PC3_ADC3_IN13, XK
+	// PC3_ADC3_IN13, XK
+	GPIO_InitStructure.GPIO_Pin		= XK_ADC_PIN;		
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(XK_ADC_PORT, &GPIO_InitStructure);
-	
-	GPIO_InitStructure.GPIO_Pin		= CUR_56V_ADC_PIN;	// PF9_ADC3_IN7, 56V_CUR
+	// PF9_ADC3_IN7, 56V_CUR
+	GPIO_InitStructure.GPIO_Pin		= CUR_56V_ADC_PIN;	
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(CUR_56V_ADC_PORT, &GPIO_InitStructure);
-	
-	GPIO_InitStructure.GPIO_Pin		= TEMP_ADC_PIN;		// PC0_ADC123_IN10, Temperature
+	// PC0_ADC123_IN10, Temperature
+	GPIO_InitStructure.GPIO_Pin		= TEMP_ADC_PIN;		
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(TEMP_ADC_PORT, &GPIO_InitStructure);
-	
-//	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_0;		// PA0_ADC3_IN0, HGB
-//	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
-//	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
-//	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-//	GPIO_Init(GPIOA, &GPIO_InitStructure);
-//							
-	GPIO_InitStructure.GPIO_Pin		= SIG1_ADC_PIN;		// SIG1 ==> PF7_ADC3_IN5 ,CRP
+	//elec ADC3_IN6 PF8
+	GPIO_InitStructure.GPIO_Pin		= ELEC_ADC_PIN;		
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(ELEC_ADC_PORT, &GPIO_InitStructure);
+	// SIG1 ==> PF7_ADC3_IN5 ,CRP
+	GPIO_InitStructure.GPIO_Pin		= SIG1_ADC_PIN;		
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(SIG1_ADC_PORT, &GPIO_InitStructure);
-	
-	GPIO_InitStructure.GPIO_Pin		= SIG2_ADC_PIN;		// SIG2 ==> PA0_ADC3_IN0 ,HGB
+	// SIG2 ==> PA0_ADC3_IN0 ,HGB
+	GPIO_InitStructure.GPIO_Pin		= SIG2_ADC_PIN;		
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
@@ -836,7 +836,7 @@ UINT32  HW_Get_ADC_CRP(void)
 		ADC_RegularChannelConfig(ADC3, SIG1_ADC_CHANNEL, 1, ADC_SampleTime_480Cycles ); 
 		ADC_SoftwareStartConv(ADC3);		
 		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nRet = ADC_GetConversionValue(ADC3);	
+		nRet += ADC_GetConversionValue(ADC3);	
 	}
 	nRet /= 30;
 #else	
@@ -935,6 +935,28 @@ void Elec_Init(void)
 //    }
 }
 
+UINT16 Get_Elec_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	//nVal = g_ADC3_Value[1];
+#else
+	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
+	ADC_Cmd(ADC3,ENABLE);
+	for(i = 0; i < 5; i++)
+	{
+		ADC_RegularChannelConfig(ADC3, ELEC_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles ); 
+		ADC_SoftwareStartConv(ADC3);		
+		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+		nVal += ADC_GetConversionValue(ADC3);	
+	}
+	nVal /= 5;
+#endif
+	return nVal;
+
+}
+
 // beep
 void Beep_Init(void)
 {
@@ -994,35 +1016,35 @@ void Pump_PWM_Init(UINT32 Arr, UINT32 Psc)
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;        //上拉
 	GPIO_Init(PUMP_CLK_PORT, &GPIO_InitStructure);        
 	GPIO_ResetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
-//	
-//	TIM_DeInit(PUMP_PWM_TIM);
-//	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  //定时器分频
-//	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; //向上计数模式
-//	TIM_TimeBaseStructure.TIM_Period=Arr;   //自动重装载值
-//	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
-//	TIM_TimeBaseInit(PUMP_PWM_TIM,&TIM_TimeBaseStructure);//初始化定时器14
+	
+	TIM_DeInit(PUMP_PWM_TIM);
+	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  //定时器分频
+	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; //向上计数模式
+	TIM_TimeBaseStructure.TIM_Period=Arr;   //自动重装载值
+	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
+	TIM_TimeBaseInit(PUMP_PWM_TIM,&TIM_TimeBaseStructure);//初始化定时器14
 
-//	//初始化TIM14 Channel1 PWM模式	 
-//	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; //选择定时器模式:TIM脉冲宽度调制模式2
-//	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
-//	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
-//	//TIM_OCInitStructure.TIM_Pulse = ;
-//	TIM_OC2Init(PUMP_PWM_TIM, &TIM_OCInitStructure);  
+	//初始化TIM14 Channel1 PWM模式	 
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; //选择定时器模式:TIM脉冲宽度调制模式2
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
+	//TIM_OCInitStructure.TIM_Pulse = ;
+	TIM_OC2Init(PUMP_PWM_TIM, &TIM_OCInitStructure);  
 
-//	TIM_OC2PreloadConfig(PUMP_PWM_TIM, TIM_OCPreload_Enable); 
-//	TIM_ARRPreloadConfig(PUMP_PWM_TIM,ENABLE);
-//	TIM_Cmd(PUMP_PWM_TIM, ENABLE);  //
+	TIM_OC2PreloadConfig(PUMP_PWM_TIM, TIM_OCPreload_Enable); 
+	TIM_ARRPreloadConfig(PUMP_PWM_TIM,ENABLE);
+	TIM_Cmd(PUMP_PWM_TIM, ENABLE);  //
 }
 		
 
 void Pump_AntiClockWise(void) // xi qi
 {
-	GPIO_SetBits(PUMP_DIR_PORT, PUMP_DIR_PIN);
+//	GPIO_SetBits(PUMP_DIR_PORT, PUMP_DIR_PIN);
 }
 
 void Pump_ClockWise(void) // zhu qi
 {
-	GPIO_ResetBits(PUMP_DIR_PORT, PUMP_DIR_PIN);
+//	GPIO_ResetBits(PUMP_DIR_PORT, PUMP_DIR_PIN);
 }
 
 void Pump_Speed_Set(UINT16 nSpeed) // 0-499
@@ -2062,11 +2084,10 @@ void Driver_Debug(UINT8 nIndex)
 			for(i = 0; i < 10; i++)
 			{
 				printf("FIX_OC=%d, OUI_OC=%d, IN_OC=%d\r\n", Get_Fix_OC_Status(),\
-					Get_Out_OC_Status(), Get_In_OC_Status());
+				Get_Out_OC_Status(), Get_In_OC_Status());
 				IT_SYS_DlyMs(500);
 				IT_SYS_DlyMs(500);
 			}
-		
 		}
 		break;
 		case 4:
@@ -2099,6 +2120,9 @@ void Driver_Debug(UINT8 nIndex)
 			
 			val = HW_Get_ADC_CRP();
 			printf("CRP, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+						
+			val = Get_Elec_ADC();
+			printf("ELEC, ADC=%d, V=%d\r\n", val, val*3300/4095); 
 			printf("ADC end\r\n");
 		}
 		break;

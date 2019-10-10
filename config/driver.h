@@ -21,16 +21,22 @@ extern IO_ UINT8 g_Elec_Status;
 //extern IO_ UINT16 g_ADC2_Value[ADC2_CHECK_NUM];
 extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 
-// elec PF8
-#define ELEC_PORT							GPIOF
-#define ELEC_PIN							GPIO_Pin_8
-#define ELEC_SRC							RCC_AHB1Periph_GPIOF
-#define ELEC_EXIT_LINE 						EXTI_Line8
-#define ELEC_EXIT_SRC						EXTI_PortSourceGPIOF
-#define ELEC_EXIT_PIN						EXTI_PinSource8
-#define ELEC_EXIT_NUM						EXTI9_5_IRQn
-//#define ELEC_EXIT_FUNC						EXTI9_5_IRQHandler
+// elec switch PA11 (9-5 for micro switch)
+#define ELEC_PORT							GPIOA
+#define ELEC_PIN							GPIO_Pin_11
+#define ELEC_SRC							RCC_AHB1Periph_GPIOA
+#define ELEC_EXIT_LINE 						EXTI_Line11
+#define ELEC_EXIT_SRC						EXTI_PortSourceGPIOA
+#define ELEC_EXIT_PIN						EXTI_PinSource11
+#define ELEC_EXIT_NUM						EXTI15_10_IRQn
+//#define ELEC_EXIT_FUNC					EXTI15_10_IRQHandler
 #define ELEC_READ							GPIO_ReadInputDataBit(ELEC_PORT, ELEC_PIN)
+
+// elec ADC3_IN6 PF8
+#define ELEC_ADC_PORT							GPIOF
+#define ELEC_ADC_PIN							GPIO_Pin_8
+#define ELEC_ADC_SRC							RCC_AHB1Periph_GPIOF
+#define ELEC_ADC_CHANNEL						ADC_Channel_6
 
 //beep PE3	
 #define BEEP_PORT							GPIOE
@@ -178,8 +184,6 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define ADC24BIT_SPI_SRC 					RCC_APB1Periph_SPI3
 #define ADC24BIT_SPI_AF 					GPIO_AF_SPI3
 
-
-
 // LED1-8, PI4--PI11
 // LED1
 #define LED1_PORT							GPIOI
@@ -240,7 +244,6 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define LED_SELECT_A2_PIN					GPIO_Pin_15
 #define LED_SELECT_A2_SRC					RCC_AHB1Periph_GPIOH
 
-
 // XK ADC, PC3_ADC3_IN13	
 #define XK_ADC_PORT							GPIOC
 #define XK_ADC_PIN							GPIO_Pin_3
@@ -260,7 +263,6 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define TEMP_ADC_CHANNEL					ADC_Channel_10
 
 // PC2_ADC123_IN12 , Press
-
 #if PRESS_SENSOR_ADC_TYPE
 	#define PRESS_ADC_PORT					GPIOC
 	#define PRESS_ADC_PIN					GPIO_Pin_2
@@ -384,10 +386,13 @@ UINT32  HW_Get_ADC_CRP(void);
 UINT16  Get_HGB_Value(void);
 UINT32  Get_CRP_Value(void);
 
+// elec
+UINT16 Get_Elec_ADC(void);
 void Reset_Elec_Status(void);
 void Set_Elec_Status(void);
 UINT8 Get_Elec_Status(void);
 void Elec_Init(void);
+
 
 void Beep_Init(void);
 void Beep(UINT16 nDelay);
