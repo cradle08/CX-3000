@@ -6,6 +6,7 @@
 
 // toolchain 
 #include "ChainHeader.h"        
+#include "KernelHeader.h"
 // kernel code
 #include "Protocol.h"
 #include "SamplingPort.h"

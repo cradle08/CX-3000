@@ -6,6 +6,7 @@
 #include "ChainHeader.h"
 #include "stm32f4xx_rcc.h"
 
+
 //-----------------------------------------------------------------------------------------
 // definition
 
@@ -227,12 +228,12 @@ void HSI_Sysclock_Init(void)
 void EVAL_Init(void)
 {
     USART_InitTypeDef USART_InitStructure;	
-	  RCC_ClocksTypeDef  tClockTree;
+	RCC_ClocksTypeDef  tClockTree;
 	
 	//-------------------------------------------
     // 1. update the system's clock
-   HSI_Sysclock_Init(); //SystemCoreClockUpdate();
-	 RCC_GetClocksFreq(&tClockTree);
+    HSI_Sysclock_Init(); //SystemCoreClockUpdate();
+	RCC_GetClocksFreq(&tClockTree);
 #if 1
     // printf("\r\n--- SystemCoreClock = %d ---\r\n", SystemCoreClock);
     printf("\r\n sys-clk = %d", tClockTree.SYSCLK_Frequency);
@@ -314,15 +315,16 @@ void EVAL_Init(void)
 	// 9. the timer of the system messages
 	PF_InitTimer2();
 #if USE_STM32F407_ONLY
-//	ADC1_Init();//APP_ADC_Init(EN_ADC1);
+	ADC1_Init();//APP_ADC_Init(EN_ADC1);
 //	ADC2_Init();//APP_ADC_Init(EN_ADC2);
-//	ADC3_Init();//APP_ADC_Init(EN_ADC3);
+	ADC3_Init();//APP_ADC_Init(EN_ADC3);
 	
 ///	Elec_Init();
 	Beep_Init();
 	Pump_init();
 	Valve_Init();
 	OC_Init();
+	Press_Init();
 //	Fix_Motor_Init();
 //	OutIn_Motor_Init();
 #endif

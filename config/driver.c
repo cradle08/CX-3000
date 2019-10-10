@@ -359,12 +359,12 @@ void ADC3_GPIO_Init(void){
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(TEMP_ADC_PORT, &GPIO_InitStructure);
 	
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_0;		// PA0_ADC3_IN0, HGB
-	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
-	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-							
+//	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_0;		// PA0_ADC3_IN0, HGB
+//	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+//	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+//	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+//	GPIO_Init(GPIOA, &GPIO_InitStructure);
+//							
 	GPIO_InitStructure.GPIO_Pin		= SIG1_ADC_PIN;		// SIG1 ==> PF7_ADC3_IN5 ,CRP
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
@@ -495,8 +495,8 @@ void ADC3_GPIO_Init(void){
 		//
 		ADC3_GPIO_Init();
 		
-		RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3,ENABLE);	 
-	    RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3,DISABLE);	
+//		RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3,ENABLE);	 
+//	    RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3,DISABLE);	
 		// Common Set
 		ADC_CommonInitStructure.ADC_Mode	= ADC_Mode_Independent;
 		ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
@@ -805,6 +805,8 @@ UINT32 HW_Get_ADC_HGB(void)
 	UINT32 nRet = 0;
 	
 #if USE_STM32F407_ONLY
+	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
+	ADC_Cmd(ADC3,ENABLE);
 	for(i = 0; i < 30; i++)
 	{
 		ADC_RegularChannelConfig(ADC3, SIG2_ADC_CHANNEL, 1, ADC_SampleTime_480Cycles ); 
@@ -827,6 +829,8 @@ UINT32  HW_Get_ADC_CRP(void)
 	UINT32  nRet = 0;
 	
 #if USE_STM32F407_ONLY
+	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
+	ADC_Cmd(ADC3,ENABLE);
 	for(i = 0; i < 30; i++)
 	{
 		ADC_RegularChannelConfig(ADC3, SIG1_ADC_CHANNEL, 1, ADC_SampleTime_480Cycles ); 
@@ -1998,6 +2002,7 @@ void Driver_Debug(UINT8 nIndex)
 {
 	UINT32 nCurTime, nTempTime;
 	UINT16 i = 0, val = 0;
+	UINT32 nPress;
 	switch(nIndex)
 	{
 		case 0: //beep
@@ -2009,24 +2014,7 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 1: // pump
 		{
-			GPIO_InitTypeDef  GPIO_InitStructure;
-			RCC_AHB1PeriphClockCmd(PUMP_CLK_SRC, ENABLE);
-			// valve air
-			GPIO_InitStructure.GPIO_Pin = PUMP_CLK_PIN; 
-			GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-			GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-			GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-			GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-			GPIO_Init(PUMP_CLK_PORT, &GPIO_InitStructure);
-			printf("PUMP start\r\n");
-			for(i = 0; i < 50; i++)
-			{
-				GPIO_ResetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
-				IT_SYS_DlyMs(500);
-				printf("PUMP i=%d\r\n", i);
-				GPIO_SetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
-				IT_SYS_DlyMs(500);
-			}
+
 //			for(i = 0; i < 10; i++)
 //			{
 //				Pump_ClockWise();
@@ -2035,17 +2023,17 @@ void Driver_Debug(UINT8 nIndex)
 //				IT_SYS_DlyMs(100);
 //			}
 //			Pump_ClockWise();
-//			val = 50;
-//			for(i = 0; i < 9; i++)
-//			{
-//				printf("PUMP val =%d\r\n", val);
-//				Pump_Speed_Set(280);
-//				IT_SYS_DlyMs(500);
-//				IT_SYS_DlyMs(500);
-//				IT_SYS_DlyMs(500);
-//				IT_SYS_DlyMs(500);
-//				val += 50;
-//			}
+			val = 50;
+			for(i = 0; i < 9; i++)
+			{
+				printf("PUMP val =%d\r\n", val);
+				Pump_Speed_Set(280);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				val += 50;
+			}
 			printf("PUMP end\r\n");
 		}
 		break;
@@ -2086,31 +2074,32 @@ void Driver_Debug(UINT8 nIndex)
 			printf("I2C press start\r\n");
 			for(i = 0; i < 10; i++)
 			{
-				printf("press value = %d\r\n", (int)Get_Press_I2C());
+				nPress = Get_Press_I2C();
+				printf("press value=%d, nPress=%d\r\n", (int)nPress, (int)(nPress/2 - 4194304));
 				
 			}
 			printf("I2C press end\r\n");
 		}
 		break;
-		case 5: // out in motor
+		case 5: // ADCs include cur 
 		{
-			printf("OutIn start\r\n");
-//			for(i = 0; i < 10; i++)
-//			{
-//				OutIn_Motor_Enable();
-//				OutIn_Motor_ClockWise();
-//				IT_SYS_DlyMs(200);
-//				OutIn_Motor_Disable();
-//				OutIn_Motor_AntiClockWise();
-//				IT_SYS_DlyMs(200);
-//			}
-//			OutIn_Motor_Disable();
-//			OutIn_Motor_ClockWise();
-//			for(i = 0; i < 2000; i++)
-//			{
-//				OutIn_Motor_Run(300, 500);
-//			}
-//			printf("OutIn end\r\n");
+			printf("ADC start\r\n");
+			ADC3_Init();
+			val = Get_56V_Cur_ADC();
+			printf("56V, ADC=%d, V=%d\r\n", val, val*3300/4095);  
+		
+			val = Get_XK_ADC();
+			printf("XK, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+			
+			val = Get_LED_Cur_ADC();
+			printf("LED CUR, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+			
+			val = HW_Get_ADC_HGB();
+			printf("HGB, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+			
+			val = HW_Get_ADC_CRP();
+			printf("CRP, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+			printf("ADC end\r\n");
 		}
 		break;
 		case 6: // elec
