@@ -676,9 +676,9 @@ INT32 Get_Press_I2C(void)
 	UINT8 Read_Commond = 0xAA;
 	UINT8 DLHR_DATA[7] = {0x00};
 	UINT8 Status;
-	UINT32 Pressure_data,Tempertaure_data;
+	INT32 Pressure_data,Tempertaure_data;
 	
-	Press_I2C_Init();
+//	Press_I2C_Init();
 	Press_I2C_Start();
 	Press_I2C_Send_Byte((I2c_Address)<<1|0);//write
 	Press_I2C_Ack();
@@ -686,7 +686,10 @@ INT32 Get_Press_I2C(void)
 	Press_I2C_Wait_Ack();
 	Press_I2C_Stop();
 	
-	IT_SYS_DlyMs(10);
+//	IT_SYS_DlyMs(10);
+	Delay_US(250);
+	
+	__disable_irq(); // __set_PRIMASK(0);
 	Press_I2C_Start();
 	Press_I2C_Send_Byte((I2c_Address)<<1|1);//read
 	Press_I2C_Wait_Ack();
@@ -697,7 +700,8 @@ INT32 Get_Press_I2C(void)
 	DLHR_DATA[4] = Press_I2C_Read_Byte(1);//TEMPERATURE[23:16]
 	DLHR_DATA[5] = Press_I2C_Read_Byte(1);//TEMPERATURE[15:8]
 	DLHR_DATA[6] = Press_I2C_Read_Byte(0);//TEMPERATURE[7:0]
-	Press_I2C_Stop();	
+	Press_I2C_Stop();
+	__enable_irq();//__set_PRIMASK(1);
 	Status = DLHR_DATA[0];
 	Pressure_data = (DLHR_DATA[1]<<16)|(DLHR_DATA[2]<<8)|DLHR_DATA[3];
 	Tempertaure_data = (DLHR_DATA[4]<<16)|(DLHR_DATA[5]<<8)|DLHR_DATA[6];

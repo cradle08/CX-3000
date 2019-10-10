@@ -14,66 +14,6 @@ UINT16 g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF] = {0};
 IO_ ADC_Status_InitTypeDef ADC2_Status = {0};
 UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF] = {0};
 
-////===================================================
-////
-//#define  TIMING_1    (50)
-//#define  TIMING_2    (TIMING_1 + 8000)
-//#define  TIMING_3    (TIMING_2 + 1000)
-//#define  TIMING_4    (TIMING_3 + 15000)     // 15000
-//#define  TIMING_5    (TIMING_4 + 3000)
-//#define  TIMING_6    (TIMING_5 + 50)
-//#define  TIMING_7    (TIMING_6 + 5000)
-
-////-----------
-
-//#define  INDEX_ELECTRODE        1    /* 电极检测通道 */
-//#define  INDEX_VALVE_PUMP       0    /* 泵气阀阀通道 */
-//#define  INDEX_VALVE_WBC        1    /* WBC气阀通道 */
-
-////-----------//
-//#ifdef  SAMPLE_CHIP_70UM
-//#define  ELECTRODE_WASTE               0                   /* 检测池溢出即退出检测流程 */
-//#define  PRESS_BUILD                   (UINT32)350000000   /* 35kPa 适合检测的气压 */
-//#define  PUMP_PRESS_OFF                0                   /* 气压泵停止工作 */
-//#define  PUMP_PRESS_FREQ               10000               /* 气压泵驱动频率 */
-
-//#define  TIME_OVER_TS_BUILD_PRESS      20000       /* 10秒  负压泵建立负压超时时间 */
-//#ifdef   DEBUG_TEST
-//#define  TIME_OVER_TS_ADC              35000       /* 35秒  临时调试用 */
-//#else
-//#define  TIME_OVER_TS_ADC              40000       /* 40秒  数据采集超时时间 */
-//#endif
-//#define  TIME_TS_ACTION_OFF            12000       /* 12秒   检测期间关阀时间 */
-//#define  TIME_TS_ACTION_ON             15000       /* 15秒  检测期间开阀时间 */
-////-----------//
-//#elif defined SAMPLE_CHIP_95UM
-////-----------//
-//#define  ELECTRODE_WASTE               0                   /* 检测池溢出即退出检测流程 */
-//#define  PUMP_PRESS_OFF                0                   /* 气压泵停止工作 */
-//#define  PUMP_PRESS_FREQ               10000               /* 气压泵驱动频率 */
-
-//#ifdef   DEBUG_TEST
-//#define  PRESS_BUILD                   (UINT32)600000000   /* 60kPa 适合检测的气压 */
-//#define  TIME_OVER_TS_BUILD_PRESS      60000       /* 60秒  负压泵建立负压超时时间 */
-//#define  TIME_OVER_TS_ADC              15000       /* 15秒  临时调试用 */
-//#else
-//#define  PRESS_BUILD                   (UINT32)220000000   /* 30kPa->22kPa 适合检测的气压 */
-//#define  TIME_OVER_TS_BUILD_PRESS      15000       /* 10秒  负压泵建立负压超时时间 */
-//#define  TIME_OVER_TS_ADC              25000       /* 25秒  数据采集超时时间 */
-//#endif
-
-//#define  TIME_TS_ACTION_OFF            4000        /* 4秒   检测期间关阀时间 */
-//#define  TIME_TS_ACTION_ON             7000        /* 7秒   检测期间开阀时间 */
-//#endif
-
-////-----------------------------------------------------------------------
-//#define BUILD_PRESS_MIN                (UINT32)215000000
-//#define BUILD_PRESS_RIGHT              (UINT32)220000000 // (UINT32)220000000
-//#define BUILD_PRESS_MAX                (UINT32)225000000
-//#define BUILD_PRESS_DEVIATION           (UINT32)20000000
-//#define TIME_AIRLIGHT_CHECK            20000       /* 20秒  密闭性检测延时时间 */
-////-----------//
-
 /* const UINT8 softver_edtion[] = "CX2100_SLA_V004_20180521_1000"; */  /* 统一版本号命名 */
 
 IO_ UINT32  g_Udp_Count, g_Frame_Count, g_Send_Fail;
@@ -501,12 +441,11 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
     printf("%02X%02X%02X%02X ", pchCmdBuf[4],pchCmdBuf[5],pchCmdBuf[6],pchCmdBuf[7]);
 	printf("%02X%02X%02X%02X\r\n", pchCmdBuf[8],pchCmdBuf[9],pchCmdBuf[10],pchCmdBuf[11]);
 	// 1.
+	Micro_Switch_Check();
     if (PROTOCOL_HEAD_RECV_WR == chType) // cntrol cmd
     {
-		Micro_Switch_Check();
         switch (nCommand)
         {
-            //
 			case CMD_CTRL_TEST_RBC:
 			case CMD_CTRL_TEST_PLT:
 			case CMD_CTRL_TEST_RBC_PLT:
@@ -537,10 +476,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 #endif				
 				printf("debug msg len: %d\r\n", nParaLen);
 				nParaLen = 0;
-         
-					
-				Reset_Udp_Count(0);
-					
+				Reset_Udp_Count(0);	
 			}
 			break;
 			case CMD_CTRL_TEST_MODE_SET:
@@ -2008,7 +1944,6 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 	}
 	return e_Feedback_Success;
 }
-
 
 
 UINT8 HGB_Test_Exec(eTestMode eMode)

@@ -115,7 +115,7 @@ UINT8  HW_LED_Off(UINT8 index);
 // perpher adc
 UINT16 HW_Get_ADC_Perip(UINT8 Index);
 UINT8  HW_Status_Elec(UINT8 Index);
-UINT32 HW_Get_Press(UINT8 Index);
+INT32 HW_Get_Press(UINT8 Index);
 
 // current v
 UINT16 HW_Get_ADC_V_Cur(UINT8 Index);

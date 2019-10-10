@@ -1592,18 +1592,18 @@ INT32 Get_Press_Value(UINT8 nNum)
 
 
 // yaolan_
-UINT32 HW_Get_Press(UINT8 Index)
+INT32 HW_Get_Press(UINT8 Index)
 {
 #if 1
-	Get_Press_I2C();
+	return Get_Press_I2C();
 #else
-	Get_Press_ADC();
+	return Get_Press_ADC();
 #endif
 
 }
 
 // form fpga
-UINT32 HW_Get_Press_ADC(UINT8 Index)
+INT32 HW_Get_Press_ADC(UINT8 Index)
 {
 	UINT16 nAd    = 0;
     UINT32 nValue = 0;
