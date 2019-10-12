@@ -45,7 +45,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>..\obj\</OutputDirectory>
-          <OutputName>CX-3000_SLA_V007</OutputName>
+          <OutputName>CX-3000_SLA_V001</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -699,6 +699,11 @@
               <FileName>driver.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\config\driver.c</FilePath>
+            </File>
+            <File>
+              <FileName>f4sys.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\config\f4sys.c</FilePath>
             </File>
           </Files>
         </Group>

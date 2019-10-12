@@ -239,7 +239,7 @@ void Cmd_Wave_Exec(UINT8 nFlag);
 UINT8 HW_Enable_Data_Channel(eTestMode eMode);
 UINT8 HW_Disable_Data_Channel(eTestMode eMode);
 UINT8 HW_Clear_Data_Channel(eTestMode eMode);
-UINT8 Data_Circle_Handle(eTestMode eMode);
+UINT8 Data_Circle_Handle(IO_ eTestMode eMode);
 
 //yaolan_end
 //----------------------------------------------------------------------------------------------
@@ -257,8 +257,8 @@ UINT8 Data_Circle_Handle(eTestMode eMode);
 //-----------
 
 #define  INDEX_ELECTRODE        1    /* 电极检测通道 */
-#define  INDEX_VALVE_PUMP       0    /* 泵气阀阀通道 */
-#define  INDEX_VALVE_WBC        1    /* WBC气阀通道 */
+//#define  EN_VALVE_AIR       0    /* 泵气阀阀通道 */
+//#define  EN_VALVE_LIQUID        1    /* WBC气阀通道 */
 
 //-----------//
 #ifdef  SAMPLE_CHIP_70UM
@@ -280,29 +280,29 @@ UINT8 Data_Circle_Handle(eTestMode eMode);
 //-----------//
 #define  ELECTRODE_WASTE               0                   /* 检测池溢出即退出检测流程 */
 #define  PUMP_PRESS_OFF                0                   /* 气压泵停止工作 */
-#define  PUMP_PRESS_FREQ               10000 //21000               /* 气压泵驱动频率 */
+#define  PUMP_PRESS_FREQ               12500 //21000               /* 气压泵驱动频率 */
 
 #ifdef   DEBUG_TEST
 //#define  PRESS_BUILD                   600000000   /* 60kPa 适合检测的气压 */
 //#define  TIME_OVER_TS_BUILD_PRESS      60000       /* 60秒  负压泵建立负压超时时间 */
 //#define  TIME_OVER_TS_ADC              20000       /* 15秒  临时调试用 */
 #else
-#define  PRESS_BUILD                   230000000   /* 30kPa->22kPa 适合检测的气压 */
+#define  PRESS_BUILD                   2200000 //230000000   /* 30kPa->22kPa 适合检测的气压 */
 #define  TIME_OVER_TS_BUILD_PRESS      15000       /* 10秒  负压泵建立负压超时时间 */
 #define  TIME_OVER_TS_ADC              25000       /* 25秒  数据采集超时时间 */
 #endif
 
-#define  TIME_TS_ACTION_TIMEOUT        24000 //18000
+#define  TIME_TS_ACTION_TIMEOUT        8000//24000 //18000
 #define  TIME_TS_ACTION_OFF            4500 //4000        /* 4秒   检测期间关阀时间 */
 #define  TIME_TS_ACTION_ON             7000        /* 7秒   检测期间开阀时间 */
 #endif
 
 //-----------------------------------------------------------------------
-#define BUILD_PRESS_MIN                225000000 //21.5kpa
+#define BUILD_PRESS_MIN                2150000 //225000000 //21.5kpa
 #define BUILD_PRESS_RIGHT              PRESS_BUILD // (UINT32)220000000 //22kpa
-#define BUILD_PRESS_MAX                235000000  //22.5kpa
-#define BUILD_PRESS_DEVIATION          20000000   //2kpa
-#define COUNT_MIN_PRESS                140000000  //15kpa
+#define BUILD_PRESS_MAX                2250000 //235000000  //22.5kpa
+#define BUILD_PRESS_DEVIATION          300000 //20000000   //2kpa
+#define COUNT_MIN_PRESS                1400000//140000000  //15kpa
 #define TIME_AIRLIGHT_CHECK            20000       /* 20秒  密闭性检测延时时间 */
 #define GET_PRESS_NUM_FIVE			   5
 #define GET_PRESS_NUM_THREE			   3

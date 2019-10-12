@@ -668,8 +668,8 @@ UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
 		if(nPress < PRESS_BUILD)
 		{
 			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
-			HW_Valve_On(INDEX_VALVE_PUMP);
-			HW_Valve_Off(INDEX_VALVE_WBC);			
+			HW_Valve_On(EN_VALVE_AIR);
+			HW_Valve_Off(EN_VALVE_LIQUID);			
 		}
 	}
     // record the motor's para
@@ -697,16 +697,16 @@ UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
 					if(flag == 0 || flag == 1)
 					{
 						HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-						HW_Valve_Off(INDEX_VALVE_PUMP);
-						HW_Valve_Off(INDEX_VALVE_WBC);
+						HW_Valve_Off(EN_VALVE_AIR);
+						HW_Valve_Off(EN_VALVE_LIQUID);
 						flag = 2;
 					}
 				}else{
 					if(flag == 0)
 					{
 						HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
-						HW_Valve_On(INDEX_VALVE_PUMP);
-						HW_Valve_Off(INDEX_VALVE_WBC);
+						HW_Valve_On(EN_VALVE_AIR);
+						HW_Valve_Off(EN_VALVE_LIQUID);
 						flag = 1;
 					}
 				}
@@ -737,8 +737,8 @@ UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
 	if(eCall == e_NormalCheck_Call)
 	{
 		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-		HW_Valve_Off(INDEX_VALVE_PUMP);
-		HW_Valve_Off(INDEX_VALVE_WBC);	
+		HW_Valve_Off(EN_VALVE_AIR);
+		HW_Valve_Off(EN_VALVE_LIQUID);	
 		IT_SYS_DlyMs(500);
 	}
 	if(eCall == e_NormalCheck_Call)
@@ -752,15 +752,15 @@ UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
 			if(nPress >= PRESS_BUILD) 
 			{
 				HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-				HW_Valve_Off(INDEX_VALVE_PUMP);
-				HW_Valve_Off(INDEX_VALVE_WBC);	
+				HW_Valve_Off(EN_VALVE_AIR);
+				HW_Valve_Off(EN_VALVE_LIQUID);	
 				break;
 			}else{
 				if(flag == 0)
 				{
 					HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
-					HW_Valve_On(INDEX_VALVE_PUMP);
-					HW_Valve_Off(INDEX_VALVE_WBC);
+					HW_Valve_On(EN_VALVE_AIR);
+					HW_Valve_Off(EN_VALVE_LIQUID);
 					flag = 1;
 				}
 			}
@@ -768,8 +768,8 @@ UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
 		}
 		printf("3 X out check press after build: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
 		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-		HW_Valve_Off(INDEX_VALVE_PUMP);
-		HW_Valve_Off(INDEX_VALVE_WBC);	
+		HW_Valve_Off(EN_VALVE_AIR);
+		HW_Valve_Off(EN_VALVE_LIQUID);	
 	}
 	//
     g_tAxisPosStatus.nAxisX = 0;
@@ -1020,7 +1020,17 @@ void  HW_FPGA_RST_L(void)
 // I/Os control
 
 // outputs
-//
+#if USE_STM32F407_ONLY
+UINT8  HW_Valve_On(UINT8 chIndex)
+{
+	if(chIndex == EN_VALVE_LIQUID)
+	{
+		Valve_Liquid_Exec(EN_OPEN);
+	}else if(chIndex == EN_VALVE_AIR){
+		Valve_Air_Exec(EN_OPEN);
+	}
+}
+#else
 UINT8  HW_Valve_On(UINT8 chIndex)
 {
     IO_ UINT8  XRAM_ chOffset = 0;
@@ -1056,10 +1066,9 @@ UINT8  HW_Valve_On(UINT8 chIndex)
         SYS_ErrorMark((UINT8)ERR_COMMAND_NO_VALID, chIndex);
         return e_Feedback_Error;
     }
-
     return e_Feedback_Success;
 }
-
+#endif
 
 
 #if USE_STM32F407_ONLY
@@ -1118,26 +1127,16 @@ UINT8  HW_Valve_On(UINT8 chIndex)
 
 #endif //UINT8  HW_Valve_Off(UINT8 chIndex)
 
-
 //------------------------------
 // DC motor control
 /* ÓÐÐ§ÆµÂÊ·¶Î§15K - 25KHz */
 #if USE_STM32F407_ONLY
 	UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
 	{	
-		// 25000
-		if(nFreq > PUMP_PWM_LEVEL_HIGHEST)  nFreq = PUMP_PWM_LEVEL_HIGHEST;
-		////if(nDir != e_Dir_Neg || nDir != e_Dir_Pos) return;
-		if(eDir == e_Dir_Pos){
-			Pump_AntiClockWise();
-		}else if(eDir == e_Dir_Neg){
-			Pump_ClockWise();
-		}
-		Pump_Speed_Set(nFreq);
+		Pump_Exec(eDir, nFreq);
 	}
 	
 #else
-	
 	UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
 	{
 		IO_ UINT32 IRAM_  nAddr 	= 0;
@@ -1529,7 +1528,7 @@ UINT32 Get_V_CRP_LED(void)
 	
 	nVal = HW_Get_ADC_Perip(ADC_V_LED_CRP_INDEX);
 	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24;
-	printf("CRP: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
+//	printf("CRP: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
 	return nRet;
 }
 
@@ -1537,10 +1536,14 @@ UINT32 Get_V_CRP_LED(void)
 UINT16 Get_XK_V_Value(void)
 {
 	UINT16 nVal, nRet;
-
+#if USE_STM32F407_ONLY
+	nVal = Get_XK_ADC();
+	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
+#else
 	nVal = HW_Get_ADC_Perip(ADC_V_XK_INDEX);
 	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
-	printf("XK_V: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
+//	printf("XK_V: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
+#endif
 	return nRet;
 }
 
@@ -1594,12 +1597,14 @@ INT32 Get_Press_Value(UINT8 nNum)
 // yaolan_
 INT32 HW_Get_Press(UINT8 Index)
 {
+	INT32 nVal = 0;
 #if 1
-	return Get_Press_I2C();
+	 nVal = Get_Press_I2C();
+	 nVal = nVal/2 - 4194304;
 #else
-	return Get_Press_ADC();
+	 nVal = Get_Press_ADC();
 #endif
-
+	return nVal;
 }
 
 // form fpga
@@ -2238,7 +2243,7 @@ UINT8 ADC_Send(UINT32 nCmd, UINT32 nId, UINT16 * pData)
 }
 
 
-void Poll_SendDMA_ADC1_Data(UINT32 nCmd)
+UINT8 Poll_SendDMA_ADC1_Data(UINT32 nCmd)
 {
 //	memset((void*)&ADC_Status, 0, sizeof(ADC_Status_InitTypeDef));
 //	ADC1_Init();
@@ -2247,18 +2252,19 @@ void Poll_SendDMA_ADC1_Data(UINT32 nCmd)
 //	{
 		if(ADC1_Status.nSFlag == 1)
 		{
-			//ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, g_ADC_Buffer);
 			ADC_Send(nCmd, ADC1_Status.nID, g_ADC1_Buffer);
 			ADC1_Status.nSFlag = 0xFF;
-			//printf()
 			memset(g_ADC1_Buffer, 0, ADC1_BUFFER_LEN_HALF);
 			ADC1_Status.nSendID++;
+			return e_Feedback_Success;
 		}else if(ADC1_Status.nSFlag == 2){
 			ADC_Send(nCmd, ADC1_Status.nID, &g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF]);
 			ADC1_Status.nSFlag = 0xFF;
 			memset(&g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF], 0, ADC1_BUFFER_LEN_HALF);
 			ADC1_Status.nSendID++;
+			return e_Feedback_Success;
 		}	
+		return e_Feedback_Fail;
 //	}
 //	ADC_Cmd(ADC1, DISABLE);
 //	ADC_DMACmd(ADC1, DISABLE);
@@ -2288,7 +2294,7 @@ void Poll_SendDMA_ADC1_Data(UINT32 nCmd)
 //	nParaLen = 0;
 }
 
-void Poll_SendDMA_ADC2_Data(UINT32 nCmd)
+UINT8 Poll_SendDMA_ADC2_Data(UINT32 nCmd)
 {
 
 	if(ADC2_Status.nSFlag == 1)
@@ -2299,82 +2305,115 @@ void Poll_SendDMA_ADC2_Data(UINT32 nCmd)
 		//printf()
 		memset(g_ADC2_Buffer, 0, ADC2_BUFFER_LEN_HALF);
 		ADC2_Status.nSendID++;
+		return e_Feedback_Success;
 	}else if(ADC2_Status.nSFlag == 2){
 		ADC_Send(nCmd, ADC2_Status.nID, &g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF]);
 		ADC1_Status.nSFlag = 0xFF;
 		memset(&g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF], 0, ADC2_BUFFER_LEN_HALF);
 		ADC2_Status.nSendID++;
+		return e_Feedback_Success;
 	}	
+	return e_Feedback_Fail;
 	//printf("adc1 end: id=%d, sendid=%d, T=%d\r\n", \
 			(int)ADC2_Status.nID, (int)ADC2_Status.nSendID, (int)IT_SYS_GetTicks());
 }
 
 UINT8 HW_WBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 {
+	UINT8 nRet;
+	UINT16 i;
 #if	SIMUATION_TEST
 	memmove(pData, &g_Debug_Data, 512);
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		Poll_SendDMA_ADC1_Data(CMD_DATA_TEST_WBC);
+		//nRet = Poll_SendDMA_ADC1_Data(CMD_DATA_TEST_WBC);
+		if(ADC1_Status.nSFlag == 1)
+		{
+			//ADC_Send(nCmd, ADC1_Status.nID, g_ADC1_Buffer);
+			
+			for(i = 0; i < ADC1_BUFFER_LEN_HALF; i++)
+			{
+				*(pData + i) = g_ADC1_Buffer[i];
+			}
+			*pLen = ADC1_BUFFER_LEN_HALF;
+			ADC1_Status.nSFlag = 0xFF;
+			memset(g_ADC1_Buffer, 0, ADC1_BUFFER_LEN_HALF);
+			ADC1_Status.nSendID++;
+			return e_Feedback_Success;
+		}else if(ADC1_Status.nSFlag == 2){
+			//ADC_Send(nCmd, ADC1_Status.nID, &g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF]);
+			for(i = 0; i < ADC1_BUFFER_LEN_HALF; i++)
+			{
+				*(pData + i) = g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF + i];
+			}
+			*pLen = ADC1_BUFFER_LEN_HALF;
+			ADC1_Status.nSFlag = 0xFF;
+			memset(&g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF], 0, ADC1_BUFFER_LEN_HALF);
+			ADC1_Status.nSendID++;
+			return e_Feedback_Success;
+		}	
+		return e_Feedback_Fail;
 	#else 
-		Poll_SendDMA_ADC1_Data(CMD_DATA_TEST_WBC);
+		//nRet = Poll_SendDMA_ADC1_Data(CMD_DATA_TEST_WBC);
 	#endif
 #endif
-	return 0;
+	return nRet;
 }
 
 
 UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 {
+	UINT8 nRet;
 #if	SIMUATION_TEST
 		memmove(pData, &g_Debug_Data, 512);
 		*pLen = 256;
 #else
 	#if USE_STM32F407_ONLY
-		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC);
+		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC);
 	#else 
-		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC);
+		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC);
 	#endif
 #endif
-	return 0;
+	return nRet;
 }
 
 UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 {
+	UINT8 nRet;
 #if	SIMUATION_TEST
 	memmove(pData, &g_Debug_Data, 512);
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_PLT);
+		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_PLT);
 	#else 
-		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_PLT);
+		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_PLT);
 	#endif
 #endif
-	return 0;
+	return nRet;
 }
 
 UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 {
+	UINT8 nRet;
 #if	SIMUATION_TEST
 	memmove(pData, &g_Debug_Data, 512);
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT);  
+		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT);  
 	#else 
-		Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT); 
+		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT); 
 	#endif
 #endif
-	return 0;
+	return nRet;
 }
 
 
-
-UINT8 Data_Circle_Handle(eTestMode eMode)
+UINT8 Data_Circle_Handle(IO_ eTestMode eMode)
 {
-	UINT8 nRet;
+	IO_ UINT8 nRet = 0xFF;
 	UINT32 nCmd;
 	
 	LwIP_Periodic_Handle(IT_SYS_GetTicks());
@@ -2389,7 +2428,7 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 			nCmd = CMD_DATA_TEST_WBC;
 			s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
 			s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
-			nRet = HW_WBC_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+			nRet = HW_WBC_GetData(((UINT16 *)(s_anBufNet + 6)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
 			//nRet = HW_DATA_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
 		}
 		break;
@@ -2398,7 +2437,7 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 			nCmd = CMD_DATA_TEST_RBC;
 			s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
 			s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
-			nRet = HW_RBC_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+			nRet = HW_RBC_GetData(((UINT16 *)(s_anBufNet + 6)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
 		}
 		break;
 		case EN_PLT_TEST:
@@ -2406,7 +2445,7 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 			nCmd = CMD_DATA_TEST_PLT;
 			s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
 			s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
-			nRet = HW_PLT_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+			nRet = HW_PLT_GetData(((UINT16 *)(s_anBufNet + 6)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
 		}
 		break;
 		case EN_RBC_PLT_TEST:
@@ -2414,7 +2453,7 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 			nCmd = CMD_DATA_TEST_RBC_PLT;
 			s_anBufNet[2] = (((nCmd>>24)&0x00FF)|((nCmd>>8)&0xFF00));
 			s_anBufNet[3] = (((nCmd>>8)&0x00FF) |((nCmd<<8)&0xFF00));
-			nRet = HW_RBC_PLT_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+			nRet = HW_RBC_PLT_GetData(((UINT16 *)(s_anBufNet + 6)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
 		}
 		break;
 		case EN_MODE_END:
@@ -2440,9 +2479,9 @@ UINT8 Data_Circle_Handle(eTestMode eMode)
 //		}
 //      //debug..., printf the get data via serial , 20190315
 //      PL_COM_SendNChar(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
-    }else{
-		g_Send_Fail++;
-	}
+    }//else{
+		// data not ready
+	//}
 	return 0;
 }
 

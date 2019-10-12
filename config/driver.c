@@ -97,7 +97,7 @@ void ADC1_DMA_Config()
 	//DMA_DoubleBufferModeConfig(DMA2_Stream0,(uint32_t)&g_ADC_Buffer_2,DMA_Memory_0);//DMA_Memory_0?????
 	//DMA_DoubleBufferModeCmd(DMA2_Stream0,ENABLE);
 	DMA_Init(DMA2_Stream0, &DMA_InitStructure); 
-		
+	
 	// NVIC
 	DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_HTIF0);
 	DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TCIF0);
@@ -106,7 +106,7 @@ void ADC1_DMA_Config()
 		
 	NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream0_IRQn; 
 	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02;   
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x01;                      
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x00;                      
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	//DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TCIF0);
@@ -115,7 +115,7 @@ void ADC1_DMA_Config()
 	DMA_Cmd(DMA2_Stream0, ENABLE);
 }
 
-// ADC1 PA5-WBC
+// ADC1_IN5  PA5  WBC
 void ADC1_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -125,18 +125,12 @@ void ADC1_Init(void)
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 	// PA5
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_5;//GPIO_Pin_5, PA5, PA6
+	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_5;//GPIO_Pin_5, PA5
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_6;//GPIO_Pin_5, PA5, PA6
-	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
-	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-	
+
 	//ADC1
 	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, ENABLE);
 	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, DISABLE);
@@ -165,12 +159,7 @@ void ADC1_Init(void)
 	ADC1_DMA_Config();
 	ADC_DMACmd(ADC1, ENABLE);
 	
-#if DOUBLE_ADC_CHANNEL
 	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_3Cycles); //ADC_SampleTime_3Cycles
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 2, ADC_SampleTime_3Cycles); //ADC_SampleTime_3Cycles
-#else
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_3Cycles); //ADC_SampleTime_3Cycles
-#endif
 
 	ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
 	//ADC_SoftwareStartConv(ADC1);
@@ -253,8 +242,8 @@ void ADC2_DMA_Config()
 	DMA_ITConfig(DMA2_Stream3,DMA_IT_HT,ENABLE);	
 		
 	NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream3_IRQn; 
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02;   
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x01;                      
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x01;   
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x00;                      
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
 	//DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TCIF0);
@@ -263,7 +252,7 @@ void ADC2_DMA_Config()
 	DMA_Cmd(DMA2_Stream3, ENABLE);
 }
 
-// ADC1 PA5-WBC
+// ADC2_IN8  PB0  RBC/PLT,  (if RBC/PLT depart, PA6-RBC,PB0-PLT)
 void ADC2_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -273,15 +262,15 @@ void ADC2_Init(void)
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE);
 	// PA5
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_5;//GPIO_Pin_0, PB0, ADC2_IN8
+	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_0;
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 	
-	//ADC1
-	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, ENABLE);
-	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, DISABLE);
+	//ADC2
+//	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, ENABLE);
+//	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, DISABLE);
 	// Common Set
 	ADC_CommonInitStructure.ADC_Mode	= ADC_Mode_Independent;
 	ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
@@ -678,6 +667,7 @@ INT32 Get_Press_I2C(void)
 	UINT8 Status;
 	INT32 Pressure_data,Tempertaure_data;
 	
+	
 //	Press_I2C_Init();
 	Press_I2C_Start();
 	Press_I2C_Send_Byte((I2c_Address)<<1|0);//write
@@ -686,10 +676,9 @@ INT32 Get_Press_I2C(void)
 	Press_I2C_Wait_Ack();
 	Press_I2C_Stop();
 	
-//	IT_SYS_DlyMs(10);
-	Delay_US(250);
-	
-	__disable_irq(); // __set_PRIMASK(0);
+	IT_SYS_DlyMs(5);
+	//Delay_US(250);
+	__disable_irq();//__set_PRIMASK(0);
 	Press_I2C_Start();
 	Press_I2C_Send_Byte((I2c_Address)<<1|1);//read
 	Press_I2C_Wait_Ack();
@@ -933,7 +922,7 @@ void Elec_Init(void)
         // 4). enable and set input EXTI Interrupt to the lowest priority 
         NVIC_InitStructure.NVIC_IRQChannel = ELEC_EXIT_NUM;
         NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;
-        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x03;
+        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
         NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;        // enable interrupt
         NVIC_Init(&NVIC_InitStructure);    	
 //    }
@@ -1009,27 +998,27 @@ void Pump_PWM_Init(UINT32 Arr, UINT32 Psc)
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef  TIM_OCInitStructure;
 
-	RCC_APB1PeriphClockCmd(PUMP_PWM_TIM_SRC,ENABLE);  	//TIM14时钟使能    
-	RCC_AHB1PeriphClockCmd(PUMP_CLK_SRC, ENABLE); 	//使能PORTF时钟	
+	RCC_APB1PeriphClockCmd(PUMP_PWM_TIM_SRC,ENABLE);  	
+	RCC_AHB1PeriphClockCmd(PUMP_CLK_SRC, ENABLE); 
 	GPIO_PinAFConfig(PUMP_CLK_PORT,PUMP_CLK_PIN_AF, PUMP_CLK_PORT_AF); 
 
-	GPIO_InitStructure.GPIO_Pin = PUMP_CLK_PIN;           //GPIOF9
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        //复用功能
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	//速度100MHz
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;      //推挽复用输出
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;        //上拉
+	GPIO_InitStructure.GPIO_Pin = PUMP_CLK_PIN;          
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;      
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;        
 	GPIO_Init(PUMP_CLK_PORT, &GPIO_InitStructure);        
 	GPIO_ResetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
 	
 	TIM_DeInit(PUMP_PWM_TIM);
-	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  //定时器分频
-	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; //向上计数模式
+	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  
+	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; 
 	TIM_TimeBaseStructure.TIM_Period=Arr;   //自动重装载值
 	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
-	TIM_TimeBaseInit(PUMP_PWM_TIM,&TIM_TimeBaseStructure);//初始化定时器14
+	TIM_TimeBaseInit(PUMP_PWM_TIM,&TIM_TimeBaseStructure);
 
 	//初始化TIM14 Channel1 PWM模式	 
-	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; //选择定时器模式:TIM脉冲宽度调制模式2
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
 	//TIM_OCInitStructure.TIM_Pulse = ;
@@ -1038,6 +1027,8 @@ void Pump_PWM_Init(UINT32 Arr, UINT32 Psc)
 	TIM_OC2PreloadConfig(PUMP_PWM_TIM, TIM_OCPreload_Enable); 
 	TIM_ARRPreloadConfig(PUMP_PWM_TIM,ENABLE);
 	TIM_Cmd(PUMP_PWM_TIM, ENABLE);  //
+	
+	TIM_SetCompare2(PUMP_PWM_TIM, PUMP_PWM_LEVEL_CLOSE);
 }
 		
 
@@ -1062,8 +1053,8 @@ void Pump_Speed_Set(UINT16 nSpeed) // 0-499
 
 void Pump_Exec(UINT8 nDir, UINT16 nFreq)
 {
-	if(nFreq > PUMP_PWM_TIM_ARR) return;
-	///////if(nDir != e_Dir_Neg || nDir != e_Dir_Pos) return;
+	if(nFreq > PUMP_PWM_TIM_ARR) 
+		nFreq = PUMP_PWM_LEVEL_HIGHEST;
 	
 	if(nDir == e_Dir_Pos){
 		Pump_AntiClockWise();
@@ -1128,9 +1119,10 @@ void Valve_Air_Exec(UINT8 nOpt)
 {
 	if(nOpt == EN_OPEN)
 	{
-		GPIO_ResetBits(VALVE_AIR_PORT, VALVE_AIR_PIN);
-	}else if(nOpt == EN_CLOSE){
 		GPIO_SetBits(VALVE_AIR_PORT, VALVE_AIR_PIN);
+	}else if(nOpt == EN_CLOSE){
+		GPIO_ResetBits(VALVE_AIR_PORT, VALVE_AIR_PIN);
+		
 	}
 }
 
@@ -1138,9 +1130,9 @@ void Valve_Liquid_Exec(UINT8 nOpt)
 {
 	if(nOpt == EN_OPEN)
 	{
-		GPIO_ResetBits(VALVE_LIQUID_PORT, VALVE_LIQUID_PIN);
-	}else if(nOpt == EN_CLOSE){
 		GPIO_SetBits(VALVE_LIQUID_PORT, VALVE_LIQUID_PIN);
+	}else if(nOpt == EN_CLOSE){
+		GPIO_ResetBits(VALVE_LIQUID_PORT, VALVE_LIQUID_PIN);		
 	}
 }
 
@@ -1323,7 +1315,7 @@ void Micro_OC_Init(void)
 	EXTI_Init(&EXTI_InitStructure);
 	
 	NVIC_InitStructure.NVIC_IRQChannel = MICRO_OC_EXIT_IRQ;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
@@ -1794,8 +1786,8 @@ void LED_Exec(UINT8 nIndex, UINT8 nOpt)
 //		if(nPress < PRESS_BUILD)
 //		{
 //			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
-//			HW_Valve_On(INDEX_VALVE_PUMP);
-//			HW_Valve_Off(INDEX_VALVE_WBC);			
+//			HW_Valve_On(EN_VALVE_AIR);
+//			HW_Valve_Off(EN_VALVE_LIQUID);			
 //		}
 //	}
 //	// check i
@@ -2049,16 +2041,16 @@ void Driver_Debug(UINT8 nIndex)
 //				IT_SYS_DlyMs(100);
 //			}
 //			Pump_ClockWise();
-			val = 50;
-			for(i = 0; i < 9; i++)
+			//val = 50;
+			for(i = 0; i < 25000;)
 			{
-				printf("PUMP val =%d\r\n", val);
-				Pump_Speed_Set(280);
+				printf("PUMP val =%d\r\n", i);
+				Pump_Speed_Set(i);
 				IT_SYS_DlyMs(500);
 				IT_SYS_DlyMs(500);
 				IT_SYS_DlyMs(500);
 				IT_SYS_DlyMs(500);
-				val += 50;
+				i += 1000;
 			}
 			printf("PUMP end\r\n");
 		}
@@ -2067,20 +2059,28 @@ void Driver_Debug(UINT8 nIndex)
 		{
 			printf("Valve start\r\n");
 			Valve_Init();
-			for(i = 0; i < 10; i++)
+			for(i = 0; i < 3; i++)
 			{
+				printf("Air Valve i =%d\r\n", i);
 				Valve_Air_Exec(EN_OPEN);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				Valve_Air_Exec(EN_CLOSE);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+			}
+			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+			for(i = 0; i <3; i++)
+			{
+				printf("Liquid Valve i =%d\r\n", i);
 				Valve_Liquid_Exec(EN_OPEN);
 				IT_SYS_DlyMs(500);
 				IT_SYS_DlyMs(500);
-				printf("Valve i =%d\r\n", i);
-				Valve_Air_Exec(EN_CLOSE);
 				Valve_Liquid_Exec(EN_CLOSE);
 				IT_SYS_DlyMs(500);
 				IT_SYS_DlyMs(500);
 			}
 			printf("Valve end\r\n");
-		
 		}
 		break;
 		case 3: //oc
@@ -2101,7 +2101,6 @@ void Driver_Debug(UINT8 nIndex)
 			{
 				nPress = Get_Press_I2C();
 				printf("press value=%d, nPress=%d\r\n", (int)nPress, (int)(nPress/2 - 4194304));
-				
 			}
 			printf("I2C press end\r\n");
 		}
@@ -2132,7 +2131,14 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 6: // elec
 		{
-			printf("Elec Exit Func triggle, v=%d, status=%d\r\n", ELEC_READ, Get_Elec_Status());
+			//printf("Elec Exit Func triggle, v=%d, status=%d\r\n", ELEC_READ, Get_Elec_Status());
+			//Valve_Liquid_Exec(EN_OPEN);						
+			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos); 
+			Valve_Air_Exec(EN_OPEN);
+			IT_SYS_DlyMs(500);
+			IT_SYS_DlyMs(500);
+			Valve_Air_Exec(EN_CLOSE);
+			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos); //Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
 		}
 		break;
 		case 7:

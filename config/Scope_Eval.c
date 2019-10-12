@@ -201,27 +201,27 @@ PUTCHAR_PROTOTYPE
 
 
 
-void HSI_Sysclock_Init(void)
-{
-	RCC_DeInit();
-	RCC_HSICmd(ENABLE);
-	while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
+//void HSI_Sysclock_Init(void)
+//{
+//	RCC_DeInit();
+//	RCC_HSICmd(ENABLE);
+//	while(RCC_GetFlagStatus(RCC_FLAG_HSIRDY) == RESET);
 
-	RCC->APB1ENR |= RCC_APB1ENR_PWREN;
-	PWR->CR |= PWR_CR_VOS;
-	
-	RCC_HCLKConfig(RCC_SYSCLK_Div1);
-	RCC_PCLK2Config(RCC_HCLK_Div2);
-	RCC_PCLK1Config(RCC_HCLK_Div4);
-	
-	RCC_PLLCmd(DISABLE);
-	RCC_PLLConfig(RCC_PLLSource_HSI, 16, 336, 2, 4);
-	RCC_PLLCmd(ENABLE);
-	while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
-	
-	RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
-	while(RCC_GetSYSCLKSource() != 0x08);
-}
+//	RCC->APB1ENR |= RCC_APB1ENR_PWREN;
+//	PWR->CR |= PWR_CR_VOS;
+//	
+//	RCC_HCLKConfig(RCC_SYSCLK_Div1);
+//	RCC_PCLK2Config(RCC_HCLK_Div2);
+//	RCC_PCLK1Config(RCC_HCLK_Div4);
+//	
+//	RCC_PLLCmd(DISABLE);
+//	RCC_PLLConfig(RCC_PLLSource_HSI, 16, 336, 2, 4);
+//	RCC_PLLCmd(ENABLE);
+//	while(RCC_GetFlagStatus(RCC_FLAG_PLLRDY) == RESET);
+//	
+//	RCC_SYSCLKConfig(RCC_SYSCLKSource_PLLCLK);
+//	while(RCC_GetSYSCLKSource() != 0x08);
+//}
 
 //-----------------------------------------------------------------------------------------
 // initialization for the code block
@@ -232,7 +232,7 @@ void EVAL_Init(void)
 	
 	//-------------------------------------------
     // 1. update the system's clock
-    HSI_Sysclock_Init(); //SystemCoreClockUpdate();
+ // HSI_Sysclock_Init(); //SystemCoreClockUpdate(); //todo use-HSE
 	RCC_GetClocksFreq(&tClockTree);
 #if 1
     // printf("\r\n--- SystemCoreClock = %d ---\r\n", SystemCoreClock);
@@ -257,7 +257,7 @@ void EVAL_Init(void)
     
     //-------------------------------------------
 	// 3. priority setting
-	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_3);
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
 	
     //-------------------------------------------   
 	// Disable the JTAG interface and enable the SWJ interface. // GPIO_Remap_SWJ_JTAGDisable	
@@ -369,8 +369,8 @@ void EVAL_ComInit(Com_TypeDef eCom, USART_InitTypeDef* USART_InitStruct)
     USART_ITConfig(COM_USART[eCom], USART_IT_RXNE, ENABLE);    //  RX_INT = 1;	
 	// 8. configure and enable USART interrupt  
     NVIC_InitStructure.NVIC_IRQChannel = COM_ET_IRQn[eCom];       
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);	
 }

@@ -65,8 +65,8 @@
 //
 #define TEMP_ERR_AUTO_TIMES      10    // before shut down 
 
-#define VALVE_PRESSSURE 		 0  // yaolan_20190220
-#define VALVE_SAMPLE     		 1
+//#define EN_VALVE_AIR 		 0  // yaolan_20190220
+//#define EN_VALVE_LIQUID     		 1
 
 #define MOTO_SELF_CHECK_TIMEOUT  6000
 
@@ -137,8 +137,8 @@ UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
 UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
 UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
 UINT8 Data_Circle_Handle(eTestMode eMode);
-void Poll_SendDMA_ADC1_Data(UINT32 nCmd);
-void Poll_SendDMA_ADC2_Data(UINT32 nCmd);
+UINT8 Poll_SendDMA_ADC1_Data(UINT32 nCmd);
+UINT8 Poll_SendDMA_ADC2_Data(UINT32 nCmd);
 
 // yaolan_end
 //-----------------------------------------------------------------------------------------

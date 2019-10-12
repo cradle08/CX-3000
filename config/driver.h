@@ -323,8 +323,8 @@ enum{
 };
 
 enum{
-	EN_VALVE_AIR	= 0,
-	EN_VALVE_LIQUID = 1
+	 EN_VALVE_AIR		= 0,
+	 EN_VALVE_LIQUID	= 1
 };
 
 enum{
@@ -362,7 +362,6 @@ typedef enum{
 void ADC1_Init(void);
 void ADC2_Init(void);
 void ADC3_Init(void);
-UINT16 Get_XK_ADC(void);
 
 void Press_Init(void);
 void Press_I2C_Init(void);
@@ -377,7 +376,7 @@ INT32 Get_Press_I2C(void);
 
 //UINT16 Get_Press(void);
 UINT16 Get_Press_ADC(void);
-
+UINT16 Get_XK_ADC(void);
 UINT16 Get_56V_Cur_ADC(void);
 UINT16 Get_LED_Cur_ADC(void);
 UINT32  HW_Get_ADC_HGB(void);

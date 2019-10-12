@@ -459,8 +459,8 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				if(e_Feedback_Success != MSG_TestingFunc((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode)) //if(e_Feedback_Success != MSG_TestingFunc())
 				{
 					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-					HW_Valve_Off(INDEX_VALVE_PUMP);
-					HW_Valve_Off(INDEX_VALVE_WBC);
+					HW_Valve_Off(EN_VALVE_AIR);
+					HW_Valve_Off(EN_VALVE_LIQUID);
 				}
 				printf("adc1 end: id=%d, sendid=%d\r\n", \
 						(int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
@@ -521,10 +521,9 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;					
             case CMD_CTRL_VALVE: //
             {
-				//Cmd_Wave_Exec(*(pchCmdBuf + 8));
+				//Valve_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
                 if (0 == (*(pchCmdBuf + 9)))
 				{
-					//#if USE_STM32F407_ONLY
 					HW_Valve_Off(*(pchCmdBuf + 8));
 				}
 				else
@@ -945,8 +944,8 @@ UINT8 MSG_Testing(void)
     printf("\r\n\r\n === timing 1: %0.8d === \r\n", (int)nCurTicks);
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
-    HW_Valve_On(INDEX_VALVE_PUMP);  // all the air way
-    HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
+    HW_Valve_On(EN_VALVE_AIR);  // all the air way
+    HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
     HW_Valve_Off(2); // RBC
     // wait some time
     nCurTicks = IT_SYS_GetTicks();
@@ -961,8 +960,8 @@ UINT8 MSG_Testing(void)
     printf("\r\n\r\n === timing 2: %0.8d === \r\n", (int)nCurTicks);
     //
     HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);  // on, 25000 ticks per ms
-    HW_Valve_On(INDEX_VALVE_PUMP);    // all the air way
-    HW_Valve_Off(INDEX_VALVE_WBC);    // WBC
+    HW_Valve_On(EN_VALVE_AIR);    // all the air way
+    HW_Valve_Off(EN_VALVE_LIQUID);    // WBC
     HW_Valve_Off(2); // RBC
     // reset the LIST-TICK
     IT_LIST_SetTicks(0);  //===================
@@ -986,8 +985,8 @@ UINT8 MSG_Testing(void)
     printf("\r\n\r\n === timing 3: %0.8d === \r\n", (int)nCurTicks);
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-    HW_Valve_On(INDEX_VALVE_WBC);    // WBC
+    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+    HW_Valve_On(EN_VALVE_LIQUID);    // WBC
     HW_Valve_On(2); // RBC
     // detect the press 1 and press 2 all the time
     nCurTicks = IT_SYS_GetTicks();
@@ -1008,8 +1007,8 @@ UINT8 MSG_Testing(void)
     printf("\r\n\r\n === timing 4: %0.8d === \r\n", (int)nCurTicks);
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-    HW_Valve_On(INDEX_VALVE_WBC);    // WBC
+    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+    HW_Valve_On(EN_VALVE_LIQUID);    // WBC
     HW_Valve_On(2); // RBC
     //==========================
     // switch on : WBC and RBC
@@ -1049,8 +1048,8 @@ UINT8 MSG_Testing(void)
     printf("\r\n\r\n === timing 5: %0.8d === \r\n", (int)nCurTicks);
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-    //HW_Valve_Off(INDEX_VALVE_WBC); // WBC
+    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+    //HW_Valve_Off(EN_VALVE_LIQUID); // WBC
     //HW_Valve_Off(2); // RBC
     // detect the press 1 and press 2 all the time
     nCurTicks = IT_SYS_GetTicks();
@@ -1071,8 +1070,8 @@ UINT8 MSG_Testing(void)
     printf("\r\n\r\n === timing 6: %0.8d === \r\n", (int)nCurTicks);
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-    //HW_Valve_Off(INDEX_VALVE_WBC); // WBC
+    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+    //HW_Valve_Off(EN_VALVE_LIQUID); // WBC
     //HW_Valve_Off(2); // RBC
     // detect the press 1 and press 2 all the time
     nCurTicks = IT_SYS_GetTicks();
@@ -1097,8 +1096,8 @@ UINT8 MSG_Testing(void)
 	}
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
-    HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
-    HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
+    HW_Valve_Off(EN_VALVE_AIR); // all the air way
+    HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
     HW_Valve_Off(2); // RBC
     //
     // off
@@ -1752,9 +1751,9 @@ void Part_Test_Valve(UINT8 nNo, UINT32 nNum)
 	
 	for(i = 1; i <= nNum; i++)
 	{
-		HW_Valve_On(VALVE_SAMPLE);
+		HW_Valve_On(EN_VALVE_LIQUID);
 		IT_SYS_DlyMs(750);
-		HW_Valve_Off(VALVE_SAMPLE);
+		HW_Valve_Off(EN_VALVE_LIQUID);
 		IT_SYS_DlyMs(750);
 		
 		strReturn[nLen++] = VALVE_TEST;
@@ -2259,7 +2258,7 @@ UINT8 MSG_TestingFunc(void)
         collect_return_hdl(COLLECT_RET_FAIL_NONE_HOME);  /* 未执行进仓操作 */
         return e_Feedback_Error;
     }
-
+	
 	// check the ELECTRODE status
 	nTemp =  HW_Status_Elec(ADC_ELEC_INDEX);
     if (ELEC_STATUS_CLOSE == nTemp)  // 1
@@ -2276,8 +2275,8 @@ UINT8 MSG_TestingFunc(void)
     }
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(INDEX_VALVE_PUMP);  /* all the air way  CKP CHANGED 20171219*/
-    HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
+    HW_Valve_Off(EN_VALVE_AIR);  /* all the air way  CKP CHANGED 20171219*/
+    HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
 
     // 1. build the pressure
 	nPress = 0;
@@ -2295,8 +2294,8 @@ UINT8 MSG_TestingFunc(void)
     if (nPress < PRESS_BUILD)
     {
         HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);  // on, 25000 ticks per ms
-        HW_Valve_On(INDEX_VALVE_PUMP);    // all the air way
-        HW_Valve_Off(INDEX_VALVE_WBC);    // WBC
+        HW_Valve_On(EN_VALVE_AIR);    // all the air way
+        HW_Valve_Off(EN_VALVE_LIQUID);    // WBC
         //detect the press 1 and press 2 all the time
         nCurTicks = IT_SYS_GetTicks();
         nTempTicks = nCurTicks;
@@ -2324,8 +2323,8 @@ UINT8 MSG_TestingFunc(void)
         }
         // turn off
         HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
-        HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
-        HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
+        HW_Valve_Off(EN_VALVE_AIR); // all the air way
+        HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
 		printf("Count Status(after build press): ticks=%08d, press=%010d\r\n", \
 							(int)(nCurTicks - nStartTicks), (int)nPress);
         //-----------
@@ -2393,8 +2392,8 @@ UINT8 MSG_TestingFunc(void)
 	// first
     // 3. 数据预采集
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-    HW_Valve_On(INDEX_VALVE_WBC);    // WBC
+    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+    HW_Valve_On(EN_VALVE_LIQUID);    // WBC
 
     // reset the LIST-TICK
     IT_LIST_SetTicks(0);            /* 先清零本次测试流程的计时器 */
@@ -2443,7 +2442,6 @@ UINT8 MSG_TestingFunc(void)
 		}	
 
         // to check the ELECTRODE
-		
         //if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))
 		if (ELEC_STATUS_CLOSE == HW_Status_Elec(ADC_ELEC_INDEX)) 
         {
@@ -2543,7 +2541,7 @@ UINT8 MSG_TestingFunc(void)
 	}
 
 	//-------second 3s stop-----------
-    HW_Valve_Off(INDEX_VALVE_WBC);  /* 关阀 */
+    HW_Valve_Off(EN_VALVE_LIQUID);  /* 关阀 */
     nCurTicks = IT_SYS_GetTicks();
     nTempTicks = nCurTicks;
 	printf("Count Status(before 3S): ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
@@ -2618,7 +2616,7 @@ UINT8 MSG_TestingFunc(void)
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
 #endif
-	HW_Valve_On(INDEX_VALVE_WBC);  /* 开阀准备检测 */
+	HW_Valve_On(EN_VALVE_LIQUID);  /* 开阀准备检测 */
 //    HW_SW_AdcWBC(e_True);          /* switch on : WBC and RBC */
 //    HW_SW_AdcRBC(e_False);
 //    HW_EN_WBC(e_True);             /* get the ADC data */
@@ -2630,7 +2628,7 @@ UINT8 MSG_TestingFunc(void)
 	nTempTicks = nCurTicks;
 	nTempTicks1 = nCurTicks;
 	// ---------open get data switch--------
-	HW_Valve_On(INDEX_VALVE_WBC);  /* 开阀准备检测 */
+	HW_Valve_On(EN_VALVE_LIQUID);  /* 开阀准备检测 */
 	HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     HW_Enable_Data_Channel(eMode);//HW_Start_WBC(); // todo...
 //	while (nCurTicks <= (nLstTicks + (TIME_OVER_TS_ADC - TIME_TS_ACTION_ON))) //25s - 7s = 18s
@@ -2654,55 +2652,55 @@ UINT8 MSG_TestingFunc(void)
 		
 		//------to check the ELECTRODE------
 		//nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
-		nTemp = HW_Status_Elec(ADC_ELEC_INDEX);
-        if (ELEC_STATUS_CLOSE == nTemp)  /* 流程正常结束 */
-        {
-			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
-			Send_Last_FIFO_Data();
-			printf("\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
-#ifdef DEBUG_INFO_UP_LOAD
-	    	sprintf((char*)sTempInfo, "\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-				nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
-			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
-			*pDILen = nDILen;
-#endif		
-            break;
-        }
+//		nTemp = HW_Status_Elec(ADC_ELEC_INDEX);
+//        if (ELEC_STATUS_CLOSE == nTemp)  /* 流程正常结束 */
+//        {
+//			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
+//			Send_Last_FIFO_Data();
+//			printf("\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+//				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+//#ifdef DEBUG_INFO_UP_LOAD
+//	    	sprintf((char*)sTempInfo, "\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+//				nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+//			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
+//			*pDILen = nDILen;
+//#endif		
+//            break;
+//        }
 		//------to check press------
-		nPress = 0;
-		nPress =  Get_Press_Value(GET_PRESS_NUM_THREE);
-		if(nPress <= COUNT_MIN_PRESS)
-		{
-			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
-			Send_Last_FIFO_Data();	
-			printf("\r\nCount Error: press error, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)nPress);
-#ifdef DEBUG_INFO_UP_LOAD		
-			sprintf((char*)sTempInfo, "\r\nCount Error: press error, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)nPress);
-			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
-			*pDILen = nDILen;
-#endif
-			printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
-			
-			collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE); 
-			return e_Feedback_Error;
-		}
+//		nPress = 0;
+//		nPress =  Get_Press_Value(GET_PRESS_NUM_THREE);
+//		if(nPress <= COUNT_MIN_PRESS)
+//		{
+//			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
+//			Send_Last_FIFO_Data();	
+//			printf("\r\nCount Error: press error, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+//				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)nPress);
+//#ifdef DEBUG_INFO_UP_LOAD		
+//			sprintf((char*)sTempInfo, "\r\nCount Error: press error, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+//				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)nPress);
+//			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
+//			*pDILen = nDILen;
+//#endif
+//			printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
+//			
+//			collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE); 
+//			return e_Feedback_Error;
+//		}
 		nCurTicks = IT_SYS_GetTicks();	
     }
 	//------after count, stop all--------
 	HW_Disable_Data_Channel(eMode);//HW_End_WBC();
 	Send_Last_FIFO_Data();
 	HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(INDEX_VALVE_PUMP);  // all the air way
-    HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
+    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+    HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
 	
 	//-------log info after count------
 	nTempTicks1  = IT_LIST_GetTicks();
@@ -2827,34 +2825,23 @@ INT32 Build_Press_Self_Check(void)
 //		MT_X_IN_Self_Check(e_SelfCheck_Call);
 //        return e_Feedback_Error;
 //    }
-
-	#if USE_STM32F407_ONLY
-		Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
-		Valve_Air_Exec(EN_CLOSE);
-		Valve_Liquid_Exec(EN_CLOSE);	
-	#else
-		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-		HW_Valve_Off(INDEX_VALVE_PUMP);  /* all the air way  CKP CHANGED 20171219*/
-		HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
-	#endif
+	
+	HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+	HW_Valve_Off(EN_VALVE_AIR);  /* all the air way  CKP CHANGED 20171219*/
+	HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
 	
     // 1. build the pressure
-   // nPress = HW_ADC_SpiGetPress();  /* 获取泵压 */
+    // nPress = HW_ADC_SpiGetPress();  /* 获取泵压 */
 	nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
     nCurTicks = IT_SYS_GetTicks();  /* 获取系统时钟 */
 	nStartTicks = nCurTicks;
 	printf("Build start: tick=%08d, press=%010d, addpress=%010d\r\n", (int)(nCurTicks - nStartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
     if (nPress < BUILD_PRESS_RIGHT)
     {
-		#if USE_STM32F407_ONLY
-			Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_BEST);
-			Valve_Air_Exec(EN_OPEN);
-			Valve_Liquid_Exec(EN_CLOSE);	
-		#else
-			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);     // off
-			HW_Valve_Off(EN_OPEN);  /* all the air way  CKP CHANGED 20171219*/
-			HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
-		#endif
+		HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);     // off
+		HW_Valve_Off(EN_OPEN);  /* all the air way  CKP CHANGED 20171219*/
+		HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
+
         // detect the press 1 and press 2 all the time
         nCurTicks = IT_SYS_GetTicks();
         nLstTicks = nCurTicks;
@@ -2865,26 +2852,14 @@ INT32 Build_Press_Self_Check(void)
             if (nCurTicks - nTempTicks >= 10)    // 10 ms
             {
 				nTempTicks = nCurTicks;
-//				nPress = 0;
-//				for(i = 0; i < 5; i++)
-//				{
-//					nPress += HW_ADC_SpiGetPress();
-//				}
-//				nPress /= 5;
 				nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
 				//Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_BUILD_PRESS, nPress);
 				//
                 if (nPress >=  (INT32)BUILD_PRESS_RIGHT /*&& nPress <= BUILD_PRESS_MAX*/)
                 {
-					#if USE_STM32F407_ONLY
-						Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
-						Valve_Air_Exec(EN_CLOSE);
-						Valve_Liquid_Exec(EN_CLOSE);	
-					#else
-						HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-						HW_Valve_Off(EN_CLOSE);  /* all the air way  CKP CHANGED 20171219*/
-						HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
-					#endif
+					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+					HW_Valve_Off(EN_CLOSE);  /* all the air way  CKP CHANGED 20171219*/
+					HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
                     break;
                 }
 				printf("Building Press tick=%08d, press=%010d, addpress=%010d\r\n", (int)(nCurTicks - nStartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
@@ -2894,15 +2869,9 @@ INT32 Build_Press_Self_Check(void)
         }
         // turn off
        
-		#if USE_STM32F407_ONLY
-			Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
-			Valve_Air_Exec(EN_CLOSE);
-			Valve_Liquid_Exec(EN_CLOSE);	
-		#else
-			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-			HW_Valve_Off(EN_CLOSE);  /* all the air way  CKP CHANGED 20171219*/
-			HW_Valve_Off(INDEX_VALVE_WBC);   // WBC
-		#endif
+		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+		HW_Valve_Off(EN_CLOSE);  /* all the air way  CKP CHANGED 20171219*/
+		HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
         //-----------
         // to check the preeure
         //nPress = HW_ADC_SpiGetPress();
@@ -2961,13 +2930,9 @@ UINT8 AirLight_Self_Check(CALL_STYLE_E eCall)
 	printf("AirLight start: ticks=%08d, press=%010d, addpress=%010d\r\n", (int)nCurTicks, (int)nPress, (int)g_Record_Param.nAddPress);
 	if(eCall == e_PartTest_Call) // for part test
 	{
-		#if USE_STM32F407_ONLY
-			Valve_Air_Exec(EN_CLOSE);
-			Valve_Liquid_Exec(EN_OPEN);
-		#else
-			HW_Valve_Off(INDEX_VALVE_PUMP); 
-			HW_Valve_On(INDEX_VALVE_WBC); 
-		#endif
+		HW_Valve_Off(EN_VALVE_AIR); 
+		HW_Valve_On(EN_VALVE_LIQUID); 
+
 	}
 	while(nCurTicks <= (nLstTicks + TIME_AIRLIGHT_CHECK))
 	{
@@ -2990,13 +2955,8 @@ UINT8 AirLight_Self_Check(CALL_STYLE_E eCall)
 	}
 	if(eCall == e_PartTest_Call) // for part test
 	{
-		#if USE_STM32F407_ONLY
-			Valve_Air_Exec(EN_CLOSE);
-			Valve_Liquid_Exec(EN_CLOSE);
-		#else
-			HW_Valve_Off(INDEX_VALVE_PUMP); 
-			HW_Valve_Off(INDEX_VALVE_WBC); 
-		#endif
+		HW_Valve_Off(EN_VALVE_AIR); 
+		HW_Valve_Off(EN_VALVE_LIQUID); 
 	}
 	/////////////
 	//Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_AIRLIGHT_PRESS, nCurPress);
@@ -3041,22 +3001,14 @@ void Return_Press_Value(void)
 }
 
 
-
 _EXT_ UINT8 Negative_Pressure_Self_Check(void)
 {
 	INT32 nPress;
 	UINT32 StartTicks, EndTicks;
 	
-	
-	#if USE_STM32F407_ONLY
-		Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_BEST);
-		Valve_Air_Exec(EN_OPEN);
-		Valve_Liquid_Exec(EN_CLOSE);	
-	#else
-		HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);  // on, 25000 ticks per ms
-		HW_Valve_On(INDEX_VALVE_PUMP);    // all the air way
-		HW_Valve_Off(INDEX_VALVE_WBC);    // WBC
-	#endif
+	HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);  // on, 25000 ticks per ms
+	HW_Valve_On(EN_VALVE_AIR);    // all the air way
+	HW_Valve_Off(EN_VALVE_LIQUID);    // WBC
 	
 	StartTicks = IT_SYS_GetTicks();
 	EndTicks = StartTicks;
@@ -3066,30 +3018,17 @@ _EXT_ UINT8 Negative_Pressure_Self_Check(void)
 		nPress = Get_Press_Value(GET_PRESS_NUM_FIVE); 
 		if(nPress >= PRESS_BUILD)
 		{
-			#if USE_STM32F407_ONLY
-				Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
-				Valve_Air_Exec(EN_CLOSE);
-				Valve_Liquid_Exec(EN_CLOSE);
-			#else
-				HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
-				HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
-				HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
-
-			#endif
+			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
+			HW_Valve_Off(EN_VALVE_AIR); // all the air way
+			HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
 			break;
 		}
 	}
 	if((EndTicks - StartTicks) > TIME_OVER_TS_BUILD_PRESS)
 	{
-		#if USE_STM32F407_ONLY
-			Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
-			Valve_Air_Exec(EN_CLOSE);
-			Valve_Liquid_Exec(EN_CLOSE);
-		#else
-			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
-			HW_Valve_Off(INDEX_VALVE_PUMP); // all the air way
-			HW_Valve_Off(INDEX_VALVE_WBC);  // WBC
-		#endif
+		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
+		HW_Valve_Off(EN_VALVE_AIR); // all the air way
+		HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
 		return e_Feedback_Fail;
 		
 	}
@@ -3142,9 +3081,9 @@ _EXT_ UINT8 Valve1_Self_Check(void)
 	UINT8 i;
     for(i = 0; i < 3; i++)
 	{
-		HW_Valve_On(VALVE_PRESSSURE);
+		HW_Valve_On(EN_VALVE_AIR);
 		IT_SYS_DlyMs(1000);
-		HW_Valve_Off(VALVE_PRESSSURE);
+		HW_Valve_Off(EN_VALVE_AIR);
 		IT_SYS_DlyMs(1000);
 	}
 	return e_Feedback_Success;
@@ -3155,36 +3094,13 @@ _EXT_ UINT8 Valve2_Self_Check(void)
 	UINT8 i;
 	for(i = 0; i < 3; i++)
 	{
-		HW_Valve_On(VALVE_SAMPLE);
+		HW_Valve_On(EN_VALVE_LIQUID);
 		IT_SYS_DlyMs(1000);
-		HW_Valve_Off(VALVE_SAMPLE);
-		IT_SYS_DlyMs(1000);
-	}
-	return e_Feedback_Success;
-}
-
-/*
-_EXT_ UINT8 Valve_Self_Check(void)
-{
-	UINT8 i;
-    for(i = 0; i < 3; i++)
-	{
-		HW_Valve_On(VALVE_PRESSSURE);
-		IT_SYS_DlyMs(1000);
-		HW_Valve_Off(VALVE_PRESSSURE);
-		IT_SYS_DlyMs(1000);
-	}
-	IT_SYS_DlyMs(200);
-	for(i = 0; i < 3; i++)
-	{
-		HW_Valve_On(VALVE_SAMPLE);
-		IT_SYS_DlyMs(1000);
-		HW_Valve_Off(VALVE_SAMPLE);
+		HW_Valve_Off(EN_VALVE_LIQUID);
 		IT_SYS_DlyMs(1000);
 	}
 	return e_Feedback_Success;
 }
-*/
 
 _EXT_ UINT8 Pump_Self_Check(void)
 {
@@ -3194,7 +3110,7 @@ _EXT_ UINT8 Pump_Self_Check(void)
 	EndTicks = StartTicks;
 	HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
 	
-	//HW_Valve_On(INDEX_VALVE_PUMP); 
+	//HW_Valve_On(EN_VALVE_AIR); 
 	
 	while((EndTicks - StartTicks) <= PUMP_SELF_CHECK_TIME)
 	{
@@ -3202,7 +3118,7 @@ _EXT_ UINT8 Pump_Self_Check(void)
 		IT_SYS_DlyMs(1);
 	}
 	HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-	//HW_Valve_Off(INDEX_VALVE_PUMP); 
+	//HW_Valve_Off(EN_VALVE_AIR); 
 	
 	return e_Feedback_Success;
 }

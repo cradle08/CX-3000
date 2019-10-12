@@ -135,8 +135,8 @@ void test(void)
 //		DMA_ITConfig(DMA2_Stream0,DMA_IT_TC,ENABLE);
 //		DMA_ITConfig(DMA2_Stream0,DMA_IT_HT,ENABLE);
 //		NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream0_IRQn; 
-//		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02;   
-//		NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x02;                      
+//		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x01;   
+//		NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x00;                      
 //		NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 //		NVIC_Init(&NVIC_InitStructure);
 //		DMA_Cmd(DMA2_Stream0, ENABLE);
@@ -148,8 +148,8 @@ void test(void)
 //		DMA_ITConfig(DMA2_Stream3,DMA_IT_TC,ENABLE);
 //		DMA_ITConfig(DMA2_Stream3,DMA_IT_HT,ENABLE);
 //		NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream3_IRQn; 
-//		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02;   
-//		NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x02;                      
+//		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x01;   
+//		NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x00;                      
 //		NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 //		NVIC_Init(&NVIC_InitStructure);
 //		DMA_Cmd(DMA2_Stream3, ENABLE);
@@ -158,8 +158,8 @@ void test(void)
 //	}		
 //	// NVIC
 ////	NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream0_IRQn; 
-////	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02;   
-////	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x02;                      
+////	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x01;   
+////	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x01;                      
 ////	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 ////	NVIC_Init(&NVIC_InitStructure);
 ////	 //DMA_ClearITPendingBit(DMA2_Stream0,DMA_IT_TCIF0);
