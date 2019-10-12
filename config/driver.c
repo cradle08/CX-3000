@@ -122,6 +122,7 @@ void ADC1_Init(void)
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	ADC_InitTypeDef ADC_InitStructure;
 	
+	ADC_DeInit();
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 	// PA5
@@ -191,16 +192,16 @@ void DMA2_Stream0_IRQHandler(void)
 void DMA2_Stream3_IRQHandler(void) 
 {
 	// half DMA_GetFlagStatus
-	if (DMA_GetITStatus(DMA2_Stream3, DMA_IT_HTIF0) == SET)  
+	if (DMA_GetITStatus(DMA2_Stream3, DMA_IT_HTIF3) == SET)  
 	{
-		DMA_ClearITPendingBit(DMA2_Stream3, DMA_IT_HTIF0);
+		DMA_ClearITPendingBit(DMA2_Stream3, DMA_IT_HTIF3);
 		ADC2_Status.nSFlag = 1;
 		ADC2_Status.nID++;
 	}
 	
-	if (DMA_GetITStatus(DMA2_Stream3, DMA_IT_TCIF0) == SET)  
+	if (DMA_GetITStatus(DMA2_Stream3, DMA_IT_TCIF3) == SET)  
 	{
-		DMA_ClearITPendingBit(DMA2_Stream3, DMA_IT_TCIF0);
+		DMA_ClearITPendingBit(DMA2_Stream3, DMA_IT_TCIF3);
 		ADC2_Status.nSFlag = 2;
 		ADC2_Status.nID++;
 	}
@@ -230,14 +231,12 @@ void ADC2_DMA_Config()
 	DMA_InitStructure.DMA_FIFOThreshold			= DMA_FIFOThreshold_Full;
 	DMA_InitStructure.DMA_MemoryBurst			= DMA_MemoryBurst_Single;
 	DMA_InitStructure.DMA_PeripheralBurst 		= DMA_PeripheralBurst_Single;
-	
-	//DMA_DoubleBufferModeConfig(DMA2_Stream0,(uint32_t)&g_ADC_Buffer_2,DMA_Memory_0);//DMA_Memory_0?????
-	//DMA_DoubleBufferModeCmd(DMA2_Stream0,ENABLE);
-	DMA_Init(DMA2_Stream2, &DMA_InitStructure); 
+
+	DMA_Init(DMA2_Stream3, &DMA_InitStructure); 
 		
 	// NVIC
-	DMA_ClearITPendingBit(DMA2_Stream3,DMA_IT_HTIF0);
-	DMA_ClearITPendingBit(DMA2_Stream3,DMA_IT_TCIF0);
+	DMA_ClearITPendingBit(DMA2_Stream3,DMA_IT_HTIF3);
+	DMA_ClearITPendingBit(DMA2_Stream3,DMA_IT_TCIF3);
 	DMA_ITConfig(DMA2_Stream3,DMA_IT_TC,ENABLE);
 	DMA_ITConfig(DMA2_Stream3,DMA_IT_HT,ENABLE);	
 		
@@ -259,6 +258,7 @@ void ADC2_Init(void)
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	ADC_InitTypeDef ADC_InitStructure;
 	
+	//ADC_DeInit();
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE);
 	// PB0
@@ -272,6 +272,7 @@ void ADC2_Init(void)
 //	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, ENABLE);
 //	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, DISABLE);
 	// Common Set
+	//ADC_CommonInitStructure.ADC_Mode	= ADC_DualMode_RegSimult;									ADC_DualMode_RegSimult
 	ADC_CommonInitStructure.ADC_Mode	= ADC_Mode_Independent;
 	ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
 	ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div4;
@@ -279,7 +280,7 @@ void ADC2_Init(void)
 	ADC_CommonInit(&ADC_CommonInitStructure);
 	// ADC Set
 	ADC_InitStructure.ADC_Resolution	= ADC_Resolution_12b;
-	ADC_InitStructure.ADC_ScanConvMode  = DISABLE;
+	ADC_InitStructure.ADC_ScanConvMode  = ENABLE;//DISABLE;
 	ADC_InitStructure.ADC_NbrOfConversion = 1;
 	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
@@ -292,7 +293,7 @@ void ADC2_Init(void)
 	ADC_DMACmd(ADC2, ENABLE);
 	ADC_RegularChannelConfig(ADC2, ADC_Channel_8, 1, ADC_SampleTime_3Cycles); //ADC_SampleTime_3Cycles
 	ADC_DMARequestAfterLastTransferCmd(ADC2, ENABLE);
-	//ADC_SoftwareStartConv(ADC1);
+	//ADC_SoftwareStartConv(ADC2);
 }
 
 

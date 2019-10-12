@@ -5,7 +5,7 @@
 
 #include  "MyType.h"
 //#include "InterfaceScope.h"
-
+#include "Scope_Eval.h"
 
 typedef struct{
 	UINT8 nSFlag;
@@ -240,7 +240,9 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode);
 UINT8 HW_Disable_Data_Channel(eTestMode eMode);
 UINT8 HW_Clear_Data_Channel(eTestMode eMode);
 UINT8 Data_Circle_Handle(IO_ eTestMode eMode);
-
+void Eable_ADC(EN_TypeADC eType);
+void Disable_ADC(EN_TypeADC eType);
+	
 //yaolan_end
 //----------------------------------------------------------------------------------------------
 

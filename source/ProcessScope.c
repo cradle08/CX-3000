@@ -3237,11 +3237,14 @@ UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal)
 void Eable_ADC(EN_TypeADC eType)
 {
 	if(eType == EN_ADC1){
-		memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));	
+		memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
+		memset((void*)&ADC2_Status, 0, sizeof(ADC_Status_InitTypeDef));			
 		ADC1_Init(); //APP_ADC_Init(EN_ADC1);
 		ADC_SoftwareStartConv(ADC1);
 	}else if(eType == EN_ADC2){
+		memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
 		memset((void*)&ADC2_Status, 0, sizeof(ADC_Status_InitTypeDef));	
+		//DMA_Cmd(DMA2_Stream3, DISABLE);
 		ADC2_Init(); //APP_ADC_Init(EN_ADC2);
 		ADC_SoftwareStartConv(ADC2);
 	}else if(eType == EN_ADC3){
@@ -3266,6 +3269,9 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 		{
 			printf("---RBC MODE---\r\n");
 			Eable_ADC(EN_ADC2);
+//			Disable_ADC(EN_ADC2);
+//			Eable_ADC(EN_ADC2);
+			
 		}
 		break;
 		case EN_PLT_TEST:
