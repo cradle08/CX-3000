@@ -105,7 +105,7 @@ void ADC1_DMA_Config()
 	DMA_ITConfig(DMA2_Stream0,DMA_IT_HT,ENABLE);	
 		
 	NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream0_IRQn; 
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x02;   
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x00;   
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x00;                      
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
@@ -242,7 +242,7 @@ void ADC2_DMA_Config()
 	DMA_ITConfig(DMA2_Stream3,DMA_IT_HT,ENABLE);	
 		
 	NVIC_InitStructure.NVIC_IRQChannel=DMA2_Stream3_IRQn; 
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x01;   
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority=0x00;   
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority=0x00;                      
 	NVIC_InitStructure.NVIC_IRQChannelCmd=ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
@@ -261,7 +261,7 @@ void ADC2_Init(void)
 	
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE);
-	// PA5
+	// PB0
 	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_0;
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
@@ -1008,7 +1008,7 @@ void Pump_PWM_Init(UINT32 Arr, UINT32 Psc)
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;      
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;        
 	GPIO_Init(PUMP_CLK_PORT, &GPIO_InitStructure);        
-	GPIO_ResetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
+	GPIO_SetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
 	
 	TIM_DeInit(PUMP_PWM_TIM);
 	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  

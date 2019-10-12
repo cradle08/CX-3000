@@ -111,10 +111,6 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 //#define OUTIN_MOTOR_PIN_4					GPIO_Pin_*
 //#define OUTIN_MOTOR_SRC_4					RCC_AHB1Periph_GPIO*
 
-// OC for turn motor reset, and than select LED, PB6?????
-#define FIX_OC_CLK_PORT						GPIOB
-#define FIX_OC_CLK_PIN						GPIO_Pin_6
-#define FIX_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
 
 // OC for micro switch(cx3000), PD6
 #define MICRO_OC_PORT					GPIOD
@@ -126,10 +122,15 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define MICRO_OC_EXIT_FUNC				EXTI9_5_IRQHandler
 #define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
 
-// OC  for Out(cx3000), PB6
-#define OUT_OC_CLK_PORT						GPIOB
-#define OUT_OC_CLK_PIN						GPIO_Pin_6
-#define OUT_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
+// OC for turn motor reset, and than select LED, PB6
+#define FIX_OC_CLK_PORT						GPIOB
+#define FIX_OC_CLK_PIN						GPIO_Pin_6
+#define FIX_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
+
+// OC  for Out(cx3000), P**???? //todo...
+#define OUT_OC_CLK_PORT						GPIOI
+#define OUT_OC_CLK_PIN						GPIO_Pin_1
+#define OUT_OC_CLK_SRC						RCC_AHB1Periph_GPIOI
 
 // OC for in (cx3000), PB7
 #define IN_OC_CLK_PORT						GPIOB

@@ -292,7 +292,7 @@ void EVAL_Init(void)
 	
 	//-------------------------------------------
     // 6. FPGA init
-    IT_SYS_DlyMs(500); // attention: waiting the FPGA to be ready
+    //IT_SYS_DlyMs(500); // attention: waiting the FPGA to be ready
 #if !USE_STM32F407_ONLY
 	FPGA_Init();
 	FPGA_ResetHardware();
@@ -315,8 +315,12 @@ void EVAL_Init(void)
 	// 9. the timer of the system messages
 	PF_InitTimer2();
 #if USE_STM32F407_ONLY
-	ADC1_Init();//APP_ADC_Init(EN_ADC1);
-//	ADC2_Init();//APP_ADC_Init(EN_ADC2);
+
+	//ADC1_Init();//APP_ADC_Init(EN_ADC1);
+	ADC2_Init();//APP_ADC_Init(EN_ADC2);
+	
+	
+		
 	ADC3_Init();//APP_ADC_Init(EN_ADC3);
 	
 	Elec_Init();

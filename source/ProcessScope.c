@@ -3234,8 +3234,6 @@ UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal)
 //}
 
 
-
-
 void Eable_ADC(EN_TypeADC eType)
 {
 	if(eType == EN_ADC1){
@@ -3260,21 +3258,25 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 	{
 		case EN_WBC_TEST:
 		{
+			printf("---WBC MODE---\r\n");
 			Eable_ADC(EN_ADC1);
 		}
 		break;
 		case EN_RBC_TEST:
 		{
+			printf("---RBC MODE---\r\n");
 			Eable_ADC(EN_ADC2);
 		}
 		break;
 		case EN_PLT_TEST:
 		{
+			printf("---PLT MODE---\r\n");
 			Eable_ADC(EN_ADC2);
 		}
 		break;
 		case EN_RBC_PLT_TEST:
 		{
+			printf("---RBC PLT MODE---\r\n");
 			Eable_ADC(EN_ADC2);
 		}
 		break;

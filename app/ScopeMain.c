@@ -345,7 +345,6 @@ int main(void)
     ETH_BSP_Config();       /* configure ethernet */
     LwIP_Init();            /* Initilaize the LwIP stack */
     udp_echoserver_init();  /* UDP echoserver */
-
 	
 	Iint_SysParam();
 #if !USE_STM32F407_ONLY

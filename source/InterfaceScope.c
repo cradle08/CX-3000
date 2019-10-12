@@ -1029,6 +1029,7 @@ UINT8  HW_Valve_On(UINT8 chIndex)
 	}else if(chIndex == EN_VALVE_AIR){
 		Valve_Air_Exec(EN_OPEN);
 	}
+	return 0;
 }
 #else
 UINT8  HW_Valve_On(UINT8 chIndex)
@@ -1080,6 +1081,7 @@ UINT8  HW_Valve_On(UINT8 chIndex)
 		}else if(chIndex == EN_VALVE_AIR){
 			Valve_Air_Exec(EN_CLOSE);
 		}
+		return 0;
 	}		
 #else
 	UINT8  HW_Valve_Off(UINT8 chIndex)
@@ -1134,6 +1136,7 @@ UINT8  HW_Valve_On(UINT8 chIndex)
 	UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
 	{	
 		Pump_Exec(eDir, nFreq);
+		return 0;
 	}
 	
 #else
@@ -2318,42 +2321,74 @@ UINT8 Poll_SendDMA_ADC2_Data(UINT32 nCmd)
 			(int)ADC2_Status.nID, (int)ADC2_Status.nSendID, (int)IT_SYS_GetTicks());
 }
 
+
+UINT8 Get_ADC1_Buffer(UINT16* pData, UINT16* pLen)
+{
+	UINT16 i;
+	if(ADC1_Status.nSFlag == 1)
+	{
+		//ADC_Send(nCmd, ADC1_Status.nID, g_ADC1_Buffer);
+		for(i = 0; i < ADC1_BUFFER_LEN_HALF; i++)
+		{
+			*(pData + i) = g_ADC1_Buffer[i];
+		}
+		*pLen = ADC1_BUFFER_LEN_HALF;
+		ADC1_Status.nSFlag = 0xFF;
+		memset(g_ADC1_Buffer, 0, ADC1_BUFFER_LEN_HALF);
+		ADC1_Status.nSendID++;
+		return e_Feedback_Success;
+	}else if(ADC1_Status.nSFlag == 2){
+		//ADC_Send(nCmd, ADC1_Status.nID, &g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF]);
+		for(i = 0; i < ADC1_BUFFER_LEN_HALF; i++)
+		{
+			*(pData + i) = g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF + i];
+		}
+		*pLen = ADC1_BUFFER_LEN_HALF;
+		ADC1_Status.nSFlag = 0xFF;
+		memset(&g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF], 0, ADC1_BUFFER_LEN_HALF);
+		ADC1_Status.nSendID++;
+		return e_Feedback_Success;
+	}	
+	return e_Feedback_Fail;	
+}
+
+
+UINT8 Get_ADC2_Buffer(UINT16* pData, UINT16* pLen)
+{
+	UINT16 i;
+	if(ADC2_Status.nSFlag == 1)
+	{
+		for(i = 0; i < ADC2_BUFFER_LEN_HALF; i++)
+		{
+			*(pData + i) = g_ADC2_Buffer[i];
+		}
+		ADC2_Status.nSFlag = 0xFF;
+		memset(g_ADC2_Buffer, 0, ADC2_BUFFER_LEN_HALF);
+		ADC2_Status.nSendID++;
+		return e_Feedback_Success;
+	}else if(ADC2_Status.nSFlag == 2){
+		
+		for(i = 0; i < ADC2_BUFFER_LEN_HALF; i++)
+		{
+			*(pData + i) = g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF + i];
+		}
+		ADC2_Status.nSFlag = 0xFF;
+		memset(&g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF], 0, ADC2_BUFFER_LEN_HALF);
+		ADC2_Status.nSendID++;
+		return e_Feedback_Success;
+	}	
+	return e_Feedback_Fail;
+}
+	
 UINT8 HW_WBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 {
 	UINT8 nRet;
-	UINT16 i;
 #if	SIMUATION_TEST
 	memmove(pData, &g_Debug_Data, 512);
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		//nRet = Poll_SendDMA_ADC1_Data(CMD_DATA_TEST_WBC);
-		if(ADC1_Status.nSFlag == 1)
-		{
-			//ADC_Send(nCmd, ADC1_Status.nID, g_ADC1_Buffer);
-			
-			for(i = 0; i < ADC1_BUFFER_LEN_HALF; i++)
-			{
-				*(pData + i) = g_ADC1_Buffer[i];
-			}
-			*pLen = ADC1_BUFFER_LEN_HALF;
-			ADC1_Status.nSFlag = 0xFF;
-			memset(g_ADC1_Buffer, 0, ADC1_BUFFER_LEN_HALF);
-			ADC1_Status.nSendID++;
-			return e_Feedback_Success;
-		}else if(ADC1_Status.nSFlag == 2){
-			//ADC_Send(nCmd, ADC1_Status.nID, &g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF]);
-			for(i = 0; i < ADC1_BUFFER_LEN_HALF; i++)
-			{
-				*(pData + i) = g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF + i];
-			}
-			*pLen = ADC1_BUFFER_LEN_HALF;
-			ADC1_Status.nSFlag = 0xFF;
-			memset(&g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF], 0, ADC1_BUFFER_LEN_HALF);
-			ADC1_Status.nSendID++;
-			return e_Feedback_Success;
-		}	
-		return e_Feedback_Fail;
+		nRet = Get_ADC1_Buffer(pData, pLen);
 	#else 
 		//nRet = Poll_SendDMA_ADC1_Data(CMD_DATA_TEST_WBC);
 	#endif
@@ -2370,9 +2405,9 @@ UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 		*pLen = 256;
 #else
 	#if USE_STM32F407_ONLY
-		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC);
+		nRet = Get_ADC2_Buffer(pData, pLen);
 	#else 
-		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC);
+		//nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC);
 	#endif
 #endif
 	return nRet;
@@ -2386,9 +2421,9 @@ UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_PLT);
+		nRet = Get_ADC2_Buffer(pData, pLen);
 	#else 
-		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_PLT);
+		//nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_PLT);
 	#endif
 #endif
 	return nRet;
@@ -2402,7 +2437,7 @@ UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT);  
+		//nRet = Get_ADC2_Buffer(pData, pLen); 
 	#else 
 		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT); 
 	#endif
