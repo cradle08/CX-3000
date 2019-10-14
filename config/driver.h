@@ -119,7 +119,9 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define MICRO_OC_EXIT_PORT				EXTI_PortSourceGPIOD
 #define MICRO_OC_EXIT_PIN				EXTI_PinSource6
 #define MICRO_OC_EXIT_LINE				EXTI_Line6
+#if USE_STM32F407_ONLY
 #define MICRO_OC_EXIT_FUNC				EXTI9_5_IRQHandler
+#endif
 #define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
 
 // OC for turn motor reset, and than select LED, PB6
