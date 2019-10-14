@@ -5,15 +5,6 @@
 
 
 
-
-
-
-void ADC24Bit_Init(void)
-{
-	ADC24Bit_SPI_Init();
-	AD7799_Init();
-}
-
 void ADC24Bit_SPI_Init(void)
 {
 	  GPIO_InitTypeDef  GPIO_InitStructure;
@@ -57,8 +48,8 @@ void ADC24Bit_SPI_Init(void)
 	  GPIO_PinAFConfig(ADC24BIT_MISO_PORT, ADC24BIT_MISO_AF_SRC,   ADC24BIT_SPI_AF); 
  	  GPIO_PinAFConfig(ADC24BIT_CS_PORT,   ADC24BIT_CS_AF_SRC,     ADC24BIT_SPI_AF); 
 	  
-	  RCC_APB1PeriphResetCmd(ADC24BIT_SPI_SRC,ENABLE);
-	  RCC_APB1PeriphResetCmd(ADC24BIT_SPI_SRC,DISABLE);
+	  RCC_APB1PeriphResetCmd(ADC24BIT_SPI_SRC, ENABLE);
+	  RCC_APB1PeriphResetCmd(ADC24BIT_SPI_SRC, DISABLE);
 
 	  SPI_Cmd(ADC24BIT_SPI, DISABLE);
 	  SPI_InitStructure.SPI_Direction = SPI_Direction_2Lines_FullDuplex;  //设置SPI单向或者双向的数据模式:SPI设置为双线双向全双工
@@ -76,16 +67,25 @@ void ADC24Bit_SPI_Init(void)
 }
 
 
+void ADC24Bit_Init(void)
+{
+	ADC24Bit_SPI_Init();
+	AD7799_Init();
+}
 
-
-
-UINT32 ADC24Bit_Get_ADC(void)
+UINT16 ADC24Bit_SPI_GetByte(void)
 {
 	UINT16 nLow, nHigh;
     while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_RXNE) == RESET){}//等待发送区空  
-	SPI_I2S_ReceiveData(ADC24BIT_SPI);	   	
+	return SPI_I2S_ReceiveData(ADC24BIT_SPI);	   	
 }
 
+//
+void ADC24Bit_SPI_SendByte(UINT8 nData)
+{
+    while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_TXE) == RESET){}//等待发送区空  
+	SPI_I2S_SendData(ADC24BIT_SPI, nData);	
+}
 
 
 

@@ -78,7 +78,6 @@
 #define AD7799_IO2(x)		(((x) & 0x1) << 5)
 
 
-	
 // AD7799 for 24bits HGB and CRP data, SPI3_CLK_PC10, SPI3_MOSI_PB5(PC12),
 // SPI3_MISO_PB4(PC11)	SPI3_CS_PA15(PC13)
 #define ADC24BIT_CLK_PORT					GPIOC
@@ -114,9 +113,9 @@
 //
 void ADC24Bit_Init(void);
 void ADC24Bit_SPI_Init(void);
-void ADC24Bit_SPI_GetByte(void);
-void ADC24Bit_SPI_SendByte(void);
-//UINT32 ADC24Bit_Get_ADC(void);
+UINT16 ADC24Bit_SPI_GetByte(void);
+void ADC24Bit_SPI_SendByte(UINT8 nData);
+
 
 UINT8 AD7799_Init(void);
 UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size);
