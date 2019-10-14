@@ -2070,6 +2070,7 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 7:
 		{
+			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
 //			printf("start\r\n");
 //			OutIn_Motor_Enable();
 //			for(i = 0; i < 5; i++)
@@ -2098,6 +2099,7 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 8:
 		{	
+			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
 			//MT_X_Home(e_NormalCheck_Call); 
 //			
 //			nCurTime = IT_SYS_GetTicks();
@@ -2119,7 +2121,7 @@ void Driver_Debug(UINT8 nIndex)
 			//WBC_48V_Self_Check();
 			//Valve1_Self_Check();
 			//Valve2_Self_Check();
-			printf(" start\r\n");
+	
 //			
 //			Valve_Liquid_Exec(EN_OPEN);
 //			IT_SYS_DlyMs(500);
@@ -2127,18 +2129,14 @@ void Driver_Debug(UINT8 nIndex)
 //			IT_SYS_DlyMs(500);
 //			
 			//-----pump
-			Valve_Air_Exec(EN_OPEN);
-			Valve_Liquid_Exec(EN_OPEN);
-			IT_SYS_DlyMs(500);
+//			Valve_Air_Exec(EN_OPEN);
+//			Valve_Liquid_Exec(EN_OPEN);
+//			IT_SYS_DlyMs(500);
 			
-			//Pump_AntiClockWise();
-			TIM_SetCompare2(PUMP_PWM_TIM, PUMP_PWM_LEVEL_BEST);//Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_BEST);
-			IT_SYS_DlyMs(500);
-			IT_SYS_DlyMs(500);
-			IT_SYS_DlyMs(500);
-			Valve_Air_Exec(EN_CLOSE);
-			Valve_Liquid_Exec(EN_CLOSE);
-			TIM_SetCompare2(PUMP_PWM_TIM, PUMP_PWM_LEVEL_CLOSE);//Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+			//HW_Valve_On(EN_VALVE_AIR);
+//			Valve_Air_Exec(EN_CLOSE);
+//			Valve_Liquid_Exec(EN_CLOSE);
+//			TIM_SetCompare2(PUMP_PWM_TIM, PUMP_PWM_LEVEL_CLOSE);//Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
 
 			//----------- out in
 //			OutIn_Motor_Enable();
@@ -2148,12 +2146,9 @@ void Driver_Debug(UINT8 nIndex)
 //				OutIn_Motor_Run(OUTIN_MOTOR_PULSE_UP_TIME, OUTIN_MOTOR_PULSE_DOWN_TIME);
 //			}
 			//---------- press
-			printf("press=%010d, xk=%d\r\n", Get_Press_ADC(), Get_XK_ADC());
-			printf("press=%010d\r\n", (int)Get_Press_Value(5));
-			
 			//Pump_Exec(e_Dir_Pos, 14999);
 			//Pump_Self_Check();
-			printf(" end\r\n");
+
 			//Get_Press_Value(5);
 		}
 		break;

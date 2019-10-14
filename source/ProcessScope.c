@@ -2839,7 +2839,7 @@ INT32 Build_Press_Self_Check(void)
     if (nPress < BUILD_PRESS_RIGHT)
     {
 		HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);     // off
-		HW_Valve_Off(EN_OPEN);  /* all the air way  CKP CHANGED 20171219*/
+		HW_Valve_On(EN_VALVE_AIR);  /* all the air way  CKP CHANGED 20171219*/
 		HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
 
         // detect the press 1 and press 2 all the time
@@ -2858,7 +2858,7 @@ INT32 Build_Press_Self_Check(void)
                 if (nPress >=  (INT32)BUILD_PRESS_RIGHT /*&& nPress <= BUILD_PRESS_MAX*/)
                 {
 					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-					HW_Valve_Off(EN_CLOSE);  /* all the air way  CKP CHANGED 20171219*/
+					HW_Valve_Off(EN_VALVE_AIR);  /* all the air way  CKP CHANGED 20171219*/
 					HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
                     break;
                 }
@@ -2870,7 +2870,7 @@ INT32 Build_Press_Self_Check(void)
         // turn off
        
 		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-		HW_Valve_Off(EN_CLOSE);  /* all the air way  CKP CHANGED 20171219*/
+		HW_Valve_Off(EN_VALVE_AIR);  /* all the air way  CKP CHANGED 20171219*/
 		HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
         //-----------
         // to check the preeure
