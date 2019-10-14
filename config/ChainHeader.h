@@ -30,6 +30,8 @@
 #include "driver.h"
 #include "f4sys.h"
 #include "KernelHeader.h"
+#include "AD7799.h"
+
 
 #endif
 

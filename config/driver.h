@@ -7,7 +7,7 @@
 #include <stdio.h>        // for "printf" debug
 
 
-#define PRESS_SENSOR_ADC_TYPE				0
+#define PRESS_SENSOR_ADC_TYPE		0
 #if PRESS_SENSOR_ADC_TYPE
 	#define ADC3_CHECK_NUM			7
 #else
@@ -158,32 +158,7 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI2
 #define D_REGISTER_SPI_AF 					GPIO_AF_SPI2
 
-	
-// AD7799 for 24bits HGB and CRP data, SPI3_CLK_PC10, SPI3_MOSI_PB5(PC12),
-// SPI3_MISO_PB4(PC11)	SPI3_CS_PA15(PC13)
-#define ADC24BIT_CLK_PORT					GPIOC
-#define ADC24BIT_CLK_PIN					GPIO_Pin_10
-#define ADC24BIT_CLK_SRC					RCC_AHB1Periph_GPIOC
-#define ADC24BIT_CLK_AF_SRC 				GPIO_PinSource10
 
-#define ADC24BIT_MOSI_PORT					GPIOB
-#define ADC24BIT_MOSI_PIN					GPIO_Pin_5
-#define ADC24BIT_MOSI_SRC					RCC_AHB1Periph_GPIOB
-#define ADC24BIT_MOSI_AF_SRC 				GPIO_PinSource5
-
-#define ADC24BIT_MISO_PORT					GPIOB
-#define ADC24BIT_MISO_PIN					GPIO_Pin_4
-#define ADC24BIT_MISO_SRC					RCC_AHB1Periph_GPIOB
-#define ADC24BIT_MISO_AF_SRC 				GPIO_PinSource4
-
-#define ADC24BIT_CS_PORT					GPIOA
-#define ADC24BIT_CS_PIN						GPIO_Pin_15
-#define ADC24BIT_CS_SRC						RCC_AHB1Periph_GPIOA
-#define ADC24BIT_CS_AF_SRC 					GPIO_PinSource15
-
-#define ADC24BIT_SPI						SPI3
-#define ADC24BIT_SPI_SRC 					RCC_APB1Periph_SPI3
-#define ADC24BIT_SPI_AF 					GPIO_AF_SPI3
 
 // LED1-8, PI4--PI11
 // LED1
@@ -437,10 +412,6 @@ void LED_Cur_DAC_Set(UINT16 nVal); // adc
 void LED_Cur_Auto_Adjust(UINT16 nVal); // adc
 void LED_Exec(UINT8 nIndex, UINT8 nOpt);
 
-//
-void ADC24Bit_Init(void);
-void ADC24Bit_SPI_Init(void);
-UINT32 ADC24Bit_Get_ADC(void);
 
 // 
 void DResistor_Init(void);
@@ -470,6 +441,16 @@ void Driver_Debug(UINT8 nIndex);
 //void OutIn_Motor_Run(UINT16 nUp, UINT16 nDown);
 //UINT8 OutIn_Motor_Home(eModeType eMode);
 //UINT8 OutIn_Motor_Out(eModeType eMode);
+
+
+
+
+
+
+
+
+
+
 
 
 
