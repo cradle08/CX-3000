@@ -112,8 +112,8 @@ UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size)
 	UINT32 receivedData = 0x00;	
 	data[0] = AD7799_COMM_READ |  AD7799_COMM_ADDR(regAddress);
 	AD7799_CS_LOW;  
-	SPI_Write(data,1);
-	SPI_Read(data,size);
+//...	SPI_Write(data,1);
+//...	SPI_Read(data,size);
 	AD7799_CS_HIGH;
 	if(size == 1)
 	{
@@ -156,7 +156,7 @@ void AD7799_SetRegisterValue(UINT8 regAddress,
           data[1] = (UINT8)((regValue & 0xFF0000) >> 16);
     }
     AD7799_CS_LOW;	    
-    SPI_Write(data,(1 + size));
+//...    SPI_Write(data,(1 + size));
     AD7799_CS_HIGH;
 }
 
@@ -165,7 +165,7 @@ void AD7799_Reset(void)
 {
 	UINT8 dataToSend[5] = {0x03, 0xff, 0xff, 0xff, 0xff};
 	AD7799_CS_LOW;	    
-	SPI_Write(dataToSend,4);
+//...	SPI_Write(dataToSend,4);
 	AD7799_CS_HIGH;	
 }
 
