@@ -2362,6 +2362,7 @@ UINT8 Get_ADC2_Buffer(UINT16* pData, UINT16* pLen)
 		{
 			*(pData + i) = g_ADC2_Buffer[i];
 		}
+		*pLen = ADC1_BUFFER_LEN_HALF;
 		ADC2_Status.nSFlag = 0xFF;
 		memset(g_ADC2_Buffer, 0, ADC2_BUFFER_LEN_HALF);
 		ADC2_Status.nSendID++;
@@ -2372,6 +2373,7 @@ UINT8 Get_ADC2_Buffer(UINT16* pData, UINT16* pLen)
 		{
 			*(pData + i) = g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF + i];
 		}
+		*pLen = ADC1_BUFFER_LEN_HALF;
 		ADC2_Status.nSFlag = 0xFF;
 		memset(&g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF], 0, ADC2_BUFFER_LEN_HALF);
 		ADC2_Status.nSendID++;

@@ -136,6 +136,7 @@ void ADC1_Init(void)
 	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, ENABLE);
 	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC1, DISABLE);
 	// Common Set
+	ADC_Cmd(ADC1, DISABLE);
 	ADC_CommonInitStructure.ADC_Mode	= ADC_Mode_Independent;
 	ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;
 	ADC_CommonInitStructure.ADC_Prescaler = ADC_Prescaler_Div4;
@@ -143,13 +144,13 @@ void ADC1_Init(void)
 	ADC_CommonInit(&ADC_CommonInitStructure);
 	// ADC Set
 	ADC_InitStructure.ADC_Resolution	= ADC_Resolution_12b;
-#if DOUBLE_ADC_CHANNEL
-	ADC_InitStructure.ADC_ScanConvMode  = DISABLE;
-	ADC_InitStructure.ADC_NbrOfConversion = 2;
-#else
-	ADC_InitStructure.ADC_ScanConvMode  = DISABLE;
+//#if DOUBLE_ADC_CHANNEL
+//	ADC_InitStructure.ADC_ScanConvMode  = DISABLE;
+//	ADC_InitStructure.ADC_NbrOfConversion = 2;
+//#else
+	ADC_InitStructure.ADC_ScanConvMode  = ENABLE;
 	ADC_InitStructure.ADC_NbrOfConversion = 1;
-#endif
+//#endif
 	ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;
 	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
 	ADC_InitStructure.ADC_ExternalTrigConv  = ADC_ExternalTrigConv_T1_CC1;
@@ -198,7 +199,7 @@ void DMA2_Stream3_IRQHandler(void)
 		ADC2_Status.nSFlag = 1;
 		ADC2_Status.nID++;
 	}
-	
+
 	if (DMA_GetITStatus(DMA2_Stream3, DMA_IT_TCIF3) == SET)  
 	{
 		DMA_ClearITPendingBit(DMA2_Stream3, DMA_IT_TCIF3);
@@ -257,8 +258,8 @@ void ADC2_Init(void)
 	GPIO_InitTypeDef GPIO_InitStructure;
 	ADC_CommonInitTypeDef ADC_CommonInitStructure;
 	ADC_InitTypeDef ADC_InitStructure;
+	ADC_DeInit();
 	
-	//ADC_DeInit();
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE);
 	// PB0
@@ -272,6 +273,7 @@ void ADC2_Init(void)
 //	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, ENABLE);
 //	RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC2, DISABLE);
 	// Common Set
+	ADC_Cmd(ADC2, DISABLE);
 	//ADC_CommonInitStructure.ADC_Mode	= ADC_DualMode_RegSimult;									ADC_DualMode_RegSimult
 	ADC_CommonInitStructure.ADC_Mode	= ADC_Mode_Independent;
 	ADC_CommonInitStructure.ADC_TwoSamplingDelay = ADC_TwoSamplingDelay_5Cycles;

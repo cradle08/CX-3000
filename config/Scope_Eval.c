@@ -317,12 +317,12 @@ void EVAL_Init(void)
 #if USE_STM32F407_ONLY
 
 	ADC1_Init();//APP_ADC_Init(EN_ADC1);
-	// ...?
-	ADC_SoftwareStartConv(ADC1);
-	IT_SYS_DlyMs(10);
-	Disable_ADC(EN_ADC1);
-	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));	
-	
+//	// ...?
+//	ADC_SoftwareStartConv(ADC1);
+//	IT_SYS_DlyMs(10);
+//	Disable_ADC(EN_ADC1);
+//	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));	
+//	
 	ADC2_Init();//APP_ADC_Init(EN_ADC2);
 		
 	ADC3_Init();//APP_ADC_Init(EN_ADC3);

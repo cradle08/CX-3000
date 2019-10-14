@@ -3321,7 +3321,7 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 void Disable_ADC(EN_TypeADC eType)
 {
 	if(eType == EN_ADC1){
-		ADC_Cmd(ADC1, DISABLE);
+		//ADC_Cmd(ADC1, DISABLE);
 		ADC_DMACmd(ADC1, DISABLE);
 		DMA_Cmd(DMA2_Stream0, DISABLE);
 		
