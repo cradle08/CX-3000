@@ -78,6 +78,26 @@
 
 // AD7799 for 24bits HGB and CRP data, SPI3_CLK_PC10, SPI3_MOSI_PB5(PC12),
 // SPI3_MISO_PB4(PC11)	SPI3_CS_PA15(PC13)
+//#define ADC24BIT_CLK_PORT					GPIOC
+//#define ADC24BIT_CLK_PIN					GPIO_Pin_10
+//#define ADC24BIT_CLK_SRC					RCC_AHB1Periph_GPIOC
+//#define ADC24BIT_CLK_AF_SRC 				GPIO_PinSource10
+
+//#define ADC24BIT_MOSI_PORT					GPIOB
+//#define ADC24BIT_MOSI_PIN					GPIO_Pin_5
+//#define ADC24BIT_MOSI_SRC					RCC_AHB1Periph_GPIOB
+//#define ADC24BIT_MOSI_AF_SRC 				GPIO_PinSource5
+
+//#define ADC24BIT_MISO_PORT					GPIOB
+//#define ADC24BIT_MISO_PIN					GPIO_Pin_4
+//#define ADC24BIT_MISO_SRC					RCC_AHB1Periph_GPIOB
+//#define ADC24BIT_MISO_AF_SRC 				GPIO_PinSource4
+
+//#define ADC24BIT_CS_PORT					GPIOA
+//#define ADC24BIT_CS_PIN						GPIO_Pin_15
+//#define ADC24BIT_CS_SRC						RCC_AHB1Periph_GPIOA
+//#define ADC24BIT_CS_AF_SRC 					GPIO_PinSource15
+
 #define ADC24BIT_CLK_PORT					GPIOC
 #define ADC24BIT_CLK_PIN					GPIO_Pin_10
 #define ADC24BIT_CLK_SRC					RCC_AHB1Periph_GPIOC
@@ -97,6 +117,7 @@
 #define ADC24BIT_CS_PIN						GPIO_Pin_15
 #define ADC24BIT_CS_SRC						RCC_AHB1Periph_GPIOA
 #define ADC24BIT_CS_AF_SRC 					GPIO_PinSource15
+
 
 #define ADC24BIT_SPI						SPI3
 #define ADC24BIT_SPI_SRC 					RCC_APB1Periph_SPI3

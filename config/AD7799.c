@@ -4,7 +4,6 @@
 
 
 
-
 void ADC24Bit_SPI_Init(void)
 {
 	  GPIO_InitTypeDef  GPIO_InitStructure;
@@ -92,8 +91,8 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 	UINT8 i, nVal;
 	for(i = 0; i < nCount; i++)
 	{
-		nVal = ADC24Bit_SPI_GetByte();
-		*(pBuf + i) = nVal;
+		nVal = *(pBuf + i);
+		ADC24Bit_SPI_SendByte(nVal);	
 	}	
 }
 
@@ -103,8 +102,8 @@ void SPI_Read(UINT8 *pBuf, UINT8 nCount)
 	UINT8 i, nVal;
 	for(i = 0; i < nCount; i++)
 	{
-		nVal = *(pBuf + i);
-		ADC24Bit_SPI_SendByte(nVal);	
+		nVal = ADC24Bit_SPI_GetByte();
+		*(pBuf + i) = nVal;
 	}	
 	
 }

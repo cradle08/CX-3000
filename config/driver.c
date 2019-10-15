@@ -2189,8 +2189,10 @@ void Driver_Debug(UINT8 nIndex)
 //			printf("Fix Motor end\r\n");
 			
 		}
-		case 12: //B
+		case 12: //C
 		{
+			ADC24Bit_Init();
+			IT_SYS_DlyMs(10);
 			for(i = 0; i < 10; i++)
 			{
 				printf("AD7799 ADC = %d\r\n", (int)AD7799_Get_ADC_Value());
