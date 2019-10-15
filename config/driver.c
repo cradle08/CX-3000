@@ -977,7 +977,7 @@ void Beep(UINT16 nDelay)
 // pump
 void Pump_init(void)
 {
-	GPIO_InitTypeDef  GPIO_InitStructure;
+//	GPIO_InitTypeDef  GPIO_InitStructure;
 	RCC_AHB1PeriphClockCmd(PUMP_CLK_SRC|PUMP_DIR_SRC, ENABLE);
 //	// dir
 //	GPIO_InitStructure.GPIO_Pin = PUMP_DIR_PIN; 
@@ -1470,7 +1470,7 @@ void LED_Cur_DAC_Set(UINT16 nVal)
 //
 void LED_Cur_Auto_Adjust(UINT16 nVal)
 {
-	UINT16 nTempADC, nTempV;
+	UINT16 nTempADC;
 	UINT32 nCurTick, nTempTick;
 	
 	LED_Cur_Switch(EN_OPEN);
@@ -1936,7 +1936,7 @@ void DRegister_Write(UINT16 nCmd)
 
 void DResistor_Set(UINT8 nIndex, UINT8 nVal)
 {
-	UINT16 nCmd =0, nCh = 0x01;
+	UINT16 nCmd =0;
 	
 	nCmd = ((1 << 15) | ( nVal << 7));
 	DRegister_Write(nCmd);
@@ -1945,7 +1945,7 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal)
 
 void Driver_Debug(UINT8 nIndex)
 {
-	UINT32 nCurTime, nTempTime;
+//	UINT32 nCurTime, nTempTime;
 	UINT16 i = 0, val = 0;
 	UINT32 nPress;
 	switch(nIndex)
@@ -2168,7 +2168,7 @@ void Driver_Debug(UINT8 nIndex)
 			}
 		}
 		break;
-		case 11:  // fix motor
+		case 11:  // B  fix motor
 		{
 			printf("Fix Motor start\r\n");
 //			for(i = 0; i < 10; i++)
@@ -2189,6 +2189,14 @@ void Driver_Debug(UINT8 nIndex)
 //			printf("Fix Motor end\r\n");
 			
 		}
+		case 12: //B
+		{
+			for(i = 0; i < 10; i++)
+			{
+				printf("AD7799 ADC = %d\r\n", (int)AD7799_Get_ADC_Value());
+			}
+		}
+		break;
 		default:break;	
 	}	
 }

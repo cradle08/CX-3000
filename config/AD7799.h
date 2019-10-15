@@ -5,9 +5,7 @@
 #include "MyType.h"  
 
 
-//#define AD7799_CS_LOW  AD_CS_0()
-//#define AD7799_CS_HIGH  AD_CS_1()
-#define ADC_RDY_DAT (AD_DO)
+
 /*AD7799 Registers*/
 #define AD7799_REG_COMM		0 /* Communications Register(WO, 8-bit) */
 #define AD7799_REG_STAT	    0 /* Status Register	    (RO, 8-bit) */
@@ -107,6 +105,7 @@
 #define AD7799_CS_LOW	GPIO_SetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
 #define AD7799_CS_HIGH	GPIO_ResetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
 
+//#define ADC_RDY_DAT (AD_DO)
 
 
 
@@ -123,9 +122,9 @@ void AD7799_SetRegisterValue(UINT8 regAddress,
                              UINT32 regValue, 
                              UINT8 size);
 void AD7799_Reset(void);
-void AD7799_INIT(void);
 
 
+UINT32 AD7799_Get_ADC_Value(void);
 
 
 

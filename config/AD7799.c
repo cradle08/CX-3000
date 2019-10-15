@@ -75,7 +75,6 @@ void ADC24Bit_Init(void)
 
 UINT16 ADC24Bit_SPI_GetByte(void)
 {
-	UINT16 nLow, nHigh;
     while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_RXNE) == RESET){}//等待发送区空  
 	return SPI_I2S_ReceiveData(ADC24BIT_SPI);	   	
 }
@@ -88,22 +87,28 @@ void ADC24Bit_SPI_SendByte(UINT8 nData)
 }
 
 
-
-
-
-							 
-
-UINT8 AD7799_Init(void)
-{ 
-	UINT8 status = 0x1;
-	u32 ID=AD7799_GetRegisterValue(AD7799_REG_ID, 1);
-	if( (ID& 0x0F) != AD7799_ID)
+void SPI_Write(UINT8 *pBuf, UINT8 nCount)
+{
+	UINT8 i, nVal;
+	for(i = 0; i < nCount; i++)
 	{
-		status = 0x0;
-	}
-	
-	return(status);
+		nVal = ADC24Bit_SPI_GetByte();
+		*(pBuf + i) = nVal;
+	}	
 }
+
+
+void SPI_Read(UINT8 *pBuf, UINT8 nCount)
+{
+	UINT8 i, nVal;
+	for(i = 0; i < nCount; i++)
+	{
+		nVal = *(pBuf + i);
+		ADC24Bit_SPI_SendByte(nVal);	
+	}	
+	
+}
+			 
 
 
 UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size)
@@ -112,8 +117,8 @@ UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size)
 	UINT32 receivedData = 0x00;	
 	data[0] = AD7799_COMM_READ |  AD7799_COMM_ADDR(regAddress);
 	AD7799_CS_LOW;  
-//...	SPI_Write(data,1);
-//...	SPI_Read(data,size);
+	SPI_Write(data,1);
+	SPI_Read(data,size);
 	AD7799_CS_HIGH;
 	if(size == 1)
 	{
@@ -146,7 +151,7 @@ void AD7799_SetRegisterValue(UINT8 regAddress,
     }
     if(size == 2)
     {
-		   data[2] = (UINT8)((regValue & 0x0000FF) >> 0);
+		data[2] = (UINT8)((regValue & 0x0000FF) >> 0);
         data[1] = (UINT8)((regValue & 0x00FF00) >> 8);
     }
     if(size == 3)
@@ -156,7 +161,7 @@ void AD7799_SetRegisterValue(UINT8 regAddress,
           data[1] = (UINT8)((regValue & 0xFF0000) >> 16);
     }
     AD7799_CS_LOW;	    
-//...    SPI_Write(data,(1 + size));
+    SPI_Write(data,(1 + size));
     AD7799_CS_HIGH;
 }
 
@@ -165,7 +170,7 @@ void AD7799_Reset(void)
 {
 	UINT8 dataToSend[5] = {0x03, 0xff, 0xff, 0xff, 0xff};
 	AD7799_CS_LOW;	    
-//...	SPI_Write(dataToSend,4);
+	SPI_Write(dataToSend,4);
 	AD7799_CS_HIGH;	
 }
 
@@ -180,25 +185,78 @@ void AD7799_SetReference(UINT8 state)
 
 }
 
-void AD7799_INIT(void)
+
+
+//UINT8 AD7799_Init(void)
+//{ 
+//	UINT8 status = 0x01;
+//	u32 ID=AD7799_GetRegisterValue(AD7799_REG_ID, 1);
+//	if( (ID& 0x0F) != AD7799_ID)
+//	{
+//		status = 0x0;
+//		printf("AD7799 not ready at init\r\n");
+//	}
+//	
+//	return(status);
+//}
+
+
+void AD7799_Calibrate(void)
 {
-    UINT32 command;
+	AD7799_SetRegisterValue(AD7799_REG_CONF,0x2030,2);//内部通道校准
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0x9005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0xb005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0xd005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0xf005,2);IT_SYS_DlyMs(5);
+	
+	AD7799_SetRegisterValue(AD7799_REG_CONF,0x2031,2);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0x9005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0xb005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0xd005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0xf005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_CONF,0x2032,2);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0x9005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0xb005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0xd005,2);IT_SYS_DlyMs(5);
+	AD7799_SetRegisterValue(AD7799_REG_MODE,0xf005,2);IT_SYS_DlyMs(5);
+	
+	AD7799_SetRegisterValue(AD7799_REG_IO,0,1);//设置通道3 为ad输入
+}
+
+
+
+UINT8 AD7799_Init(void)
+{
+    UINT32 command, ID;
+	
+	ID=AD7799_GetRegisterValue(AD7799_REG_ID, 1);
+	if( (ID& 0x0F) != AD7799_ID)
+	{
+		printf("AD7799 not ready at init\r\n");
+	}
+	AD7799_Calibrate();
+	
     command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
     command &= ~AD7799_CONF_GAIN(0xFF);
-    command |= AD7799_CONF_GAIN(1);
+     command |= AD7799_CONF_GAIN(AD7799_GAIN_2);  //command |= AD7799_CONF_GAIN(1);
     AD7799_SetRegisterValue(AD7799_REG_CONF,command,2);
-    //todo... AD7799_SetReference();
+    AD7799_SetReference(1);
     command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
     command &= ~AD7799_CONF_CHAN(0xFF);
-    command |= AD7799_CONF_CHAN(2); //
+    command |= AD7799_CONF_CHAN(AD7799_CH_AIN1P_AIN1M); //
     AD7799_SetRegisterValue(AD7799_REG_CONF,command,2);
     command = AD7799_GetRegisterValue(AD7799_REG_MODE,2);
     command &= ~AD7799_MODE_SEL(0xFF);
-    command |= AD7799_MODE_SEL(0);// ??????
+    command |= AD7799_MODE_SEL(AD7799_MODE_CONT); // continuous
     AD7799_SetRegisterValue(AD7799_REG_MODE,command,2);
-
+	return 0;
 }
 
+
+UINT32 AD7799_Get_ADC_Value(void)
+{
+	return AD7799_GetRegisterValue(AD7799_REG_DATA,3);
+}
 
 
 
