@@ -341,7 +341,9 @@ int main(void)
     PL_InitProtocol();
     SPG_InitProtocol();
     EVAL_Init();            /* platform */
-
+	
+	ETH_BSP_Config();
+	IT_SYS_DlyMs(200);
     ETH_BSP_Config();       /* configure ethernet */
     LwIP_Init();            /* Initilaize the LwIP stack */
     udp_echoserver_init();  /* UDP echoserver */
