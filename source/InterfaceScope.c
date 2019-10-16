@@ -2330,6 +2330,7 @@ UINT8 Get_ADC1_Buffer(UINT16* pData, UINT16* pLen)
 		//ADC_Send(nCmd, ADC1_Status.nID, g_ADC1_Buffer);
 		for(i = 0; i < ADC1_BUFFER_LEN_HALF; i++)
 		{
+			//*(pData + i) = g_ADC1_Buffer[i] >> 8 | g_ADC1_Buffer[i] << 8;
 			*(pData + i) = g_ADC1_Buffer[i];
 		}
 		*pLen = ADC1_BUFFER_LEN_HALF;
@@ -2341,6 +2342,7 @@ UINT8 Get_ADC1_Buffer(UINT16* pData, UINT16* pLen)
 		//ADC_Send(nCmd, ADC1_Status.nID, &g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF]);
 		for(i = 0; i < ADC1_BUFFER_LEN_HALF; i++)
 		{
+			//*(pData + i) = g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF + i] >> 8 | g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF + i] << 8;
 			*(pData + i) = g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF + i];
 		}
 		*pLen = ADC1_BUFFER_LEN_HALF;
@@ -2439,9 +2441,9 @@ UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 	*pLen = 256;
 #else	
 	#if USE_STM32F407_ONLY
-		//nRet = Get_ADC2_Buffer(pData, pLen); 
+		nRet = Get_ADC2_Buffer(pData, pLen); 
 	#else 
-		nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT); 
+		//nRet = Poll_SendDMA_ADC2_Data(CMD_DATA_TEST_RBC_PLT); 
 	#endif
 #endif
 	return nRet;

@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\obj\CX-3000_SLA_V001.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\obj\CX-3000_SLA_V001.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Tue Oct 15 17:24:14 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Wed Oct 16 17:42:08 2019
 <BR><P>
 <H3>Maximum Stack Usage =        868 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1949,7 +1949,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_PLT_GetData
+<BR>[Called By]<UL><LI><a href="#[14d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_RBC_PLT_GetData
+<LI><a href="#[14c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_PLT_GetData
 <LI><a href="#[14b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_RBC_GetData
 </UL>
 
@@ -1977,11 +1978,15 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_Circle_Handle
 </UL>
 
-<P><STRONG><a name="[14d]"></a>HW_RBC_PLT_GetData</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, interfacescope.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_Circle_Handle
+<P><STRONG><a name="[14d]"></a>HW_RBC_PLT_GetData</STRONG> (Thumb, 26 bytes, Stack size 24 bytes, interfacescope.o(.text))
+<BR><BR>[Stack]<UL><LI>Max Depth = 40<LI>Call Chain = HW_RBC_PLT_GetData &rArr; Get_ADC2_Buffer
+</UL>
+<BR>[Calls]<UL><LI><a href="#[149]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_ADC2_Buffer
+</UL>
+<BR>[Called By]<UL><LI><a href="#[e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Data_Circle_Handle
 </UL>
 
-<P><STRONG><a name="[e0]"></a>Data_Circle_Handle</STRONG> (Thumb, 428 bytes, Stack size 24 bytes, interfacescope.o(.text))
+<P><STRONG><a name="[e0]"></a>Data_Circle_Handle</STRONG> (Thumb, 422 bytes, Stack size 24 bytes, interfacescope.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 508<LI>Call Chain = Data_Circle_Handle &rArr; LwIP_Periodic_Handle &rArr; tcp_tmr &rArr; tcp_fasttmr &rArr; tcp_process_refused_data &rArr; tcp_recv_null &rArr; tcp_close &rArr; tcp_close_shutdown &rArr; tcp_pcb_remove &rArr; tcp_output &rArr; tcp_output_segment &rArr; ip_output &rArr; ip_output_if &rArr; ip_frag &rArr; pbuf_alloc &rArr; pbuf_free &rArr; mem_free &rArr; plug_holes
 </UL>
 <BR>[Calls]<UL><LI><a href="#[14d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_RBC_PLT_GetData
