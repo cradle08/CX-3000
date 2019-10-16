@@ -42,6 +42,24 @@
 #define AD7799_MODE_CAL_INT_FULL 5 /* Internal Full-Scale Calibration */
 #define AD7799_MODE_CAL_SYS_ZERO 6 /* System Zero-Scale Calibration */
 #define AD7799_MODE_CAL_SYS_FULL 7 /* System Full-Scale Calibration */
+
+// update rates 
+#define AD7799_MODE_UPDATE_4        0xE	/*4.17 */
+#define AD7799_MODE_UPDATE_6        0xD	/* 6.25  */
+#define AD7799_MODE_UPDATE_8        0xC	/* 8.33  */
+#define AD7799_MODE_UPDATE_10       0xB	/* 10  */
+#define AD7799_MODE_UPDATE_12       0xA	/* 12.5  */
+#define AD7799_MODE_UPDATE_16       0x9	/* 16.7  */
+//#define AD7799_MODE_UPDATE_16       0x8	/* 16.7  */
+#define AD7799_MODE_UPDATE_19       0x7	/* 19.6  */
+#define AD7799_MODE_UPDATE_33       0x6	/* 33.2  */
+#define AD7799_MODE_UPDATE_39       0x5	/* 39  */
+#define AD7799_MODE_UPDATE_50       05x	/* 50  */
+#define AD7799_MODE_UPDATE_62       0x4	/* 62  */
+#define AD7799_MODE_UPDATE_123      0x3	/* 123  */
+#define AD7799_MODE_UPDATE_242      0x2	/* 242  */
+#define AD7799_MODE_UPDATE_470      0x1	/* 470  */
+
 /* Configuration Register Bit Designations (AD7799_REG_CONF) */
 #define AD7799_CONF_BO_EN	  (1 << 13) 			/* Burnout Current Enable */
 #define AD7799_CONF_UNIPOLAR  (1 << 12) 			/* Unipolar/Bipolar Enable */
