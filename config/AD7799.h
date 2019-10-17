@@ -50,7 +50,7 @@
 #define AD7799_MODE_UPDATE_10       0xB	/* 10  */
 #define AD7799_MODE_UPDATE_12       0xA	/* 12.5  */
 #define AD7799_MODE_UPDATE_16       0x9	/* 16.7  */
-//#define AD7799_MODE_UPDATE_16       0x8	/* 16.7  */
+//#define AD7799_MODE_UPDATE_16     0x8	/* 16.7  */
 #define AD7799_MODE_UPDATE_19       0x7	/* 19.6  */
 #define AD7799_MODE_UPDATE_33       0x6	/* 33.2  */
 #define AD7799_MODE_UPDATE_39       0x5	/* 39  */

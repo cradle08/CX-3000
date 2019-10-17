@@ -233,7 +233,7 @@ UINT8 AD7799_Init(void)
 	{
 		printf("AD7799 not ready at init\r\n");
 	}
-	AD7799_Calibrate();
+	//AD7799_Calibrate();
 	
     command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
     command &= ~AD7799_CONF_GAIN(0xFF);

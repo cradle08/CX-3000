@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\obj\CX-3000_SLA_V001.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\obj\CX-3000_SLA_V001.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Wed Oct 16 18:59:44 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Thu Oct 17 09:11:34 2019
 <BR><P>
 <H3>Maximum Stack Usage =        868 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3374,7 +3374,7 @@ Global Symbols
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Exec
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Cur_Switch
 <LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Beep
-<LI><a href="#[332]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Reset
+<LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Reset
 <LI><a href="#[32e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_GetRegisterValue
 <LI><a href="#[32b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetRegisterValue
 <LI><a href="#[312]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pump_PWM_Init
@@ -3393,7 +3393,7 @@ Global Symbols
 <LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Valve_Init
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OC_Init
 <LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Beep
-<LI><a href="#[332]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Reset
+<LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Reset
 <LI><a href="#[32e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_GetRegisterValue
 <LI><a href="#[32b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetRegisterValue
 <LI><a href="#[31d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Micro_OC_Init
@@ -4612,7 +4612,7 @@ Global Symbols
 <LI><a href="#[16d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ETH_FlushTransmitFIFO
 <LI><a href="#[169]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ETH_Init
 <LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Beep
-<LI><a href="#[330]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Calibrate
+<LI><a href="#[332]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Calibrate
 <LI><a href="#[3f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ETH_GPIO_Config
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ETH_link_callback
 </UL>
@@ -6086,7 +6086,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[329]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC24Bit_SPI_SendByte
 </UL>
-<BR>[Called By]<UL><LI><a href="#[332]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Reset
+<BR>[Called By]<UL><LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Reset
 <LI><a href="#[32e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_GetRegisterValue
 <LI><a href="#[32b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetRegisterValue
 </UL>
@@ -6098,8 +6098,8 @@ Global Symbols
 <LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 <LI><a href="#[32a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Write
 </UL>
-<BR>[Called By]<UL><LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
-<LI><a href="#[330]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Calibrate
+<BR>[Called By]<UL><LI><a href="#[332]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Calibrate
+<LI><a href="#[330]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
 <LI><a href="#[32f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetReference
 </UL>
 
@@ -6128,7 +6128,7 @@ Global Symbols
 <LI><a href="#[32d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Read
 <LI><a href="#[32a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Write
 </UL>
-<BR>[Called By]<UL><LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
+<BR>[Called By]<UL><LI><a href="#[330]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
 <LI><a href="#[32f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetReference
 <LI><a href="#[327]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Get_ADC_Value
 </UL>
@@ -6139,23 +6139,13 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[32e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_GetRegisterValue
 <LI><a href="#[32b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetRegisterValue
 </UL>
-<BR>[Called By]<UL><LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
+<BR>[Called By]<UL><LI><a href="#[330]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
 </UL>
 
-<P><STRONG><a name="[330]"></a>AD7799_Calibrate</STRONG> (Thumb, 266 bytes, Stack size 8 bytes, ad7799.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = AD7799_Calibrate &rArr; AD7799_SetRegisterValue &rArr; SPI_Write &rArr; ADC24Bit_SPI_SendByte &rArr; SPI_I2S_GetFlagStatus &rArr; assert_failed &rArr; __2printf
-</UL>
-<BR>[Calls]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_DlyMs
-<LI><a href="#[32b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetRegisterValue
-</UL>
-<BR>[Called By]<UL><LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
-</UL>
-
-<P><STRONG><a name="[331]"></a>AD7799_Init</STRONG> (Thumb, 174 bytes, Stack size 16 bytes, ad7799.o(.text))
+<P><STRONG><a name="[330]"></a>AD7799_Init</STRONG> (Thumb, 116 bytes, Stack size 16 bytes, ad7799.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = AD7799_Init &rArr; AD7799_SetReference &rArr; AD7799_GetRegisterValue &rArr; SPI_Read &rArr; ADC24Bit_SPI_GetByte &rArr; SPI_I2S_GetFlagStatus &rArr; assert_failed &rArr; __2printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[330]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Calibrate
-<LI><a href="#[32f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetReference
+<BR>[Calls]<UL><LI><a href="#[32f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetReference
 <LI><a href="#[32e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_GetRegisterValue
 <LI><a href="#[32b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetRegisterValue
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
@@ -6166,16 +6156,21 @@ Global Symbols
 <P><STRONG><a name="[326]"></a>ADC24Bit_Init</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, ad7799.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 136<LI>Call Chain = ADC24Bit_Init &rArr; AD7799_Init &rArr; AD7799_SetReference &rArr; AD7799_GetRegisterValue &rArr; SPI_Read &rArr; ADC24Bit_SPI_GetByte &rArr; SPI_I2S_GetFlagStatus &rArr; assert_failed &rArr; __2printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
+<BR>[Calls]<UL><LI><a href="#[330]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
 <LI><a href="#[328]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC24Bit_SPI_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
 </UL>
 
-<P><STRONG><a name="[332]"></a>AD7799_Reset</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, ad7799.o(.text), UNUSED)
+<P><STRONG><a name="[331]"></a>AD7799_Reset</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, ad7799.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 <LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 <LI><a href="#[32a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SPI_Write
+</UL>
+
+<P><STRONG><a name="[332]"></a>AD7799_Calibrate</STRONG> (Thumb, 328 bytes, Stack size 8 bytes, ad7799.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_DlyMs
+<LI><a href="#[32b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_SetRegisterValue
 </UL>
 
 <P><STRONG><a name="[327]"></a>AD7799_Get_ADC_Value</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, ad7799.o(.text))
@@ -7883,7 +7878,7 @@ Global Symbols
 <LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;start_run
 <LI><a href="#[167]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;assert_failed
 <LI><a href="#[26]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TIM2_IRQHandler
-<LI><a href="#[331]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
+<LI><a href="#[330]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
 <LI><a href="#[30f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_HGB_Value
 <LI><a href="#[3f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;udp_echoserver_receive_callback
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ETH_link_callback
