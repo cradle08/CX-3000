@@ -235,19 +235,31 @@ UINT8 AD7799_Init(void)
 	}
 	//AD7799_Calibrate();
 	
-    command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
-    command &= ~AD7799_CONF_GAIN(0xFF);
-     command |= AD7799_CONF_GAIN(AD7799_GAIN_2);  //command |= AD7799_CONF_GAIN(1);
-    AD7799_SetRegisterValue(AD7799_REG_CONF,command,2);
-    AD7799_SetReference(1);
-    command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
-    command &= ~AD7799_CONF_CHAN(0xFF);
-    command |= AD7799_CONF_CHAN(AD7799_CH_AIN1P_AIN1M); //
-    AD7799_SetRegisterValue(AD7799_REG_CONF,command,2);
-    command = AD7799_GetRegisterValue(AD7799_REG_MODE,2);
-    command &= ~AD7799_MODE_SEL(0xFF);
-    command |= AD7799_MODE_SEL(AD7799_MODE_CONT); // continuous
-    AD7799_SetRegisterValue(AD7799_REG_MODE,command,2);
+	// mode and updateR set, continuous Coversion Mode and 50Hz Update Rate(default:16.7)
+	command = AD7799_MODE_CONT | AD7799_MODE_RATE(AD7799_MODE_UPDATE_50);
+	AD7799_SetRegisterValue(AD7799_REG_MODE, command, 2);
+	
+	// config: Gain 0(in-amp not used,2.5V),  use buf, channel 1
+	command = AD7799_CONF_GAIN(AD7799_GAIN_1) | AD7799_CONF_BUF | AD7799_CH_AIN1P_AIN1M;
+	AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
+	
+	
+	
+	
+	
+//    command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
+//    command &= ~AD7799_CONF_GAIN(0xFF);
+//    command |= AD7799_CONF_GAIN(AD7799_GAIN_1);  //command |= AD7799_CONF_GAIN(1);
+//    AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
+//    //AD7799_SetReference(1);
+//    command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
+//    command &= ~AD7799_CONF_CHAN(0xFF);
+//    command |= AD7799_CONF_CHAN(AD7799_CH_AIN1P_AIN1M); //
+//    AD7799_SetRegisterValue(AD7799_REG_CONF,command, 2);
+//    command = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
+//    command &= ~AD7799_MODE_SEL(0xFF);
+//    command |= AD7799_MODE_SEL(AD7799_MODE_CONT); // continuous
+//    AD7799_SetRegisterValue(AD7799_REG_MODE,command, 2);
 	return 0;
 }
 

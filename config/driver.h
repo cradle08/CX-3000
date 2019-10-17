@@ -31,17 +31,26 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define ELEC_EXIT_NUM						EXTI15_10_IRQn
 //#define ELEC_EXIT_FUNC					EXTI15_10_IRQHandler
 #define ELEC_READ							GPIO_ReadInputDataBit(ELEC_PORT, ELEC_PIN)
-
 // elec ADC3_IN6 PF8
 #define ELEC_ADC_PORT							GPIOF
 #define ELEC_ADC_PIN							GPIO_Pin_8
 #define ELEC_ADC_SRC							RCC_AHB1Periph_GPIOF
 #define ELEC_ADC_CHANNEL						ADC_Channel_6
+// elec
+UINT16 Get_Elec_ADC(void);
+void Reset_Elec_Status(void);
+void Set_Elec_Status(void);
+UINT8 Get_Elec_Status(void);
+void Elec_Init(void);
+
 
 //beep PE3	
 #define BEEP_PORT							GPIOE
 #define BEEP_PIN							GPIO_Pin_3
 #define BEEP_SRC							RCC_AHB1Periph_GPIOE
+void Beep_Init(void);
+void Beep(UINT16 nDelay);
+
 
 // Pump PD13_CLK(TIM4_CH3), PD4_DIR
 #define PUMP_CLK_PORT						GPIOD
@@ -60,20 +69,39 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define PUMP_DIR_PORT						GPIOD
 #define PUMP_DIR_PIN						GPIO_Pin_4
 #define PUMP_DIR_SRC						RCC_AHB1Periph_GPIOD
+//
+void Pump_init(void);
+void Pump_PWM_Init(UINT32 Arr, UINT32 Psc);
+//void TIM4_PWM_Init(UINT32 Arr, UINT32 Psc);
+void Pump_Speed_Set(UINT16 nSpeed);
+void Pump_AntiClockWise(void);
+void Pump_ClockWise(void);
+void Pump_Exec(UINT8 nDir, UINT16 nFreq);
 
 // mixing motor, PB10
 #define MIXING_DIR_PORT						GPIOB
 #define MIXING_DIR_PIN						GPIO_Pin_10
 #define MIXING_DIR_SRC						RCC_AHB1Periph_GPIOB
+// mixing motor
+void Mixing_Motor_Init(void);
+void Mixing_Motor_Run(void);
+void Mixing_Motor_Stop(void);
+
 
 //switch 1_PF11, 2_PH6
 #define VALVE_AIR_PORT						GPIOF
 #define VALVE_AIR_PIN						GPIO_Pin_11
 #define VALVE_AIR_SRC						RCC_AHB1Periph_GPIOF
-
+//
 #define VALVE_LIQUID_PORT					GPIOH
 #define VALVE_LIQUID_PIN					GPIO_Pin_6
 #define VALVE_LIQUID_SRC					RCC_AHB1Periph_GPIOH
+// valve
+void Valve_Init(void);
+void Valve_Air_Exec(UINT8 nOpt);
+void Valve_Liquid_Exec(UINT8 nOpt);
+void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
+
 
 // turn motor, PB12, PB13, PB14, PB15
 #define TURN_MOTOR_PORT_1					GPIOB
@@ -128,37 +156,51 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define FIX_OC_CLK_PORT						GPIOB
 #define FIX_OC_CLK_PIN						GPIO_Pin_6
 #define FIX_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
-
 // OC  for Out(cx3000), P**???? //todo...
 #define OUT_OC_CLK_PORT						GPIOI
 #define OUT_OC_CLK_PIN						GPIO_Pin_1
 #define OUT_OC_CLK_SRC						RCC_AHB1Periph_GPIOI
-
 // OC for in (cx3000), PB7
 #define IN_OC_CLK_PORT						GPIOB
 #define IN_OC_CLK_PIN						GPIO_Pin_7
 #define IN_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
-
+//
+void OC_Init(void);
+UINT8 Get_Micro_OC_Status(void);
+UINT8 Get_Fix_OC_Status(void);
+UINT8 Get_Out_OC_Status(void);
+UINT8 Get_In_OC_Status(void);
 
 //cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS
 #define D_REGISTER_CLK_PORT					GPIOI
 #define D_REGISTER_CLK_PIN					GPIO_Pin_1
 #define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER_CLK_AF_SRC 				GPIO_PinSource1
-
+//
 #define D_REGISTER_MOSI_PORT				GPIOI
 #define D_REGISTER_MOSI_PIN					GPIO_Pin_3
 #define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER_MOSI_AF_SRC 				GPIO_PinSource3
-
+//
 #define D_REGISTER_CS_PORT					GPIOI
 #define D_REGISTER_CS_PIN					GPIO_Pin_0
 #define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER_CS_AF_SRC 				GPIO_PinSource0
-
+//
 #define D_REGISTER_SPI						SPI2
 #define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI2
 #define D_REGISTER_SPI_AF 					GPIO_AF_SPI2
+// 
+enum {
+	EN_DRESISTOR_CHAN0 = 0,
+	EN_DRESISTOR_CHAN1 = 1,
+	EN_DRESISTOR_CHAN2 = 2,
+	EN_DRESISTOR_CHAN3 = 3,
+};
+//
+void DResistor_Init(void);
+void DRegister_SPI_Init(void);
+void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 
 
 
@@ -221,6 +263,16 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define LED_SELECT_A2_PORT					GPIOH
 #define LED_SELECT_A2_PIN					GPIO_Pin_15
 #define LED_SELECT_A2_SRC					RCC_AHB1Periph_GPIOH
+//
+void LED_Init(void);
+void LED_Cur_DAC_Init(void);
+void LED_Cur_Switch(UINT8 nOpt);
+void LED_Cur_DAC_Set(UINT16 nVal); // adc
+void LED_Cur_Auto_Adjust(UINT16 nVal); // adc
+void LED_Exec(UINT8 nIndex, UINT8 nOpt);
+
+
+
 
 // XK ADC, PC3_ADC3_IN13	
 #define XK_ADC_PORT							GPIOC
@@ -277,6 +329,18 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define PRESS_I2C_SCL    					 PHout(4) //SCL 
 #define PRESS_I2C_SDA   	 				 PHout(5) //SDA	 
 #define PRESS_I2C_READ_SDA  				 PHin(5)  //SDA 
+//
+void Press_Init(void);
+void Press_I2C_Init(void);
+void Press_I2C_Start(void);
+void Press_I2C_Stop(void);
+UINT8 Press_I2C_Wait_Ack(void);
+void Press_I2C_Ack(void);
+void Press_I2C_NAck(void);
+void Press_I2C_Send_Byte(UINT8 nVal);
+UINT8 Press_I2C_Read_Byte(UINT8 nAck);
+INT32 Get_Press_I2C(void);
+
 
 // parameter define
 #define FIX_MOTOR_PULSE_UP_TIME					155
@@ -290,6 +354,14 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define TURN_MOTOR_MAX_CLOCKWISE_STEP			5000
 #define TURN_MOTOR_MAX_DELAY					4000
 #define TURN_MOTOR_MIN_DELAY					3000
+// turn motor
+void Turn_Motor_Init(void);
+UINT8 Turn_Motor_Reset(void);
+void Turn_Motor_Goto_Postion(UINT32 nStep);
+void Turn_Motor_Select_LED(UINT8 nIndex);
+
+
+
 // led cur adjust
 #define HGB_LED_CUR_ADJUST_VALUE					8
 #define CRP_LED_CUR_ADJUST_VALUE					8
@@ -337,20 +409,12 @@ typedef enum{
 	EN_MODE_SELF_CHECK = 1
 }eModeType;
 
+
+
+
 void ADC1_Init(void);
 void ADC2_Init(void);
 void ADC3_Init(void);
-
-void Press_Init(void);
-void Press_I2C_Init(void);
-void Press_I2C_Start(void);
-void Press_I2C_Stop(void);
-UINT8 Press_I2C_Wait_Ack(void);
-void Press_I2C_Ack(void);
-void Press_I2C_NAck(void);
-void Press_I2C_Send_Byte(UINT8 nVal);
-UINT8 Press_I2C_Read_Byte(UINT8 nAck);
-INT32 Get_Press_I2C(void);
 
 //UINT16 Get_Press(void);
 UINT16 Get_Press_ADC(void);
@@ -363,62 +427,9 @@ UINT32  HW_Get_ADC_CRP(void);
 UINT16  Get_HGB_Value(void);
 UINT32  Get_CRP_Value(void);
 
-// elec
-UINT16 Get_Elec_ADC(void);
-void Reset_Elec_Status(void);
-void Set_Elec_Status(void);
-UINT8 Get_Elec_Status(void);
-void Elec_Init(void);
-
-
-void Beep_Init(void);
-void Beep(UINT16 nDelay);
-
-void Pump_init(void);
-void Pump_PWM_Init(UINT32 Arr, UINT32 Psc);
-//void TIM4_PWM_Init(UINT32 Arr, UINT32 Psc);
-void Pump_Speed_Set(UINT16 nSpeed);
-void Pump_AntiClockWise(void);
-void Pump_ClockWise(void);
-void Pump_Exec(UINT8 nDir, UINT16 nFreq);
-
-// mixing motor
-void Mixing_Motor_Init(void);
-void Mixing_Motor_Run(void);
-void Mixing_Motor_Stop(void);
-
-// valve
-void Valve_Init(void);
-void Valve_Air_Exec(UINT8 nOpt);
-void Valve_Liquid_Exec(UINT8 nOpt);
-void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
-
-// turn motor
-void Turn_Motor_Init(void);
-UINT8 Turn_Motor_Reset(void);
-void Turn_Motor_Goto_Postion(UINT32 nStep);
-void Turn_Motor_Select_LED(UINT8 nIndex);
 
 //
-void OC_Init(void);
-UINT8 Get_Micro_OC_Status(void);
-UINT8 Get_Fix_OC_Status(void);
-UINT8 Get_Out_OC_Status(void);
-UINT8 Get_In_OC_Status(void);
 
-//
-void LED_Init(void);
-void LED_Cur_DAC_Init(void);
-void LED_Cur_Switch(UINT8 nOpt);
-void LED_Cur_DAC_Set(UINT16 nVal); // adc
-void LED_Cur_Auto_Adjust(UINT16 nVal); // adc
-void LED_Exec(UINT8 nIndex, UINT8 nOpt);
-
-
-// 
-void DResistor_Init(void);
-void DRegister_SPI_Init(void);
-void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 
 //
 void Driver_Debug(UINT8 nIndex);

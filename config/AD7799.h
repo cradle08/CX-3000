@@ -44,17 +44,17 @@
 #define AD7799_MODE_CAL_SYS_FULL 7 /* System Full-Scale Calibration */
 
 // update rates 
-#define AD7799_MODE_UPDATE_4        0xE	/*4.17 */
-#define AD7799_MODE_UPDATE_6        0xD	/* 6.25  */
-#define AD7799_MODE_UPDATE_8        0xC	/* 8.33  */
-#define AD7799_MODE_UPDATE_10       0xB	/* 10  */
-#define AD7799_MODE_UPDATE_12       0xA	/* 12.5  */
-#define AD7799_MODE_UPDATE_16       0x9	/* 16.7  */
-//#define AD7799_MODE_UPDATE_16     0x8	/* 16.7  */
-#define AD7799_MODE_UPDATE_19       0x7	/* 19.6  */
-#define AD7799_MODE_UPDATE_33       0x6	/* 33.2  */
-#define AD7799_MODE_UPDATE_39       0x5	/* 39  */
-#define AD7799_MODE_UPDATE_50       05x	/* 50  */
+#define AD7799_MODE_UPDATE_4        0xF	/*4.17 */
+#define AD7799_MODE_UPDATE_6        0xE	/* 6.25  */
+#define AD7799_MODE_UPDATE_8        0xD /* 8.33  */
+#define AD7799_MODE_UPDATE_10       0xC	/* 10  */
+#define AD7799_MODE_UPDATE_12       0xB	/* 12.5  */
+#define AD7799_MODE_UPDATE_16       0xA	/* 16.7  */
+//#define AD7799_MODE_UPDATE_16     0x9	/* 16.7  */
+#define AD7799_MODE_UPDATE_19       0x8	/* 19.6  */
+#define AD7799_MODE_UPDATE_33       0x7	/* 33.2  */
+#define AD7799_MODE_UPDATE_39       0x6	/* 39  */
+#define AD7799_MODE_UPDATE_50       0x5	/* 50  */
 #define AD7799_MODE_UPDATE_62       0x4	/* 62  */
 #define AD7799_MODE_UPDATE_123      0x3	/* 123  */
 #define AD7799_MODE_UPDATE_242      0x2	/* 242  */
@@ -92,6 +92,10 @@
 #define AD7799_IOEN			(1 << 6)
 #define AD7799_IO1(x)		(((x) & 0x1) << 4)
 #define AD7799_IO2(x)		(((x) & 0x1) << 5)
+
+
+#define AD7799_SET_CHAN_1_CMD  (AD7799_CONF_GAIN(AD7799_GAIN_1) | AD7799_CONF_BUF | AD7799_CH_AIN1P_AIN1M) 
+#define AD7799_SET_CHAN_2_CMD  (AD7799_CONF_GAIN(AD7799_GAIN_1) | AD7799_CONF_BUF | AD7799_CH_AIN2P_AIN2M) 
 
 
 // AD7799 for 24bits HGB and CRP data, SPI3_CLK_PC10, SPI3_MOSI_PB5(PC12),

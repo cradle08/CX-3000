@@ -1912,9 +1912,9 @@ void DRegister_SPI_Init(void)
 	  SPI_InitStructure.SPI_CPOL = SPI_CPOL_High;		//串行同步时钟的空闲状态为高电平
 	  SPI_InitStructure.SPI_CPHA = SPI_CPHA_2Edge;	//串行同步时钟的第二个跳变沿（上升或下降）数据被采样
 	  SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;		//NSS信号由硬件（NSS管脚）还是软件（使用SSI位）管理:内部NSS信号有SSI位控制
-	  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_256;		//定义波特率预分频的值:波特率预分频值为256
+	  SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_2;		//定义波特率预分频的值:波特率预分频值为256
 	  SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	//指定数据传输从MSB位还是LSB位开始:数据传输从MSB位开始
-	  SPI_InitStructure.SPI_CRCPolynomial = 10;	//CRC值计算的多项式
+	  SPI_InitStructure.SPI_CRCPolynomial = 7;	//CRC值计算的多项式
 	  SPI_Init(D_REGISTER_SPI, &SPI_InitStructure);  //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
 	 
 	  SPI_Cmd(D_REGISTER_SPI, ENABLE); //使能SPI外设
@@ -1938,7 +1938,7 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal)
 {
 	UINT16 nCmd =0;
 	
-	nCmd = ((1 << 15) | ( nVal << 7));
+	nCmd = (( nIndex & 0x03) << 8) | nVal;
 	DRegister_Write(nCmd);
 }
 
