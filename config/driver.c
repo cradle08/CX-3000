@@ -2189,6 +2189,7 @@ void Driver_Debug(UINT8 nIndex)
 //			printf("Fix Motor end\r\n");
 			
 		}
+		break;
 		case 12: //C
 		{
 			ADC24Bit_Init();

@@ -148,17 +148,29 @@
 #define AD7799_CS_LOW	GPIO_SetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
 #define AD7799_CS_HIGH	GPIO_ResetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
 
+#define AD_SCK_1()	GPIO_SetBits(ADC24BIT_CLK_PORT, ADC24BIT_CLK_PIN)
+#define AD_SCK_0()	GPIO_ResetBits(ADC24BIT_CLK_PORT, ADC24BIT_CLK_PIN)
+#define AD_CS_1()	GPIO_SetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
+#define AD_CS_0()	GPIO_ResetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
+#define AD_DI_1()	GPIO_SetBits(ADC24BIT_MOSI_PORT, ADC24BIT_MOSI_PIN)
+#define AD_DI_0()	GPIO_ResetBits(ADC24BIT_MOSI_PORT, ADC24BIT_MOSI_PIN)
+#define AD_DO()		GPIO_ReadInputDataBit(ADC24BIT_MISO_PORT, ADC24BIT_MOSI_PIN)
+
+
 //#define ADC_RDY_DAT (AD_DO)
 
 
-
+#define AD7799_USE_SPI_COMMUNICATION		0
 //
 void ADC24Bit_Init(void);
 void ADC24Bit_SPI_Init(void);
 UINT16 ADC24Bit_SPI_GetByte(void);
 void ADC24Bit_SPI_SendByte(UINT8 nData);
+void ADC24Bit_GPIO_Init(void);
 
 
+void SPI_Read(UINT8 *pBuf, UINT8 nCount);
+void SPI_Write(UINT8 *pBuf, UINT8 nCount);
 UINT8 AD7799_Init(void);
 UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size);
 void AD7799_SetRegisterValue(UINT8 regAddress,

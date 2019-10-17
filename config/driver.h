@@ -272,8 +272,6 @@ void LED_Cur_Auto_Adjust(UINT16 nVal); // adc
 void LED_Exec(UINT8 nIndex, UINT8 nOpt);
 
 
-
-
 // XK ADC, PC3_ADC3_IN13	
 #define XK_ADC_PORT							GPIOC
 #define XK_ADC_PIN							GPIO_Pin_3
@@ -340,7 +338,6 @@ void Press_I2C_NAck(void);
 void Press_I2C_Send_Byte(UINT8 nVal);
 UINT8 Press_I2C_Read_Byte(UINT8 nAck);
 INT32 Get_Press_I2C(void);
-
 
 // parameter define
 #define FIX_MOTOR_PULSE_UP_TIME					155
