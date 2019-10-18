@@ -1878,10 +1878,10 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
     cnt = 0;
     for (n = 0; n < ELECTRODE_GET_FILTER_NUM; n++)
     {
-		#if ONLY_USE_STM32F407
-        if (1 == HW_LEVEL_GetElectrode(chIndex))
-		#else
+		#if USE_STM32F407_ONLY
 		if(1 == Get_Elec_Status())
+		#else
+		if (1 == HW_LEVEL_GetElectrode(chIndex))
 		#endif
         {
             cnt += 1;
@@ -1896,7 +1896,7 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
 //#ifdef   DEBUG_TEST  /* 临时调试用，设置电极永远无法获取溢出信号 */
 //    return  1;
 //#else
- //   return  0;
+    return  0;
 //endif
 }
 

@@ -152,6 +152,9 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 #define MICRO_OC_EXIT_FUNC				EXTI9_5_IRQHandler
 #endif
 #define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
+void Micro_OC_Init(void);
+
+/////////////////
 
 // OC for turn motor reset, and than select LED, PB6
 #define FIX_OC_CLK_PORT						GPIOB

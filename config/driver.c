@@ -895,7 +895,6 @@ UINT8 Get_Elec_Status(void)
 #if ELEC_USE_EXIT_MODE
 void ELEC_EXIT_FUNC(void)
 {
-	
 	//IT_SYS_DlyMs(2);
 	if(ELEC_READ == 0) // low triggle
 	{
@@ -1307,6 +1306,8 @@ void MICRO_OC_EXIT_FUNC(void)
 	{
 		g_Micro_Switch = EN_CLOSE;
 	}
+	Beep(100);
+	printf("Mirco S IRQ\r\n");
 }
 
 void Micro_OC_Init(void)
@@ -1321,14 +1322,14 @@ void Micro_OC_Init(void)
 	GPIO_InitStructure.GPIO_Pin = MICRO_OC_PIN; 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_Init(MICRO_OC_PORT, &GPIO_InitStructure);
 	GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
 	
 	SYSCFG_EXTILineConfig(MICRO_OC_EXIT_PORT, MICRO_OC_EXIT_PIN);
 	EXTI_InitStructure.EXTI_Line = MICRO_OC_EXIT_LINE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising; // or down ????
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // or down ????
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&EXTI_InitStructure);
 	
@@ -2071,19 +2072,33 @@ void Driver_Debug(UINT8 nIndex)
 			printf("ADC end\r\n");
 		}
 		break;
-		case 6: // elec
+		case 6: // elec  and micro switch
 		{
+//			printf("start\r\n");
+//			Micro_OC_Init();
+//			for(i = 0; i < 10; i++)
+//			{
+//				GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				GPIO_SetBits(MICRO_OC_PORT, MICRO_OC_PIN);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//			}
 			Elec_Init();
 			for(i = 0; i < 10; i++)
 			{
-				printf("Eelc status =%d\r\n", Get_Elec_Status());
+				printf("Eelc status =%d, e=%d\r\n", Get_Elec_Status(), hw_filter_get_electrode(INDEX_ELECTRODE));
 			}
+			
+			
 //			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos); 
 //			Valve_Air_Exec(EN_OPEN);
 //			IT_SYS_DlyMs(500);
 //			IT_SYS_DlyMs(500);
 //			Valve_Air_Exec(EN_CLOSE);
 //			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos); //Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+			printf("end\r\n");
 		}
 		break;
 		case 7:
@@ -2211,11 +2226,31 @@ void Driver_Debug(UINT8 nIndex)
 		case 12: //C
 		{
 			ADC24Bit_Init();
-			IT_SYS_DlyMs(10);
+			IT_SYS_DlyMs(100);
 			for(i = 0; i < 10; i++)
 			{
 				printf("AD7799 ADC = %d\r\n", (int)AD7799_Get_ADC_Value());
+				IT_SYS_DlyMs(100);
 			}
+		}
+		break;
+		case 13: //D
+		{
+			printf("ADC1 and ADC2 test start\r\n");
+			UINT32 nCurTicks, nLstTicks;
+			Eable_ADC(EN_ADC1);
+			Eable_ADC(EN_ADC2);
+			nCurTicks = IT_SYS_GetTicks();
+			nLstTicks = nCurTicks;
+			while (nCurTicks <= (nLstTicks + 10))
+			{
+				Data_Circle_Handle(EN_WBC_TEST);
+				Data_Circle_Handle(EN_RBC_PLT_TEST);
+				nCurTicks = IT_SYS_GetTicks();
+			}
+			Disable_ADC(EN_ADC1);
+			Disable_ADC(EN_ADC1);
+			printf("ADC1 and ADC2 test end\r\n");
 		}
 		break;
 		default:break;	

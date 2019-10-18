@@ -236,11 +236,11 @@ void EVAL_Init(void)
 	RCC_GetClocksFreq(&tClockTree);
 #if 1
     // printf("\r\n--- SystemCoreClock = %d ---\r\n", SystemCoreClock);
-    printf("\r\n sys-clk = %d", tClockTree.SYSCLK_Frequency);
+    printf("\r\n SYS-clk = %d", tClockTree.SYSCLK_Frequency);
     printf("\r\n AHB-clk = %d", tClockTree.HCLK_Frequency);
     printf("\r\n APB1-clk = %d", tClockTree.PCLK1_Frequency);
     printf("\r\n APB2-clk = %d", tClockTree.PCLK2_Frequency);
-    printf("\r\n ");
+   // printf("\r\n ");
 #endif
     //-------------------------------------------
     // 2. Initialize and start the SysTick counter and its interrupt. 
@@ -289,7 +289,8 @@ void EVAL_Init(void)
 	EVAL_OutputInit(O_LAN8720_RST);
 	//EVAL_OutputInit(O_HEAT_1);//yaolan_20190715
 	//EVAL_OutputInit(O_HEAT_2);//yaolan_20190715
-	
+
+
 	//-------------------------------------------
     // 6. FPGA init
     //IT_SYS_DlyMs(500); // attention: waiting the FPGA to be ready
@@ -328,6 +329,7 @@ void EVAL_Init(void)
 	ADC3_Init();//APP_ADC_Init(EN_ADC3);
 	
 	Elec_Init();
+	//Micro_OC_Init();
 	Beep_Init();
 	Pump_init();
 	Valve_Init();

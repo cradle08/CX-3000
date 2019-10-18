@@ -160,7 +160,7 @@
 //#define ADC_RDY_DAT (AD_DO)
 
 
-#define AD7799_USE_SPI_COMMUNICATION		0
+#define AD7799_USE_SPI_COMMUNICATION		1
 //
 void ADC24Bit_Init(void);
 void ADC24Bit_SPI_Init(void);

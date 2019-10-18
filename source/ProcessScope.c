@@ -2648,24 +2648,24 @@ UINT8 MSG_TestingFunc(void)
 		}	
 		
 		//------to check the ELECTRODE------
-//		nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
-//        if (ELEC_STATUS_CLOSE == nTemp)  /* 流程正常结束 */
-//        {
-//			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
-//			Send_Last_FIFO_Data();
-//			printf("\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-//				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
-//#ifdef DEBUG_INFO_UP_LOAD
-//	    	sprintf((char*)sTempInfo, "\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-//				nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
-//			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-//			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
-//			*pDILen = nDILen;
-//#endif		
-//            break;
-//        }
+		nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
+        if (ELECTRODE_WASTE == nTemp)  /* 流程正常结束 */
+        {
+			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
+			Send_Last_FIFO_Data();
+			printf("\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+#ifdef DEBUG_INFO_UP_LOAD
+	    	sprintf((char*)sTempInfo, "\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+				nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
+			*pDILen = nDILen;
+#endif		
+            break;
+        }
 		//------to check press------
 //		nPress = 0;
 //		nPress =  Get_Press_Value(GET_PRESS_NUM_THREE);

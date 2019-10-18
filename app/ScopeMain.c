@@ -356,7 +356,7 @@ int main(void)
     start_run();
 
     /* test(); */
-    printf("\r\n ...... Readying ......\r\n");
+    printf("\r\n ...... Readying ...Data=%s...\r\n", __DATE__);
 //	Clear_FPGA_FIFO_Data();
 //	g_AirLight_Flag = e_Feedback_Fail;
 //	if(e_Feedback_Success == AirLight_Self_Check(e_SelfCheck_Call))
