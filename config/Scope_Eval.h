@@ -227,7 +227,7 @@ typedef enum
 #define IN_HOME_3_ET_LINE               EXTI_Line10   
 #define IN_HOME_3_ET_PORT               EXTI_PortSourceGPIOB
 #define IN_HOME_3_ET_PIN                EXTI_PinSource10
-#define IN_HOME_3_ET_IRQn               EXTI15_10_IRQn
+//#define IN_HOME_3_ET_IRQn               EXTI15_10_IRQn
 
 // PB11    home oc, motor 4
 #define IN_HOME_4_GPIO_PIN              GPIO_Pin_11
@@ -236,7 +236,7 @@ typedef enum
 #define IN_HOME_4_ET_LINE               EXTI_Line11   
 #define IN_HOME_4_ET_PORT               EXTI_PortSourceGPIOB
 #define IN_HOME_4_ET_PIN                EXTI_PinSource11
-#define IN_HOME_4_ET_IRQn               EXTI15_10_IRQn
+//#define IN_HOME_4_ET_IRQn               EXTI15_10_IRQn
 
 // PB12    home oc, motor 5
 #define IN_HOME_5_GPIO_PIN              GPIO_Pin_12
@@ -245,7 +245,7 @@ typedef enum
 #define IN_HOME_5_ET_LINE               EXTI_Line12   
 #define IN_HOME_5_ET_PORT               EXTI_PortSourceGPIOB
 #define IN_HOME_5_ET_PIN                EXTI_PinSource12
-#define IN_HOME_5_ET_IRQn               EXTI15_10_IRQn
+//#define IN_HOME_5_ET_IRQn               EXTI15_10_IRQn
 
 // PB13    home oc, motor 6
 #define IN_HOME_6_GPIO_PIN              GPIO_Pin_13
@@ -254,7 +254,7 @@ typedef enum
 #define IN_HOME_6_ET_LINE               EXTI_Line13   	
 #define IN_HOME_6_ET_PORT               EXTI_PortSourceGPIOB
 #define IN_HOME_6_ET_PIN                EXTI_PinSource13
-#define IN_HOME_6_ET_IRQn               EXTI15_10_IRQn
+//#define IN_HOME_6_ET_IRQn               EXTI15_10_IRQn
 
 // 2. the motor status oc-detect input
 // PG7     from the fpga, to be used as a external interrupt

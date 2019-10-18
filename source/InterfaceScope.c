@@ -1566,24 +1566,6 @@ UINT8 Get_WBC_V_Status(UINT32 nV)
 	else return EN_WBC_V_HIGH;
 }
 
-
-
-//yaolao_
-UINT8 HW_Status_Elec(UINT8 Index)
-{
-	UINT8 i = 0, count = 0;
-	for(i = 0; i < 5; i++)
-	{
-		if(HW_Get_ADC_Perip(Index) >= ELEC_TRIGGER_THRESHOLD)
-		{
-			count++;
-		}
-	}
-	if(count >= 3) return ELEC_STATUS_CLOSE;
-	else return ELEC_STATUS_OPEN;
-}
-
-
 INT32 Get_Press_Value(UINT8 nNum)
 {
 	UINT8 i;
@@ -1896,7 +1878,11 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
     cnt = 0;
     for (n = 0; n < ELECTRODE_GET_FILTER_NUM; n++)
     {
+		#if ONLY_USE_STM32F407
         if (1 == HW_LEVEL_GetElectrode(chIndex))
+		#else
+		if(1 == Get_Elec_Status())
+		#endif
         {
             cnt += 1;
         }
@@ -1907,11 +1893,11 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
         return  1;
     }
 
-#ifdef   DEBUG_TEST  /* 临时调试用，设置电极永远无法获取溢出信号 */
-    return  1;
-#else
-    return  0;
-#endif
+//#ifdef   DEBUG_TEST  /* 临时调试用，设置电极永远无法获取溢出信号 */
+//    return  1;
+//#else
+ //   return  0;
+//endif
 }
 
 //------------------------------

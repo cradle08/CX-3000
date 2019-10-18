@@ -866,39 +866,54 @@ UINT32  Get_CRP_Value(void)
 
 void Reset_Elec_Status(void)
 {
+#if ELEC_USE_EXIT_MODE
 	g_Elec_Status = 0;
+#else
+	GPIO_ResetBits(ELEC_PORT, ELEC_PIN);
+#endif
 }
 
 void Set_Elec_Status(void)
 {
+#if ELEC_USE_EXIT_MODE
 	g_Elec_Status = 1;
+#else
+	GPIO_SetBits(ELEC_PORT, ELEC_PIN);
+#endif
 }
 
 UINT8 Get_Elec_Status(void)
 {
+#if ELEC_USE_EXIT_MODE
 	return g_Elec_Status;
+#else
+	return GPIO_ReadInputDataBit(ELEC_PORT, ELEC_PIN);
+#endif
 }
 
-//void ELEC_EXIT_FUNC(void)
-//{
-//	
-//	IT_SYS_DlyMs(2);
-//	if(ELEC_READ == 0) // low triggle
-//	{
-//		Set_Elec_Status();
-//	}		 
-//	EXTI_ClearITPendingBit(ELEC_EXIT_LINE);
-//	printf("Elec Exit Func triggle, v=%d, status=%d\r\n", ELEC_READ, Get_Elec_Status());
-//}
 
+#if ELEC_USE_EXIT_MODE
+void ELEC_EXIT_FUNC(void)
+{
+	
+	//IT_SYS_DlyMs(2);
+	if(ELEC_READ == 0) // low triggle
+	{
+		Set_Elec_Status();
+	}		 
+	EXTI_ClearITPendingBit(ELEC_EXIT_LINE);
+	printf("Elec Exit Func triggle, v=%d, status=%d\r\n", ELEC_READ, Get_Elec_Status());
+}
+#endif
 
 
 void Elec_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
     EXTI_InitTypeDef EXTI_InitStructure;
+#if ELEC_USE_EXIT_MODE
     NVIC_InitTypeDef NVIC_InitStructure;
-  
+#endif
     // 1. enable the input pin Clock 
     RCC_AHB1PeriphClockCmd(ELEC_SRC, ENABLE);
 	
@@ -906,29 +921,29 @@ void Elec_Init(void)
 	GPIO_InitStructure.GPIO_Pin = ELEC_PIN;  
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;   
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; //100M
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP; 
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_DOWN; 
     GPIO_Init(ELEC_PORT, &GPIO_InitStructure); 
-
+//	GPIO_SetBits(ELEC_PORT, ELEC_PIN);
     // 3. extinal-interrupt model 
-//    if (eModel == IN_MODEL_EXTI)     
-//    {
-        // 1). enable the SYSCFG-clock
-        RCC_APB2PeriphClockCmd(ELEC_SRC, ENABLE);       
-        // 2). Connects EXTI Line to Button GPIO Pin 
-        SYSCFG_EXTILineConfig(ELEC_EXIT_SRC, ELEC_EXIT_PIN);    
-        // 3). Configure EXTI line 
-        EXTI_InitStructure.EXTI_Line = ELEC_EXIT_LINE;
-        EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;   
-        EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;  // all pins are rising detected         
-        EXTI_InitStructure.EXTI_LineCmd = ENABLE;               // enable interrupt line 		
-        EXTI_Init(&EXTI_InitStructure);                           
-        // 4). enable and set input EXTI Interrupt to the lowest priority 
-        NVIC_InitStructure.NVIC_IRQChannel = ELEC_EXIT_NUM;
-        NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;
-        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
-        NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;        // enable interrupt
-        NVIC_Init(&NVIC_InitStructure);    	
-//    }
+#if ELEC_USE_EXIT_MODE
+	// 1). enable the SYSCFG-clock
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);       
+	// 2). Connects EXTI Line to Button GPIO Pin 
+	SYSCFG_EXTILineConfig(ELEC_EXIT_SRC, ELEC_EXIT_PIN);    
+	// 3). Configure EXTI line 
+	EXTI_InitStructure.EXTI_Line = ELEC_EXIT_LINE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;   
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  // all pins are rising detected         
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;               // enable interrupt line 		
+	EXTI_Init(&EXTI_InitStructure);                           
+	// 4). enable and set input EXTI Interrupt to the lowest priority 
+	NVIC_InitStructure.NVIC_IRQChannel = ELEC_EXIT_NUM;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x01;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;        // enable interrupt
+	NVIC_Init(&NVIC_InitStructure);    	
+#endif
+
 }
 
 UINT16 Get_Elec_ADC(void)
@@ -2058,14 +2073,17 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 6: // elec
 		{
-			//printf("Elec Exit Func triggle, v=%d, status=%d\r\n", ELEC_READ, Get_Elec_Status());
-			//Valve_Liquid_Exec(EN_OPEN);						
-			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos); 
-			Valve_Air_Exec(EN_OPEN);
-			IT_SYS_DlyMs(500);
-			IT_SYS_DlyMs(500);
-			Valve_Air_Exec(EN_CLOSE);
-			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos); //Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+			Elec_Init();
+			for(i = 0; i < 10; i++)
+			{
+				printf("Eelc status =%d\r\n", Get_Elec_Status());
+			}
+//			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos); 
+//			Valve_Air_Exec(EN_OPEN);
+//			IT_SYS_DlyMs(500);
+//			IT_SYS_DlyMs(500);
+//			Valve_Air_Exec(EN_CLOSE);
+//			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos); //Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
 		}
 		break;
 		case 7:

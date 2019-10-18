@@ -2260,8 +2260,8 @@ UINT8 MSG_TestingFunc(void)
     }
 	
 	// check the ELECTRODE status
-	nTemp =  HW_Status_Elec(ADC_ELEC_INDEX);
-    if (ELEC_STATUS_CLOSE == nTemp)  // 1
+	nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);  // 1
+    if (ELECTRODE_WASTE == nTemp)  // 1
     {
         printf("Count Error: the ELECTRODE error = %d(before build press)\r\n", nTemp);
 #ifdef DEBUG_INFO_UP_LOAD
@@ -2371,8 +2371,7 @@ UINT8 MSG_TestingFunc(void)
 
     //==================
     // 2. check the ELECTRODE
-    //if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))  // 1
-	if (ELEC_STATUS_CLOSE == HW_Status_Elec(ADC_ELEC_INDEX))  //
+    if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))  // 1
     {
         //*****************************
         // Exception 2
@@ -2442,8 +2441,7 @@ UINT8 MSG_TestingFunc(void)
 		}	
 
         // to check the ELECTRODE
-        //if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))
-		if (ELEC_STATUS_CLOSE == HW_Status_Elec(ADC_ELEC_INDEX)) 
+        if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))
         {
 			printf("\r\nCount Error: the ELECTRODE error(4.5S), ticks=%08d, press=%010d, udp=%d, q=%d, f=%d\r\n", \
 									(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail);
@@ -2561,8 +2559,7 @@ UINT8 MSG_TestingFunc(void)
 //		IT_SYS_DlyMs(1);
 		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
         // to check the ELECTRODE
-        //if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))  /* 流程正常结束 */
-        if (ELEC_STATUS_CLOSE == HW_Status_Elec(ADC_ELEC_INDEX)) 
+        if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))  /* 流程正常结束 */
 		{
 			printf("Count Error: the ELECTRODE tigger(3S stop), ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 							(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
@@ -2638,21 +2635,20 @@ UINT8 MSG_TestingFunc(void)
 		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_SEND_FPGA_DATA);
 		Data_Circle_Handle(eMode);
 		//------get wbc data every 500ms------
-//		if((nCurTicks - nTempTicks1) >= 500) // 1ms per time
-//		{
-//			wbc_v = Get_XK_V_Value();
-//			printf("%d,", (int)wbc_v);
-//#ifdef DEBUG_INFO_UP_LOAD
-//			sprintf((char*)sTempInfo,"%d,", (int)wbc_v);
-//			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-//			*pDILen = nDILen;
-//#endif
-//			nTempTicks1 = nCurTicks;
-//		}	
+		if((nCurTicks - nTempTicks1) >= 500) // 1ms per time
+		{
+			wbc_v = Get_XK_V_Value();
+			printf("%d,", (int)wbc_v);
+#ifdef DEBUG_INFO_UP_LOAD
+			sprintf((char*)sTempInfo,"%d,", (int)wbc_v);
+			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+			*pDILen = nDILen;
+#endif
+			nTempTicks1 = nCurTicks;
+		}	
 		
 		//------to check the ELECTRODE------
-		//nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
-//		nTemp = HW_Status_Elec(ADC_ELEC_INDEX);
+//		nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
 //        if (ELEC_STATUS_CLOSE == nTemp)  /* 流程正常结束 */
 //        {
 //			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
@@ -2706,7 +2702,6 @@ UINT8 MSG_TestingFunc(void)
 	nTempTicks1  = IT_LIST_GetTicks();
 	nTempTicks = IT_ADC_GetTicks();
 	//nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
-	nTemp = HW_Status_Elec(ADC_ELEC_INDEX);
 	printf("Count Status(after count): ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)nTempTicks1, (int)nTempTicks, (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
 				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));

@@ -37,6 +37,7 @@ extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
 #define ELEC_ADC_SRC							RCC_AHB1Periph_GPIOF
 #define ELEC_ADC_CHANNEL						ADC_Channel_6
 // elec
+#define ELEC_USE_EXIT_MODE		0
 UINT16 Get_Elec_ADC(void);
 void Reset_Elec_Status(void);
 void Set_Elec_Status(void);

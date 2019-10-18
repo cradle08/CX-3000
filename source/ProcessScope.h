@@ -191,8 +191,8 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 
 #define HGB_MIX_THRESHOLD_V		4500		// 4500mv
 #define CRP_MIX_THRESHOLD_V		4500		// 4500mv
-#define ELEC_STATUS_OPEN     	1
-#define ELEC_STATUS_CLOSE    	0
+#define ELEC_STATUS_OPEN     	0
+#define ELEC_STATUS_CLOSE    	1	// high V is touch
 
 #define HGB_CALIBRATE_DATA_NUM	10
 //#define DISCARD_DATA_NUM		2
@@ -280,7 +280,7 @@ void Disable_ADC(EN_TypeADC eType);
 //-----------//
 #elif defined SAMPLE_CHIP_95UM
 //-----------//
-#define  ELECTRODE_WASTE               0                   /* 检测池溢出即退出检测流程 */
+#define  ELECTRODE_WASTE               1                   /* 检测池溢出即退出检测流程 */
 #define  PUMP_PRESS_OFF                0                   /* 气压泵停止工作 */
 #define  PUMP_PRESS_FREQ               12500 //21000               /* 气压泵驱动频率 */
 
