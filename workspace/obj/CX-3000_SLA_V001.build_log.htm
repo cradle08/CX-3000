@@ -1,0 +1,92 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+F:\CX-3000\CX-3000\workspace\prj\CX-3000.uvproj
+Project File Date:  10/17/2019
+
+<h2>Output:</h2>
+Build target 'Scope'
+linking...
+Program Size: Code=134244 RO-data=5052 RW-data=996 ZI-data=86084  
+FromELF: creating hex file...
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 0 Warning(s).
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Erase Failed!
+Internal command error
+Internal command error
+Error: Flash Download failed  -  "Cortex-M4"
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Erase Failed!
+Internal command error
+Internal command error
+Error: Flash Download failed  -  "Cortex-M4"
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+Application running ...
+</pre>
+</body>
+</html>
+s, i, j;
+..\..\source\ProcessScope.c: 4 warnings, 0 errors
+compiling Protocol.c...
+compiling InterfaceScope.c...
+compiling SamplingPort.c...
+compiling StorageManagement.c...
+compiling Fpga.c...
+compiling Scope_It.c...
+compiling Scope_Eval.c...
+..\..\config\Scope_Eval.c(423): warning:  #177-D: function "EVAL_InputInit" was declared but never referenced
+  void EVAL_InputInit(Input_TypeDef eIn, InModel_Typedef eModel)
+..\..\config\Scope_Eval.c: 1 warning, 0 errors
+compiling Scope_Move.c...
+compiling BufferCircle.c...
+compiling NetBufferCircle.c...
+compiling SampleBufferCircle.c...
+compiling InterruptBufferCircle.c...
+compiling driver.c...
+..\..\config\driver.c(577): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(595): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(607): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(619): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(632): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(645): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(657): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(853): warning:  #550-D: variable "Status" was set but never used
+        UINT8 Status;
+..\..\config\driver.c(854): warning:  #550-D: variable "Tempertaure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(934): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(1327): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 i, j;
+..\..\config\driver.c(1327): warning:  #177-D: variable "j" was declared but never referenced
+        UINT16 i, j;
+..\..\config\driver.c: 12 warnings, 0 errors
+compiling AD7799.c...
+..\..\config\AD7799.c(177): warning:  #177-D: variable "j" was declared but never referenced
+                UINT8 i, j, nVal;
+..\..\config\AD7799.c: 1 warning, 0 errors
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
+linking...
+Program Size: Code=134244 RO-data=5052 RW-data=996 ZI-data=86084  
+FromELF: creating hex file...
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 18 Warning(s).
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+Application running ...

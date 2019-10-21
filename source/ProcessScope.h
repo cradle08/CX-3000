@@ -280,7 +280,7 @@ void Disable_ADC(EN_TypeADC eType);
 //-----------//
 #elif defined SAMPLE_CHIP_95UM
 //-----------//
-#define  ELECTRODE_WASTE               0                   /* 检测池溢出即退出检测流程 */
+#define  ELECTRODE_WASTE               1                   /* 检测池溢出即退出检测流程 */
 #define  PUMP_PRESS_OFF                0                   /* 气压泵停止工作 */
 #define  PUMP_PRESS_FREQ               12500 //21000               /* 气压泵驱动频率 */
 

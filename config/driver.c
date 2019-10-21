@@ -2123,20 +2123,20 @@ void Driver_Debug(UINT8 nIndex)
 		case 6: // elec  and micro switch
 		{
 			printf("start\r\n");
-			Micro_OC_Init();
-			for(i = 0; i < 10; i++)
-			{
-				GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
-				IT_SYS_DlyMs(200);
-				GPIO_SetBits(MICRO_OC_PORT, MICRO_OC_PIN);
-				IT_SYS_DlyMs(200);
-			}
-			
-//			Elec_Init();
+//			Micro_OC_Init();
 //			for(i = 0; i < 10; i++)
 //			{
-//				printf("Eelc status =%d, e=%d\r\n", Get_Elec_Status(), hw_filter_get_electrode(INDEX_ELECTRODE));
+//				GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
+//				IT_SYS_DlyMs(200);
+//				GPIO_SetBits(MICRO_OC_PORT, MICRO_OC_PIN);
+//				IT_SYS_DlyMs(200);
 //			}
+			
+			Elec_Init();
+			for(i = 0; i < 10; i++)
+			{
+				printf("Eelc status =%d, e=%d\r\n", Get_Elec_Status(), hw_filter_get_electrode(INDEX_ELECTRODE));
+			}
 			
 			
 //			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos); 

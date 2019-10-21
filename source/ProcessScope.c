@@ -3053,7 +3053,7 @@ _EXT_ UINT32 WBC_48V_Self_Check(void)
 	UINT32 nVCheck, nVIn;
 	// adc
 	nVCheck = Get_XK_V_Value(); //Get_WBC_V_Value();// Get_XK_V_Value();
-	nVIn = nVCheck*422/22;
+	nVIn = nVCheck*21;
 	
 //	Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_WBC_48V, nWord);
 //	Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_WBC_48V, nVCheck);
@@ -3061,7 +3061,7 @@ _EXT_ UINT32 WBC_48V_Self_Check(void)
 	
     printf("WBC_48V Slef Check: wbc_v=%d, 48v=%d\r\n",\
 					 (int)nVCheck, (int)nVIn);
-	if(nVIn >= 40000 && nVIn <= 60000)
+	if(nVIn >= 55000 && nVIn <= 60000)
 	{
 		Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_WBC_48V, e_Feedback_Success);
 	}else{ // error

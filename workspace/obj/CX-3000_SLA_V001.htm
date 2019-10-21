@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\obj\CX-3000_SLA_V001.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\obj\CX-3000_SLA_V001.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Mon Oct 21 16:27:20 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Mon Oct 21 18:35:16 2019
 <BR><P>
 <H3>Maximum Stack Usage =        876 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -912,7 +912,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_Handling
 </UL>
 
-<P><STRONG><a name="[b8]"></a>WBC_48V_Self_Check</STRONG> (Thumb, 72 bytes, Stack size 16 bytes, processscope.o(.text))
+<P><STRONG><a name="[b8]"></a>WBC_48V_Self_Check</STRONG> (Thumb, 68 bytes, Stack size 16 bytes, processscope.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 428<LI>Call Chain = WBC_48V_Self_Check &rArr; Msg_Return_Handle_16 &rArr; PL_NET_SendResult &rArr; udp_echoserver_senddata &rArr; udp_sendto &rArr; udp_sendto_if &rArr; ip_output_if &rArr; ip_frag &rArr; pbuf_alloc &rArr; pbuf_free &rArr; mem_free &rArr; plug_holes
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_XK_V_Value
@@ -1057,7 +1057,7 @@ Global Symbols
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_TestingFunc
 </UL>
 
-<P><STRONG><a name="[db]"></a>MSG_TestingFunc</STRONG> (Thumb, 5138 bytes, Stack size 280 bytes, processscope.o(.text))
+<P><STRONG><a name="[db]"></a>MSG_TestingFunc</STRONG> (Thumb, 5128 bytes, Stack size 280 bytes, processscope.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 804<LI>Call Chain = MSG_TestingFunc &rArr; Send_Last_FIFO_Data &rArr; HW_LWIP_Working &rArr; LwIP_Periodic_Handle &rArr; tcp_tmr &rArr; tcp_fasttmr &rArr; tcp_process_refused_data &rArr; tcp_recv_null &rArr; tcp_close &rArr; tcp_close_shutdown &rArr; tcp_pcb_remove &rArr; tcp_output &rArr; tcp_output_segment &rArr; ip_output &rArr; ip_output_if &rArr; ip_frag &rArr; pbuf_alloc &rArr; pbuf_free &rArr; mem_free &rArr; plug_holes
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hw_filter_get_electrode
@@ -1097,7 +1097,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_Handling
 </UL>
 
-<P><STRONG><a name="[e2]"></a>MSG_Handling</STRONG> (Thumb, 1948 bytes, Stack size 64 bytes, processscope.o(.text))
+<P><STRONG><a name="[e2]"></a>MSG_Handling</STRONG> (Thumb, 1974 bytes, Stack size 64 bytes, processscope.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 868<LI>Call Chain = MSG_Handling &rArr; MSG_TestingFunc &rArr; Send_Last_FIFO_Data &rArr; HW_LWIP_Working &rArr; LwIP_Periodic_Handle &rArr; tcp_tmr &rArr; tcp_fasttmr &rArr; tcp_process_refused_data &rArr; tcp_recv_null &rArr; tcp_close &rArr; tcp_close_shutdown &rArr; tcp_pcb_remove &rArr; tcp_output &rArr; tcp_output_segment &rArr; ip_output &rArr; ip_output_if &rArr; ip_frag &rArr; pbuf_alloc &rArr; pbuf_free &rArr; mem_free &rArr; plug_holes
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;udp_echoserver_senddata
@@ -1793,7 +1793,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Elec_Status
 </UL>
-<BR>[Called By]<UL><LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_TestingFunc
+<BR>[Called By]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
+<LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_TestingFunc
 <LI><a href="#[af]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Part_Test_Check_Elec
 <LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Part_Test_WBC_And_Check_Elec
 </UL>
@@ -3340,7 +3341,6 @@ Global Symbols
 <LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mixing_Motor_Run
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Exec
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Cur_Switch
-<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
 <LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Beep
 <LI><a href="#[335]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Reset
 <LI><a href="#[333]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_GetRegisterValue
@@ -3359,7 +3359,6 @@ Global Symbols
 <LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mixing_Motor_Stop
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Exec
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Cur_Switch
-<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
 <LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Valve_Init
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OC_Init
 <LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Beep
@@ -5671,6 +5670,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[216]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ReadInputDataBit
 </UL>
 <BR>[Called By]<UL><LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hw_filter_get_electrode
+<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
 </UL>
 
 <P><STRONG><a name="[2df]"></a>Elec_Init</STRONG> (Thumb, 44 bytes, Stack size 16 bytes, driver.o(.text))
@@ -5679,7 +5679,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[214]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
 <LI><a href="#[23b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_AHB1PeriphClockCmd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EVAL_Init
+<BR>[Called By]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
+<LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EVAL_Init
 </UL>
 
 <P><STRONG><a name="[316]"></a>Get_Elec_ADC</STRONG> (Thumb, 86 bytes, Stack size 16 bytes, driver.o(.text))
@@ -5896,8 +5897,7 @@ Global Symbols
 <LI><a href="#[23f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB2PeriphClockCmd
 <LI><a href="#[23b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_AHB1PeriphClockCmd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
-<LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OC_Init
+<BR>[Called By]<UL><LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OC_Init
 </UL>
 
 <P><STRONG><a name="[2e3]"></a>OC_Init</STRONG> (Thumb, 132 bytes, Stack size 16 bytes, driver.o(.text))
@@ -6022,12 +6022,14 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[328]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRegister_Write
 </UL>
 
-<P><STRONG><a name="[e6]"></a>Driver_Debug</STRONG> (Thumb, 926 bytes, Stack size 32 bytes, driver.o(.text))
+<P><STRONG><a name="[e6]"></a>Driver_Debug</STRONG> (Thumb, 922 bytes, Stack size 32 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 540<LI>Call Chain = Driver_Debug &rArr; Data_Circle_Handle &rArr; LwIP_Periodic_Handle &rArr; tcp_tmr &rArr; tcp_fasttmr &rArr; tcp_process_refused_data &rArr; tcp_recv_null &rArr; tcp_close &rArr; tcp_close_shutdown &rArr; tcp_pcb_remove &rArr; tcp_output &rArr; tcp_output_segment &rArr; ip_output &rArr; ip_output_if &rArr; ip_frag &rArr; pbuf_alloc &rArr; pbuf_free &rArr; mem_free &rArr; plug_holes
 </UL>
 <BR>[Calls]<UL><LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Valve_Liquid_Exec
 <LI><a href="#[124]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Valve_Air_Exec
 <LI><a href="#[127]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Press_I2C
+<LI><a href="#[138]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Elec_Status
+<LI><a href="#[a9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hw_filter_get_electrode
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_GetTicks
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_PUMP_Pulse
 <LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_XK_ADC
@@ -6036,18 +6038,16 @@ Global Symbols
 <LI><a href="#[d6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Eable_ADC
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Disable_ADC
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_DlyMs
-<LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
-<LI><a href="#[21a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 <LI><a href="#[1cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DAC_GetDataOutputValue
 <LI><a href="#[1cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DAC_SetChannel1Data
 <LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Valve_Init
+<LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Elec_Init
 <LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Beep
 <LI><a href="#[2de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC3_Init
 <LI><a href="#[32a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC24Bit_Init
 <LI><a href="#[32b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Get_ADC_Value
 <LI><a href="#[323]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Cur_DAC_Init
 <LI><a href="#[322]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Out_OC_Status
-<LI><a href="#[321]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Micro_OC_Init
 <LI><a href="#[31e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Fix_OC_Status
 <LI><a href="#[318]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pump_Speed_Set
 <LI><a href="#[316]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Elec_ADC
