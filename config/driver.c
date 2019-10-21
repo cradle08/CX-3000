@@ -8,7 +8,7 @@
 
 IO_ UINT8 g_Elec_Status = 0;
 //IO_ UINT16 g_ADC2_Value[ADC2_CHECK_NUM] = {0};
-IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM] = {0};
+IO_ UINT16 g_ADC3_Value[EN_ADC_END] = {0};
 
 const unsigned int g_Turn_Motor_Table[4]={0xC000,0x6000,0x3000,0x9000};
 
@@ -299,21 +299,21 @@ void ADC2_Init(void)
 }
 
 
-u16 Get_Adc(UINT8 nCh, UINT8 nTime)   
-{
-	UINT8 i = 0;
-	UINT32 nVal = 0;
-	
-	for(i = 0; i < nTime; i++)
-	{
-		ADC_RegularChannelConfig(ADC1, nCh, 1, ADC_SampleTime_480Cycles );	    
-		ADC_SoftwareStartConv(ADC1);		
-		while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));
-		nVal += ADC_GetConversionValue(ADC1);	
-	}
-	nVal /= nTime;
-	return nVal;
-}
+//u16 Get_Adc(UINT8 nCh, UINT8 nTime)   
+//{
+//	UINT8 i = 0;
+//	UINT32 nVal = 0;
+//	
+//	for(i = 0; i < nTime; i++)
+//	{
+//		ADC_RegularChannelConfig(ADC1, nCh, 1, ADC_SampleTime_480Cycles );	    
+//		ADC_SoftwareStartConv(ADC1);		
+//		while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC ));
+//		nVal += ADC_GetConversionValue(ADC1);	
+//	}
+//	nVal /= nTime;
+//	return nVal;
+//}
 
 void ADC3_GPIO_Init(void){
 	
@@ -321,10 +321,11 @@ void ADC3_GPIO_Init(void){
 	
 	#if PRESS_SENSOR_ADC_TYPE
 		RCC_AHB1PeriphClockCmd(TEMP_ADC_SRC|CUR_56V_ADC_SRC|XK_ADC_SRC| \
-				LED_CUR_ADC_SRC|ELEC_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC|PRESS_ADC_SRC, ENABLE);
+				LED_CUR_ADC_SRC|ELEC_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC| \
+				CUR12N_ADC_SRC|CUR12P_ADC_SRC|PRESS_ADC_SRC, ENABLE);
 	#else
 		RCC_AHB1PeriphClockCmd(TEMP_ADC_SRC|CUR_56V_ADC_SRC|XK_ADC_SRC| \
-				LED_CUR_ADC_SRC|ELEC_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC, ENABLE);
+				CUR12N_ADC_SRC|CUR12P_ADC_SRC|LED_CUR_ADC_SRC|ELEC_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC, ENABLE);
 	#endif
 	// PF6_ADC3_IN4, LED_CUR
 	GPIO_InitStructure.GPIO_Pin		= LED_CUR_ADC_PIN;  
@@ -368,6 +369,20 @@ void ADC3_GPIO_Init(void){
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(SIG2_ADC_PORT, &GPIO_InitStructure);
+	
+	//  PA3_ADC3_IN3 ,12V_N
+	GPIO_InitStructure.GPIO_Pin		= CUR12N_ADC_PIN;		
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(CUR12N_ADC_PORT, &GPIO_InitStructure);
+	
+	//  PF10_ADC3_IN8 ,12V_N
+	GPIO_InitStructure.GPIO_Pin		= CUR12P_ADC_PIN;		
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(CUR12P_ADC_PORT, &GPIO_InitStructure);
 	
 	#if PRESS_SENSOR_ADC_TYPE
 		GPIO_InitStructure.GPIO_Pin		= PRESS_ADC_PIN; // PC2_ADC123_IN12 , Press
@@ -498,7 +513,7 @@ void ADC3_GPIO_Init(void){
 		// ADC Set
 		ADC_InitStructure.ADC_Resolution	= ADC_Resolution_12b;
 		ADC_InitStructure.ADC_ScanConvMode  = DISABLE;//ENABLE;//DISABLE;
-		ADC_InitStructure.ADC_NbrOfConversion = ADC3_CHECK_NUM;
+		ADC_InitStructure.ADC_NbrOfConversion = 1;
 		ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;//DISABLE;//ENABLE;// ENABLE;
 		ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
 		ADC_InitStructure.ADC_ExternalTrigConv  = ADC_ExternalTrigConvEdge_None;// ADC_ExternalTrigConv_T1_CC1; // ADC_ExternalTrigConvEdge_None
@@ -532,6 +547,174 @@ void ADC3_GPIO_Init(void){
 	
 #endif //ADC3_INIT_WITH_DMA
 
+
+UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
+{
+	UINT32 nVal = 0;
+	UINT8 i;
+	
+#if ADC3_INIT_WITH_DMA
+	nVal = g_ADC3_Value[nIndex];
+#else
+	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
+	ADC_Cmd(ADC3,ENABLE);
+	for(i = 0; i < nCount; i++)
+	{
+		ADC_RegularChannelConfig(ADC3, g_ADC3_IN[nIndex], 1, ADC_SampleTime_480Cycles ); 
+		ADC_SoftwareStartConv(ADC3);		
+		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
+		nVal += ADC_GetConversionValue(ADC3);	
+	}
+	nVal /= nCount;
+#endif
+	return nVal;
+	
+}
+
+//
+UINT16 Get_Press_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	nVal = g_ADC3_Value[EN_ADC_PRESS];
+#else
+	#if PRESS_SENSOR_ADC_TYPE
+		nVal = Get_ADC3_Channel_Value(EN_ADC_PRESS, ADC_SMOOTH_NUM_5);
+	#else
+		// IIC API ...
+		
+	#endif
+#endif
+	return nVal;
+}
+
+//
+UINT16 Get_XK_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	nVal = g_ADC3_Value[EN_ADC_XK];
+#else
+	nVal = Get_ADC3_Channel_Value(EN_ADC_XK, ADC_SMOOTH_NUM_5);
+#endif
+	return nVal;
+}
+
+UINT16 Get_12V_N_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	nVal = g_ADC3_Value[EN_ADC_12V_N];
+#else
+	nVal = Get_ADC3_Channel_Value(EN_ADC_12V_N, ADC_SMOOTH_NUM_5);
+#endif
+	return nVal;
+}
+
+UINT16 Get_12V_P_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	nVal = g_ADC3_Value[EN_ADC_12V_P];
+#else
+	nVal = Get_ADC3_Channel_Value(EN_ADC_12V_P, ADC_SMOOTH_NUM_5);
+#endif
+	return nVal;
+}
+
+//
+UINT16 Get_56V_Cur_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	//nVal = g_ADC3_Value[EN_ADC_56V_CUR];
+#else
+	nVal = Get_ADC3_Channel_Value(EN_ADC_56V_CUR, ADC_SMOOTH_NUM_5);
+#endif
+	return nVal;
+}
+
+//
+UINT16 Get_LED_Cur_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	//nVal = g_ADC3_Value[EN_ADC_LED_CUR];
+#else
+	nVal = Get_ADC3_Channel_Value(EN_ADC_LED_CUR, ADC_SMOOTH_NUM_5);
+#endif
+	return nVal;
+}
+
+UINT16 Get_Temp_ADC(void)
+{
+	UINT16 nVal = 0, i;
+	
+#if ADC3_INIT_WITH_DMA
+	//nVal = g_ADC3_Value[EN_ADC_LED_CUR];
+#else
+	nVal = Get_ADC3_Channel_Value(EN_ADC_TEMP, ADC_SMOOTH_NUM_5);
+#endif
+	return nVal;
+}
+
+//
+UINT32 HW_Get_ADC_HGB(void)
+{
+	UINT32 nVal = 0;
+	
+#if USE_STM32F407_ONLY
+	nVal = Get_ADC3_Channel_Value(EN_ADC_HGB, ADC_SMOOTH_NUM_30);
+#else	
+	nVal = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+	
+#endif
+	return nVal;
+}
+
+//
+UINT32  HW_Get_ADC_CRP(void)
+{
+	UINT32  nVal = 0;
+	
+#if USE_STM32F407_ONLY
+	nVal = Get_ADC3_Channel_Value(EN_ADC_CRP, ADC_SMOOTH_NUM_30);
+#else	
+	nVal = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+#endif
+	return nVal;
+}
+
+//
+UINT16  Get_HGB_Value(void)
+{
+	UINT16  nRet;
+	UINT32  nVal;
+	
+	nVal = HW_Get_ADC_CRP();
+	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
+	printf("HGB: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
+	return nRet;
+}
+
+//
+UINT32  Get_CRP_Value(void)
+{
+	UINT32 nVal, nRet;
+	
+	nVal = HW_Get_ADC_CRP();
+	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24;
+	//printf("CRP: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
+	return nRet;
+}
+
+	
 
 void Press_Init(void)
 {
@@ -701,168 +884,7 @@ INT32 Get_Press_I2C(void)
 	return Pressure_data;
 }
 
-//
-UINT16 Get_Press_ADC(void)
-{
-	UINT16 nVal = 0, i;
-	
-#if ADC3_INIT_WITH_DMA
-	nVal = g_ADC3_Value[0];
-#else
-	#if PRESS_SENSOR_ADC_TYPE
-		ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
-		ADC_Cmd(ADC3,ENABLE);
-		for(i = 0; i < 5; i++)
-		{
-			ADC_RegularChannelConfig(ADC3, ADC_Channel_12, 1, ADC_SampleTime_3Cycles );
-			ADC_SoftwareStartConv(ADC3);		
-			while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-			nVal += ADC_GetConversionValue(ADC3);	
-		}
-		nVal /= 5;
-	#else
-		// IIC API ...
-		
-	#endif
-#endif
-	return nVal;
-}
 
-//
-UINT16 Get_XK_ADC(void)
-{
-	UINT16 nVal = 0, i;
-	
-#if ADC3_INIT_WITH_DMA
-	nVal = g_ADC3_Value[1];
-#else
-	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
-	ADC_Cmd(ADC3,ENABLE);
-	for(i = 0; i < 5; i++)
-	{
-		ADC_RegularChannelConfig(ADC3, XK_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles ); 
-		ADC_SoftwareStartConv(ADC3);		
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nVal += ADC_GetConversionValue(ADC3);	
-	}
-	nVal /= 5;
-#endif
-	return nVal;
-}
-
-//
-UINT16 Get_56V_Cur_ADC(void)
-{
-	UINT16 nVal = 0, i;
-	
-#if ADC3_INIT_WITH_DMA
-	//nVal = g_ADC3_Value[1];
-#else
-	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
-	ADC_Cmd(ADC3,ENABLE);
-	for(i = 0; i < 5; i++)
-	{
-		ADC_RegularChannelConfig(ADC3, CUR_56V_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles ); 
-		ADC_SoftwareStartConv(ADC3);		
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nVal += ADC_GetConversionValue(ADC3);	
-	}
-	nVal /= 5;
-#endif
-	return nVal;
-}
-
-//
-UINT16 Get_LED_Cur_ADC(void)
-{
-	UINT16 nVal = 0, i;
-	
-#if ADC3_INIT_WITH_DMA
-	//nVal = g_ADC3_Value[1];
-#else
-	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
-	ADC_Cmd(ADC3,ENABLE);
-	for(i = 0; i < 5; i++)
-	{
-		ADC_RegularChannelConfig(ADC3, LED_CUR_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles ); 
-		ADC_SoftwareStartConv(ADC3);		
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nVal += ADC_GetConversionValue(ADC3);	
-	}
-	nVal /= 5;
-#endif
-	return nVal;
-}
-
-//
-UINT32 HW_Get_ADC_HGB(void)
-{
-	UINT8 i;
-	UINT32 nRet = 0;
-	
-#if USE_STM32F407_ONLY
-	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
-	ADC_Cmd(ADC3,ENABLE);
-	for(i = 0; i < 30; i++)
-	{
-		ADC_RegularChannelConfig(ADC3, SIG2_ADC_CHANNEL, 1, ADC_SampleTime_480Cycles ); 
-		ADC_SoftwareStartConv(ADC3);	
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nRet += ADC_GetConversionValue(ADC3);	
-	}
-	nRet /= 30;	
-#else	
-	nRet = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
-	
-#endif
-	return nRet;
-}
-
-//
-UINT32  HW_Get_ADC_CRP(void)
-{
-	UINT8 i;
-	UINT32  nRet = 0;
-	
-#if USE_STM32F407_ONLY
-	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
-	ADC_Cmd(ADC3,ENABLE);
-	for(i = 0; i < 30; i++)
-	{
-		ADC_RegularChannelConfig(ADC3, SIG1_ADC_CHANNEL, 1, ADC_SampleTime_480Cycles ); 
-		ADC_SoftwareStartConv(ADC3);		
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nRet += ADC_GetConversionValue(ADC3);	
-	}
-	nRet /= 30;
-#else	
-	nRet = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
-#endif
-	return nRet;
-}
-
-//
-UINT16  Get_HGB_Value(void)
-{
-	UINT16  nRet;
-	UINT32  nVal;
-	
-	nVal = HW_Get_ADC_CRP();
-	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
-	printf("HGB: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
-	return nRet;
-}
-
-//
-UINT32  Get_CRP_Value(void)
-{
-	UINT32 nVal, nRet;
-	
-	nVal = HW_Get_ADC_CRP();
-	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24;
-	//printf("CRP: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
-	return nRet;
-}
 
 void Reset_Elec_Status(void)
 {
@@ -1299,15 +1321,30 @@ void Turn_Motor_Select_LED(UINT8 nIndex)
 }
 
 // for micro oc exit interrupt
-void MICRO_OC_EXIT_FUNC(void)
+//void MICRO_OC_EXIT_FUNC(void)
+void EXTI9_5_IRQHandler(void)
 {
-	// read micro oc status
-	if(GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN) == EN_CLOSE)
-	{
-		g_Micro_Switch = EN_CLOSE;
+	UINT16 i, j;
+	if(RESET != EXTI_GetITStatus(MICRO_OC_EXIT_LINE))
+    {
+        EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
+		// read micro oc status
+		if(GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN) == EN_CLOSE)
+		{
+			g_Micro_Switch = EN_CLOSE;
+		}
+		Beep(50);
+//		GPIO_SetBits(BEEP_PORT, BEEP_PIN);
+//		for(i = 0; i < 16800; i ++)
+//		{	
+//			for(j = 0; j <1000; j++)
+//			{
+//				;
+//			}	
+//		}
+//		GPIO_ResetBits(BEEP_PORT, BEEP_PIN);
+		printf("Mirco S IRQ\r\n");
 	}
-	Beep(100);
-	printf("Mirco S IRQ\r\n");
 }
 
 void Micro_OC_Init(void)
@@ -1317,19 +1354,21 @@ void Micro_OC_Init(void)
 	EXTI_InitTypeDef   EXTI_InitStructure;
 	
 	RCC_AHB1PeriphClockCmd(MICRO_OC_SRC, ENABLE);
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 	// micro switch, with EXIT interupt
 	GPIO_InitStructure.GPIO_Pin = MICRO_OC_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	//GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_Init(MICRO_OC_PORT, &GPIO_InitStructure);
 	GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
 	
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);       
 	SYSCFG_EXTILineConfig(MICRO_OC_EXIT_PORT, MICRO_OC_EXIT_PIN);
 	EXTI_InitStructure.EXTI_Line = MICRO_OC_EXIT_LINE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // or down ????
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising; // or down ????
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&EXTI_InitStructure);
 	
@@ -2052,44 +2091,52 @@ void Driver_Debug(UINT8 nIndex)
 		{
 			printf("ADC start\r\n");
 			ADC3_Init();
+			IT_SYS_DlyMs(100);
+			
 			val = Get_56V_Cur_ADC();
 			printf("56V, ADC=%d, V=%d\r\n", val, val*3300/4095);  
 		
 			val = Get_XK_ADC();
 			printf("XK, ADC=%d, V=%d\r\n", val, val*3300/4095); 
 			
-			val = Get_LED_Cur_ADC();
-			printf("LED CUR, ADC=%d, V=%d\r\n", val, val*3300/4095); 
-			
-			val = HW_Get_ADC_HGB();
-			printf("HGB, ADC=%d, V=%d\r\n", val, val*3300/4095); 
-			
-			val = HW_Get_ADC_CRP();
-			printf("CRP, ADC=%d, V=%d\r\n", val, val*3300/4095); 
-						
+//			val = Get_LED_Cur_ADC();
+//			printf("LED CUR, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+//			
+//			val = HW_Get_ADC_HGB();
+//			printf("HGB, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+//			
+//			val = HW_Get_ADC_CRP();
+//			printf("CRP, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+//						
 			val = Get_Elec_ADC();
 			printf("ELEC, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+			
+			val = Get_12V_N_ADC();
+			printf("12V N, ADC=%d, V=%d\r\n", val, val*3300/4095); 
+			
+			val = Get_12V_P_ADC();
+			printf("12V_P, ADC=%d, V=%d\r\n", val, val*3300/4095); 
 			printf("ADC end\r\n");
+			IT_SYS_DlyMs(100);
 		}
 		break;
 		case 6: // elec  and micro switch
 		{
-//			printf("start\r\n");
-//			Micro_OC_Init();
-//			for(i = 0; i < 10; i++)
-//			{
-//				GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
-//				IT_SYS_DlyMs(500);
-//				IT_SYS_DlyMs(500);
-//				GPIO_SetBits(MICRO_OC_PORT, MICRO_OC_PIN);
-//				IT_SYS_DlyMs(500);
-//				IT_SYS_DlyMs(500);
-//			}
-			Elec_Init();
+			printf("start\r\n");
+			Micro_OC_Init();
 			for(i = 0; i < 10; i++)
 			{
-				printf("Eelc status =%d, e=%d\r\n", Get_Elec_Status(), hw_filter_get_electrode(INDEX_ELECTRODE));
+				GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
+				IT_SYS_DlyMs(200);
+				GPIO_SetBits(MICRO_OC_PORT, MICRO_OC_PIN);
+				IT_SYS_DlyMs(200);
 			}
+			
+//			Elec_Init();
+//			for(i = 0; i < 10; i++)
+//			{
+//				printf("Eelc status =%d, e=%d\r\n", Get_Elec_Status(), hw_filter_get_electrode(INDEX_ELECTRODE));
+//			}
 			
 			
 //			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos); 

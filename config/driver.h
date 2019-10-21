@@ -8,18 +8,16 @@
 
 
 #define PRESS_SENSOR_ADC_TYPE		0
-#if PRESS_SENSOR_ADC_TYPE
-	#define ADC3_CHECK_NUM			7
-#else
-	#define ADC3_CHECK_NUM			6
-#endif
+//#if PRESS_SENSOR_ADC_TYPE
+//	#define ADC3_CHECK_NUM			7
+//#else
+//	#define ADC3_CHECK_NUM			6
+//#endif
 
 #define ADC2_CHECK_NUM			2
 #define ADC3_INIT_WITH_DMA		0
-
 extern IO_ UINT8 g_Elec_Status;
-//extern IO_ UINT16 g_ADC2_Value[ADC2_CHECK_NUM];
-extern IO_ UINT16 g_ADC3_Value[ADC3_CHECK_NUM];
+
 
 // elec switch PA11 (9-5 for micro switch)
 #define ELEC_PORT							GPIOA
@@ -295,12 +293,12 @@ void LED_Exec(UINT8 nIndex, UINT8 nOpt);
 #define TEMP_ADC_CHANNEL					ADC_Channel_10
 
 // PC2_ADC123_IN12 , Press
-#if PRESS_SENSOR_ADC_TYPE
+//#if PRESS_SENSOR_ADC_TYPE
 	#define PRESS_ADC_PORT					GPIOC
 	#define PRESS_ADC_PIN					GPIO_Pin_2
 	#define PRESS_ADC_SRC					RCC_AHB1Periph_GPIOC
 	#define PRESS_ADC_CHANNEL				ADC_Channel_12
-#endif
+//#endif
 
 // Optical path Signal acquisiton ADC,   SIG1 ==> PF7_ADC3_IN5 ,CRP
 #define SIG1_ADC_PORT						GPIOF
@@ -313,6 +311,17 @@ void LED_Exec(UINT8 nIndex, UINT8 nOpt);
 #define SIG2_ADC_PIN						GPIO_Pin_0
 #define SIG2_ADC_SRC						RCC_AHB1Periph_GPIOA
 #define SIG2_ADC_CHANNEL					ADC_Channel_0
+
+// 12V N
+#define CUR12N_ADC_PORT						GPIOA
+#define CUR12N_ADC_PIN						GPIO_Pin_3
+#define CUR12N_ADC_SRC						RCC_AHB1Periph_GPIOA
+#define CUR12N_ADC_CHANNEL					ADC_Channel_3
+// 12V P
+#define CUR12P_ADC_PORT						GPIOF
+#define CUR12P_ADC_PIN						GPIO_Pin_10
+#define CUR12P_ADC_SRC						RCC_AHB1Periph_GPIOF
+#define CUR12P_ADC_CHANNEL					ADC_Channel_10
 
 
 // press check, PH4_SCl, PH5_SDA I2C, I2C
@@ -360,7 +369,6 @@ void Turn_Motor_Init(void);
 UINT8 Turn_Motor_Reset(void);
 void Turn_Motor_Goto_Postion(UINT32 nStep);
 void Turn_Motor_Select_LED(UINT8 nIndex);
-
 
 
 // led cur adjust
@@ -411,19 +419,48 @@ typedef enum{
 }eModeType;
 
 
+#define ADC_SMOOTH_NUM_5	5
+#define ADC_SMOOTH_NUM_10	10
+#define ADC_SMOOTH_NUM_20	20
+#define ADC_SMOOTH_NUM_30	30
+enum{
+	EN_ADC_PRESS	= 0,
+	EN_ADC_XK		= 1,
+	EN_ADC_12V_N	= 2,
+	EN_ADC_12V_P	= 3,
+	EN_ADC_56V_CUR	= 4,
+	EN_ADC_ELEC		= 5,
+	EN_ADC_LED_CUR	= 6,
+	EN_ADC_HGB		= 7,
+	EN_ADC_CRP		= 8,
+	EN_ADC_TEMP		= 9,
+	EN_ADC_END		= 10,
+};
 
+static IO_ UINT8 g_ADC3_IN[EN_ADC_END] = \
+	{PRESS_ADC_CHANNEL,   XK_ADC_CHANNEL,	   CUR12N_ADC_CHANNEL, \
+	 CUR12P_ADC_CHANNEL,  CUR_56V_ADC_CHANNEL, ELEC_ADC_CHANNEL, \
+	 LED_CUR_ADC_CHANNEL, SIG2_ADC_CHANNEL,    SIG1_ADC_CHANNEL, \
+	 TEMP_ADC_CHANNEL};
+
+extern IO_ UINT16 g_ADC3_Value[EN_ADC_END];
 
 void ADC1_Init(void);
 void ADC2_Init(void);
 void ADC3_Init(void);
 
 //UINT16 Get_Press(void);
+UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount);
 UINT16 Get_Press_ADC(void);
 UINT16 Get_XK_ADC(void);
+UINT16 Get_12V_N_ADC(void);
+UINT16 Get_12V_P_ADC(void);
 UINT16 Get_56V_Cur_ADC(void);
 UINT16 Get_LED_Cur_ADC(void);
+UINT16 Get_Temp_ADC(void);	 
 UINT32  HW_Get_ADC_HGB(void);
 UINT32  HW_Get_ADC_CRP(void);
+
 // get HGB CRP adc data
 UINT16  Get_HGB_Value(void);
 UINT32  Get_CRP_Value(void);

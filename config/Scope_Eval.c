@@ -323,7 +323,7 @@ void EVAL_Init(void)
 //	IT_SYS_DlyMs(10);
 //	Disable_ADC(EN_ADC1);
 //	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));	
-//	
+
 	ADC2_Init();//APP_ADC_Init(EN_ADC2);
 		
 	ADC3_Init();//APP_ADC_Init(EN_ADC3);

@@ -336,6 +336,15 @@ void test(void)
 //}
 
 
+#if 0
+int main(void)
+{
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	Beep_Init();
+	Micro_OC_Init();
+	while(1);
+}
+#else
 int main(void)
 {
     PL_InitProtocol();
@@ -368,6 +377,18 @@ int main(void)
         HW_LWIP_MainLine();
     }
 }
-
 #endif
 
+
+
+
+
+
+
+
+
+
+
+
+
+#endif

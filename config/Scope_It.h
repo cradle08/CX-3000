@@ -17,7 +17,7 @@
 // systick counter
 #define IRQ_SysTick_ms       SysTick_Handler
 // exti input, PG6
-#define IRQ_MotorStatus      EXTI9_5_IRQHandler
+//#define IRQ_MotorStatus      EXTI9_5_IRQHandler
 // communicate
 #define IRQ_ComCommand       USART1_IRQHandler     // COM_MAIN, com1(usart1)
 #define IRQ_ComSampling      USART3_IRQHandler     // COM_SAMPLING, com2(usart3)
@@ -40,7 +40,7 @@ void SysTick_Handler(void);         // core-m3
 // void EXTI2_IRQHandler(void);     // EXTI Line 2
 // void EXTI3_IRQHandler(void);     // EXTI Line 3
 // void EXTI4_IRQHandler(void);     // EXTI Line 4
-void EXTI9_5_IRQHandler(void);      // EXTI Line 9..5
+//void EXTI9_5_IRQHandler(void);      // EXTI Line 9..5
 // void EXTI15_10_IRQHandler(void);    // EXTI Line 15..10
 
 /* usart interrupt */
