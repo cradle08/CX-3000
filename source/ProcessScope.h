@@ -294,7 +294,7 @@ void Disable_ADC(EN_TypeADC eType);
 #define  TIME_OVER_TS_ADC              25000       /* 25秒  数据采集超时时间 */
 #endif
 
-#define  TIME_TS_ACTION_TIMEOUT        20000//24000 //18000
+#define  TIME_TS_ACTION_TIMEOUT        18000//24000 //18000
 #define  TIME_TS_ACTION_OFF            4500 //4000        /* 4秒   检测期间关阀时间 */
 #define  TIME_TS_ACTION_ON             7000        /* 7秒   检测期间开阀时间 */
 #endif
@@ -310,9 +310,9 @@ void Disable_ADC(EN_TypeADC eType);
 #define GET_PRESS_NUM_THREE			   3
 //-----------//
 
-#define COUNT_WBC_XK_CHECK_V   	   	   1500    //1.5v xiao kong 
+#define COUNT_WBC_XK_CHECK_V   	   	   1800//1500    //1.5v xiao kong 
 #define COUNT_WBC_TOUCH_CHECK_V   	   2000    //1.8v
-#define COUNT_WBC_START_V   		   2300    //2.3v
+#define COUNT_WBC_START_V   		   2500   //2300 //2.3v
 #define PRESS_PRECISION_FACTOR         (0xF4240)  //1000000
 
 #define PART_TEST_CHECK_DELAY			200 //ms

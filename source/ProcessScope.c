@@ -2516,7 +2516,7 @@ UINT8 MSG_TestingFunc(void)
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		*pDILen = nDILen;
 #endif
-		collect_return_hdl(COLLECT_RET_FAIL_WBC_TOUCH);
+//		collect_return_hdl(COLLECT_RET_FAIL_WBC_TOUCH);
 ////		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
 /////		return e_Feedback_Error;	
 	}
@@ -2535,7 +2535,7 @@ UINT8 MSG_TestingFunc(void)
 #endif
 /////		collect_return_hdl(COLLECT_RET_FAIL_WBC_ELECTRODE);
 /////		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-		return e_Feedback_Error;
+//		return e_Feedback_Error;
 	}
 
 	//-------second 3s stop-----------
@@ -2646,7 +2646,7 @@ UINT8 MSG_TestingFunc(void)
 #endif
 			nTempTicks1 = nCurTicks;
 		}	
-		
+//		
 		//------to check the ELECTRODE------
 		nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
         if (ELECTRODE_WASTE == nTemp)  /* 流程正常结束 */

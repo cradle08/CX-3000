@@ -560,7 +560,7 @@ UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
 	ADC_Cmd(ADC3,ENABLE);
 	for(i = 0; i < nCount; i++)
 	{
-		ADC_RegularChannelConfig(ADC3, g_ADC3_IN[nIndex], 1, ADC_SampleTime_480Cycles ); 
+		ADC_RegularChannelConfig(ADC3, g_ADC3_IN[nIndex], 1, ADC_SampleTime_3Cycles ); 
 		ADC_SoftwareStartConv(ADC3);		
 		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
 		nVal += ADC_GetConversionValue(ADC3);	
