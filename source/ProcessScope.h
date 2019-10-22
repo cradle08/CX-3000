@@ -294,7 +294,7 @@ void Disable_ADC(EN_TypeADC eType);
 #define  TIME_OVER_TS_ADC              25000       /* 25秒  数据采集超时时间 */
 #endif
 
-#define  TIME_TS_ACTION_TIMEOUT        18000//24000 //18000
+#define  TIME_TS_ACTION_TIMEOUT        1000//24000 //18000
 #define  TIME_TS_ACTION_OFF            4500 //4000        /* 4秒   检测期间关阀时间 */
 #define  TIME_TS_ACTION_ON             7000        /* 7秒   检测期间开阀时间 */
 #endif

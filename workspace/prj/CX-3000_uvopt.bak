@@ -267,7 +267,7 @@
       <Focus>0</Focus>
       <ColumnNumber>13</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>348</TopLine>
+      <TopLine>349</TopLine>
       <CurrentLine>352</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\app\ScopeMain.c</PathWithFileName>
@@ -337,10 +337,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>23</ColumnNumber>
+      <ColumnNumber>3</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2256</TopLine>
-      <CurrentLine>2264</CurrentLine>
+      <TopLine>3219</TopLine>
+      <CurrentLine>3229</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\ProcessScope.c</PathWithFileName>
       <FilenameWithoutPath>ProcessScope.c</FilenameWithoutPath>
@@ -371,7 +371,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1869</TopLine>
+      <TopLine>1873</TopLine>
       <CurrentLine>1882</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\InterfaceScope.c</PathWithFileName>
@@ -1049,10 +1049,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>16</ColumnNumber>
+      <ColumnNumber>4</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>316</TopLine>
-      <CurrentLine>331</CurrentLine>
+      <TopLine>323</TopLine>
+      <CurrentLine>332</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\Scope_Eval.c</PathWithFileName>
       <FilenameWithoutPath>Scope_Eval.c</FilenameWithoutPath>
@@ -1161,10 +1161,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>13</ColumnNumber>
+      <ColumnNumber>1</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2101</TopLine>
-      <CurrentLine>2137</CurrentLine>
+      <TopLine>287</TopLine>
+      <CurrentLine>299</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\driver.c</PathWithFileName>
       <FilenameWithoutPath>driver.c</FilenameWithoutPath>

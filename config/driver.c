@@ -1115,19 +1115,19 @@ void Mixing_Motor_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;
 	GPIO_Init(MIXING_DIR_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
+	GPIO_SetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
 }
 
 void Mixing_Motor_Run(void)
 {
-	GPIO_SetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
+	GPIO_ResetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
 }
 
 void Mixing_Motor_Stop(void)
 {
-	GPIO_ResetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
+	GPIO_SetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
 }
 
 // valve
@@ -1189,13 +1189,13 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt)
 void Turn_Motor_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(TURN_MOTOR_SRC_1|TURN_MOTOR_SRC_2|TURN_MOTOR_SRC_3|TURN_MOTOR_SRC_4, ENABLE);
+	RCC_AHB1PeriphClockCmd(TURN_MOTOR_SRC_1|TURN_MOTOR_SRC_2|TURN_MOTOR_SRC_3|TURN_MOTOR_SRC_4|TURN_MOTOR_POWER_SRC, ENABLE);
 	// turn pin 1
 	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_1; 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
 	GPIO_Init(TURN_MOTOR_PORT_1, &GPIO_InitStructure);
 	GPIO_ResetBits(TURN_MOTOR_PORT_1, TURN_MOTOR_PIN_1);
 	// turn pin 2
@@ -1203,7 +1203,7 @@ void Turn_Motor_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;
 	GPIO_Init(TURN_MOTOR_PORT_2, &GPIO_InitStructure);
 	GPIO_ResetBits(TURN_MOTOR_PORT_2, TURN_MOTOR_PIN_2);
 	// turn pin 3
@@ -1211,7 +1211,7 @@ void Turn_Motor_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
 	GPIO_Init(TURN_MOTOR_PORT_3, &GPIO_InitStructure);
 	GPIO_ResetBits(TURN_MOTOR_PORT_3, TURN_MOTOR_PIN_3);
 	// turn pin 4
@@ -1219,9 +1219,28 @@ void Turn_Motor_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
 	GPIO_Init(TURN_MOTOR_PORT_4, &GPIO_InitStructure);
 	GPIO_ResetBits(TURN_MOTOR_PORT_4, TURN_MOTOR_PIN_4);
+	
+	// turn motor power control, PH9
+	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_POWER_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(TURN_MOTOR_POWER_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(TURN_MOTOR_POWER_PORT, TURN_MOTOR_POWER_PIN);
+}
+
+void Turn_Motor_Power(UINT8 nOpt)
+{
+	if(EN_OPEN == nOpt)
+	{
+		GPIO_SetBits(TURN_MOTOR_POWER_PORT, TURN_MOTOR_POWER_PIN);
+	}else if(EN_CLOSE == nOpt){
+		GPIO_ResetBits(TURN_MOTOR_POWER_PORT, TURN_MOTOR_POWER_PIN);
+	}
 }
 
 
@@ -1265,7 +1284,7 @@ void Turn_Motor_Goto_Postion(UINT32 nStep)
 		TURN_MOTOR_PORT->ODR = nOutStatus|g_Turn_Motor_Table[nTurnStep];
 		
 		if(DelayTime > TURN_MOTOR_MIN_DELAY) DelayTime -= 10;
-		Delay_US(DelayTime);
+		IT_SYS_DlyMs(1);//Delay_US(DelayTime);
 		nTemp++;
 	}
 
@@ -1439,58 +1458,74 @@ void LED_Init(void)
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_Init(LED1_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(LED1_PORT, LED1_PIN);
 	//LED2
 	GPIO_InitStructure.GPIO_Pin   = LED2_PIN; 
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_Init(LED2_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(LED2_PORT, LED2_PIN);
 	// LED3
 	GPIO_InitStructure.GPIO_Pin   = LED3_PIN; 
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_Init(LED3_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(LED3_PORT, LED3_PIN);
 	//LED4
 	GPIO_InitStructure.GPIO_Pin   = LED4_PIN; 
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//GPIO_PuPd_DOWN;
 	GPIO_Init(LED4_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(LED4_PORT, LED4_PIN);
 	// LED5
 	GPIO_InitStructure.GPIO_Pin   = LED5_PIN; 
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//GPIO_PuPd_DOWN;;
 	GPIO_Init(LED5_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(LED5_PORT, LED5_PIN);
 	//LED6
 	GPIO_InitStructure.GPIO_Pin   = LED6_PIN; 
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//GPIO_PuPd_DOWN;;
 	GPIO_Init(LED6_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(LED6_PORT, LED6_PIN);
 	// LED7
 	GPIO_InitStructure.GPIO_Pin   = LED7_PIN; 
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//GPIO_PuPd_DOWN;;
 	GPIO_Init(LED7_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(LED7_PORT, LED7_PIN);
 	//LED8
 	GPIO_InitStructure.GPIO_Pin   = LED8_PIN; 
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//GPIO_PuPd_DOWN;;
 	GPIO_Init(LED8_PORT, &GPIO_InitStructure);
-	// Control Switch
+	GPIO_ResetBits(LED8_PORT, LED8_PIN);
+	// Control Switch, PB8
 	GPIO_InitStructure.GPIO_Pin   = LED_CUR_SWITCH_PIN; 
 	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;//GPIO_PuPd_UP;//GPIO_PuPd_DOWN;;
 	GPIO_Init(LED_CUR_SWITCH_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(LED_CUR_SWITCH_PORT, LED_CUR_SWITCH_PIN);
 	// LED Cur Adjust, DAC
 	LED_Cur_DAC_Init();
-	
 }
 
 void LED_Cur_DAC_Init(void)
@@ -1535,7 +1570,7 @@ void LED_Cur_Auto_Adjust(UINT16 nVal)
 	nTempTick = nCurTick;
 	nTempADC = Get_LED_Cur_ADC();
 	//nTempV = nTempADC*3300/4095;
-	while(nCurTick < nTempTick + 3000)
+	while(nCurTick < nTempTick + 5000)
 	{
 		if(nTempADC - nVal > 3)
 		{
@@ -1544,7 +1579,10 @@ void LED_Cur_Auto_Adjust(UINT16 nVal)
 			LED_Cur_DAC_Set(nTempADC + 3);
 		}else{
 			// not need to adjust
+			break;
 		}
+		nTempADC = Get_LED_Cur_ADC();
+		IT_SYS_DlyMs(5);
 	}
 }
 
@@ -2283,21 +2321,86 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 13: //D
 		{
-			printf("ADC1 and ADC2 test start\r\n");
-			UINT32 nCurTicks, nLstTicks;
-			Eable_ADC(EN_ADC1);
-			Eable_ADC(EN_ADC2);
-			nCurTicks = IT_SYS_GetTicks();
-			nLstTicks = nCurTicks;
-			while (nCurTicks <= (nLstTicks + 10))
+			printf("start\r\n");
+			LED_Init();
+			printf("init\r\n");
+			for(i = 0; i < 30; i++)
 			{
-				Data_Circle_Handle(EN_WBC_TEST);
-				Data_Circle_Handle(EN_RBC_PLT_TEST);
-				nCurTicks = IT_SYS_GetTicks();
+				LED_Cur_Switch(EN_OPEN);
+				LED_Exec(EN_LED1, EN_OPEN);LED_Exec(EN_LED2, EN_OPEN);LED_Exec(EN_LED3, EN_OPEN);LED_Exec(EN_LED4, EN_OPEN);
+				LED_Exec(EN_LED5, EN_OPEN);LED_Exec(EN_LED6, EN_OPEN);LED_Exec(EN_LED7, EN_OPEN);
+				IT_SYS_DlyMs(100);
+				printf("i =%d\r\n", i);
+				//LED_Exec(i, EN_CLOSE)
+				LED_Exec(EN_LED1, EN_CLOSE);LED_Exec(EN_LED2, EN_CLOSE);LED_Exec(EN_LED3, EN_CLOSE);LED_Exec(EN_LED4, EN_CLOSE);
+				LED_Exec(EN_LED5, EN_CLOSE);LED_Exec(EN_LED6, EN_CLOSE);LED_Exec(EN_LED7, EN_CLOSE);
+				LED_Cur_Switch(EN_CLOSE);
+				IT_SYS_DlyMs(100);
 			}
-			Disable_ADC(EN_ADC1);
-			Disable_ADC(EN_ADC1);
-			printf("ADC1 and ADC2 test end\r\n");
+			LED_Cur_Switch(EN_OPEN);
+			printf("power open\r\n");
+			for(i = 0; i < 10; i++)
+			{
+				val = Get_LED_Cur_ADC();
+				printf("LED CUR ADC=%d,V=%d\r\n", val, val*3300/4096);
+			}
+			
+			printf("end\r\n");
+//			printf("ADC1 and ADC2 test start\r\n");
+//			UINT32 nCurTicks, nLstTicks;
+//			Eable_ADC(EN_ADC1);
+//			Eable_ADC(EN_ADC2);
+//			nCurTicks = IT_SYS_GetTicks();
+//			nLstTicks = nCurTicks;
+//			while (nCurTicks <= (nLstTicks + 10))
+//			{
+//				Data_Circle_Handle(EN_WBC_TEST);
+//				Data_Circle_Handle(EN_RBC_PLT_TEST);
+//				nCurTicks = IT_SYS_GetTicks();
+//			}
+//			Disable_ADC(EN_ADC1);
+//			Disable_ADC(EN_ADC1);
+//			printf("ADC1 and ADC2 test end\r\n");
+		}
+		break;
+		case 14: // E, turn motor
+		{
+			printf("start\r\n");
+			Turn_Motor_Init();
+			Turn_Motor_Power(EN_OPEN);
+//			for(i = 0; i < 30; i++)
+//			{
+//				GPIO_ResetBits(TURN_MOTOR_PORT_1, TURN_MOTOR_PIN_1);
+//				GPIO_ResetBits(TURN_MOTOR_PORT_2, TURN_MOTOR_PIN_2);
+//				GPIO_ResetBits(TURN_MOTOR_PORT_3, TURN_MOTOR_PIN_3);
+//				GPIO_ResetBits(TURN_MOTOR_PORT_4, TURN_MOTOR_PIN_4);
+//				IT_SYS_DlyMs(100);//IT_SYS_DlyMs(500);
+//				printf("i = %d\r\n", i);
+//				GPIO_SetBits(TURN_MOTOR_PORT_1, TURN_MOTOR_PIN_1);
+//				GPIO_SetBits(TURN_MOTOR_PORT_2, TURN_MOTOR_PIN_2);
+//				GPIO_SetBits(TURN_MOTOR_PORT_3, TURN_MOTOR_PIN_3);
+//				GPIO_SetBits(TURN_MOTOR_PORT_4, TURN_MOTOR_PIN_4);
+//				IT_SYS_DlyMs(100);
+//			}
+			
+			//Turn_Motor_Reset();
+			Turn_Motor_Goto_Postion(1000);
+			printf("end\r\n");
+		}
+		break;
+		case 15: //F , mix motor
+		{
+			Mixing_Motor_Init();
+			printf("start\r\n");
+			for(i = 0; i < 30; i++)
+			{
+				Mixing_Motor_Run();
+				IT_SYS_DlyMs(200);
+				printf("i = %d\r\n", i);
+				Mixing_Motor_Stop();
+				IT_SYS_DlyMs(200);
+			}
+			printf("end\r\n");
 		}
 		break;
 		default:break;	

@@ -335,6 +335,8 @@ void EVAL_Init(void)
 	Valve_Init();
 	OC_Init();
 	Press_Init();
+	Turn_Motor_Init();
+	Mixing_Motor_Init();
 //	Fix_Motor_Init();
 //	OutIn_Motor_Init();
 #endif

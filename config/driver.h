@@ -78,9 +78,9 @@ void Pump_ClockWise(void);
 void Pump_Exec(UINT8 nDir, UINT16 nFreq);
 
 // mixing motor, PB10
-#define MIXING_DIR_PORT						GPIOB
-#define MIXING_DIR_PIN						GPIO_Pin_10
-#define MIXING_DIR_SRC						RCC_AHB1Periph_GPIOB
+#define MIXING_DIR_PORT						GPIOE
+#define MIXING_DIR_PIN						GPIO_Pin_6
+#define MIXING_DIR_SRC						RCC_AHB1Periph_GPIOE
 // mixing motor
 void Mixing_Motor_Init(void);
 void Mixing_Motor_Run(void);
@@ -118,8 +118,24 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 #define TURN_MOTOR_PORT_4					GPIOB
 #define TURN_MOTOR_PIN_4					GPIO_Pin_15
 #define TURN_MOTOR_SRC_4					RCC_AHB1Periph_GPIOB
-
 #define TURN_MOTOR_PORT						GPIOB
+
+#define TURN_MOTOR_POWER_PORT				GPIOH
+#define TURN_MOTOR_POWER_PIN				GPIO_Pin_9
+#define TURN_MOTOR_POWER_SRC				RCC_AHB1Periph_GPIOH
+
+#define	OUTIN_MOTOR_HOME_TIME					10000
+// turn motor 
+#define TURN_MOTOR_MAX_ANTI_CLOCKWISE_STEP		5000
+#define TURN_MOTOR_MAX_CLOCKWISE_STEP			5000
+#define TURN_MOTOR_MAX_DELAY					4000
+#define TURN_MOTOR_MIN_DELAY					3000
+// turn motor
+void Turn_Motor_Init(void);
+UINT8 Turn_Motor_Reset(void);
+void Turn_Motor_Goto_Postion(UINT32 nStep);
+void Turn_Motor_Select_LED(UINT8 nIndex);
+void Turn_Motor_Power(UINT8 nOpt);
 
 // out in motor, not sure by now
 //#define OUTIN_MOTOR_PORT_1					GPIO*
@@ -269,8 +285,9 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 void LED_Init(void);
 void LED_Cur_DAC_Init(void);
 void LED_Cur_Switch(UINT8 nOpt);
-void LED_Cur_DAC_Set(UINT16 nVal); // adc
-void LED_Cur_Auto_Adjust(UINT16 nVal); // adc
+UINT16 Get_LED_Cur_ADC(void);      // ADC
+void LED_Cur_DAC_Set(UINT16 nVal); // DAC
+void LED_Cur_Auto_Adjust(UINT16 nVal); 
 void LED_Exec(UINT8 nIndex, UINT8 nOpt);
 
 
@@ -358,17 +375,6 @@ INT32 Get_Press_I2C(void);
 #define OUTIN_MOTOR_PULSE_UP_TIME				60
 #define OUTIN_MOTOR_PULSE_DOWN_TIME				60
 
-#define	OUTIN_MOTOR_HOME_TIME					10000
-// turn motor 
-#define TURN_MOTOR_MAX_ANTI_CLOCKWISE_STEP		5000
-#define TURN_MOTOR_MAX_CLOCKWISE_STEP			5000
-#define TURN_MOTOR_MAX_DELAY					4000
-#define TURN_MOTOR_MIN_DELAY					3000
-// turn motor
-void Turn_Motor_Init(void);
-UINT8 Turn_Motor_Reset(void);
-void Turn_Motor_Goto_Postion(UINT32 nStep);
-void Turn_Motor_Select_LED(UINT8 nIndex);
 
 
 // led cur adjust
@@ -456,7 +462,7 @@ UINT16 Get_XK_ADC(void);
 UINT16 Get_12V_N_ADC(void);
 UINT16 Get_12V_P_ADC(void);
 UINT16 Get_56V_Cur_ADC(void);
-UINT16 Get_LED_Cur_ADC(void);
+//UINT16 Get_LED_Cur_ADC(void);
 UINT16 Get_Temp_ADC(void);	 
 UINT32  HW_Get_ADC_HGB(void);
 UINT32  HW_Get_ADC_CRP(void);
