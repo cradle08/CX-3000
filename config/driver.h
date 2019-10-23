@@ -223,38 +223,38 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 
 
 // LED1-8, PI4--PI11
+// LED0
+#define LED0_PORT							GPIOI
+#define LED0_PIN							GPIO_Pin_4
+#define LED0_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED1
 #define LED1_PORT							GPIOI
-#define LED1_PIN							GPIO_Pin_4
+#define LED1_PIN							GPIO_Pin_5
 #define LED1_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED2
 #define LED2_PORT							GPIOI
-#define LED2_PIN							GPIO_Pin_5
+#define LED2_PIN							GPIO_Pin_6
 #define LED2_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED3
 #define LED3_PORT							GPIOI
-#define LED3_PIN							GPIO_Pin_6
+#define LED3_PIN							GPIO_Pin_7
 #define LED3_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED4
 #define LED4_PORT							GPIOI
-#define LED4_PIN							GPIO_Pin_7
+#define LED4_PIN							GPIO_Pin_8
 #define LED4_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED5
 #define LED5_PORT							GPIOI
-#define LED5_PIN							GPIO_Pin_8
+#define LED5_PIN							GPIO_Pin_9
 #define LED5_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED6
 #define LED6_PORT							GPIOI
-#define LED6_PIN							GPIO_Pin_9
+#define LED6_PIN							GPIO_Pin_10
 #define LED6_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED7
 #define LED7_PORT							GPIOI
-#define LED7_PIN							GPIO_Pin_10
+#define LED7_PIN							GPIO_Pin_11
 #define LED7_CLK_SRC						RCC_AHB1Periph_GPIOI
-// LED8
-#define LED8_PORT							GPIOI
-#define LED8_PIN							GPIO_Pin_11
-#define LED8_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED Cur Control Switch, PB8
 #define LED_CUR_SWITCH_PORT					GPIOB
 #define LED_CUR_SWITCH_PIN					GPIO_Pin_8
@@ -281,10 +281,12 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 #define LED_SELECT_A2_PORT					GPIOH
 #define LED_SELECT_A2_PIN					GPIO_Pin_15
 #define LED_SELECT_A2_SRC					RCC_AHB1Periph_GPIOH
+#define LED_SELECT_PORT						GPIOH
 //
 void LED_Init(void);
 void LED_Cur_DAC_Init(void);
 void LED_Cur_Switch(UINT8 nOpt);
+void LEC_Cur_ADC_Check_Channel(UINT16 nIndex);
 UINT16 Get_LED_Cur_ADC(void);      // ADC
 void LED_Cur_DAC_Set(UINT16 nVal); // DAC
 void LED_Cur_Auto_Adjust(UINT16 nVal); 
@@ -398,17 +400,18 @@ enum{
 };
 
 enum{
+	EN_LED0 = 0,
 	EN_LED1 = 1,
 	EN_LED2 = 2,
 	EN_LED3 = 3,
 	EN_LED4 = 4,
 	EN_LED5 = 5,
 	EN_LED6 = 6,
-	EN_LED7 = 7,
-	EN_LED8 = 8
+	EN_LED7 = 7
 };
 
 enum {
+	EN_LED0_POSTION		= 100,	
 	EN_LED1_POSTION		= 300,
 	EN_LED2_POSTION		= 600,
 	EN_LED3_POSTION		= 900,
@@ -416,7 +419,7 @@ enum {
 	EN_LED5_POSTION		= 1500,
 	EN_LED6_POSTION		= 1800,
 	EN_LED7_POSTION		= 2100,
-	EN_LED8_POSTION		= 2400,	
+	
 };
 
 typedef enum{
