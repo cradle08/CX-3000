@@ -56,6 +56,18 @@ const unsigned int g_Turn_Motor_Table[4]={0xC000,0x6000,0x3000,0x9000};
 //} 
 
 
+//void Delay_US(UINT32 us)
+//{
+//    UINT32 start, now, delta, reload, us_tick;
+//    start = SysTick->VAL;
+//    reload = SysTick->LOAD;
+//    us_tick = SystemCoreClock / 1000000UL;
+//    do {
+//        now = SysTick->VAL;
+//        delta = start > now ? start - now : reload + start - now;
+//    } while(delta < us_tick * us);
+//}
+
 void Delay_US(UINT32 us)
 {
     UINT32 start, now, delta, reload, us_tick;
@@ -64,7 +76,9 @@ void Delay_US(UINT32 us)
     us_tick = SystemCoreClock / 1000000UL;
     do {
         now = SysTick->VAL;
-        delta = start > now ? start - now : reload + start - now;
+		if(start > now) delta = start - now;
+		else delta = reload - now + start;
+        //delta = start > now ? start - now : reload + start - now;
     } while(delta < us_tick * us);
 }
 
@@ -1284,11 +1298,18 @@ void Turn_Motor_Goto_Postion(UINT32 nStep)
 		TURN_MOTOR_PORT->ODR = nOutStatus|g_Turn_Motor_Table[nTurnStep];
 		
 		if(DelayTime > TURN_MOTOR_MIN_DELAY) DelayTime -= 10;
-		IT_SYS_DlyMs(1);//Delay_US(DelayTime);
-		//;;;;;;;;;;;
+//		Delay_US(500);
+//		Delay_US(500);
+//		Delay_US(500);
+		if(DelayTime/1000 >= 1)
+		{
+			IT_SYS_DlyMs(DelayTime/1000);
+			Delay_US(DelayTime%1000);
+		}else{
+			Delay_US(DelayTime);
+		}
 		nTemp++;
 	}
-
 }
 
 void Turn_Motor_Select_LED(UINT8 nIndex)
@@ -1347,6 +1368,7 @@ void EXTI9_5_IRQHandler(void)
 	UINT16 i, j;
 	if(RESET != EXTI_GetITStatus(MICRO_OC_EXIT_LINE))
     {
+		Delay_US(500);
         EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
 		// read micro oc status
 		if(GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN) == EN_CLOSE)
@@ -1354,6 +1376,7 @@ void EXTI9_5_IRQHandler(void)
 			g_Micro_Switch = EN_CLOSE;
 		}
 		Beep(50);
+		printf("Mirco Switch IRQ...\r\n");
 //		GPIO_SetBits(BEEP_PORT, BEEP_PIN);
 //		for(i = 0; i < 16800; i ++)
 //		{	
@@ -1363,32 +1386,32 @@ void EXTI9_5_IRQHandler(void)
 //			}	
 //		}
 //		GPIO_ResetBits(BEEP_PORT, BEEP_PIN);
-		printf("Mirco S IRQ\r\n");
+		
 	}
 }
 
 void Micro_OC_Init(void)
 {
-	GPIO_InitTypeDef  GPIO_InitStructure;
-	NVIC_InitTypeDef   NVIC_InitStructure;
-	EXTI_InitTypeDef   EXTI_InitStructure;
-	
+	GPIO_InitTypeDef GPIO_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
 	RCC_AHB1PeriphClockCmd(MICRO_OC_SRC, ENABLE);
-	//RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 	// micro switch, with EXIT interupt
+	
 	GPIO_InitStructure.GPIO_Pin = MICRO_OC_PIN; 
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	//GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_Init(MICRO_OC_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
-	
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);       
+	//GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
 	SYSCFG_EXTILineConfig(MICRO_OC_EXIT_PORT, MICRO_OC_EXIT_PIN);
+	
 	EXTI_InitStructure.EXTI_Line = MICRO_OC_EXIT_LINE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising; // or down ????
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // or down ????
 	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
 	EXTI_Init(&EXTI_InitStructure);
 	
@@ -2360,26 +2383,37 @@ void Driver_Debug(UINT8 nIndex)
 			printf("start\r\n");
 			LED_Init();
 			printf("init\r\n");
-			for(i = 0; i < 30; i++)
-			{
-				LED_Cur_Switch(EN_OPEN);
-				LED_Exec(EN_LED1, EN_OPEN);LED_Exec(EN_LED2, EN_OPEN);LED_Exec(EN_LED3, EN_OPEN);LED_Exec(EN_LED4, EN_OPEN);
-				LED_Exec(EN_LED5, EN_OPEN);LED_Exec(EN_LED6, EN_OPEN);LED_Exec(EN_LED7, EN_OPEN);LED_Exec(EN_LED0, EN_OPEN);
-				IT_SYS_DlyMs(100);
-				printf("i =%d\r\n", i);
-				//LED_Exec(i, EN_CLOSE)
-				LED_Exec(EN_LED1, EN_CLOSE);LED_Exec(EN_LED2, EN_CLOSE);LED_Exec(EN_LED3, EN_CLOSE);LED_Exec(EN_LED4, EN_CLOSE);
-				LED_Exec(EN_LED5, EN_CLOSE);LED_Exec(EN_LED6, EN_CLOSE);LED_Exec(EN_LED7, EN_CLOSE);LED_Exec(EN_LED0, EN_CLOSE);
-				LED_Cur_Switch(EN_CLOSE);
-				IT_SYS_DlyMs(100);
-			}
 			LED_Cur_Switch(EN_OPEN);
-			printf("power open\r\n");
-			for(i = 0; i < 10; i++)
+			for(i = 0; i < EN_LED_END; i++)
 			{
-				val = Get_LED_Cur_ADC();
-				printf("LED CUR ADC=%d,V=%d\r\n", val, val*3300/4096);
+				LED_Exec(i, EN_OPEN);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				LED_Exec(i, EN_CLOSE);
 			}
+			
+//			for(i = 0; i < 30; i++)
+//			{
+//				LED_Cur_Switch(EN_OPEN);
+//				LED_Exec(EN_LED1, EN_OPEN);LED_Exec(EN_LED2, EN_OPEN);LED_Exec(EN_LED3, EN_OPEN);LED_Exec(EN_LED4, EN_OPEN);
+//				LED_Exec(EN_LED5, EN_OPEN);LED_Exec(EN_LED6, EN_OPEN);LED_Exec(EN_LED7, EN_OPEN);LED_Exec(EN_LED0, EN_OPEN);
+//				IT_SYS_DlyMs(100);
+//				printf("i =%d\r\n", i);
+//				//LED_Exec(i, EN_CLOSE)
+//				LED_Exec(EN_LED1, EN_CLOSE);LED_Exec(EN_LED2, EN_CLOSE);LED_Exec(EN_LED3, EN_CLOSE);LED_Exec(EN_LED4, EN_CLOSE);
+//				LED_Exec(EN_LED5, EN_CLOSE);LED_Exec(EN_LED6, EN_CLOSE);LED_Exec(EN_LED7, EN_CLOSE);LED_Exec(EN_LED0, EN_CLOSE);
+//				LED_Cur_Switch(EN_CLOSE);
+//				IT_SYS_DlyMs(100);
+//			}
+			
+//			LED_Cur_Switch(EN_OPEN);
+//			printf("power open\r\n");
+//			for(i = 0; i < 10; i++)
+//			{
+//				val = Get_LED_Cur_ADC();
+//				printf("LED CUR ADC=%d,V=%d\r\n", val, val*3300/4096);
+//			}
 			
 			printf("end\r\n");
 //			printf("ADC1 and ADC2 test start\r\n");
@@ -2420,7 +2454,8 @@ void Driver_Debug(UINT8 nIndex)
 //			}
 //			
 			//Turn_Motor_Reset();
-			Turn_Motor_Goto_Postion(50000);
+			Turn_Motor_Goto_Postion(20000);
+			Turn_Motor_Power(EN_CLOSE);
 			printf("end\r\n");
 		}
 		break;

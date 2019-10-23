@@ -129,7 +129,7 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 #define TURN_MOTOR_MAX_ANTI_CLOCKWISE_STEP		5000
 #define TURN_MOTOR_MAX_CLOCKWISE_STEP			5000
 #define TURN_MOTOR_MAX_DELAY					4000
-#define TURN_MOTOR_MIN_DELAY					3000
+#define TURN_MOTOR_MIN_DELAY					3000//3000
 // turn motor
 void Turn_Motor_Init(void);
 UINT8 Turn_Motor_Reset(void);
@@ -407,7 +407,8 @@ enum{
 	EN_LED4 = 4,
 	EN_LED5 = 5,
 	EN_LED6 = 6,
-	EN_LED7 = 7
+	EN_LED7 = 7,
+	EN_LED_END = 8
 };
 
 enum {
