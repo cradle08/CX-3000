@@ -56,18 +56,6 @@ const unsigned int g_Turn_Motor_Table[4]={0xC000,0x6000,0x3000,0x9000};
 //} 
 
 
-//void Delay_US(UINT32 us)
-//{
-//    UINT32 start, now, delta, reload, us_tick;
-//    start = SysTick->VAL;
-//    reload = SysTick->LOAD;
-//    us_tick = SystemCoreClock / 1000000UL;
-//    do {
-//        now = SysTick->VAL;
-//        delta = start > now ? start - now : reload + start - now;
-//    } while(delta < us_tick * us);
-//}
-
 void Delay_US(UINT32 us)
 {
     UINT32 start, now, delta, reload, us_tick;
@@ -76,11 +64,23 @@ void Delay_US(UINT32 us)
     us_tick = SystemCoreClock / 1000000UL;
     do {
         now = SysTick->VAL;
-		if(start > now) delta = start - now;
-		else delta = reload - now + start;
-        //delta = start > now ? start - now : reload + start - now;
+        delta = start > now ? start - now : reload + start - now;
     } while(delta < us_tick * us);
 }
+
+//void Delay_US(UINT32 us)
+//{
+//    UINT32 start, now, delta, reload, us_tick;
+//    start = SysTick->VAL;
+//    reload = SysTick->LOAD;
+//    us_tick = SystemCoreClock / 1000000UL;
+//    do {
+//        now = SysTick->VAL;
+//		if(start > now) delta = start - now;
+//		else delta = reload - now + start;
+//        //delta = start > now ? start - now : reload + start - now;
+//    } while(delta < us_tick * us);
+//}
 
 
 void ADC1_DMA_Config()
@@ -1368,15 +1368,16 @@ void EXTI9_5_IRQHandler(void)
 	UINT16 i, j;
 	if(RESET != EXTI_GetITStatus(MICRO_OC_EXIT_LINE))
     {
-		Delay_US(500);
         EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
 		// read micro oc status
+		//Delay_US(500);Delay_US(500);
+		Beep(20);
 		if(GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN) == EN_CLOSE)
 		{
 			g_Micro_Switch = EN_CLOSE;
 		}
-		Beep(50);
-		printf("Mirco Switch IRQ...\r\n");
+		
+		printf("Mirco Switch IRQ, S=%d\r\n", g_Micro_Switch);
 //		GPIO_SetBits(BEEP_PORT, BEEP_PIN);
 //		for(i = 0; i < 16800; i ++)
 //		{	
@@ -1404,7 +1405,8 @@ void Micro_OC_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	//GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(MICRO_OC_PORT, &GPIO_InitStructure);
 	//GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
 	SYSCFG_EXTILineConfig(MICRO_OC_EXIT_PORT, MICRO_OC_EXIT_PIN);
@@ -2367,15 +2369,17 @@ void Driver_Debug(UINT8 nIndex)
 			
 		}
 		break;
-		case 12: //C
+		case 12: //C   AD7799
 		{
-			ADC24Bit_Init();
-			IT_SYS_DlyMs(100);
-			for(i = 0; i < 10; i++)
+			printf("AD7799 start\r\n");
+			//ADC24Bit_Init();
+			IT_SYS_DlyMs(200);
+			for(i = 0; i < 30; i++)
 			{
 				printf("AD7799 ADC = %d\r\n", (int)AD7799_Get_ADC_Value());
 				IT_SYS_DlyMs(100);
 			}
+			printf("AD7799 end\r\n");
 		}
 		break;
 		case 13: //D

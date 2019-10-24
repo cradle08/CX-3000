@@ -18,6 +18,7 @@
 #define ADC3_INIT_WITH_DMA		0
 extern IO_ UINT8 g_Elec_Status;
 
+void Delay_US(UINT32 us);
 
 // elec switch PA11 (9-5 for micro switch)
 #define ELEC_PORT							GPIOA

@@ -31,7 +31,7 @@
 #include "f4sys.h"
 #include "KernelHeader.h"
 #include "AD7799.h"
-
+#include "driver.h"
 
 #endif
 

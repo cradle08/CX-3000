@@ -75,28 +75,28 @@ void ADC24Bit_GPIO_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//100MHz
-	//GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//上拉
+	//GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_CS_PORT, &GPIO_InitStructure);
 	//Di	
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MISO_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//GPIO_Mode_IN;//复用功能
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//100MHz
-	//GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//
 	GPIO_Init(ADC24BIT_MISO_PORT, &GPIO_InitStructure);
 	// Do
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MOSI_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//100MHz
-	//GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//上拉
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_MOSI_PORT, &GPIO_InitStructure);
 	// clk
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_CLK_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//100MHz
-	//GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//上拉
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_CLK_PORT, &GPIO_InitStructure);
 }
 
@@ -138,11 +138,11 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 	
 	__disable_irq();
 	AD_SCK_1();
-	__nop();
+	Delay_US(5);//__nop();
 	AD_CS_1();
-	__nop();
+	Delay_US(5);//__nop();
 	AD_CS_0();
-	__nop();
+	Delay_US(5);//__nop();
 
 	for(i=0;i<nCount;i++)
  	{
@@ -150,6 +150,7 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 		for(j=0; j<8; j++)
 		{
 			AD_SCK_0();
+			Delay_US(4);
 			if(0x80 == (nVal & 0x80))
 			{
 				AD_DI_1();	  //Send one to SDO pin
@@ -158,13 +159,14 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 			{
 				AD_DI_0();	  //Send zero to SDO pin
 			}
-			__nop();
+			Delay_US(4);//__nop();
 			AD_SCK_1();
-			__nop();
+			Delay_US(4);//__nop();
 			nVal <<= 1;	//Rotate data
 		}
 	}
 	AD_CS_1();
+	Delay_US(2);
 	__enable_irq();
 	
 #endif
@@ -186,36 +188,39 @@ void SPI_Read(UINT8 *pBuf, UINT8 nCount)
 	
 	__disable_irq();
 	AD_SCK_1();
-	__nop();
+	Delay_US(5);//__nop();
 	AD_CS_1();
-	__nop();
+	Delay_US(5);//__nop();
 	AD_CS_0();
-	__nop();
+	Delay_US(5);//__nop();
 
 	for(j=0; j<nCount; j++)
 	{
 		for(i=0; i<8; i++)
 		{
 		    AD_SCK_0();
+			Delay_US(4);
 			nVal <<= 1;		//Rotate data
-			__nop();
+			Delay_US(4);//__nop();
 			nTemp = AD_DO();			//Read SDI of AD7799
-			 AD_SCK_1();	
+			AD_SCK_1();	
+			Delay_US(4);
 			if(nTemp)
 			{
 				nVal |= 1;	
 			}
-			__nop();
+			Delay_US(4);//__nop();
 		}
 		*(pBuf + j )= nVal;
 	}	 
 	AD_CS_1();
+	Delay_US(4);
 	__enable_irq();
 	
 #endif
 	
 }
-			 
+ 
 
 
 UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size)
@@ -224,6 +229,7 @@ UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size)
 	UINT32 receivedData = 0x00;	
 	data[0] = AD7799_COMM_READ |  AD7799_COMM_ADDR(regAddress);
 	AD7799_CS_LOW;  
+	Delay_US(10);
 	SPI_Write(data,1);
 	SPI_Read(data,size);
 	AD7799_CS_HIGH;
@@ -336,15 +342,18 @@ UINT8 AD7799_Init(void)
     UINT32 command, ID;
 #if !AD7799_USE_SPI_COMMUNICATION	
 	AD_CS_0();
+	Delay_US(5);
 	AD_DI_1();
+	Delay_US(5);
 	AD_SCK_1();
-	IT_SYS_DlyMs(100);
-#endif
+	IT_SYS_DlyMs(200);
+#else
 	ID=AD7799_GetRegisterValue(AD7799_REG_ID, 1);
 	if( (ID& 0x0F) != AD7799_ID)
 	{
 		printf("AD7799 not ready at init\r\n");
 	}
+#endif
 	//AD7799_Calibrate();
 	
 	// mode and updateR set, continuous Coversion Mode and 50Hz Update Rate(default:16.7)

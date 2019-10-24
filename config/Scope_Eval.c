@@ -337,8 +337,9 @@ void EVAL_Init(void)
 	Press_Init();
 	Turn_Motor_Init();
 	Mixing_Motor_Init();
-//	Fix_Motor_Init();
-//	OutIn_Motor_Init();
+	LED_Init();
+	ADC24Bit_Init();
+	
 #endif
 	Beep(400);
 }
