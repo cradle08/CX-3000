@@ -441,7 +441,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
     printf("%02X%02X%02X%02X ", pchCmdBuf[4],pchCmdBuf[5],pchCmdBuf[6],pchCmdBuf[7]);
 	printf("%02X%02X%02X%02X\r\n", pchCmdBuf[8],pchCmdBuf[9],pchCmdBuf[10],pchCmdBuf[11]);
 	// 1.
-	Micro_Switch_Check();
+	//Micro_Switch_Check();
     if (PROTOCOL_HEAD_RECV_WR == chType) // cntrol cmd
     {
         switch (nCommand)
@@ -477,6 +477,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				printf("debug msg len: %d\r\n", nParaLen);
 				nParaLen = 0;
 				Reset_Udp_Count(0);	
+				Reset_ADC_InitDataType();
 			}
 			break;
 			case CMD_CTRL_TEST_MODE_SET:
@@ -953,7 +954,7 @@ UINT8 MSG_Testing(void)
     while (nCurTicks <= (nLstTicks + TIMING_1))
     {
         nCurTicks = IT_SYS_GetTicks();
-        HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }
     //--------- 2 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -978,7 +979,7 @@ UINT8 MSG_Testing(void)
             nPress2   = HW_ADC_SlaveGetADC();
             printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
         }
-        HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }
     //--------- 3 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -1000,7 +1001,7 @@ UINT8 MSG_Testing(void)
             nPress2   = HW_ADC_SlaveGetADC();
             printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
         }
-        HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }
     //--------- 4 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -1033,7 +1034,7 @@ UINT8 MSG_Testing(void)
             nHgb	  = HW_ADC_SpiGetADC(0);  // 0: HGB, get the sample of the HGB channel
             printf("\r\n %0.8d: %0.5d, %0.5d, HGB = %0.5d", (int)nCurTicks, nPress1, nPress2, nHgb);
         }
-        HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }
     //==========================
     // switch off : WBC and RBC
@@ -1063,7 +1064,7 @@ UINT8 MSG_Testing(void)
             nPress2   = HW_ADC_SlaveGetADC();
             printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
         }
-        HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }
     //--------- 6 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -1081,7 +1082,7 @@ UINT8 MSG_Testing(void)
         nCurTicks = IT_SYS_GetTicks();
         // do not get press 1
         // do not get press 2
-        HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }
     //--------- 7 --------------
     nCurTicks = IT_SYS_GetTicks();
@@ -1092,7 +1093,7 @@ UINT8 MSG_Testing(void)
     {
         nCurTicks = IT_SYS_GetTicks();
         // do nothing
-        HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
 	}
     //
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
@@ -2220,7 +2221,7 @@ UINT8 MSG_TestingFunc(void)
 	
     IO_ INT32 nPress = 0;
     IO_ UINT32 nCurTicks = 0, nLstTicks = 0,  nTempTicks = 0, nTempTicks1 = 0;
-	IO_ UINT32 nPreTicks1 = 0, nPreTicks = 0;
+	IO_ UINT32 nPreTicks1 = 0, nPreTicks = 0, nPreTimeOutTicks = 0, nTestTimeOutTicks = 0;
 	IO_ UINT32 nStartTicks = 0, nEndTicks = 0, wbc_v = 0;
 	IO_ UINT8 nWBC_Count = 0, nWBC_Val = 0, i = 0, nTemp = 0xFF, flag = 0;
 	IO_ _STA_  UINT32 Num = 1;
@@ -2231,6 +2232,7 @@ UINT8 MSG_TestingFunc(void)
 #endif
 	
 	Reset_Udp_Count(0);
+	Reset_ADC_InitDataType();
 	nStartTicks = IT_SYS_GetTicks();
 	printf("\r\n------------------Start Count: num=%d----------\r\n", (int)Num);
 #ifdef DEBUG_INFO_UP_LOAD
@@ -2244,20 +2246,20 @@ UINT8 MSG_TestingFunc(void)
 //	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 #endif
 	Num++;
-	
-	// check MT x position
-    if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
-    {
-		printf("Count Error: MT x not at home position\r\n");
-#ifdef DEBUG_INFO_UP_LOAD
-		sprintf((char*)sTempInfo,"Count Error: MT x not at home position\r\n");
-		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
-		*pDILen = nDILen;
-#endif
-        collect_return_hdl(COLLECT_RET_FAIL_NONE_HOME);  /* 未执行进仓操作 */
-        return e_Feedback_Error;
-    }
+
+//	// check MT x position
+//    if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
+//    {
+//		printf("Count Error: MT x not at home position\r\n");
+//#ifdef DEBUG_INFO_UP_LOAD
+//		sprintf((char*)sTempInfo,"Count Error: MT x not at home position\r\n");
+//		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
+//		*pDILen = nDILen;
+//#endif
+//        collect_return_hdl(COLLECT_RET_FAIL_NONE_HOME);  /* 未执行进仓操作 */
+//        return e_Feedback_Error;
+//    }
 	
 	// check the ELECTRODE status
 	nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);  // 1
@@ -2282,10 +2284,10 @@ UINT8 MSG_TestingFunc(void)
 	nPress = 0;
 	nPress =  Get_Press_Value(GET_PRESS_NUM_FIVE);
     nCurTicks = IT_SYS_GetTicks();  /* 获取系统时钟 */
-	printf("Count Status: before build press, ticks=%08d, press=%010d\r\n", \
+	printf("Count Status: before build press, ticks=%05d, press=%010d\r\n", \
 						(int)(nCurTicks - nStartTicks), (int)nPress);
 #ifdef DEBUG_INFO_UP_LOAD
-	sprintf((char*)sTempInfo, "Count Status: before build press, ticks=%08d, press=%010d\r\n", \
+	sprintf((char*)sTempInfo, "Count Status: before build press, ticks=%05d, press=%010d\r\n", \
 						(int)(nCurTicks - nStartTicks), (int)nPress);
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
@@ -2308,7 +2310,7 @@ UINT8 MSG_TestingFunc(void)
 				nLstTicks = nCurTicks;
 				nPress = 0;
 				nPress =  Get_Press_Value(GET_PRESS_NUM_FIVE);
-                printf("Count Status(building press): ticks=%08d, press=%010d\r\n", \
+                printf("Count Status(building press): ticks=%05d, press=%010d\r\n", \
 							(int)(nCurTicks - nStartTicks), (int)nPress);
                 //
 #ifdef DEBUG_INFO_UP_LOAD
@@ -2319,18 +2321,18 @@ UINT8 MSG_TestingFunc(void)
                     break;
                 }
             }
-		   HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+		   //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
         }
         // turn off
         HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
         HW_Valve_Off(EN_VALVE_AIR); // all the air way
         HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
-		printf("Count Status(after build press): ticks=%08d, press=%010d\r\n", \
-							(int)(nCurTicks - nStartTicks), (int)nPress);
+		printf("Count Status(after build press): ticks=%05d, press=%010d\r\n", \
+							(int)(nCurTicks - nTempTicks), (int)nPress);
         //-----------
 #ifdef DEBUG_INFO_UP_LOAD
 		sprintf((char*)sTempInfo, "Count Status(after build press): after build press, ticks=%08d, press=%010d\r\n", \
-						(int)(nCurTicks - nStartTicks), (int)nPress);
+						(int)(nCurTicks - nTempTicks), (int)nPress);
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 		*pDILen = nDILen;
@@ -2340,12 +2342,12 @@ UINT8 MSG_TestingFunc(void)
         if (nCurTicks > (nLstTicks + TIME_OVER_TS_BUILD_PRESS))  // 15000ms
         {
             nCurTicks = IT_SYS_GetTicks();
-            printf("Count Error: build press timeout,ticks=%08d, press=%010d\r\n", \
-						(int)(nCurTicks -  nStartTicks), (int)nPress);
+            printf("Count Error: build press timeout,ticks=%05d, press=%010d\r\n", \
+						(int)(nCurTicks -  nTempTicks), (int)nPress);
             
 #ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo, "Count Error: build press timeout,ticks=%08d, press=%010d\r\n", \
-						(int)(nCurTicks -  nStartTicks), (int)nPress);
+			sprintf((char*)sTempInfo, "Count Error: build press timeout,ticks=%05d, press=%010d\r\n", \
+						(int)(nCurTicks -  nTempTicks), (int)nPress);
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
@@ -2358,11 +2360,11 @@ UINT8 MSG_TestingFunc(void)
     {
         // do nothing
         nCurTicks = IT_SYS_GetTicks();
-        printf("Count Status(press enough): ticks=%08d, press=%010d\r\n",\
-				(int)(nCurTicks - nStartTicks), (int)nPress);
+        printf("Count Status(press enough): ticks=%05d, press=%010d\r\n",\
+				(int)(nCurTicks - nTempTicks), (int)nPress);
 #ifdef DEBUG_INFO_UP_LOAD
-		sprintf((char*)sTempInfo, "Count Status(press enough): ticks=%08d, press=%010d\r\n",\
-				(int)(nCurTicks - nStartTicks), (int)nPress);
+		sprintf((char*)sTempInfo, "Count Status(press enough): ticks=%05d, press=%010d\r\n",\
+				(int)(nCurTicks - nTempTicks), (int)nPress);
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 		*pDILen = nDILen;
@@ -2390,6 +2392,14 @@ UINT8 MSG_TestingFunc(void)
 
 	// first
     // 3. 数据预采集
+	if(eMode == EN_WBC_TEST)
+	{
+		nPreTimeOutTicks = TIME_TS_ACTION_PRE_TIME_1; // 4500ms
+		
+	}else{
+		nPreTimeOutTicks = TIME_TS_ACTION_PRE_TIME_2; // 7000ms
+	}
+	
     HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
     HW_Valve_Off(EN_VALVE_AIR);  // all the air way
     HW_Valve_On(EN_VALVE_LIQUID);    // WBC
@@ -2399,16 +2409,18 @@ UINT8 MSG_TestingFunc(void)
     nCurTicks = IT_SYS_GetTicks();
     //nLstTicks = nCurTicks;
 	nTempTicks = nCurTicks;  
-	printf("Count Status(before 4.5S): ticks=%08d, preTicks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+	nPreTicks = 0;
+	printf("Count Status(before %d.%dS): ticks=%05d, preTicks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
 					(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
-	sprintf((char*)sTempInfo, "Count Status(before 4.5S): ticks=%08d, preTicks=%08d,press=%010d, udp=%d, wbc_v=%d\r\n", \
+	sprintf((char*)sTempInfo, "Count Status(before %d.%dS): ticks=%05d, preTicks=%05d,press=%010d, udp=%d, wbc_v=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
 					(int)IT_LIST_GetTicks(),(int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
 #endif
 	//------------pre-handle 4.5s---------
+	IT_LIST_SetTicks(0);            /* 先清零本次测试流程的计时器 */
 	nCurTicks = IT_SYS_GetTicks();
 	nTempTicks = nCurTicks;
 	nTempTicks1 = nCurTicks;
@@ -2421,15 +2433,16 @@ UINT8 MSG_TestingFunc(void)
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	*pDILen = nDILen;
 #endif
-    while((nCurTicks - nTempTicks) <= TIME_TS_ACTION_OFF) // 4500ms
+
+	while((nCurTicks - nTempTicks) <= nPreTimeOutTicks) 
     {
-		if((nCurTicks - nTempTicks1) >= 200) // 1ms per time
+		if((nCurTicks - nTempTicks1) >= 500) // 1ms per time
 		{
 			nTempTicks1 = nCurTicks;
 			wbc_v = Get_XK_V_Value();
 			printf("%d,", (int)wbc_v);
 #ifdef DEBUG_INFO_UP_LOAD
-			if((nTempTicks1 + 200) > nTempTicks + TIME_TS_ACTION_OFF){
+			if((nTempTicks1 + 200) > nTempTicks + nPreTimeOutTicks){
 				sprintf((char*)sTempInfo,"%d", (int)wbc_v);
 			}else{
 				sprintf((char*)sTempInfo,"%d,", (int)wbc_v);
@@ -2443,11 +2456,11 @@ UINT8 MSG_TestingFunc(void)
         // to check the ELECTRODE
         if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))
         {
-			printf("\r\nCount Error: the ELECTRODE error(4.5S), ticks=%08d, press=%010d, udp=%d, q=%d, f=%d\r\n", \
-									(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail);
+			printf("\r\nCount Error: the ELECTRODE error(%d.%dS), ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
+									(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count);
 #ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo, "\r\nCount Error: the ELECTRODE error(4.5S), ticks=%08d, press=%010d, udp=%d, q=%d, f=%d\r\n", \
-										(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail);
+			sprintf((char*)sTempInfo, "\r\nCount Error: the ELECTRODE error(%d.%dS), ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
+										(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count);
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
@@ -2460,11 +2473,11 @@ UINT8 MSG_TestingFunc(void)
 		nPress =  Get_Press_Value(GET_PRESS_NUM_FIVE);
 		if(nPress <= COUNT_MIN_PRESS)
 		{
-			printf("\r\nCount Error: the press error(4.5S),ticks=%08d, press=%010d, udp=%d, q=%d, f=%d\r\n", \
-								(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail);
+			printf("\r\nCount Error: the press error(%d.%dS),ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
+								(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)g_Frame_Count);
 #ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo, "\r\nCount Error: the press error(4.5S), ticks=%08d, press=%010d, udp=%d, q=%d, f=%d\r\n", \
-												(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail);
+			sprintf((char*)sTempInfo, "\r\nCount Error: the press error(%d.%dS), ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
+												(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)g_Frame_Count);
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
@@ -2472,31 +2485,30 @@ UINT8 MSG_TestingFunc(void)
             collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
             return e_Feedback_Error;
 		}
-		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
 		nCurTicks = IT_SYS_GetTicks();
 		nPreTicks = nCurTicks - nTempTicks;
-		if(nPreTicks <= 1500 && flag == 0){ // 0-1500ms
-			if(EN_WBC_V_LOW == Get_WBC_V_Status(COUNT_WBC_XK_CHECK_V)){ // wbc_v lower than COUNT_WBC_XK_CHECK_V(1.5v)
-				flag = 1;
-				printf("\r\nCount Error: (0-1.5s)xiao_kong error, ticks=%08d, preticks=%08d, press=%010d, udp=%d, preticks=%d, wbc_v=%d\r\n", \
-						(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
-#ifdef DEBUG_INFO_UP_LOAD
-				sprintf((char*)sTempInfo, "\r\nCount Error: (0-1.5s)xiao_kong error: ticks=%08d, preticks=%08d, press=%010d, udp=%d, preticks=%d,wbc_v=%d\r\n", \
-							(int)IT_LIST_GetTicks(), (int)nPreTicks,(int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
-				Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-				memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
-				*pDILen = nDILen;
-#endif			
-////				collect_return_hdl(COLLECT_RET_FAIL_WBC_BSK);
-////				return e_Feedback_Error;
-			}
-		}
+//		if(nPreTicks <= 1500 && flag == 0){ // 0-1500ms
+//			if(EN_WBC_V_LOW == Get_WBC_V_Status(COUNT_WBC_XK_CHECK_V)){ // wbc_v lower than COUNT_WBC_XK_CHECK_V(1.5v)
+//				flag = 1;
+//				printf("\r\nCount Error: (0-1.5s)xiao_kong error, ticks=%08d, preticks=%08d, press=%010d, udp=%d, preticks=%d, wbc_v=%d\r\n", \
+//						(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
+//#ifdef DEBUG_INFO_UP_LOAD
+//				sprintf((char*)sTempInfo, "\r\nCount Error: (0-1.5s)xiao_kong error: ticks=%08d, preticks=%08d, press=%010d, udp=%d, preticks=%d,wbc_v=%d\r\n", \
+//							(int)IT_LIST_GetTicks(), (int)nPreTicks,(int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
+//				Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//				memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
+//				*pDILen = nDILen;
+//#endif			
+//////				collect_return_hdl(COLLECT_RET_FAIL_WBC_BSK);
+//////				return e_Feedback_Error;
+//			}
+//		}
     }
-//	if(nPreTicks >= TIME_TS_ACTION_OFF){
-	printf("\r\nCount Status(after 4.5S): ticks=%08d, preticks=%08d, press=%010d, udp=%d, preticks=%d, wbc_v=%d\r\n", \
+	printf("\r\nCount Status(after %d.%dS): ticks=%05d, preTicks=%05d, press=%010d, udp=%d, preticks=%d, wbc_v=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
 						(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
-	sprintf((char*)sTempInfo, "\r\nCount Status(after 4.5S): ticks=%08d, preticks=%08d,press=%010d, udp=%d, preticks=%d,wbc_v=%d\r\n", \
+	sprintf((char*)sTempInfo, "\r\nCount Status(after %d.%dS): ticks=%05d, preTicks=%05d,press=%010d, udp=%d, preticks=%d,wbc_v=%d\r\n", (int)nPreTimeOutTicks/1000, (int)nPreTimeOutTicks%1000/100,\
 							(int)IT_LIST_GetTicks(), (int)nPreTicks,(int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
@@ -2506,65 +2518,64 @@ UINT8 MSG_TestingFunc(void)
 	// -----check wbc elec touch before count----------
 	if(EN_WBC_V_LOW != Get_WBC_V_Status(COUNT_WBC_START_V)) // the wbc_v not changed
 	{
-		printf("Count Error: WBC Elec Touch Error, ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
-		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+		printf("Count Error: WBC Elec Touch Error, ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
+		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
 		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 #ifdef DEBUG_INFO_UP_LOAD	
-		sprintf((char*)sTempInfo, "Count Error: WBC Elec Touch Error, wbc_v error, ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
-		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+		sprintf((char*)sTempInfo, "Count Error: WBC Elec Touch Error, wbc_v error, ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
+		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, \
 		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		*pDILen = nDILen;
 #endif
 //		collect_return_hdl(COLLECT_RET_FAIL_WBC_TOUCH);
-////		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-/////		return e_Feedback_Error;	
+//		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+//		return e_Feedback_Error;	
 	}
 	// -----check wbc elec v before count-----------
-	if(EN_WBC_V_LOW != Get_WBC_V_Status(COUNT_WBC_TOUCH_CHECK_V)) // the wbc_v is not low than COUNT_WBC_MIN_V(1.8v)
-	{
-		printf("Count Error: WBC V Error, ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
-		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
-#ifdef DEBUG_INFO_UP_LOAD	
-		sprintf((char*)sTempInfo, "Count Error: WBC V Error, ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
-		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
-		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-		*pDILen = nDILen;
-#endif
-/////		collect_return_hdl(COLLECT_RET_FAIL_WBC_ELECTRODE);
-/////		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-//		return e_Feedback_Error;
-	}
+//	if(EN_WBC_V_LOW != Get_WBC_V_Status(COUNT_WBC_TOUCH_CHECK_V)) // the wbc_v is not low than COUNT_WBC_MIN_V(1.8v)
+//	{
+//		printf("Count Error: WBC V Error, ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
+//		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
+//		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+//#ifdef DEBUG_INFO_UP_LOAD	
+//		sprintf((char*)sTempInfo, "Count Error: WBC V Error, ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
+//		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
+//		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+//		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//		*pDILen = nDILen;
+//#endif
+///////		collect_return_hdl(COLLECT_RET_FAIL_WBC_ELECTRODE);
+///////		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+////		return e_Feedback_Error;
+//	}
 
 	//-------second 3s stop-----------
     HW_Valve_Off(EN_VALVE_LIQUID);  /* 关阀 */
     nCurTicks = IT_SYS_GetTicks();
     nTempTicks = nCurTicks;
-	printf("Count Status(before 3S): ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+	printf("Count Status(before 3S): ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
-	sprintf((char*)sTempInfo, "Count Status((before 3S)): ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+	sprintf((char*)sTempInfo, "Count Status((before 3S)): ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
 #endif
 
-    //while((nCurTicks - nTempTicks) <= TIME_TS_ACTION_ON - TIME_TS_ACTION_OFF)
 	while((nCurTicks - nTempTicks) <= 3000)
     {
         nCurTicks = IT_SYS_GetTicks();
 //		IT_SYS_DlyMs(1);
-		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
         // to check the ELECTRODE
         if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))  /* 流程正常结束 */
 		{
-			printf("Count Error: the ELECTRODE tigger(3S stop), ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+			printf("Count Error: the ELECTRODE tigger(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 							(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo, "Count Error: the ELECTRODE tigger(3S stop), ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+			sprintf((char*)sTempInfo, "Count Error: the ELECTRODE tigger(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 								(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
@@ -2577,10 +2588,10 @@ UINT8 MSG_TestingFunc(void)
 		nPress =  Get_Press_Value(GET_PRESS_NUM_FIVE);
 		if(nPress <= COUNT_MIN_PRESS)
 		{
-			printf("Count Error: the press error(3S stop), ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+			printf("Count Error: the press error(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 							(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo, "Count Error: the press error(3S stop), ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+			sprintf((char*)sTempInfo, "Count Error: the press error(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 								(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
@@ -2589,12 +2600,12 @@ UINT8 MSG_TestingFunc(void)
             collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
             return e_Feedback_Error;
 		}
-		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }
-	printf("Count Status(after 3S): ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+	printf("Count Status(after 3S): ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
-	sprintf((char*)sTempInfo, "Count Status(after 3S): ticks=%08d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+	sprintf((char*)sTempInfo, "Count Status(after 3S): ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
 							(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
@@ -2602,13 +2613,21 @@ UINT8 MSG_TestingFunc(void)
 #endif
 	
 	//-------third, counting start-------
+	if(eMode == EN_WBC_TEST)
+	{
+		nTestTimeOutTicks = TIME_TS_ACTION_TIMEOUT_1; // 24000ms
+		
+	}else{
+		nTestTimeOutTicks = TIME_TS_ACTION_TIMEOUT_2; // 34000ms
+	}
 	IT_ADC_SetTicks(0); 
+	IT_LIST_SetTicks(nPreTicks);
 	g_Frame_Count = 0;
-	printf("Count Status(before count): ticks=%08d, adc_ticks=%08d, press=%010d, udp=%d, q=%d, f=%d, wbc_v=%d\r\nWBC_V: ", \
-		(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)Get_XK_V_Value());
+	printf("Count Status(before count): ticks=%05d, adc_ticks=%05d, press=%010d, udp=%d, q=%d, f=%d, wbc_v=%d, maxt=%d\r\nWBC_V: ", \
+		(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)Get_XK_V_Value(), (int)nTestTimeOutTicks);
 #ifdef DEBUG_INFO_UP_LOAD
-		sprintf((char*)sTempInfo, "Count Status(before count): ticks=%08d, adc_ticks=%08d, press=%010d, udp=%d, q=%d, f=%d, wbc_v=%d\r\nWBC_V: ", \
-		(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)Get_XK_V_Value());
+		sprintf((char*)sTempInfo, "Count Status(before count): ticks=%05d, adc_ticks=%05d, press=%010d, udp=%d, q=%d, f=%d, wbc_v=%d, maxt=%d\r\nWBC_V: ", \
+		(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)Get_XK_V_Value(),(int)nTestTimeOutTicks);
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
@@ -2626,39 +2645,38 @@ UINT8 MSG_TestingFunc(void)
 	nTempTicks1 = nCurTicks;
 	// ---------open get data switch--------
 	HW_Valve_On(EN_VALVE_LIQUID);  /* 开阀准备检测 */
-	HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+	//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     HW_Enable_Data_Channel(eMode);//HW_Start_WBC(); // todo...
-//	while (nCurTicks <= (nLstTicks + (TIME_OVER_TS_ADC - TIME_TS_ACTION_ON))) //25s - 7s = 18s
-	while (nCurTicks <= (nLstTicks + TIME_TS_ACTION_TIMEOUT)) //24s
+	while (nCurTicks <= (nLstTicks + nTestTimeOutTicks)) //24s
     {
 		//----------getting data and send ------------------------------
 		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_SEND_FPGA_DATA);
 		Data_Circle_Handle(eMode);
 		//------get wbc data every 500ms------
-		if((nCurTicks - nTempTicks1) >= 500) // 1ms per time
-		{
-			wbc_v = Get_XK_V_Value();
-			printf("%d,", (int)wbc_v);
-#ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo,"%d,", (int)wbc_v);
-			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-			*pDILen = nDILen;
-#endif
-			nTempTicks1 = nCurTicks;
-		}	
+//		if((nCurTicks - nTempTicks1) >= 1000) // 1ms per time
+//		{
+//			wbc_v = Get_XK_V_Value();
+//			printf("%d,", (int)wbc_v);
+//#ifdef DEBUG_INFO_UP_LOAD
+//			sprintf((char*)sTempInfo,"%d,", (int)wbc_v);
+//			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//			*pDILen = nDILen;
+//#endif
+//			nTempTicks1 = nCurTicks;
+//		}	
 //		
 		//------to check the ELECTRODE------
 		nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
         if (ELECTRODE_WASTE == nTemp)  /* 流程正常结束 */
         {
 			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
-			Send_Last_FIFO_Data();
-			printf("\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+			//Send_Last_FIFO_Data();
+			printf("\r\nCount Status: Success, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
 				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 #ifdef DEBUG_INFO_UP_LOAD
-	    	sprintf((char*)sTempInfo, "\r\nCount Status: Success, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+	    	sprintf((char*)sTempInfo, "\r\nCount Status: Success, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
 				nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
@@ -2673,18 +2691,18 @@ UINT8 MSG_TestingFunc(void)
 //		{
 //			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
 //			Send_Last_FIFO_Data();	
-//			printf("\r\nCount Error: press error, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+//			printf("\r\nCount Error: press error, ticks=%05d, adc_ticks=%05%, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
 //				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)nPress);
 //#ifdef DEBUG_INFO_UP_LOAD		
-//			sprintf((char*)sTempInfo, "\r\nCount Error: press error, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
-//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
+//			sprintf((char*)sTempInfo, "\r\nCount Error: press error, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+//				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
 //				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)nPress);
 //			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 //			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 //			*pDILen = nDILen;
 //#endif
-//			printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
+//			printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%05d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
 //			
 //			collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE); 
 //			return e_Feedback_Error;
@@ -2693,7 +2711,7 @@ UINT8 MSG_TestingFunc(void)
     }
 	//------after count, stop all--------
 	HW_Disable_Data_Channel(eMode);//HW_End_WBC();
-	Send_Last_FIFO_Data();
+	//Send_Last_FIFO_Data();
 	HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
     HW_Valve_Off(EN_VALVE_AIR);  // all the air way
     HW_Valve_Off(EN_VALVE_LIQUID);   // WBC
@@ -2702,11 +2720,11 @@ UINT8 MSG_TestingFunc(void)
 	nTempTicks1  = IT_LIST_GetTicks();
 	nTempTicks = IT_ADC_GetTicks();
 	//nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
-	printf("Count Status(after count): ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+	printf("Count Status(after count): ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)nTempTicks1, (int)nTempTicks, (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
 				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 #ifdef DEBUG_INFO_UP_LOAD
-	sprintf((char*)sTempInfo, "Count status(after count): ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+	sprintf((char*)sTempInfo, "Count status(after count): ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)nTempTicks1, (int)nTempTicks, (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
 				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
@@ -2716,27 +2734,27 @@ UINT8 MSG_TestingFunc(void)
 
     //-----------timeout -------------- nPreTicks
 //    if (nCurTicks > (nLstTicks + (TIME_OVER_TS_ADC - TIME_TS_ACTION_ON)))  /* 超时判断 */
-	if (nCurTicks > (nLstTicks + TIME_TS_ACTION_TIMEOUT)) 
+	if (nCurTicks > (nLstTicks + nTestTimeOutTicks)) 
 	{
         nCurTicks = IT_SYS_GetTicks();
-		printf("Count Error: timeout, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+		printf("Count Error: timeout, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d,maxt=%d\r\n",\
 					(int)nTempTicks1, (int)nTempTicks, (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-					(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+					(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)nTestTimeOutTicks);
 #ifdef DEBUG_INFO_UP_LOAD
-		sprintf((char*)sTempInfo, "Count Error: timeout, ticks=%08d, adc_ticks=%08d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
+		sprintf((char*)sTempInfo, "Count Error: timeout, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d, maxt=%d\r\n",\
 								(int)nTempTicks1, (int)nTempTicks, (int)Get_Udp_Count(),(int)g_Frame_Count, (int)g_Send_Fail,\
-								hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+								hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)nTestTimeOutTicks);
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 		*pDILen = nDILen;
 #endif
         
 #ifdef DEBUG_INFO_UP_LOAD
-	   sprintf((char*)sTempInfo, "------------------End Count: num=%d, q=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)g_Frame_Count, (int)IT_LIST_GetTicks(), nDILen);
+	   sprintf((char*)sTempInfo, "------------------End Count: num=%d, q=%d, ticks=%05d---nDILen=%d-------\r\n", (int)(Num -1), (int)g_Frame_Count, (int)IT_LIST_GetTicks(), nDILen);
 	   Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	   *pDILen = nDILen;
 #endif		
-	   printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%08d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
+	   printf("------------------End Count: num=%d, udp=%d, q=%d, f=%d, ticks=%05d---nDILen=%d-------\r\n", (int)(Num -1), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)IT_LIST_GetTicks(), nDILen);
        collect_return_hdl(COLLECT_RET_FAIL_TIMEOVER);  /* 采集异常 */
 	   return e_Feedback_Error;
     }
@@ -2859,7 +2877,7 @@ INT32 Build_Press_Self_Check(void)
                 }
 				printf("Building Press tick=%08d, press=%010d, addpress=%010d\r\n", (int)(nCurTicks - nStartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
             }
-            HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+            //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
 			//HW_LWIP_Working_Recv_Handle(IT_LIST_GetTicks(), IT_ADC_GetTicks());
         }
         // turn off
@@ -3228,17 +3246,20 @@ UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal)
 //	}
 //}
 
+void Reset_ADC_InitDataType(void)
+{
+	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
+	memset((void*)&ADC2_Status, 0, sizeof(ADC_Status_InitTypeDef));		
+}
 
 void Eable_ADC(EN_TypeADC eType)
 {
 	if(eType == EN_ADC1){
-		memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
-		memset((void*)&ADC2_Status, 0, sizeof(ADC_Status_InitTypeDef));			
+		Reset_ADC_InitDataType();
 		ADC1_Init(); //APP_ADC_Init(EN_ADC1);
 		ADC_SoftwareStartConv(ADC1);
 	}else if(eType == EN_ADC2){
-		memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
-		memset((void*)&ADC2_Status, 0, sizeof(ADC_Status_InitTypeDef));	
+		Reset_ADC_InitDataType();
 		//DMA_Cmd(DMA2_Stream3, DISABLE);
 		ADC2_Init(); //APP_ADC_Init(EN_ADC2);
 		ADC_SoftwareStartConv(ADC2);

@@ -1870,12 +1870,13 @@ UINT8  HW_LEVEL_GetElectrode(UINT8 chIndex)
 }
 
 /* 滤波方式获取电极状态 */
-#define  ELECTRODE_GET_FILTER_NUM  5
+#define  ELECTRODE_GET_FILTER_NUM  7
 UINT8 hw_filter_get_electrode(UINT8 chIndex)
 {
-    UINT8 n, cnt;
+    IO_ UINT8 n, cnt;
 
     cnt = 0;
+	//__disable_irq();
     for (n = 0; n < ELECTRODE_GET_FILTER_NUM; n++)
     {
 		#if USE_STM32F407_ONLY
@@ -1887,11 +1888,11 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
             cnt += 1;
         }
     }
-
     if (cnt > (ELECTRODE_GET_FILTER_NUM / 2))  /* 以超过半数的值为准 */
     {
         return  1;
     }
+	//__enable_irq();
 
 //#ifdef   DEBUG_TEST  /* 临时调试用，设置电极永远无法获取溢出信号 */
 //    return  1;
@@ -2025,24 +2026,24 @@ void  HW_End_WBC(void)
 }
 
 //
-void Send_Last_FIFO_Data(void)
-{
-	UINT8 i;
-	for(i = 0; i < 9; i++) // FPGA FIFO is 4K, the last data should less than 4K
-	{
-		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_SEND_FPGA_DATA);
-	}
-}
+//void Send_Last_FIFO_Data(void)
+//{
+//	UINT8 i;
+//	for(i = 0; i < 9; i++) // FPGA FIFO is 4K, the last data should less than 4K
+//	{
+//		HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_SEND_FPGA_DATA);
+//	}
+//}
 
-void Clear_FPGA_FIFO_Data(void)
-{
-	UINT8 i;
-	for(i = 0; i < 8; i++)
-	{
-		HW_DATA_ClearData(((UINT16 *)(s_anBufNet)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
-	}
-	printf("Clear_FPGA_FIFO_Data Finished\r\n");
-}
+//void Clear_FPGA_FIFO_Data(void)
+//{
+//	UINT8 i;
+//	for(i = 0; i < 8; i++)
+//	{
+//		HW_DATA_ClearData(((UINT16 *)(s_anBufNet)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+//	}
+//	printf("Clear_FPGA_FIFO_Data Finished\r\n");
+//}
 
 //
 UINT8 HW_DATA_ClearData(UINT16 * pnData, UINT16 * pnLen, UINT16 * pnStatus)
@@ -2283,29 +2284,29 @@ UINT8 Poll_SendDMA_ADC1_Data(UINT32 nCmd)
 //	nParaLen = 0;
 }
 
-UINT8 Poll_SendDMA_ADC2_Data(UINT32 nCmd)
-{
+//UINT8 Poll_SendDMA_ADC2_Data(UINT32 nCmd)
+//{
 
-	if(ADC2_Status.nSFlag == 1)
-	{
-		//ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, g_ADC_Buffer);
-		ADC_Send(nCmd, ADC2_Status.nID, g_ADC2_Buffer);
-		ADC1_Status.nSFlag = 0xFF;
-		//printf()
-		memset(g_ADC2_Buffer, 0, ADC2_BUFFER_LEN_HALF);
-		ADC2_Status.nSendID++;
-		return e_Feedback_Success;
-	}else if(ADC2_Status.nSFlag == 2){
-		ADC_Send(nCmd, ADC2_Status.nID, &g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF]);
-		ADC1_Status.nSFlag = 0xFF;
-		memset(&g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF], 0, ADC2_BUFFER_LEN_HALF);
-		ADC2_Status.nSendID++;
-		return e_Feedback_Success;
-	}	
-	return e_Feedback_Fail;
-	//printf("adc1 end: id=%d, sendid=%d, T=%d\r\n", \
-			(int)ADC2_Status.nID, (int)ADC2_Status.nSendID, (int)IT_SYS_GetTicks());
-}
+//	if(ADC2_Status.nSFlag == 1)
+//	{
+//		//ADC_Send(CMD_DATA_NET_TEST, ADC_Status.nID, g_ADC_Buffer);
+//		ADC_Send(nCmd, ADC2_Status.nID, g_ADC2_Buffer);
+//		ADC1_Status.nSFlag = 0xFF;
+//		//printf()
+//		memset(g_ADC2_Buffer, 0, ADC2_BUFFER_LEN_HALF);
+//		ADC2_Status.nSendID++;
+//		return e_Feedback_Success;
+//	}else if(ADC2_Status.nSFlag == 2){
+//		ADC_Send(nCmd, ADC2_Status.nID, &g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF]);
+//		ADC1_Status.nSFlag = 0xFF;
+//		memset(&g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF], 0, ADC2_BUFFER_LEN_HALF);
+//		ADC2_Status.nSendID++;
+//		return e_Feedback_Success;
+//	}	
+//	return e_Feedback_Fail;
+//	//printf("adc1 end: id=%d, sendid=%d, T=%d\r\n", \
+//			(int)ADC2_Status.nID, (int)ADC2_Status.nSendID, (int)IT_SYS_GetTicks());
+//}
 
 
 UINT8 Get_ADC1_Buffer(UINT16* pData, UINT16* pLen)
@@ -2512,88 +2513,60 @@ UINT8 Data_Circle_Handle(IO_ eTestMode eMode)
 
 
 //
-UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag)
-{
-    IO_ UINT8 chReturn;
-	IO_ UINT16 nTemp;
-    //=====================================================
-    // 1. lwip handing
-    // 1) period task
-    // ---check if any packet received
-//    if (ETH_CheckFrameReceived())
+//UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag)
+//{
+//    IO_ UINT8 chReturn;
+//	IO_ UINT16 nTemp;
+//    LwIP_Periodic_Handle(IT_SYS_GetTicks());
+
+//    //=====================================================
+//#if 1
+//    // 2. data feedback
+//    s_anBufNet[0] = 0x5344;
+//    s_anBufNet[1] = 0x4457;
+//	// cmd
+//	s_anBufNet[2] = 0x00;
+//	s_anBufNet[3] = 0x00;
+//	
+//    chReturn = HW_DATA_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+//    // s_anBufNet[3] = s_nStatus;
+//  
+//    if (e_Feedback_Success == chReturn)
 //    {
-//        // for debug, the "arp frame"
-//        // printf("-");
-//        // process received ethernet packet
-//        LwIP_Pkt_Handle();
-//        // udp_echoserver_senddata("abcd", 4);
-//			  //--------------------------------------------
-//        // 2) message handling
-//        PL_NET_CheckingFrame((UINT8 *)g_NET_achCmdRvBuf);
-//        if (E_PL_BUF_ENABLE == PL_NET_IsRecvCommandValid())
-//        {
-//            MSG_Handling((UINT8 *)g_NET_achCmdRvBuf, (UINT8 *)g_achFbkSdBuf);
-//            //
-//            PL_NET_ResetRecvComand();
-//        }
-//    }
-    // ---handle periodic timers for LwIP
-    LwIP_Periodic_Handle(IT_SYS_GetTicks());
-
-    //=====================================================
-#if 1
-    // 2. data feedback
-    s_anBufNet[0] = 0x5344;
-    s_anBufNet[1] = 0x4457;
-	// cmd
-	s_anBufNet[2] = 0x00;
-	s_anBufNet[3] = 0x00;
-	
-    chReturn = HW_DATA_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
-    // s_anBufNet[3] = s_nStatus;
-  
-    if (e_Feedback_Success == chReturn)
-    {
-		g_Frame_Count++;
-		if(eFlag == EN_SEND_FPGA_DATA){
-			
-			g_Udp_Count++;
-			s_anBufNet[2] = (((g_Udp_Count>>24)&0x00FF)|((g_Udp_Count>>8)&0xFF00));
-			s_anBufNet[3] = (((g_Udp_Count>>8)&0x00FF) |((g_Udp_Count<<8)&0xFF00));
-			chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
-			if (e_Feedback_Fail == chReturn)
-			{
-				g_Send_Fail++;
-				//IT_SYS_DlyMs(1);
-			}
-		}
-//		else if(eFlag == EN_DROP_FPGA_DATA){// else do not send to app
-			
+//		g_Frame_Count++;
+//		if(eFlag == EN_SEND_FPGA_DATA){
+//			
+//			g_Udp_Count++;
+//			s_anBufNet[2] = (((g_Udp_Count>>24)&0x00FF)|((g_Udp_Count>>8)&0xFF00));
+//			s_anBufNet[3] = (((g_Udp_Count>>8)&0x00FF) |((g_Udp_Count<<8)&0xFF00));
+//			chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
+//			if (e_Feedback_Fail == chReturn)
+//			{
+//				g_Send_Fail++;
+//				//IT_SYS_DlyMs(1);
+//			}
 //		}
-        //----------------------------------------------------------
-        // debug..., printf the get data via serial , 20190315
-//      PL_COM_SendNChar(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
-    }else{
-		g_Frame_Count++;
-	}
-		
-#endif
+//    }else{
+//		g_Frame_Count++;
+//	}
+//		
+//#endif
 
-#if 0
-    //-----------------------------------------------------
-    // for testing:
-    // take attention: the array "s_achBufNet" must be put
-    //				   out of the function "main", or it will
-    //				   case error.
-    chReturn = udp_echoserver_senddata((UINT8 *)g_achFbkSdBuf, 1200);
-    if (e_Feedback_Fail == chReturn)
-    {
-        IT_SYS_DlyMs(1);
-    }
-#endif
+//#if 0
+//    //-----------------------------------------------------
+//    // for testing:
+//    // take attention: the array "s_achBufNet" must be put
+//    //				   out of the function "main", or it will
+//    //				   case error.
+//    chReturn = udp_echoserver_senddata((UINT8 *)g_achFbkSdBuf, 1200);
+//    if (e_Feedback_Fail == chReturn)
+//    {
+//        IT_SYS_DlyMs(1);
+//    }
+//#endif
 
-    return e_Feedback_Success;
-}
+//    return e_Feedback_Success;
+//}
 
 
 UINT8  HW_LWIP_MainLine(void)

@@ -220,7 +220,6 @@ void SPI_Read(UINT8 *pBuf, UINT8 nCount)
 #endif
 	
 }
- 
 
 
 UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size)

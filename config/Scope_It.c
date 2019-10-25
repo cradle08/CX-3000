@@ -62,7 +62,8 @@ void IRQ_SysTimer(void)
 			// sampling port timeout
     	    SPG_IsrTime();
 			// timer get CRP data per 100ms
-			if(g_CRP_Data.eEnable == e_True)
+			//if(g_CRP_Data.eEnable == e_True)
+			if(g_CRP_Data.eEnable == 1)
 			{								
 				if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 0)
 				{

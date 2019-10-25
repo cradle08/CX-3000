@@ -6,6 +6,7 @@
 #include  "MyType.h"
 //#include "InterfaceScope.h"
 #include "Scope_Eval.h"
+extern const UINT8 softver_edtion[];
 
 typedef struct{
 	UINT8 nSFlag;
@@ -242,7 +243,7 @@ UINT8 HW_Clear_Data_Channel(eTestMode eMode);
 UINT8 Data_Circle_Handle(IO_ eTestMode eMode);
 void Eable_ADC(EN_TypeADC eType);
 void Disable_ADC(EN_TypeADC eType);
-	
+void Reset_ADC_InitDataType(void);
 //yaolan_end
 //----------------------------------------------------------------------------------------------
 
@@ -275,7 +276,7 @@ void Disable_ADC(EN_TypeADC eType);
 #else
 #define  TIME_OVER_TS_ADC              40000       /* 40秒  数据采集超时时间 */
 #endif
-#define  TIME_TS_ACTION_OFF            12000       /* 12秒   检测期间关阀时间 */
+//#define  TIME_TS_ACTION_OFF            12000       /* 12秒   检测期间关阀时间 */
 #define  TIME_TS_ACTION_ON             15000       /* 15秒  检测期间开阀时间 */
 //-----------//
 #elif defined SAMPLE_CHIP_95UM
@@ -294,9 +295,11 @@ void Disable_ADC(EN_TypeADC eType);
 #define  TIME_OVER_TS_ADC              25000       /* 25秒  数据采集超时时间 */
 #endif
 
-#define  TIME_TS_ACTION_TIMEOUT        1000//24000 //18000
-#define  TIME_TS_ACTION_OFF            4500 //4000        /* 4秒   检测期间关阀时间 */
-#define  TIME_TS_ACTION_ON             7000        /* 7秒   检测期间开阀时间 */
+#define  TIME_TS_ACTION_TIMEOUT_1        24000 //18000
+#define  TIME_TS_ACTION_TIMEOUT_2        50000
+#define  TIME_TS_ACTION_PRE_TIME_1       4500      /* 4秒   检测期间关阀时间 */
+#define  TIME_TS_ACTION_PRE_TIME_2       9000
+#define  TIME_TS_ACTION_ON               7000        /* 7秒   检测期间开阀时间 */
 #endif
 
 //-----------------------------------------------------------------------
