@@ -2190,25 +2190,25 @@ void Simulation_Data(UINT8 *pDInfo, UINT16 *pDILen,eTestMode eMode)
 }
 
 
-void MSG_DataTesting(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode)
-{
-	IO_ INT8 sTempInfo[100] = {0};
-	IO_ UINT16 nDILen = 0;
-		
-	*pDILen = nDILen;
-	
-	HW_Enable_Data_Channel(eMode);
-	Data_Circle_Handle(eMode);
-	HW_Disable_Data_Channel(eMode);
-	printf("Data Test: id=%d, sendid=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
-#ifdef DEBUG_INFO_UP_LOAD
-		sprintf((char*)sTempInfo, "Data Test: id=%d, sendid=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
-		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-		memset((char*)sTempInfo, 0, 100);
-		*pDILen = nDILen;
-#endif
-	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
-}
+//void MSG_DataTesting(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode)
+//{
+//	IO_ INT8 sTempInfo[100] = {0};
+//	IO_ UINT16 nDILen = 0;
+//		
+//	*pDILen = nDILen;
+//	
+//	HW_Enable_Data_Channel(eMode);
+//	Data_Circle_Handle(eMode);
+//	HW_Disable_Data_Channel(eMode);
+//	printf("Data Test: id=%d, sendid=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
+//#ifdef DEBUG_INFO_UP_LOAD
+//		sprintf((char*)sTempInfo, "Data Test: id=%d, sendid=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
+//		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//		memset((char*)sTempInfo, 0, 100);
+//		*pDILen = nDILen;
+//#endif
+//	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
+//}
 
 //
 #ifdef DEBUG_INFO_UP_LOAD
@@ -2373,15 +2373,16 @@ UINT8 MSG_TestingFunc(void)
 
     //==================
     // 2. check the ELECTRODE
-    if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))  // 1
+	nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
+    if (ELECTRODE_WASTE == nTemp)  // 1
     {
         //*****************************
         // Exception 2
         //*****************************
         nCurTicks = IT_SYS_GetTicks();
-        printf("Count Error: the ELECTRODE error(after build press)\r\n");
+        printf("Count Error: the ELECTRODE=%d error (after build press)\r\n", nTemp);
 #ifdef DEBUG_INFO_UP_LOAD
-		sprintf((char*)sTempInfo, "Count Error: the ELECTRODE error(after build press)\r\n");
+		sprintf((char*)sTempInfo, "Count Error: the ELECTRODE=%d error(after build press)\r\n", nTemp);
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 		*pDILen = nDILen;
@@ -2454,12 +2455,13 @@ UINT8 MSG_TestingFunc(void)
 		}	
 
         // to check the ELECTRODE
-        if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))
+		nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
+        if (ELECTRODE_WASTE == nTemp)
         {
-			printf("\r\nCount Error: the ELECTRODE error(%d.%dS), ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
+			printf("\r\nCount Error: the ELECTRODE=%d error(%d.%dS), ticks=%05d, press=%010d, udp=%d, q=%d\r\n", nTemp, (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
 									(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count);
 #ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo, "\r\nCount Error: the ELECTRODE error(%d.%dS), ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
+			sprintf((char*)sTempInfo, "\r\nCount Error: the ELECTRODE=%d error(%d.%dS), ticks=%05d, press=%010d, udp=%d, q=%d\r\n", nTemp, (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
 										(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count);
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
@@ -2570,12 +2572,13 @@ UINT8 MSG_TestingFunc(void)
 //		IT_SYS_DlyMs(1);
 		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
         // to check the ELECTRODE
-        if (ELECTRODE_WASTE == hw_filter_get_electrode(INDEX_ELECTRODE))  /* 流程正常结束 */
+		nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
+        if (ELECTRODE_WASTE == nTemp)  /* 流程正常结束 */
 		{
-			printf("Count Error: the ELECTRODE tigger(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+			printf("Count Error: the ELECTRODE=%d tigger(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", nTemp,\
 							(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo, "Count Error: the ELECTRODE tigger(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+			sprintf((char*)sTempInfo, "Count Error: the ELECTRODE=%d tigger(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", nTemp,\
 								(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);

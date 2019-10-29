@@ -83,7 +83,7 @@
 #define IP_REMOTE_ADDR0   192
 #define IP_REMOTE_ADDR1   168
 #define IP_REMOTE_ADDR2   1
-#define IP_REMOTE_ADDR3   102
+#define IP_REMOTE_ADDR3   102 //197
 
 
 /*NETMASK*/
@@ -100,7 +100,7 @@
 
 /*Port*/
 #define SERVER_PORT    8000
-#define CLIENT_PORT    8000
+#define CLIENT_PORT    8000 //9016
 
 
 /* MII and RMII mode selection, for STM324xG-EVAL Board(MB786) RevB ***********/

@@ -329,16 +329,15 @@ void EVAL_Init(void)
 	ADC3_Init();//APP_ADC_Init(EN_ADC3);
 	
 	Elec_Init();
-	//Micro_OC_Init();
 	Beep_Init();
 	Pump_init();
 	Valve_Init();
 	OC_Init();
 	Press_Init();
-//	Turn_Motor_Init();
-//	Mixing_Motor_Init();
-//	LED_Init();
-//	ADC24Bit_Init();
+	Turn_Motor_Init();
+	Mixing_Motor_Init();
+	LED_Init();
+	ADC24Bit_Init();
 	
 #endif
 	Beep(400);

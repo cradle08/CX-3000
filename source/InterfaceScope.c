@@ -1870,12 +1870,11 @@ UINT8  HW_LEVEL_GetElectrode(UINT8 chIndex)
 }
 
 /* 滤波方式获取电极状态 */
-#define  ELECTRODE_GET_FILTER_NUM  7
+#define  ELECTRODE_GET_FILTER_NUM  5
 UINT8 hw_filter_get_electrode(UINT8 chIndex)
 {
-    IO_ UINT8 n, cnt;
-
-    cnt = 0;
+    IO_ UINT8 n, cnt = 0;
+	//return  0;
 	//__disable_irq();
     for (n = 0; n < ELECTRODE_GET_FILTER_NUM; n++)
     {
