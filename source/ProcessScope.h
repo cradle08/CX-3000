@@ -471,7 +471,7 @@ _EXT_ UINT8 MSG_TestingFunc(void);
 #endif
 
 void Simulation_Data(UINT8 *pDInfo, UINT16 *pDILen,eTestMode eMode);
-//void MSG_DataTesting(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode);
+void MSG_DataTesting(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode);
 
 
 void Part_Test_Exec(UINT8 nNo, UINT32 nNum);

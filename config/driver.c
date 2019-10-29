@@ -129,6 +129,7 @@ void ADC1_DMA_Config()
 	DMA_Cmd(DMA2_Stream0, ENABLE);
 }
 
+#define WBC_USE_PA5    	1
 // ADC1_IN5  PA5  WBC
 void ADC1_Init(void)
 {
@@ -140,7 +141,11 @@ void ADC1_Init(void)
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
 	// PA5
-	GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_5;//GPIO_Pin_5, PA5
+	#if WBC_USE_PA5
+		GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_5;//GPIO_Pin_5;//GPIO_Pin_5, PA5
+	#else
+		GPIO_InitStructure.GPIO_Pin		= GPIO_Pin_6;	
+	#endif
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
@@ -175,8 +180,11 @@ void ADC1_Init(void)
 	ADC1_DMA_Config();
 	ADC_DMACmd(ADC1, ENABLE);
 	
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_3Cycles); //ADC_SampleTime_3Cycles
-
+	#if WBC_USE_PA5
+		ADC_RegularChannelConfig(ADC1, ADC_Channel_5, 1, ADC_SampleTime_3Cycles); //ADC_SampleTime_3Cycles
+	#else
+		ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_3Cycles); //ADC_SampleTime_3Cycles
+	#endif
 	ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
 	//ADC_SoftwareStartConv(ADC1);
 }
@@ -827,6 +835,7 @@ void Press_I2C_Send_Byte(UINT8 nVal)
     u8 t;   
 	PRESS_I2C_SDA_OUT(); 	    
     PRESS_I2C_SCL=0;//拉低时钟开始数据传输
+	__disable_irq();
     for(t=0;t<8;t++)
     {              
         PRESS_I2C_SDA=(nVal&0x80)>>7;
@@ -837,12 +846,14 @@ void Press_I2C_Send_Byte(UINT8 nVal)
 		PRESS_I2C_SCL=0;	
 		Delay_US(2);
     }
+	__enable_irq();
 }
 
 UINT8 Press_I2C_Read_Byte(UINT8 nAck)
 {
 	unsigned char i,receive=0;
 	PRESS_I2C_SDA_IN();//SDA设置为输入
+	__disable_irq();
     for(i=0;i<8;i++ )
 	{
         PRESS_I2C_SCL=0; 
@@ -856,6 +867,7 @@ UINT8 Press_I2C_Read_Byte(UINT8 nAck)
         Press_I2C_NAck();//发送nACK
     else
         Press_I2C_Ack(); //发送ACK   
+	__enable_irq();
     return receive;
 }
 
@@ -2349,7 +2361,17 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 11:  // B  fix motor
 		{
-			printf("Fix Motor start\r\n");
+			
+			printf("start\r\n");
+			__disable_irq();
+			for(i = 0; i < 50; i++)
+			{
+				AD7799_CS_LOW;
+				Delay_US(50);
+				AD7799_CS_HIGH;
+				Delay_US(50);
+			}
+			__enable_irq();
 //			for(i = 0; i < 10; i++)
 //			{
 //				Fix_Motor_Enable();
@@ -2366,13 +2388,13 @@ void Driver_Debug(UINT8 nIndex)
 //				Fix_Motor_Run(300, 600);
 //			}
 //			printf("Fix Motor end\r\n");
-			
+			printf("end\r\n");
 		}
 		break;
 		case 12: //C   AD7799
 		{
 			printf("AD7799 start\r\n");
-			//ADC24Bit_Init();
+			ADC24Bit_Init();
 			IT_SYS_DlyMs(200);
 			for(i = 0; i < 30; i++)
 			{

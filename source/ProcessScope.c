@@ -2190,26 +2190,42 @@ void Simulation_Data(UINT8 *pDInfo, UINT16 *pDILen,eTestMode eMode)
 }
 
 
-//void MSG_DataTesting(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode)
-//{
-//	IO_ INT8 sTempInfo[100] = {0};
-//	IO_ UINT16 nDILen = 0;
-//		
-//	*pDILen = nDILen;
-//	
-//	HW_Enable_Data_Channel(eMode);
-//	Data_Circle_Handle(eMode);
-//	HW_Disable_Data_Channel(eMode);
-//	printf("Data Test: id=%d, sendid=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
-//#ifdef DEBUG_INFO_UP_LOAD
-//		sprintf((char*)sTempInfo, "Data Test: id=%d, sendid=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
-//		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-//		memset((char*)sTempInfo, 0, 100);
-//		*pDILen = nDILen;
-//#endif
-//	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
-//}
 
+void MSG_DataTesting(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode)
+{
+	IO_ INT8 sTempInfo[100] = {0};
+	IO_ UINT16 nDILen = 0;
+	IO_ UINT32 nStartTicks = 0, nCurTicks = 0;	
+	
+	*pDILen = nDILen;
+	
+	HW_Enable_Data_Channel(eMode);
+	nStartTicks = IT_SYS_GetTicks();
+	nCurTicks = nStartTicks;
+	printf("start\r\n");
+	while(nCurTicks < nStartTicks + 8000)
+	{
+		Data_Circle_Handle(eMode);
+		nCurTicks = IT_SYS_GetTicks();	
+	}
+	HW_Disable_Data_Channel(eMode);
+	printf("Data Test: id=%d, sendid=%d, ticks=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID, (int)(nCurTicks-nStartTicks));
+	collect_return_hdl(COLLECT_RET_SUCESS);
+	
+	nDILen = 0;
+	pDInfo[nDILen++] = 0x44; pDInfo[nDILen++] = 0x53; pDInfo[nDILen++] = 0x57; 
+	pDInfo[nDILen++] = 0x44; pDInfo[nDILen++] = 0x30; pDInfo[nDILen++] = 0x00;
+	pDInfo[nDILen++] = 0x02; pDInfo[nDILen++] = 0x01;
+	pDInfo[nDILen++] = 0x00; pDInfo[nDILen++] = 0x00;
+	#ifdef DEBUG_INFO_UP_LOAD
+		sprintf((char*)sTempInfo, "Data Test: id=%d, sendid=%d\r\n", (int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
+		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+		memset((char*)sTempInfo, 0, 100);
+		*pDILen = nDILen;
+#endif
+	
+	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
+}
 //
 #ifdef DEBUG_INFO_UP_LOAD
 UINT8 MSG_TestingFunc(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode)

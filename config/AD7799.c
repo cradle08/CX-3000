@@ -15,28 +15,28 @@ void ADC24Bit_SPI_Init(void)
 	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_CLK_PIN; 
 	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
 	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
-	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_50MHz;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
 	  //GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
 	  GPIO_Init(ADC24BIT_CLK_PORT, &GPIO_InitStructure);
 	  // mosi
 	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_MOSI_PIN; 
 	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
 	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
-	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_50MHz;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
 	  //GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
 	  GPIO_Init(ADC24BIT_MOSI_PORT, &GPIO_InitStructure);
 	  // miso
 	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_MISO_PIN; 
 	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
 	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
-	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_50MHz;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
 	 // GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;
 	  GPIO_Init(ADC24BIT_MISO_PORT, &GPIO_InitStructure);
 	  // cs
 	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_CS_PIN; 
 	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
 	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
-	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_50MHz;
+	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
 	  //GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
 	  GPIO_Init(ADC24BIT_CS_PORT, &GPIO_InitStructure);
 	
@@ -74,28 +74,28 @@ void ADC24Bit_GPIO_Init(void)
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_CS_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//100MHz
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	//GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_CS_PORT, &GPIO_InitStructure);
 	//Di	
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MISO_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//100MHz
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//
 	GPIO_Init(ADC24BIT_MISO_PORT, &GPIO_InitStructure);
 	// Do
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MOSI_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//100MHz
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_MOSI_PORT, &GPIO_InitStructure);
 	// clk
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_CLK_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;//100MHz
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_CLK_PORT, &GPIO_InitStructure);
 }
@@ -112,15 +112,19 @@ void ADC24Bit_Init(void)
 
 UINT16 ADC24Bit_SPI_GetByte(void)
 {
+	//__disable_irq();
     while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_RXNE) == RESET){}//等待发送区空  
-	return SPI_I2S_ReceiveData(ADC24BIT_SPI);	   	
+	return SPI_I2S_ReceiveData(ADC24BIT_SPI);	 
+	//__enable_irq();
 }
 
 //
 void ADC24Bit_SPI_SendByte(UINT8 nData)
 {
+	//__disable_irq();
     while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_TXE) == RESET){}//等待发送区空  
 	SPI_I2S_SendData(ADC24BIT_SPI, nData);	
+	//__enable_irq();
 }
 
 
