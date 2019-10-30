@@ -614,7 +614,7 @@ UINT16 Get_Press_ADC(void)
 //
 UINT16 Get_XK_ADC(void)
 {
-	UINT16 nVal = 0, i;
+	UINT16 nVal = 0;
 	
 #if ADC3_INIT_WITH_DMA
 	nVal = g_ADC3_Value[EN_ADC_XK];
@@ -1377,7 +1377,7 @@ void Turn_Motor_Select_LED(UINT8 nIndex)
 //void MICRO_OC_EXIT_FUNC(void)
 void EXTI9_5_IRQHandler(void)
 {
-	UINT16 i, j;
+	UINT16 i;
 	if(RESET != EXTI_GetITStatus(MICRO_OC_EXIT_LINE))
     {
         EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
@@ -2113,7 +2113,7 @@ void Driver_Debug(UINT8 nIndex)
 {
 //	UINT32 nCurTime, nTempTime;
 	UINT16 i = 0, val = 0;
-	UINT32 nPress;
+	UINT32 nPress, nADC = 0;
 	switch(nIndex)
 	{
 		case 0: //beep
@@ -2394,12 +2394,26 @@ void Driver_Debug(UINT8 nIndex)
 		case 12: //C   AD7799
 		{
 			printf("AD7799 start\r\n");
-			ADC24Bit_Init();
+			//ADC24Bit_Init();
 			IT_SYS_DlyMs(200);
-			for(i = 0; i < 30; i++)
+			for(i = 0; i < 3000; i++)
 			{
-				printf("AD7799 ADC = %d\r\n", (int)AD7799_Get_ADC_Value());
+				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
+				nADC = AD7799_Get_ADC_Value();
+				printf("AD7799 CH1 ADC = %d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
 				IT_SYS_DlyMs(100);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				
+				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
+				nADC = AD7799_Get_ADC_Value();
+				printf("AD7799 CH2 ADC = %d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+				IT_SYS_DlyMs(100);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				
 			}
 			printf("AD7799 end\r\n");
 		}

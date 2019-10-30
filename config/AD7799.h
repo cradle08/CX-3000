@@ -4,7 +4,7 @@
 
 #include "MyType.h"  
 
-
+#define AD7799_REF_MV 	5000
 
 /*AD7799 Registers*/
 #define AD7799_REG_COMM		0 /* Communications Register(WO, 8-bit) */
@@ -76,12 +76,13 @@
 #define AD7799_GAIN_32      5
 #define AD7799_GAIN_64      6
 #define AD7799_GAIN_128     7
+#define AD7799_GAIN			AD7799_GAIN_2
 /* AD7799_CONF_REFDET(x) options */
 #define AD7799_REFDET_ENA   1	
 #define AD7799_REFDET_DIS   0
 /* AD7799_CONF_CHAN(x) options */
-#define AD7799_CH_AIN1P_AIN1M	0 /* AIN1(+) - AIN1(-) */
-#define AD7799_CH_AIN2P_AIN2M	1 /* AIN2(+) - AIN2(-) */
+#define AD7799_CH_AIN1P_AIN1M	1 /* AIN1(+) - AIN1(-) */
+#define AD7799_CH_AIN2P_AIN2M	0 /* AIN2(+) - AIN2(-) */
 #define AD7799_CH_AIN3P_AIN3M	2 /* AIN3(+) - AIN3(-) */
 #define AD7799_CH_AIN1M_AIN1M	3 /* AIN1(-) - AIN1(-) */
 #define AD7799_CH_AVDD_MONITOR	7 /* AVDD Monitor */
@@ -150,13 +151,13 @@
 // PC12_SP3_MOSI
 #define ADC24BIT_MOSI_PORT					GPIOC
 #define ADC24BIT_MOSI_PIN					GPIO_Pin_12
-#define ADC24BIT_MOSI_SRC					RCC_AHB1Periph_GPIOB
+#define ADC24BIT_MOSI_SRC					RCC_AHB1Periph_GPIOC
 #define ADC24BIT_MOSI_AF_SRC 				GPIO_PinSource12
 
 // PC11_SP3_MISO
 #define ADC24BIT_MISO_PORT					GPIOC
 #define ADC24BIT_MISO_PIN					GPIO_Pin_11
-#define ADC24BIT_MISO_SRC					RCC_AHB1Periph_GPIOB
+#define ADC24BIT_MISO_SRC					RCC_AHB1Periph_GPIOC
 #define ADC24BIT_MISO_AF_SRC 				GPIO_PinSource11
 
 // PA15_SP3_CS
@@ -171,8 +172,8 @@
 #define ADC24BIT_SPI_SRC 					RCC_APB1Periph_SPI3
 #define ADC24BIT_SPI_AF 					GPIO_AF_SPI3
 
-#define AD7799_CS_LOW	GPIO_SetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
-#define AD7799_CS_HIGH	GPIO_ResetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
+#define AD7799_CS_LOW	GPIO_ResetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
+#define AD7799_CS_HIGH	GPIO_SetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
 
 #define AD_SCK_1()	GPIO_SetBits(ADC24BIT_CLK_PORT, ADC24BIT_CLK_PIN)
 #define AD_SCK_0()	GPIO_ResetBits(ADC24BIT_CLK_PORT, ADC24BIT_CLK_PIN)
@@ -180,7 +181,7 @@
 #define AD_CS_0()	GPIO_ResetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN)
 #define AD_DI_1()	GPIO_SetBits(ADC24BIT_MOSI_PORT, ADC24BIT_MOSI_PIN)
 #define AD_DI_0()	GPIO_ResetBits(ADC24BIT_MOSI_PORT, ADC24BIT_MOSI_PIN)
-#define AD_DO()		GPIO_ReadInputDataBit(ADC24BIT_MISO_PORT, ADC24BIT_MOSI_PIN)
+#define AD_DO()		GPIO_ReadInputDataBit(ADC24BIT_MISO_PORT, ADC24BIT_MISO_PIN)
 
 
 //#define ADC_RDY_DAT (AD_DO)
@@ -199,14 +200,17 @@ void SPI_Read(UINT8 *pBuf, UINT8 nCount);
 void SPI_Write(UINT8 *pBuf, UINT8 nCount);
 UINT8 AD7799_Init(void);
 UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size);
-void AD7799_SetRegisterValue(UINT8 regAddress,
-                             UINT32 regValue, 
-                             UINT8 size);
+void AD7799_SetRegisterValue(UINT8 regAddress, UINT32 regValue, UINT8 size);
+void AD7799_SetChannel(UINT32 channel);
+void AD7799_SetMode(UINT32 nMode, UINT8 nRate);
+void AD7799_SetGain(UINT32 nGain);
+void AD7799_SetReference(UINT32 nStatus);
 void AD7799_Reset(void);
-
+void AD7799_SetBurnoutCurren(UINT8 nOpt);
+void AD7799_SetBufMode(u8 nOpt);
 
 UINT32 AD7799_Get_ADC_Value(void);
-
+double AD7799_Get_Value(UINT32 nVal);
 
 
 

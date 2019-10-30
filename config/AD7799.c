@@ -77,13 +77,15 @@ void ADC24Bit_GPIO_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	//GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_CS_PORT, &GPIO_InitStructure);
+	GPIO_SetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN);
 	//Di	
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MISO_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN; //GPIO_PuPd_UP
 	GPIO_Init(ADC24BIT_MISO_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(ADC24BIT_MISO_PORT, ADC24BIT_MISO_PIN);
 	// Do
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MOSI_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
@@ -91,6 +93,7 @@ void ADC24Bit_GPIO_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_MOSI_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(ADC24BIT_MOSI_PORT, ADC24BIT_MOSI_PIN);
 	// clk
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_CLK_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
@@ -98,6 +101,7 @@ void ADC24Bit_GPIO_Init(void)
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_CLK_PORT, &GPIO_InitStructure);
+	GPIO_SetBits(ADC24BIT_CLK_PORT, ADC24BIT_CLK_PIN);
 }
 
 void ADC24Bit_Init(void)
@@ -144,7 +148,7 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 	AD_SCK_1();
 	Delay_US(5);//__nop();
 	AD_CS_1();
-	Delay_US(5);//__nop();
+	Delay_US(10);//__nop();
 	AD_CS_0();
 	Delay_US(5);//__nop();
 
@@ -154,7 +158,7 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 		for(j=0; j<8; j++)
 		{
 			AD_SCK_0();
-			Delay_US(4);
+			//Delay_US(4);
 			if(0x80 == (nVal & 0x80))
 			{
 				AD_DI_1();	  //Send one to SDO pin
@@ -163,14 +167,14 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 			{
 				AD_DI_0();	  //Send zero to SDO pin
 			}
-			Delay_US(4);//__nop();
+			Delay_US(3);//__nop();
 			AD_SCK_1();
-			Delay_US(4);//__nop();
+			Delay_US(3);//__nop();
 			nVal <<= 1;	//Rotate data
 		}
 	}
 	AD_CS_1();
-	Delay_US(2);
+	//Delay_US(2);
 	__enable_irq();
 	
 #endif
@@ -203,22 +207,20 @@ void SPI_Read(UINT8 *pBuf, UINT8 nCount)
 		for(i=0; i<8; i++)
 		{
 		    AD_SCK_0();
-			Delay_US(4);
 			nVal <<= 1;		//Rotate data
-			Delay_US(4);//__nop();
+			Delay_US(3);//__nop();
 			nTemp = AD_DO();			//Read SDI of AD7799
 			AD_SCK_1();	
-			Delay_US(4);
+			Delay_US(3);
 			if(nTemp)
 			{
 				nVal |= 1;	
 			}
-			Delay_US(4);//__nop();
+			Delay_US(3);//__nop();
 		}
 		*(pBuf + j )= nVal;
 	}	 
 	AD_CS_1();
-	Delay_US(4);
 	__enable_irq();
 	
 #endif
@@ -231,11 +233,11 @@ UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size)
 	UINT8 data[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
 	UINT32 receivedData = 0x00;	
 	data[0] = AD7799_COMM_READ |  AD7799_COMM_ADDR(regAddress);
-	AD7799_CS_LOW;  
-	Delay_US(10);
+	//AD7799_CS_LOW;  
 	SPI_Write(data,1);
+	//Delay_US(5);
 	SPI_Read(data,size);
-	AD7799_CS_HIGH;
+	//AD7799_CS_HIGH;
 	if(size == 1)
 	{
 		receivedData += (data[0] << 0);
@@ -276,9 +278,9 @@ void AD7799_SetRegisterValue(UINT8 regAddress,
 		  data[2] = (UINT8)((regValue & 0x00FF00) >> 8);
           data[1] = (UINT8)((regValue & 0xFF0000) >> 16);
     }
-    AD7799_CS_LOW;	    
+    //AD7799_CS_LOW;	    
     SPI_Write(data,(1 + size));
-    AD7799_CS_HIGH;
+   // AD7799_CS_HIGH;
 }
 
 
@@ -291,14 +293,14 @@ void AD7799_Reset(void)
 }
 
 
-void AD7799_SetReference(UINT8 state)
-{
-    UINT32 command = 0;
-    command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
-    command &= ~AD7799_CONF_REFDET(1);
-    command |= AD7799_CONF_REFDET(state);
-    AD7799_SetRegisterValue(AD7799_REG_CONF,  command, 2);
-}
+//void AD7799_SetReference(UINT8 state)
+//{
+//    UINT32 command = 0;
+//    command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
+//    command &= ~AD7799_CONF_REFDET(1);
+//    command |= AD7799_CONF_REFDET(state);
+//    AD7799_SetRegisterValue(AD7799_REG_CONF,  command, 2);
+//}
 
 
 
@@ -359,12 +361,13 @@ UINT8 AD7799_Init(void)
 #endif
 	//AD7799_Calibrate();
 	
+	// my
 	// mode and updateR set, continuous Coversion Mode and 50Hz Update Rate(default:16.7)
 	command = AD7799_MODE_CONT | AD7799_MODE_RATE(AD7799_MODE_UPDATE_50);
 	AD7799_SetRegisterValue(AD7799_REG_MODE, command, 2);
 	
 	// config: Gain 0(in-amp not used,2.5V),  use buf, channel 1
-	command = AD7799_CONF_GAIN(AD7799_GAIN_16) |AD7799_CONF_REFDET(AD7799_REFDET_DIS)|\
+	command = AD7799_CONF_GAIN(AD7799_GAIN_1) |AD7799_CONF_REFDET(AD7799_REFDET_DIS)|\
 		AD7799_CONF_BUF | AD7799_CH_AIN1P_AIN1M;
 	AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
 	
@@ -386,12 +389,72 @@ UINT8 AD7799_Init(void)
 }
 
 
+void AD7799_SetChannel(UINT32 channel)
+{
+    UINT32 command;
+    command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
+    command &= ~AD7799_CONF_CHAN(0xFF);
+    command |= AD7799_CONF_CHAN(channel);
+	
+    AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
+}
+
+void AD7799_SetMode(UINT32 nMode, UINT8 nRate)
+{
+    unsigned long command;
+    command = AD7799_GetRegisterValue(AD7799_REG_MODE,2);
+    command &= ~AD7799_MODE_SEL(0xFF); 
+    command |= AD7799_MODE_SEL(nMode);
+	command &= 0XFFF0;
+	command |= nRate;			//评率最快
+	
+    AD7799_SetRegisterValue(AD7799_REG_MODE, command, 2);
+}
+
+void AD7799_SetGain(UINT32 nGain)
+{
+    unsigned long command;
+    command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
+	
+    command &= ~AD7799_CONF_GAIN(0xFF);
+    command |= AD7799_CONF_GAIN(nGain);
+    AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
+}
+
+void AD7799_SetBurnoutCurren(UINT8 nOpt)//设置BO
+{
+    unsigned long command;
+    command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
+	command &= ~0X2000;
+	
+	if(nOpt)
+		command |= 0X2000;
+	
+    AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
+}
+
+void AD7799_SetBufMode(u8 nOpt)		//设置buf	
+{
+    unsigned long command;
+    command = AD7799_GetRegisterValue(AD7799_REG_CONF,2);
+	command &= ~0X10;
+	
+	if(nOpt)
+		command |= 0X10;
+    AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
+}
+
 UINT32 AD7799_Get_ADC_Value(void)
 {
 	return AD7799_GetRegisterValue(AD7799_REG_DATA,3);
 }
 
+double AD7799_Get_Value(UINT32 nVal)
+{
+	long value = (nVal - 0X800000);
+	return (float)((float)value*(float)AD7799_REF_MV)/(0X800000*1);	//0X800000:2.048V    0X000000:0V
 
+}
 
 
 
