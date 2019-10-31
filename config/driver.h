@@ -134,7 +134,7 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 // turn motor
 void Turn_Motor_Init(void);
 UINT8 Turn_Motor_Reset(void);
-void Turn_Motor_Goto_Postion(UINT32 nStep);
+UINT8 Turn_Motor_Goto_Postion(UINT32 nStep);
 void Turn_Motor_Select_LED(UINT8 nIndex);
 void Turn_Motor_Power(UINT8 nOpt);
 
@@ -172,21 +172,28 @@ void Micro_OC_Init(void);
 /////////////////
 
 // OC for turn motor reset, and than select LED, PB6
-#define FIX_OC_CLK_PORT						GPIOB
-#define FIX_OC_CLK_PIN						GPIO_Pin_6
-#define FIX_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
+#define TURN_RESET_OC_CLK_PORT			GPIOG
+#define TURN_RESET_OC_CLK_PIN			GPIO_Pin_4
+#define TURN_RESET_OC_CLK_SRC			RCC_AHB1Periph_GPIOG
+
+// OC LED select
+#define TURN_SELECT_OC_CLK_PORT			GPIOG
+#define TURN_SELECT_OC_CLK_PIN			GPIO_Pin_5
+#define TURN_SELECT_OC_CLK_SRC			RCC_AHB1Periph_GPIOG
+
 // OC  for Out(cx3000), P**???? //todo...
-#define OUT_OC_CLK_PORT						GPIOI
-#define OUT_OC_CLK_PIN						GPIO_Pin_1
-#define OUT_OC_CLK_SRC						RCC_AHB1Periph_GPIOI
+#define OUT_OC_CLK_PORT					GPIOI
+#define OUT_OC_CLK_PIN					GPIO_Pin_1
+#define OUT_OC_CLK_SRC					RCC_AHB1Periph_GPIOI
 // OC for in (cx3000), PB7
-#define IN_OC_CLK_PORT						GPIOB
-#define IN_OC_CLK_PIN						GPIO_Pin_7
-#define IN_OC_CLK_SRC						RCC_AHB1Periph_GPIOB
+#define IN_OC_CLK_PORT					GPIOB
+#define IN_OC_CLK_PIN					GPIO_Pin_7
+#define IN_OC_CLK_SRC					RCC_AHB1Periph_GPIOB
 //
 void OC_Init(void);
 UINT8 Get_Micro_OC_Status(void);
-UINT8 Get_Fix_OC_Status(void);
+UINT8 Get_Turn_Select_OC_Status(void); 
+UINT8 Get_Turn_Reset_OC_Status(void); 
 UINT8 Get_Out_OC_Status(void);
 UINT8 Get_In_OC_Status(void);
 
