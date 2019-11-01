@@ -103,6 +103,7 @@ void Valve_Liquid_Exec(UINT8 nOpt);
 void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 
 
+#define STEP_NUMBER  0x03
 // turn motor, PB12, PB13, PB14, PB15
 #define TURN_MOTOR_PORT_1					GPIOB
 #define TURN_MOTOR_PIN_1					GPIO_Pin_12
@@ -127,14 +128,60 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 
 #define	OUTIN_MOTOR_HOME_TIME					10000
 // turn motor 
-#define TURN_MOTOR_MAX_ANTI_CLOCKWISE_STEP		5000
-#define TURN_MOTOR_MAX_CLOCKWISE_STEP			5000
+#define TURN_MOTOR_MAX_ANTI_CLOCKWISE_STEP		500
+#define TURN_MOTOR_MAX_CLOCKWISE_STEP			500
 #define TURN_MOTOR_MAX_DELAY					4000
 #define TURN_MOTOR_MIN_DELAY					3000//3000
+
+
+enum{
+	EN_LED0 = 0,
+	EN_LED1 = 1,
+	EN_LED2 = 2,
+	EN_LED3 = 3,
+	EN_LED4 = 4,
+	EN_LED5 = 5,
+	EN_LED6 = 6,
+	EN_LED7 = 7,
+	EN_LED_END = 8,
+};
+
+enum{
+	EN_POSITION_LED0 = 0,
+	EN_POSITION_LED1 = 1,
+	EN_POSITION_LED2 = 2,
+	EN_POSITION_LED3 = 3,
+	EN_POSITION_LED4 = 4,
+	EN_POSITION_LED5 = 5,
+	EN_POSITION_LED6 = 6,
+	EN_POSITION_LED7 = 7,
+	EN_POSITION_LED_RESET = 8,
+	EN_POSITION_LED_UNSURE = 9
+};
+
+
+enum {
+	EN_LED0_POSTION		= 138,	
+	EN_LED1_POSTION		= 203,
+	EN_LED2_POSTION		= 134,
+	EN_LED3_POSTION		= 62,
+	EN_LED4_POSTION		= 4,
+	EN_LED5_POSTION		= 70,
+	EN_LED6_POSTION		= 0,
+	EN_LED7_POSTION		= 0,
+	
+};
+extern  IO_ UINT8 g_Turn_Position;
 // turn motor
 void Turn_Motor_Init(void);
+
+void Turn_Motor_Break(void);
+void Turn_Motor_Free(void);
 UINT8 Turn_Motor_Reset(void);
-UINT8 Turn_Motor_Goto_Postion(UINT32 nStep);
+UINT8 Turn_Motor_ClockWise(UINT32 nStep);
+UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep);
+void Turn_Motor_Goto_Postion(UINT8 nOpt, UINT32 nStep);
+	
 void Turn_Motor_Select_LED(UINT8 nIndex);
 void Turn_Motor_Power(UINT8 nOpt);
 
@@ -407,29 +454,7 @@ enum{
 	EN_CLOCK_WISE = 1
 };
 
-enum{
-	EN_LED0 = 0,
-	EN_LED1 = 1,
-	EN_LED2 = 2,
-	EN_LED3 = 3,
-	EN_LED4 = 4,
-	EN_LED5 = 5,
-	EN_LED6 = 6,
-	EN_LED7 = 7,
-	EN_LED_END = 8
-};
 
-enum {
-	EN_LED0_POSTION		= 100,	
-	EN_LED1_POSTION		= 300,
-	EN_LED2_POSTION		= 600,
-	EN_LED3_POSTION		= 900,
-	EN_LED4_POSTION		= 1200,
-	EN_LED5_POSTION		= 1500,
-	EN_LED6_POSTION		= 1800,
-	EN_LED7_POSTION		= 2100,
-	
-};
 
 typedef enum{
 	EN_MODE_NORMAL = 0,

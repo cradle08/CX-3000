@@ -2122,6 +2122,10 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		nTempTicks = nCurTicks;
 		Mixing_Motor_Run();
 		while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 3s
+			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
+			{
+				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+			}
 			IT_SYS_DlyMs(10);
 		}
 		Mixing_Motor_Stop();
