@@ -245,5 +245,4 @@ double AD7799_Get_Value(UINT32 nVal);
 
 
 
-
 #endif //  __AD7799_H__

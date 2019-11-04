@@ -2575,6 +2575,7 @@ UINT8  HW_LWIP_MainLine(void)
     // 1. lwip handing
     // 1) period task
     // ---check if any packet received
+	Micro_Switch_Check();
     if (ETH_CheckFrameReceived())
     {
         // for debug, the "arp frame"

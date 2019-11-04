@@ -693,7 +693,8 @@ UINT32 HW_Get_ADC_HGB(void)
 	UINT32 nVal = 0;
 	
 #if USE_STM32F407_ONLY
-	nVal = Get_ADC3_Channel_Value(EN_ADC_HGB, ADC_SMOOTH_NUM_30);
+	//nVal = Get_ADC3_Channel_Value(EN_ADC_HGB, ADC_SMOOTH_NUM_30);
+	nVal = AD7799_Get_ADC_Value();
 #else	
 	nVal = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 	
@@ -707,7 +708,8 @@ UINT32  HW_Get_ADC_CRP(void)
 	UINT32  nVal = 0;
 	
 #if USE_STM32F407_ONLY
-	nVal = Get_ADC3_Channel_Value(EN_ADC_CRP, ADC_SMOOTH_NUM_30);
+	//nVal = Get_ADC3_Channel_Value(EN_ADC_CRP, ADC_SMOOTH_NUM_30);
+	nVal = AD7799_Get_ADC_Value();
 #else	
 	nVal = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 #endif
@@ -1393,7 +1395,7 @@ UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep)
 	{
 		if(g_Turn_Position == EN_POSITION_LED_RESET)
 		{
-			if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+			if(EN_CLOSE == Get_Turn_Select_OC_Status() && nTemp <= 15) 
 			{
 				g_Turn_Position = EN_POSITION_LED_UNSURE; /////////////
 				printf("nTemp Steps = %d \r\n", (int)nTemp);
@@ -1438,7 +1440,7 @@ UINT8 Turn_Motor_ClockWise(UINT32 nStep)
 	{
 		if(g_Turn_Position == EN_POSITION_LED_RESET)
 		{
-			if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+			if(EN_CLOSE == Get_Turn_Select_OC_Status() && nTemp >= nStep - 15) 
 			{
 				g_Turn_Position = EN_POSITION_LED_UNSURE; /////////////
 				printf("nTemp Steps = %d \r\n", (int)nTemp);
@@ -1485,6 +1487,7 @@ void Turn_Motor_Goto_Postion(UINT8 nOpt, UINT32 nStep)
 void Turn_Motor_Select_LED(UINT8 nIndex)
 {
 	Turn_Motor_Reset();
+	IT_SYS_DlyMs(200);
 	switch(nIndex)
 	{
 		case EN_LED0:
@@ -1542,13 +1545,14 @@ void EXTI9_5_IRQHandler(void)
 		//Delay_US(500);Delay_US(500);
 		Beep(300);
 	    EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
-		if(GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN) == EN_CLOSE)
+		if(Get_Micro_OC_Status() == EN_CLOSE)
 		{
 			g_Micro_Switch = EN_CLOSE;
 		}
 		printf("Mirco Switch IRQ, S=%d\r\n", g_Micro_Switch);
 	}
 }
+
 
 void Micro_OC_Init(void)
 {
@@ -1908,6 +1912,14 @@ void LED_Exec(UINT8 nIndex, UINT8 nOpt)
 	}
 }
 
+void LED_All_Reset(void)
+{
+	UINT8 i;
+	for(i = 0; i < EN_LED_END; i++)
+	{
+		LED_Exec(i, EN_CLOSE);
+	}
+}
 
 //// fix motor
 //void Fix_Motor_Init(void)
@@ -2277,34 +2289,61 @@ void Driver_Debug(UINT8 nIndex)
 	{
 		case 0: //beep
 		{
-			printf("Beep start\r\n");
-			Beep(200);
-			printf("Beep end\r\n");
+			printf("start\r\n");
+
+			//g_Test_Mode = EN_HGB_TEST;
+			//Turn_Motor_Init();
+			Turn_Motor_Power(EN_OPEN);
+			LED_Cur_Switch(EN_OPEN);
+			for(i = 0; i < EN_LED_END; i++)
+			{
+				LED_Exec(i, EN_OPEN);
+				printf("i =%d\r\n", i);
+				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+				LED_Exec(i, EN_CLOSE);
+			}
+			
+//			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
+			LED_Exec(EN_LED1, EN_OPEN); 	// open led
+			Turn_Motor_Select_LED(EN_LED1); // select led 
+			printf("HGB had select\r\n");
+		
+			LED_All_Reset();
+			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+			LED_Exec(EN_LED4, EN_OPEN);		// open led
+			Turn_Motor_Select_LED(EN_LED4); // select led 
+			printf("CRP had select\r\n");
+			
+			printf("end\r\n");
+			
+//			printf("Beep start\r\n");
+//			Beep(200);
+//			printf("Beep end\r\n");
 		}
 		break;
 		case 1: // pump
 		{
-
-//			for(i = 0; i < 10; i++)
-//			{
-//				Pump_ClockWise();
-//				IT_SYS_DlyMs(100);
-//				Pump_AntiClockWise();
-//				IT_SYS_DlyMs(100);
-//			}
-//			Pump_ClockWise();
-			//val = 50;
-			for(i = 0; i < 25000;)
+			printf("start\r\n");
+			for(i = EN_LED0; i < EN_LED6; i++)
 			{
-				printf("PUMP val =%d\r\n", i);
-				Pump_Speed_Set(i);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				i += 1000;
+				Turn_Motor_Select_LED(i); // LED_Exec(i, EN_OPEN);
+				printf("LED =%d\r\n", i);
+				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
 			}
-			printf("PUMP end\r\n");
+			
+			
+//			for(i = 0; i < 25000;)
+//			{
+//				printf("PUMP val =%d\r\n", i);
+//				Pump_Speed_Set(i);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				i += 1000;
+//			}
+			printf("end\r\n");
 		}
 		break;
 		case 2: // valve
@@ -2548,29 +2587,37 @@ void Driver_Debug(UINT8 nIndex)
 		case 12: //C   AD7799
 		{
 			printf("AD7799 start\r\n");
-			//ADC24Bit_Init();
-			LED_Cur_Switch(EN_OPEN);
-			LED_Exec(EN_LED6, EN_OPEN);
-			IT_SYS_DlyMs(200);
-			for(i = 0; i < 3; i++)
+//			ADC24Bit_Init();
+//			LED_Cur_Switch(EN_OPEN);
+//			LED_Exec(EN_LED1, EN_OPEN);
+//			Turn_Motor_Select_LED(EN_LED1);
+//			IT_SYS_DlyMs(200);
+			for(i = 0; i < 10; i++)
 			{
-				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
 				nADC = AD7799_Get_ADC_Value();
-				printf("AD7799 CH1 ADC = %d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
-				IT_SYS_DlyMs(100);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				
-				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
-				nADC = AD7799_Get_ADC_Value();
-				printf("AD7799 CH2 ADC = %d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
-				IT_SYS_DlyMs(100);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				
+				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+				IT_SYS_DlyMs(50);
 			}
+			
+//			for(i = 0; i < 10; i++)
+//			{
+//				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
+//				nADC = AD7799_Get_ADC_Value();
+//				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+//				IT_SYS_DlyMs(100);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				
+//				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
+//				nADC = AD7799_Get_ADC_Value();
+//				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+//				IT_SYS_DlyMs(100);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				
+//			}
 			printf("AD7799 end\r\n");
 		}
 		break;

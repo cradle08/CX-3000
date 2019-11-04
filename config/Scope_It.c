@@ -214,7 +214,6 @@ UINT8  IT_SYS_DlyMs(UINT32 nDlyMs)
 {
     m_nSysTicksEnd = m_nSysTicks + nDlyMs;
 	while(m_nSysTicks < m_nSysTicksEnd);
-
 	return e_Feedback_Success;
 }
 
@@ -229,7 +228,6 @@ UINT32 IT_SYS_GetTicks(void)
 UINT8  IT_SYS_SetTicks(UINT32 nTicks)
 {
 	m_nSysTicks = nTicks;
-	//
 	return e_Feedback_Success;
 }
 
@@ -238,7 +236,6 @@ UINT8  IT_SYS_SetTicks(UINT32 nTicks)
 UINT8  IT_SYS_SetDlyMs(UINT32 nDlyMs)
 {
     m_nSysTicksEnd = m_nSysTicks + nDlyMs;
-
 	return e_Feedback_Success;
 }
 

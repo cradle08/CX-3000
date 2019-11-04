@@ -441,7 +441,6 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
     printf("%02X%02X%02X%02X ", pchCmdBuf[4],pchCmdBuf[5],pchCmdBuf[6],pchCmdBuf[7]);
 	printf("%02X%02X%02X%02X\r\n", pchCmdBuf[8],pchCmdBuf[9],pchCmdBuf[10],pchCmdBuf[11]);
 	// 1.
-	//Micro_Switch_Check();
     if (PROTOCOL_HEAD_RECV_WR == chType) // cntrol cmd
     {
         switch (nCommand)
@@ -452,6 +451,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
             case CMD_CTRL_TEST_WBC: // count func
             {
 				eMode  = GetTestMode(nCommand);// which cmd was be exec
+				//g_Test_Mode = eMode;
 #if SIMUATION_TEST
 				nParaLen = 0;
 				Simulation_Data((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode);
@@ -1882,7 +1882,7 @@ void Send_Packets_Test(UINT16 Time, UINT32 Num)
 // CRP 
 void Micro_Switch_Check(void)
 {
-	if(EN_CRP_TEST ==g_Test_Mode)
+	if(EN_CRP_TEST == g_Test_Mode)
 	{
 		if(g_Micro_Switch == EN_CLOSE) // had checked cuvette put in
 		{
@@ -1895,23 +1895,32 @@ void Micro_Switch_Check(void)
 // 
 UINT8 LED_Mode_Set(UINT8 nIndex)
 {
+	UINT16 nRet = 0;
 	switch(nIndex)
 	{
 		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
-			g_Test_Mode = EN_HGB_TEST;
+			
+			LED_All_Reset();
 			LED_Cur_Switch(EN_OPEN);
-			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
+			Turn_Motor_Power(EN_OPEN);
+//			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
 			LED_Exec(EN_LED1, EN_OPEN); // open led
+			Turn_Motor_Select_LED(EN_LED1); // select led 
+			g_Test_Mode = EN_HGB_TEST;
+			printf("HGB Mode Set Finished M=%d\r\n", g_Test_Mode);
 		}
 		break;
 		case EN_CRP_TEST: // CRP need select LED and adjust LED Cur
 		{
-			g_Test_Mode = EN_CRP_TEST;
+			LED_All_Reset();
 			LED_Cur_Switch(EN_OPEN); // open cur
-			LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); // adjust cur
-			Turn_Motor_Select_LED(EN_LED2); // select led 
-			LED_Exec(EN_LED2, EN_OPEN);		// open led
+			Turn_Motor_Power(EN_OPEN);
+//			LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); // adjust cur
+			LED_Exec(EN_LED4, EN_OPEN);		// open led
+			Turn_Motor_Select_LED(EN_LED4); // select led 
+			g_Test_Mode = EN_CRP_TEST;
+			printf("CRP Mode Set Finished, M=%d\r\n", g_Test_Mode);
 		}
 		break;
 		default:
@@ -1920,6 +1929,7 @@ UINT8 LED_Mode_Set(UINT8 nIndex)
 		}
 		break;	
 	}
+	Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_TEST_MODE_SET, nRet);
 }
 
 //
@@ -1984,8 +1994,9 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 #else				
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
-			if(Get_In_OC_Status() == EN_OPEN){ // cuvette out
+			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
 				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+				return 0;
 			}
 			buffer[i] = HW_Get_ADC_HGB();
 			printf("ADC=%d,", (int)buffer[i]);
@@ -1996,6 +2007,10 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		//Send_Data_HGB(CMD_DATA_TEST_HGB, &nVal, 1);
 		Send_Data_HGB(CMD_DATA_TEST_HGB, buffer, HGB_CALIBRATE_DATA_NUM);
 		collect_return_hdl(COLLECT_RET_SUCESS);
+		for(i = 0; i < 3; i++)
+		{
+			Beep(300);
+		}
 		printf("HGB_Test_Exec End\r\n");
 
 	}else if(eMode == EN_HGB_CALIBRATE){
@@ -2108,7 +2123,11 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 #endif	
 		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
 		g_CRP_Data.eEnable = e_False;	
-		collect_return_hdl(COLLECT_RET_SUCESS);		
+		collect_return_hdl(COLLECT_RET_SUCESS);
+		for(i = 0; i < 3; i++)
+		{
+			Beep(300);
+		}
 		printf("CRP_Test_Exec End\r\n");
 	}else if(eMode == EN_CRP_CALIBRATE){
 		printf("CRP Calibrate Start\r\n");
@@ -2116,6 +2135,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
 		{
 			collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+			return 0;
 		}
 		// mixing
 		nCurTicks = IT_SYS_GetTicks();
@@ -2125,8 +2145,10 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
 			{
 				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+				return 0;
 			}
 			IT_SYS_DlyMs(10);
+			nCurTicks = IT_SYS_GetTicks();
 		}
 		Mixing_Motor_Stop();
 		// get data
@@ -2135,6 +2157,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		{
 			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
 				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+				return 0;
 			}
 			buffer[i] = HW_Get_ADC_CRP();
 			printf("CRP ADC=%d, 3.3V=%d\r\n", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);

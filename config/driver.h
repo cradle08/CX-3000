@@ -146,6 +146,9 @@ enum{
 	EN_LED_END = 8,
 };
 
+#define HGB_LED_NO  EN_LED2
+#define CRP_LED_NO  EN_LED6
+
 enum{
 	EN_POSITION_LED0 = 0,
 	EN_POSITION_LED1 = 1,
@@ -181,7 +184,6 @@ UINT8 Turn_Motor_Reset(void);
 UINT8 Turn_Motor_ClockWise(UINT32 nStep);
 UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep);
 void Turn_Motor_Goto_Postion(UINT8 nOpt, UINT32 nStep);
-	
 void Turn_Motor_Select_LED(UINT8 nIndex);
 void Turn_Motor_Power(UINT8 nOpt);
 
@@ -284,27 +286,27 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 #define LED0_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED1
 #define LED1_PORT							GPIOI
-#define LED1_PIN							GPIO_Pin_5
+#define LED1_PIN							GPIO_Pin_10
 #define LED1_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED2
 #define LED2_PORT							GPIOI
-#define LED2_PIN							GPIO_Pin_6
+#define LED2_PIN							GPIO_Pin_9
 #define LED2_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED3
 #define LED3_PORT							GPIOI
-#define LED3_PIN							GPIO_Pin_7
+#define LED3_PIN							GPIO_Pin_8
 #define LED3_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED4
 #define LED4_PORT							GPIOI
-#define LED4_PIN							GPIO_Pin_8
+#define LED4_PIN							GPIO_Pin_7
 #define LED4_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED5
 #define LED5_PORT							GPIOI
-#define LED5_PIN							GPIO_Pin_9
+#define LED5_PIN							GPIO_Pin_5
 #define LED5_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED6
 #define LED6_PORT							GPIOI
-#define LED6_PIN							GPIO_Pin_10
+#define LED6_PIN							GPIO_Pin_6
 #define LED6_CLK_SRC						RCC_AHB1Periph_GPIOI
 // LED7
 #define LED7_PORT							GPIOI
@@ -346,7 +348,7 @@ UINT16 Get_LED_Cur_ADC(void);      // ADC
 void LED_Cur_DAC_Set(UINT16 nVal); // DAC
 void LED_Cur_Auto_Adjust(UINT16 nVal); 
 void LED_Exec(UINT8 nIndex, UINT8 nOpt);
-
+void LED_All_Reset(void);
 
 // XK ADC, PC3_ADC3_IN13	
 #define XK_ADC_PORT							GPIOC
@@ -453,7 +455,6 @@ enum{
 	EN_ANTI_CLOCK_WISE = 0,
 	EN_CLOCK_WISE = 1
 };
-
 
 
 typedef enum{
