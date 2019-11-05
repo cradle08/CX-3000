@@ -1,0 +1,85 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+F:\CX-3000\CX-3000\workspace\prj\CX-3000.uvproj
+Project File Date:  10/17/2019
+
+<h2>Output:</h2>
+Build target 'Scope'
+linking...
+Program Size: Code=137748 RO-data=4940 RW-data=996 ZI-data=86084  
+FromELF: creating hex file...
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 0 Warning(s).
+</pre>
+</body>
+</html>
+...
+Program Size: Code=137748 RO-data=4940 RW-data=996 ZI-data=86084  
+FromELF: creating hex file...
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 1 Warning(s).
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Erase Done.
+Programming Done.
+Verify OK.
+Application running ...
+ never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(668): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(680): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(882): warning:  #550-D: variable "Status" was set but never used
+        UINT8 Status;
+..\..\config\driver.c(883): warning:  #550-D: variable "Tempertaure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(963): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(1431): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
+  }
+..\..\config\driver.c(1475): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
+  }
+..\..\config\driver.c: 11 warnings, 0 errors
+linking...
+Program Size: Code=137776 RO-data=4940 RW-data=996 ZI-data=86084  
+FromELF: creating hex file...
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 11 Warning(s).
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Erase Done.
+Programming Failed!
+Internal command error
+Error: Flash Download failed  -  "Cortex-M4"
+7-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(680): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(882): warning:  #550-D: variable "Status" was set but never used
+        UINT8 Status;
+..\..\config\driver.c(883): warning:  #550-D: variable "Tempertaure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(963): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(1431): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
+  }
+..\..\config\driver.c(1475): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
+  }
+..\..\config\driver.c: 11 warnings, 0 errors
+compiling AD7799.c...
+..\..\config\AD7799.c(390): warning:  #177-D: variable "ID" was declared but never referenced
+      UINT32 command, ID;
+..\..\config\AD7799.c: 1 warning, 0 errors
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
+linking...
+Program Size: Code=136416 RO-data=4940 RW-data=996 ZI-data=86084  
+FromELF: creating hex file...
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 17 Warning(s).
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Error: Flash Download failed  -  Target DLL has been cancelled
+...
+ror(s), 18 Warning(s).
+or(s), 18 Warning(s).
+Target not created

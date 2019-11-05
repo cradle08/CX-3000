@@ -44,7 +44,7 @@ typedef enum
 {
     E_COM_MAIN      = 0,
     E_COM_SAMPLING  = 1,
-    E_COM_NULL      = 2,
+   // E_COM_NULL      = 2,
   
 } Com_TypeDef;   
 
@@ -127,7 +127,7 @@ typedef enum
 #define COM3_TX_GPIO_PORT           GPIOC
 #define COM3_TX_GPIO_CLK            RCC_AHB1Periph_GPIOC
 #define COM3_RX_PIN                 GPIO_Pin_7
-#define COM3_RX_GPIO_PORT           GPIOC
+#define COM3_RX_GPIO_PORT           GPIOC// GPIOC
 #define COM3_RX_GPIO_CLK            RCC_AHB1Periph_GPIOC
 #define COM3_AF_TX_PIN_SOURCE       GPIO_PinSource6
 #define COM3_AF_RX_PIN_SOURCE       GPIO_PinSource7           

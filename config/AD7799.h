@@ -142,6 +142,10 @@
 //#define ADC24BIT_CS_SRC						RCC_AHB1Periph_GPIOA
 //#define ADC24BIT_CS_AF_SRC 					GPIO_PinSource15
 
+
+
+#if 0 
+//////////////////for fei xian
 // PC10_SP3_CLK
 #define ADC24BIT_CLK_PORT					GPIOC
 #define ADC24BIT_CLK_PIN					GPIO_Pin_10
@@ -165,6 +169,35 @@
 #define ADC24BIT_CS_PIN						GPIO_Pin_15
 #define ADC24BIT_CS_SRC						RCC_AHB1Periph_GPIOA
 #define ADC24BIT_CS_AF_SRC 					GPIO_PinSource15
+
+
+#else
+///////////////////for route
+// PC10_SP3_CLK
+#define ADC24BIT_CLK_PORT					GPIOA
+#define ADC24BIT_CLK_PIN					GPIO_Pin_8
+#define ADC24BIT_CLK_SRC					RCC_AHB1Periph_GPIOA
+#define ADC24BIT_CLK_AF_SRC 				GPIO_PinSource8
+
+// PC12_SP3_MOSI
+#define ADC24BIT_MOSI_PORT					GPIOC
+#define ADC24BIT_MOSI_PIN					GPIO_Pin_9
+#define ADC24BIT_MOSI_SRC					RCC_AHB1Periph_GPIOC
+#define ADC24BIT_MOSI_AF_SRC 				GPIO_PinSource7
+
+// PC11_SP3_MISO    PC10
+#define ADC24BIT_MISO_PORT					GPIOC
+#define ADC24BIT_MISO_PIN					GPIO_Pin_10     //start pc7
+#define ADC24BIT_MISO_SRC					RCC_AHB1Periph_GPIOC
+#define ADC24BIT_MISO_AF_SRC 				GPIO_PinSource10
+
+// PA15_SP3_CS  PC6
+#define ADC24BIT_CS_PORT					GPIOC
+#define ADC24BIT_CS_PIN						GPIO_Pin_6
+#define ADC24BIT_CS_SRC						RCC_AHB1Periph_GPIOC
+#define ADC24BIT_CS_AF_SRC 					GPIO_PinSource6
+
+#endif
 
 
 
@@ -191,8 +224,9 @@
 //
 void ADC24Bit_Init(void);
 void ADC24Bit_SPI_Init(void);
-UINT16 ADC24Bit_SPI_GetByte(void);
-void ADC24Bit_SPI_SendByte(UINT8 nData);
+//UINT16 ADC24Bit_SPI_GetByte(void);
+//void ADC24Bit_SPI_SendByte(UINT8 nData);
+UINT8 ADC24Bit_SPI_ReadWriteByte(UINT8 nData);
 void ADC24Bit_GPIO_Init(void);
 
 

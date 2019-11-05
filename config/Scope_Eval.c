@@ -234,7 +234,7 @@ void EVAL_Init(void)
     // 1. update the system's clock
  // HSI_Sysclock_Init(); //SystemCoreClockUpdate(); //todo use-HSE
 	RCC_GetClocksFreq(&tClockTree);
-#if 1
+#if 0
     // printf("\r\n--- SystemCoreClock = %d ---\r\n", SystemCoreClock);
     printf("\r\n SYS-clk = %d", tClockTree.SYSCLK_Frequency);
     printf("\r\n AHB-clk = %d", tClockTree.HCLK_Frequency);
@@ -242,6 +242,7 @@ void EVAL_Init(void)
     printf("\r\n APB2-clk = %d", tClockTree.PCLK2_Frequency);
    // printf("\r\n ");
 #endif
+	
     //-------------------------------------------
     // 2. Initialize and start the SysTick counter and its interrupt. 
     //    take attention: when want to use IRQ_DelayMs(), this must be called first !!!
@@ -337,10 +338,11 @@ void EVAL_Init(void)
 	Turn_Motor_Init();
 	Mixing_Motor_Init();
 	LED_Init();
-	ADC24Bit_Init();
+	//ADC24Bit_Init();
 	
 #endif
 	Beep(400);
+	ADC24Bit_Init();
 }
 
 

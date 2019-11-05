@@ -2559,10 +2559,18 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 11:  // B  fix motor
 		{
-			printf("start\r\n");
-			Turn_Motor_Power(EN_OPEN);
-			Turn_Motor_ClockWise(20000);
-			Turn_Motor_Power(EN_CLOSE);
+			for(i = 0; i < 50000; i++)
+			{
+				AD_SCK_1();
+				Delay_US(500);
+				AD_SCK_0();
+				Delay_US(500);
+				
+			}
+//			printf("start\r\n");
+//			Turn_Motor_Power(EN_OPEN);
+//			Turn_Motor_ClockWise(20000);
+//			Turn_Motor_Power(EN_CLOSE);
 	
 //			__enable_irq();
 //			for(i = 0; i < 10; i++)
@@ -2592,11 +2600,39 @@ void Driver_Debug(UINT8 nIndex)
 //			LED_Exec(EN_LED1, EN_OPEN);
 //			Turn_Motor_Select_LED(EN_LED1);
 //			IT_SYS_DlyMs(200);
-			for(i = 0; i < 10; i++)
+
+			for(i = 0; i < 5000; i++)
 			{
 				nADC = AD7799_Get_ADC_Value();
-				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
-				IT_SYS_DlyMs(50);
+     			printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+				
+//				AD7799_CS_HIGH;
+				IT_SYS_DlyMs(100);
+//				AD7799_CS_LOW;
+//				IT_SYS_DlyMs(10);
+				
+//				printf("PC7=%d\r\n", GPIO_ReadInputDataBit(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN));
+//				IT_SYS_DlyMs(10);
+				
+//				nADC = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
+//				printf("\r\nAD_M_1: %d\r\n", (int)nADC);
+//				IT_SYS_DlyMs(10);
+//				// mode and updateR set, continuous Coversion Mode and 50Hz Update Rate(default:16.7)
+//				nADC = AD7799_MODE_CONT | AD7799_MODE_RATE(AD7799_MODE_UPDATE_50);
+//				AD7799_SetRegisterValue(AD7799_REG_MODE, nADC, 2);
+//				IT_SYS_DlyMs(10);
+//				nADC = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
+//				printf("AD_M_2: %d\r\n", (int)nADC);
+//				IT_SYS_DlyMs(10);
+				
+//					nADC = AD7799_MODE_CONT | AD7799_MODE_RATE(AD7799_MODE_UPDATE_50);
+//					//printf("D=%d\r\n", (UINT32)nADC);
+//					AD7799_SetRegisterValue(AD7799_REG_MODE, nADC, 2);
+//				ADC24Bit_Init();
+				
+//       			nADC = AD7799_Get_ADC_Value();
+//				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+//				IT_SYS_DlyMs(5);
 			}
 			
 //			for(i = 0; i < 10; i++)
@@ -2604,7 +2640,6 @@ void Driver_Debug(UINT8 nIndex)
 //				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
 //				nADC = AD7799_Get_ADC_Value();
 //				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
-//				IT_SYS_DlyMs(100);
 //				IT_SYS_DlyMs(500);
 //				IT_SYS_DlyMs(500);
 //				IT_SYS_DlyMs(500);
@@ -2612,7 +2647,6 @@ void Driver_Debug(UINT8 nIndex)
 //				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
 //				nADC = AD7799_Get_ADC_Value();
 //				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
-//				IT_SYS_DlyMs(100);
 //				IT_SYS_DlyMs(500);
 //				IT_SYS_DlyMs(500);
 //				IT_SYS_DlyMs(500);

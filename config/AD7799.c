@@ -16,32 +16,33 @@ void ADC24Bit_SPI_Init(void)
 	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
 	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
 	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
-	  //GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_NOPULL;
 	  GPIO_Init(ADC24BIT_CLK_PORT, &GPIO_InitStructure);
 	  // mosi
 	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_MOSI_PIN; 
 	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
 	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
 	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
-	  //GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_NOPULL;
 	  GPIO_Init(ADC24BIT_MOSI_PORT, &GPIO_InitStructure);
 	  // miso
 	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_MISO_PIN; 
 	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
 	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
 	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
-	 // GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;
 	  GPIO_Init(ADC24BIT_MISO_PORT, &GPIO_InitStructure);
 	  // cs
 	  GPIO_InitStructure.GPIO_Pin	 = ADC24BIT_CS_PIN; 
 	  GPIO_InitStructure.GPIO_Mode 	 = GPIO_Mode_AF;
 	  GPIO_InitStructure.GPIO_OType	 = GPIO_OType_PP;
 	  GPIO_InitStructure.GPIO_Speed  = GPIO_Speed_100MHz;
-	  //GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_UP;
+	  GPIO_InitStructure.GPIO_PuPd   = GPIO_PuPd_NOPULL;
 	  GPIO_Init(ADC24BIT_CS_PORT, &GPIO_InitStructure);
 	
 	  //GPIO_PinAFConfig(D_REGISTER_CLK_PORT,GPIO_PinSource3,GPIO_AF_SPI1); 
-	  //GPIO_PinAFConfig(D_REGISTER_MOSI_PORT,GPIO_PinSource4,GPIO_AF_SPI1); 
+	  //GPIO_PinAFConfig(D_REGISTER_MOSI_PORT,GPIO_PinSource4,GPIO_AF_SPI1);
+	  GPIO_PinAFConfig(ADC24BIT_MISO_PORT, ADC24BIT_MISO_AF_SRC,  ADC24BIT_SPI_AF); 	  
 	  GPIO_PinAFConfig(ADC24BIT_CLK_PORT,  ADC24BIT_CLK_AF_SRC,	   ADC24BIT_SPI_AF); 
 	  GPIO_PinAFConfig(ADC24BIT_MOSI_PORT, ADC24BIT_MOSI_AF_SRC,   ADC24BIT_SPI_AF);
  	  GPIO_PinAFConfig(ADC24BIT_CS_PORT,   ADC24BIT_CS_AF_SRC,     ADC24BIT_SPI_AF); 
@@ -63,6 +64,8 @@ void ADC24Bit_SPI_Init(void)
 	  SPI_Init(ADC24BIT_SPI, &SPI_InitStructure);  //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
 	  
 	  SPI_Cmd(ADC24BIT_SPI, ENABLE); //使能SPI外设
+	  
+	  ADC24Bit_SPI_ReadWriteByte(0xff);
 }
 
 void ADC24Bit_GPIO_Init(void)
@@ -75,15 +78,17 @@ void ADC24Bit_GPIO_Init(void)
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-	//GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
 	GPIO_Init(ADC24BIT_CS_PORT, &GPIO_InitStructure);
 	GPIO_SetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN);
+	
+	
 	//Di	
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MISO_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;//复用功能
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
+	//GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN; //GPIO_PuPd_UP
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//GPIO_PuPd_DOWN; //GPIO_PuPd_UP
 	GPIO_Init(ADC24BIT_MISO_PORT, &GPIO_InitStructure);
 	GPIO_ResetBits(ADC24BIT_MISO_PORT, ADC24BIT_MISO_PIN);
 	// Do
@@ -114,21 +119,57 @@ void ADC24Bit_Init(void)
 	AD7799_Init();
 }
 
-UINT16 ADC24Bit_SPI_GetByte(void)
-{
-	//__disable_irq();
-    while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_RXNE) == RESET){}//等待发送区空  
-	return SPI_I2S_ReceiveData(ADC24BIT_SPI);	 
-	//__enable_irq();
-}
+//UINT16 ADC24Bit_SPI_GetByte(void)
+//{
+////	//__disable_irq();
+////    while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_RXNE) == RESET){}//等待发送区空  
+////	return SPI_I2S_ReceiveData(ADC24BIT_SPI);	 
+////	//__enable_irq();
+
+//		UINT8 nRetry = 0;
+//	while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_TXE) == RESET)
+//	{
+//		nRetry ++;
+//		if(nRetry > 200) return 0;
+//	}
+//	nRetry = 0;
+//	SPI_I2S_SendData(ADC24BIT_SPI, nData);	
+//	//
+//	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET)
+//	{
+//		nRetry ++;
+//		if(nRetry > 200) return 0;
+//	}
+//	nRetry = 0;
+//	return SPI_I2S_ReceiveData(SPI2); 
+//		
+//}
 
 //
-void ADC24Bit_SPI_SendByte(UINT8 nData)
+UINT8 ADC24Bit_SPI_ReadWriteByte(UINT8 nData)
 {
-	//__disable_irq();
-    while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_TXE) == RESET){}//等待发送区空  
+//	//__disable_irq();
+//    while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_TXE) == RESET){}//等待发送区空  
+//	SPI_I2S_SendData(ADC24BIT_SPI, nData);	
+//	//__enable_irq();
+	
+	UINT8 nRetry = 0;
+	while (SPI_I2S_GetFlagStatus(ADC24BIT_SPI, SPI_I2S_FLAG_TXE) == RESET)
+	{
+		nRetry ++;
+		if(nRetry > 200) return 0;
+	}
+	nRetry = 0;
 	SPI_I2S_SendData(ADC24BIT_SPI, nData);	
-	//__enable_irq();
+	//
+	while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET)
+	{
+		nRetry ++;
+		if(nRetry > 200) return 0;
+	}
+	nRetry = 0;
+	return SPI_I2S_ReceiveData(SPI2); 
+	
 }
 
 
@@ -139,18 +180,18 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 	for(i = 0; i < nCount; i++)
 	{
 		nVal = *(pBuf + i);
-		ADC24Bit_SPI_SendByte(nVal);	
+		ADC24Bit_SPI_ReadWriteByte(nVal);	
 	}	
 #else
 	UINT8 j;
 	
 	__disable_irq();
 	AD_SCK_1();
-	Delay_US(5);//__nop();
-	AD_CS_1();
-	Delay_US(10);//__nop();
+	Delay_US(20);//__nop();
+//	AD_CS_1();  /////////////
+//	Delay_US(10);//__nop();
 	AD_CS_0();
-	Delay_US(5);//__nop();
+	Delay_US(20);
 
 	for(i=0;i<nCount;i++)
  	{
@@ -158,7 +199,6 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 		for(j=0; j<8; j++)
 		{
 			AD_SCK_0();
-			//Delay_US(4);
 			if(0x80 == (nVal & 0x80))
 			{
 				AD_DI_1();	  //Send one to SDO pin
@@ -167,13 +207,13 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 			{
 				AD_DI_0();	  //Send zero to SDO pin
 			}
-			Delay_US(3);//__nop();
+			Delay_US(15);//__nop();
 			AD_SCK_1();
-			Delay_US(3);//__nop();
+			Delay_US(15);//__nop();
 			nVal <<= 1;	//Rotate data
 		}
 	}
-	AD_CS_1();
+//	AD_CS_1();
 	//Delay_US(2);
 	__enable_irq();
 	
@@ -188,7 +228,7 @@ void SPI_Read(UINT8 *pBuf, UINT8 nCount)
 #if AD7799_USE_SPI_COMMUNICATION
 	for(i = 0; i < nCount; i++)
 	{
-		nVal = ADC24Bit_SPI_GetByte();
+		nVal = ADC24Bit_SPI_ReadWriteByte(0);
 		*(pBuf + i) = nVal;
 	}	
 #else
@@ -196,11 +236,11 @@ void SPI_Read(UINT8 *pBuf, UINT8 nCount)
 	
 	__disable_irq();
 	AD_SCK_1();
-	Delay_US(5);//__nop();
-	AD_CS_1();
-	Delay_US(5);//__nop();
+	Delay_US(20);//__nop();
+//	AD_CS_1();
+//	Delay_US(10);//__nop();
 	AD_CS_0();
-	Delay_US(5);//__nop();
+	Delay_US(20);//__nop();
 
 	for(j=0; j<nCount; j++)
 	{
@@ -208,19 +248,19 @@ void SPI_Read(UINT8 *pBuf, UINT8 nCount)
 		{
 		    AD_SCK_0();
 			nVal <<= 1;		//Rotate data
-			Delay_US(3);//__nop();
+			Delay_US(15);//__nop();
 			nTemp = AD_DO();			//Read SDI of AD7799
 			AD_SCK_1();	
-			Delay_US(3);
+			Delay_US(15);
 			if(nTemp)
 			{
 				nVal |= 1;	
 			}
-			Delay_US(3);//__nop();
+			Delay_US(15);//__nop();
 		}
 		*(pBuf + j )= nVal;
 	}	 
-	AD_CS_1();
+//	AD_CS_1();
 	__enable_irq();
 	
 #endif
@@ -233,11 +273,13 @@ UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size)
 	UINT8 data[5] = {0x00, 0x00, 0x00, 0x00, 0x00};
 	UINT32 receivedData = 0x00;	
 	data[0] = AD7799_COMM_READ |  AD7799_COMM_ADDR(regAddress);
-	//AD7799_CS_LOW;  
+	AD7799_CS_LOW;  
+	__disable_irq();
 	SPI_Write(data,1);
-	//Delay_US(5);
+	Delay_US(5);
 	SPI_Read(data,size);
-	//AD7799_CS_HIGH;
+	AD7799_CS_HIGH;
+	__enable_irq();
 	if(size == 1)
 	{
 		receivedData += (data[0] << 0);
@@ -278,9 +320,9 @@ void AD7799_SetRegisterValue(UINT8 regAddress,
 		  data[2] = (UINT8)((regValue & 0x00FF00) >> 8);
           data[1] = (UINT8)((regValue & 0xFF0000) >> 16);
     }
-    //AD7799_CS_LOW;	    
+    AD7799_CS_LOW;	    
     SPI_Write(data,(1 + size));
-   // AD7799_CS_HIGH;
+    AD7799_CS_HIGH;
 }
 
 
@@ -337,7 +379,7 @@ void AD7799_Calibrate(void)
 	AD7799_SetRegisterValue(AD7799_REG_MODE,0xd005,2);IT_SYS_DlyMs(5);
 	AD7799_SetRegisterValue(AD7799_REG_MODE,0xf005,2);IT_SYS_DlyMs(5);
 	
-	AD7799_SetRegisterValue(AD7799_REG_IO,0,1);//设置通道3 为ad输入
+	//AD7799_SetRegisterValue(AD7799_REG_IO,0,1);//设置通道3 为ad输入
 }
 
 
@@ -361,17 +403,28 @@ UINT8 AD7799_Init(void)
 #endif
 	//AD7799_Calibrate();
 	
-	// my
+	command = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
+	printf("\r\nAD_M_1: %d\r\n", (int)command);
+	IT_SYS_DlyMs(10);
 	// mode and updateR set, continuous Coversion Mode and 50Hz Update Rate(default:16.7)
 	command = AD7799_MODE_CONT | AD7799_MODE_RATE(AD7799_MODE_UPDATE_50);
 	AD7799_SetRegisterValue(AD7799_REG_MODE, command, 2);
+	IT_SYS_DlyMs(10);
+	command = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
+	printf("AD_M_2: %d\r\n", (int)command);
+	IT_SYS_DlyMs(10);
 	
+	command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
+	printf("AD_COF_1: %d\r\n", (int)command);
+	IT_SYS_DlyMs(10);
 	// config: Gain 0(in-amp not used,2.5V),  use buf, channel 1
 	command = AD7799_CONF_GAIN(AD7799_GAIN_1) |AD7799_CONF_REFDET(AD7799_REFDET_DIS)|\
 		AD7799_CONF_BUF | AD7799_CH_AIN1P_AIN1M;
 	AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
-	
-	
+	IT_SYS_DlyMs(10);
+	command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
+	printf("AD_COF_2: %d\r\n", (int)command);
+	IT_SYS_DlyMs(10);
 //    command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
 //    command &= ~AD7799_CONF_GAIN(0xFF);
 //    command |= AD7799_CONF_GAIN(AD7799_GAIN_1);  //command |= AD7799_CONF_GAIN(1);
