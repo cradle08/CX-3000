@@ -6,6 +6,8 @@
 #include "KernelHeader.h"
 #include "Scope_It.h"
 
+extern __IO uint32_t  EthStatus;
+
 void start_run(void)
 {
 #if !USE_STM32F407_ONLY
@@ -351,9 +353,13 @@ int main(void)
     SPG_InitProtocol();
     EVAL_Init();            /* platform */
 	
-	ETH_BSP_Config();
-	IT_SYS_DlyMs(500);
-    ETH_BSP_Config();       /* configure ethernet */
+	printf("Waiting Net Cable Link...");
+	while(EthStatus != (ETH_INIT_FLAG | ETH_LINK_FLAG))
+	{
+		ETH_BSP_Config();
+		IT_SYS_DlyMs(200);
+	}
+   // ETH_BSP_Config();       /* configure ethernet */
     LwIP_Init();            /* Initilaize the LwIP stack */
     udp_echoserver_init();  /* UDP echoserver */
 	

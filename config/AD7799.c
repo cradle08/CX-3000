@@ -387,7 +387,7 @@ void AD7799_Calibrate(void)
 UINT8 AD7799_Init(void)
 {
 	UINT8 i;
-    UINT32 nCmdM, nCmdC, ID;
+    IO_ UINT32 nCmdM, nCmdM_Value, nCmdC, nCmdC_Value,ID;
 #if !AD7799_USE_SPI_COMMUNICATION	
 	AD_CS_0();
 	Delay_US(5);
@@ -406,8 +406,8 @@ UINT8 AD7799_Init(void)
 	//AD7799_Calibrate();
 	for(i = 0; i < 10; i++)
 	{
-		nCmdM = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
-		printf("\r\nAD_M_1: %d\r\n", (int)nCmdM);
+		nCmdM_Value = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
+		printf("\r\nAD_M_1: %d\r\n", (int)nCmdM_Value);
 		IT_SYS_DlyMs(5);
 		// mode and updateR set, continuous Coversion Mode and 50Hz Update Rate(default:16.7)
 		nCmdM = AD7799_MODE_CONT | AD7799_MODE_RATE(AD7799_MODE_UPDATE_50);
@@ -415,12 +415,12 @@ UINT8 AD7799_Init(void)
 		IT_SYS_DlyMs(5);
 		AD7799_SetRegisterValue(AD7799_REG_MODE, nCmdM, 2);
 		IT_SYS_DlyMs(5);
-		nCmdM = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
-		printf("AD_M_2: %d\r\n", (int)nCmdM);
+		nCmdM_Value = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
+		printf("AD_M_2: %d\r\n", (int)nCmdM_Value);
 		IT_SYS_DlyMs(5);
 		
-		nCmdC = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
-		printf("AD_COF_1: %d\r\n", (int)nCmdC);
+		nCmdC_Value = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
+		printf("AD_COF_1: %d\r\n", (int)nCmdC_Value);
 		IT_SYS_DlyMs(5);
 		// config: Gain 0(in-amp not used,2.5V),  use buf, channel 1
 		nCmdC = AD7799_CONF_GAIN(AD7799_GAIN_1) |AD7799_CONF_REFDET(AD7799_REFDET_DIS)|\
@@ -429,9 +429,9 @@ UINT8 AD7799_Init(void)
 		IT_SYS_DlyMs(5);
 		AD7799_SetRegisterValue(AD7799_REG_CONF, nCmdC, 2);
 		IT_SYS_DlyMs(5);
-		nCmdC = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
-		printf("AD_COF_2: %d\r\n", (int)nCmdC);
-		if(nCmdM == 5 && nCmdC == 17){
+		nCmdC_Value = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
+		printf("AD_COF_2: %d\r\n", (int)nCmdC_Value);
+		if(nCmdM == nCmdM_Value && nCmdC == nCmdC_Value){
 			break;
 		}else{
 			AD7799_Reset();
