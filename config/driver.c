@@ -2601,11 +2601,11 @@ void Driver_Debug(UINT8 nIndex)
 //			Turn_Motor_Select_LED(EN_LED1);
 //			IT_SYS_DlyMs(200);
 
-			for(i = 0; i < 5000; i++)
-			{
-				nADC = AD7799_Get_ADC_Value();
-     			printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
-				
+//			for(i = 0; i < 5000; i++)
+//			{
+//				nADC = AD7799_Get_ADC_Value();
+//     			printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+//				
 //				AD7799_CS_HIGH;
 				IT_SYS_DlyMs(100);
 //				AD7799_CS_LOW;
@@ -2633,25 +2633,21 @@ void Driver_Debug(UINT8 nIndex)
 //       			nADC = AD7799_Get_ADC_Value();
 //				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
 //				IT_SYS_DlyMs(5);
-			}
-			
-//			for(i = 0; i < 10; i++)
-//			{
-//				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
-//				nADC = AD7799_Get_ADC_Value();
-//				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
-//				IT_SYS_DlyMs(500);
-//				IT_SYS_DlyMs(500);
-//				IT_SYS_DlyMs(500);
-//				
-//				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
-//				nADC = AD7799_Get_ADC_Value();
-//				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
-//				IT_SYS_DlyMs(500);
-//				IT_SYS_DlyMs(500);
-//				IT_SYS_DlyMs(500);
-//				
 //			}
+			
+			for(i = 0; i < 100; i++)
+			{
+				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
+				nADC = AD7799_Get_ADC_Value();
+				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+				IT_SYS_DlyMs(100);
+
+				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
+				nADC = AD7799_Get_ADC_Value();
+				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+				IT_SYS_DlyMs(100);
+				
+			}
 			printf("AD7799 end\r\n");
 		}
 		break;

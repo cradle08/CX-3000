@@ -386,7 +386,8 @@ void AD7799_Calibrate(void)
 
 UINT8 AD7799_Init(void)
 {
-    UINT32 command, ID;
+	UINT8 i;
+    UINT32 nCmdM, nCmdC, ID;
 #if !AD7799_USE_SPI_COMMUNICATION	
 	AD_CS_0();
 	Delay_US(5);
@@ -394,6 +395,7 @@ UINT8 AD7799_Init(void)
 	Delay_US(5);
 	AD_SCK_1();
 	IT_SYS_DlyMs(200);
+
 #else
 	ID=AD7799_GetRegisterValue(AD7799_REG_ID, 1);
 	if( (ID& 0x0F) != AD7799_ID)
@@ -402,29 +404,41 @@ UINT8 AD7799_Init(void)
 	}
 #endif
 	//AD7799_Calibrate();
-	
-	command = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
-	printf("\r\nAD_M_1: %d\r\n", (int)command);
-	IT_SYS_DlyMs(10);
-	// mode and updateR set, continuous Coversion Mode and 50Hz Update Rate(default:16.7)
-	command = AD7799_MODE_CONT | AD7799_MODE_RATE(AD7799_MODE_UPDATE_50);
-	AD7799_SetRegisterValue(AD7799_REG_MODE, command, 2);
-	IT_SYS_DlyMs(10);
-	command = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
-	printf("AD_M_2: %d\r\n", (int)command);
-	IT_SYS_DlyMs(10);
-	
-	command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
-	printf("AD_COF_1: %d\r\n", (int)command);
-	IT_SYS_DlyMs(10);
-	// config: Gain 0(in-amp not used,2.5V),  use buf, channel 1
-	command = AD7799_CONF_GAIN(AD7799_GAIN_1) |AD7799_CONF_REFDET(AD7799_REFDET_DIS)|\
-		AD7799_CONF_BUF | AD7799_CH_AIN1P_AIN1M;
-	AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
-	IT_SYS_DlyMs(10);
-	command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
-	printf("AD_COF_2: %d\r\n", (int)command);
-	IT_SYS_DlyMs(10);
+	for(i = 0; i < 10; i++)
+	{
+		nCmdM = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
+		printf("\r\nAD_M_1: %d\r\n", (int)nCmdM);
+		IT_SYS_DlyMs(5);
+		// mode and updateR set, continuous Coversion Mode and 50Hz Update Rate(default:16.7)
+		nCmdM = AD7799_MODE_CONT | AD7799_MODE_RATE(AD7799_MODE_UPDATE_50);
+		printf("Set CmdM Value=%d\r\n", (int)nCmdM);
+		IT_SYS_DlyMs(5);
+		AD7799_SetRegisterValue(AD7799_REG_MODE, nCmdM, 2);
+		IT_SYS_DlyMs(5);
+		nCmdM = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
+		printf("AD_M_2: %d\r\n", (int)nCmdM);
+		IT_SYS_DlyMs(5);
+		
+		nCmdC = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
+		printf("AD_COF_1: %d\r\n", (int)nCmdC);
+		IT_SYS_DlyMs(5);
+		// config: Gain 0(in-amp not used,2.5V),  use buf, channel 1
+		nCmdC = AD7799_CONF_GAIN(AD7799_GAIN_1) |AD7799_CONF_REFDET(AD7799_REFDET_DIS)|\
+			AD7799_CONF_BUF | AD7799_CH_AIN1P_AIN1M;
+		printf("Set CmdC Value=%d\r\n", (int)nCmdC);
+		IT_SYS_DlyMs(5);
+		AD7799_SetRegisterValue(AD7799_REG_CONF, nCmdC, 2);
+		IT_SYS_DlyMs(5);
+		nCmdC = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
+		printf("AD_COF_2: %d\r\n", (int)nCmdC);
+		if(nCmdM == 5 && nCmdC == 17){
+			break;
+		}else{
+			AD7799_Reset();
+		}
+		IT_SYS_DlyMs(100);
+	}
+		
 //    command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
 //    command &= ~AD7799_CONF_GAIN(0xFF);
 //    command |= AD7799_CONF_GAIN(AD7799_GAIN_1);  //command |= AD7799_CONF_GAIN(1);
