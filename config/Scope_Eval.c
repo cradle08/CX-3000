@@ -341,7 +341,7 @@ void EVAL_Init(void)
 	//ADC24Bit_Init();
 	
 #endif
-	Beep(400);
+	Beep(1, 400);
 	ADC24Bit_Init();
 }
 

@@ -49,7 +49,7 @@ void Elec_Init(void);
 #define BEEP_PIN							GPIO_Pin_3
 #define BEEP_SRC							RCC_AHB1Periph_GPIOE
 void Beep_Init(void);
-void Beep(UINT16 nDelay);
+void Beep(UINT8 nNo, UINT16 nDelay);
 
 
 // Pump PD13_CLK(TIM4_CH3), PD4_DIR

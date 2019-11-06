@@ -82,7 +82,6 @@ void ADC24Bit_GPIO_Init(void)
 	GPIO_Init(ADC24BIT_CS_PORT, &GPIO_InitStructure);
 	GPIO_SetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN);
 	
-	
 	//Di	
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MISO_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;//复用功能
@@ -224,7 +223,8 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 
 void SPI_Read(UINT8 *pBuf, UINT8 nCount)
 {
-		UINT8 i, j, nVal;
+	
+	UINT8 i, j, nVal;
 #if AD7799_USE_SPI_COMMUNICATION
 	for(i = 0; i < nCount; i++)
 	{
@@ -422,8 +422,8 @@ UINT8 AD7799_Init(void)
 		nCmdC_Value = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
 		printf("AD_COF_1: %d\r\n", (int)nCmdC_Value);
 		IT_SYS_DlyMs(5);
-		// config: Gain 0(in-amp not used,2.5V),  use buf, channel 1
-		nCmdC = AD7799_CONF_GAIN(AD7799_GAIN_1) |AD7799_CONF_REFDET(AD7799_REFDET_DIS)|\
+		// config: Gain 0(in-amp not used,2.5V),  use buf, channel 1, unipolar
+		nCmdC = AD7799_CONF_GAIN(AD7799_GAIN_CONF) | AD7799_CONF_REFDET(AD7799_REFDET_DIS)|\
 			AD7799_CONF_BUF | AD7799_CH_AIN1P_AIN1M;
 		printf("Set CmdC Value=%d\r\n", (int)nCmdC);
 		IT_SYS_DlyMs(5);
@@ -438,20 +438,6 @@ UINT8 AD7799_Init(void)
 		}
 		IT_SYS_DlyMs(100);
 	}
-		
-//    command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
-//    command &= ~AD7799_CONF_GAIN(0xFF);
-//    command |= AD7799_CONF_GAIN(AD7799_GAIN_1);  //command |= AD7799_CONF_GAIN(1);
-//    AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
-//    //AD7799_SetReference(1);
-//    command = AD7799_GetRegisterValue(AD7799_REG_CONF, 2);
-//    command &= ~AD7799_CONF_CHAN(0xFF);
-//    command |= AD7799_CONF_CHAN(AD7799_CH_AIN1P_AIN1M); //
-//    AD7799_SetRegisterValue(AD7799_REG_CONF,command, 2);
-//    command = AD7799_GetRegisterValue(AD7799_REG_MODE, 2);
-//    command &= ~AD7799_MODE_SEL(0xFF);
-//    command |= AD7799_MODE_SEL(AD7799_MODE_CONT); // continuous
-//    AD7799_SetRegisterValue(AD7799_REG_MODE,command, 2);
 	return 0;
 }
 
@@ -511,16 +497,26 @@ void AD7799_SetBufMode(u8 nOpt)		//设置buf
     AD7799_SetRegisterValue(AD7799_REG_CONF, command, 2);
 }
 
-UINT32 AD7799_Get_ADC_Value(void)
+UINT32 AD7799_Get_Out_Data(void)
 {
 	return AD7799_GetRegisterValue(AD7799_REG_DATA,3);
 }
 
-double AD7799_Get_Value(UINT32 nVal)
-{
-	long value = (nVal - 0X800000);
-	return (float)((float)value*(float)AD7799_REF_MV)/(0X800000*1);	//0X800000:2.048V    0X000000:0V
 
+UINT32 AD7799_Get_ADC_Value(UINT32 nData)
+{
+	UINT32  nADC;
+	//nData = AD7799_GetRegisterValue(AD7799_REG_DATA,3);
+	nADC = 2*(nData - 0x7FFFFF)/AD7799_GAIN_VALUE;
+}
+
+
+double AD7799_Get_Value(UINT32 nData)
+{
+	UINT32 value = (nData - 0X800000);
+	return (float)((float)value*(float)AD7799_REF_MV)/(0X800000*AD7799_GAIN_VALUE);	//0X800000:2.048V    0X000000:0V
+
+//	return (float)(((float)(nData/0x7FFFFF)-1)*AD7799_REF_MV/AD7799_GAIN_VALUE);
 }
 
 

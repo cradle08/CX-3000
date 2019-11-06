@@ -1999,8 +1999,8 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
 				return 0;
 			}
-			buffer[i] = HW_Get_ADC_HGB();
-			printf("ADC=%d, V=%d\r\n", (int)buffer[i], (int)AD7799_Get_Value(buffer[i]));
+			buffer[i] = HW_Get_ADC_HGB();     
+			printf("ADC=%d, V=%6.2f\r\n", (int)buffer[i], (float)buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
 		}
 #endif
@@ -2008,11 +2008,8 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		//Send_Data_HGB(CMD_DATA_TEST_HGB, &nVal, 1);
 		Send_Data_HGB(CMD_DATA_TEST_HGB, buffer, HGB_CALIBRATE_DATA_NUM);
 		collect_return_hdl(COLLECT_RET_SUCESS);
-		for(i = 0; i < 3; i++)
-		{
-			Beep(300);
-			IT_SYS_DlyMs(300);
-		}
+		Beep(5, 300);
+	
 		printf("HGB_Test_Exec End\r\n");
 
 	}else if(eMode == EN_HGB_CALIBRATE){
@@ -2020,7 +2017,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_HGB();
-			printf("HGB ADC=%d, 5V=%d | ", (int)buffer[i], (int)AD7799_Get_Value(buffer[i]));
+			printf("HGB ADC=%d, 5V=%6.2f\r\n", (int)buffer[i], (float)buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
 		}
 		// send HGB data
@@ -2088,9 +2085,9 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		g_CRP_Data.eEnable = e_True;
 		while(g_CRP_Data.nTotal < g_Record_Param.nTotal_Num)
 		{
-			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
-				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
-			}
+//			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+//				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+//			}
 			if(g_CRP_Data.eSend == e_True)
 			{
 				if((g_CRP_Data.nTotal/DATA_FRAME_NUM_4BYTE)%2 == 1) //crpBuffer[0-511]
@@ -2104,7 +2101,8 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 					memset((void*)&g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE], 0, DATA_FRAME_NUM_4BYTE*4);
 				}
 				g_CRP_Data.eSend = e_False;
-				printf("send end\r\n");
+				//AD7799_Reset();
+				//printf("send end\r\n");
 			}
 			IT_SYS_DlyMs(5);
 		}
@@ -2124,11 +2122,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
 		g_CRP_Data.eEnable = e_False;	
 		collect_return_hdl(COLLECT_RET_SUCESS);
-		for(i = 0; i < 3; i++)
-		{
-			Beep(300);
-			IT_SYS_DlyMs(3000);
-		}
+		Beep(5, 300);
 		printf("CRP_Test_Exec End\r\n");
 	}else if(eMode == EN_CRP_CALIBRATE){
 		printf("CRP Calibrate Start\r\n");
@@ -2162,7 +2156,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 				return 0;
 			}
 			buffer[i] = HW_Get_ADC_CRP();
-			printf("CRP ADC=%08d, 5V=%05d\r\n", (int)buffer[i], (int)AD7799_Get_Value(buffer[i]));
+			printf("CRP ADC=%08d, 5V=%6.2f\r\n", (int)buffer[i], (float)(buffer[i])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
 		}
 		// send CRP data

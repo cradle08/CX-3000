@@ -1660,7 +1660,7 @@ UINT8 Send_Data_HGB(UINT32 nCmd, UINT32* pData, UINT16 nLen)
     //  net data feedback(big-end)
 	UINT8 chReturn;
 	IO_ UINT16 pos, i = 0, j = 0;
-	UINT16 nData;
+	UINT32 nData;
 	// head
     s_anBufNet[0] = 0x4243;
     s_anBufNet[1] = 0x5757;

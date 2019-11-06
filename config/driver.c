@@ -694,7 +694,7 @@ UINT32 HW_Get_ADC_HGB(void)
 	
 #if USE_STM32F407_ONLY
 	//nVal = Get_ADC3_Channel_Value(EN_ADC_HGB, ADC_SMOOTH_NUM_30);
-	nVal = AD7799_Get_ADC_Value();
+	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
 #else	
 	nVal = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 	
@@ -709,7 +709,7 @@ UINT32  HW_Get_ADC_CRP(void)
 	
 #if USE_STM32F407_ONLY
 	//nVal = Get_ADC3_Channel_Value(EN_ADC_CRP, ADC_SMOOTH_NUM_30);
-	nVal = AD7799_Get_ADC_Value();
+	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
 #else	
 	nVal = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 #endif
@@ -1031,12 +1031,24 @@ void Beep_Init(void)
 	GPIO_Init(BEEP_PORT, &GPIO_InitStructure);
 }
 
-void Beep(UINT16 nDelay)
+void Beep(UINT8 nNo, UINT16 nDelay)
 {
-	GPIO_SetBits(BEEP_PORT, BEEP_PIN);
-	IT_SYS_DlyMs(nDelay);
-	GPIO_ResetBits(BEEP_PORT, BEEP_PIN);
-	//IT_SYS_DlyMs(nDelay);
+	UINT8 i;
+	if(nNo == 0) return;
+	if(nNo > 1)
+	{
+		for(i = 0; i < nNo; i++)
+		{
+			GPIO_SetBits(BEEP_PORT, BEEP_PIN);
+			IT_SYS_DlyMs(nDelay);
+			GPIO_ResetBits(BEEP_PORT, BEEP_PIN);
+			IT_SYS_DlyMs(nDelay);
+		}
+	}else if(nNo == 1){
+		GPIO_SetBits(BEEP_PORT, BEEP_PIN);
+		IT_SYS_DlyMs(nDelay);
+		GPIO_ResetBits(BEEP_PORT, BEEP_PIN);
+	}
 }
 
 // pump
@@ -1548,7 +1560,7 @@ void EXTI9_5_IRQHandler(void)
 			EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
 			return;
 		}			
-		Beep(300);
+		Beep(1, 300);
 	    EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
 		if(Get_Micro_OC_Status() == EN_CLOSE)
 		{
@@ -2609,11 +2621,11 @@ void Driver_Debug(UINT8 nIndex)
 
 //			for(i = 0; i < 5000; i++)
 //			{
-//				nADC = AD7799_Get_ADC_Value();
+//				nADC = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
 //     			printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
 //				
 //				AD7799_CS_HIGH;
-				IT_SYS_DlyMs(100);
+//				IT_SYS_DlyMs(100);
 //				AD7799_CS_LOW;
 //				IT_SYS_DlyMs(10);
 				
@@ -2636,7 +2648,7 @@ void Driver_Debug(UINT8 nIndex)
 //					AD7799_SetRegisterValue(AD7799_REG_MODE, nADC, 2);
 //				ADC24Bit_Init();
 				
-//       			nADC = AD7799_Get_ADC_Value();
+//       			nADC = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
 //				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
 //				IT_SYS_DlyMs(5);
 //			}
@@ -2644,14 +2656,14 @@ void Driver_Debug(UINT8 nIndex)
 			for(i = 0; i < 100; i++)
 			{
 				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
-				nADC = AD7799_Get_ADC_Value();
-				printf("AD7799 CH1, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
+				nADC = AD7799_Get_Out_Data();
+				printf("AD7799 CH1, data=%d, adc=%d, V=%6.2f\r\n", (int)nADC, (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
 				IT_SYS_DlyMs(100);
 
-				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
-				nADC = AD7799_Get_ADC_Value();
-				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)nADC, AD7799_Get_Value(nADC));
-				IT_SYS_DlyMs(100);
+//				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
+//				nADC = AD7799_Get_Out_Data();
+//				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
+				IT_SYS_DlyMs(200);
 				
 			}
 			printf("AD7799 end\r\n");

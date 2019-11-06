@@ -68,15 +68,17 @@
 #define AD7799_CONF_BUF		  (1 << 4) 				/* Buffered Mode Enable */
 #define AD7799_CONF_CHAN(x)	  ((x) & 0x7) 			/* Channel select */
 /* AD7799_CONF_GAIN(x) options */
-#define AD7799_GAIN_1       0
-#define AD7799_GAIN_2       1
-#define AD7799_GAIN_4       2
-#define AD7799_GAIN_8       3
-#define AD7799_GAIN_16      4
-#define AD7799_GAIN_32      5
-#define AD7799_GAIN_64      6
-#define AD7799_GAIN_128     7
-#define AD7799_GAIN			AD7799_GAIN_2
+#define AD7799_GAIN_1       0   // gain = 1
+#define AD7799_GAIN_2       1	// gain = 2
+#define AD7799_GAIN_4       2	// gain = 4
+#define AD7799_GAIN_8       3	// gain = 8
+#define AD7799_GAIN_16      4	// gain = 16
+#define AD7799_GAIN_32      5	// gain = 32
+#define AD7799_GAIN_64      6	// gain = 64
+#define AD7799_GAIN_128     7	// gain = 128
+#define AD7799_GAIN_CONF	AD7799_GAIN_1 //AD7799_GAIN_2
+#define AD7799_GAIN_VALUE   1
+
 /* AD7799_CONF_REFDET(x) options */
 #define AD7799_REFDET_ENA   1	
 #define AD7799_REFDET_DIS   0
@@ -94,9 +96,6 @@
 #define AD7799_IO1(x)		(((x) & 0x1) << 4)
 #define AD7799_IO2(x)		(((x) & 0x1) << 5)
 
-
-#define AD7799_SET_CHAN_1_CMD  (AD7799_CONF_GAIN(AD7799_GAIN_1) | AD7799_CONF_BUF | AD7799_CH_AIN1P_AIN1M) 
-#define AD7799_SET_CHAN_2_CMD  (AD7799_CONF_GAIN(AD7799_GAIN_1) | AD7799_CONF_BUF | AD7799_CH_AIN2P_AIN2M) 
 
 
 // AD7799 for 24bits HGB and CRP data, SPI3_CLK_PC10, SPI3_MOSI_PB5(PC12),
@@ -242,8 +241,8 @@ void AD7799_SetReference(UINT32 nStatus);
 void AD7799_Reset(void);
 void AD7799_SetBurnoutCurren(UINT8 nOpt);
 void AD7799_SetBufMode(u8 nOpt);
-
-UINT32 AD7799_Get_ADC_Value(void);
+UINT32 AD7799_Get_Out_Data(void);
+UINT32 AD7799_Get_ADC_Value(UINT32 nData);
 double AD7799_Get_Value(UINT32 nVal);
 
 
