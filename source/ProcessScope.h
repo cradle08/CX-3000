@@ -175,7 +175,7 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define LED_STATUS_OPEN   	  	1
 #define LED_STATUS_CLOSE 	  	0
 #define HGB_BLACK_VALUE			0x0000
-
+#define INVAIL_VALUE			0xFFFF
 
 #define DATA_FRAME_NUM_4BYTE	128			// send data number a time
 #define DATA_FRAME_NUM_2BYTE	256			// send data number a time
@@ -320,7 +320,7 @@ void Reset_ADC_InitDataType(void);
 #define PRESS_PRECISION_FACTOR         (0xF4240)  //1000000
 
 #define PART_TEST_CHECK_DELAY			200 //ms
-#define MIXING_OVER_TIME				3000
+#define MIXING_OVER_TIME				2000
 
 enum {
 	MOTO_OUT_IN_TEST    	= 0, // only test moto out and in  at the normal count presss

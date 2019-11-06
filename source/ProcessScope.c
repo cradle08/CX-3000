@@ -2106,6 +2106,13 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 			}
 			IT_SYS_DlyMs(5);
 		}
+		if(g_CRP_Data.nTotal == INVAIL_VALUE) // check bi se ming error
+		{
+			memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
+			printf("bi se ming take out error\r\n");
+			collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+			return 0;
+		}
 		// send the last data
 		if(g_CRP_Data.nIndex != 0)
 		{
@@ -2136,7 +2143,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		nCurTicks = IT_SYS_GetTicks();
 		nTempTicks = nCurTicks;
 		Mixing_Motor_Run();
-		while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 3s
+		while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 2s
 			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
 			{
 				Mixing_Motor_Stop();

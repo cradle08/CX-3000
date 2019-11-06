@@ -64,12 +64,7 @@ void IRQ_SysTimer(void)
 			// timer get CRP data per 100ms
 			//if(g_CRP_Data.eEnable == e_True)
 			if(g_CRP_Data.eEnable == 1)
-			{			
-				if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
-					memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
-					g_CRP_Data.eEnable = 0;
-					collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
-				}		
+			{					
 				if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 0)
 				{
 					g_CRP_Data.crpBuffer[g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
@@ -98,6 +93,11 @@ void IRQ_SysTimer(void)
 				{
 					g_CRP_Data.nIndex++;
 					g_CRP_Data.nTotal++;
+				}
+				if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+					g_CRP_Data.nTotal = INVAIL_VALUE;
+					g_CRP_Data.nIndex = 0;
+					g_CRP_Data.eEnable = 0;
 				}
 			}
         }	
