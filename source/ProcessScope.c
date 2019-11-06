@@ -1929,6 +1929,7 @@ UINT8 LED_Mode_Set(UINT8 nIndex)
 		}
 		break;	
 	}
+	Turn_Motor_Power(EN_CLOSE);
 	Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_TEST_MODE_SET, nRet);
 }
 
@@ -1999,7 +2000,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 				return 0;
 			}
 			buffer[i] = HW_Get_ADC_HGB();
-			printf("ADC=%d,", (int)buffer[i]);
+			printf("ADC=%d, V=%d\r\n", (int)buffer[i], (int)AD7799_Get_Value(buffer[i]));
 			IT_SYS_DlyMs(100);
 		}
 #endif
@@ -2010,6 +2011,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < 3; i++)
 		{
 			Beep(300);
+			IT_SYS_DlyMs(300);
 		}
 		printf("HGB_Test_Exec End\r\n");
 
@@ -2018,9 +2020,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_HGB();
-			printf("HGB3.3 ADC=%d, V=%d | ", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
-			printf("HGB10 ADC=%d, V=%d | ", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_10/ADC_RESOLUTION_12);
-			printf("Press ADC=%d, V=%d\r\n", (int)buffer[i], (int)HW_ADC_SpiGetADC(2)*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12);
+			printf("HGB ADC=%d, 5V=%d | ", (int)buffer[i], (int)AD7799_Get_Value(buffer[i]));
 			IT_SYS_DlyMs(100);
 		}
 		// send HGB data
@@ -2079,7 +2079,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		{
 			for(j = 0; j < DATA_FRAME_NUM_4BYTE; j++)
 			{
-				g_CRP_Data.crpBuffer[j] = rand()%ADC_RESOLUTION_12;
+				g_CRP_Data.crpBuffer[j] = rand()%ADC_RESOLUTION_24;
 			}
 			Send_Data_CRP(CMD_DATA_TEST_CRP, &g_CRP_Data.crpBuffer[0], DATA_FRAME_NUM_4BYTE);
 		}		
@@ -2127,6 +2127,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		for(i = 0; i < 3; i++)
 		{
 			Beep(300);
+			IT_SYS_DlyMs(3000);
 		}
 		printf("CRP_Test_Exec End\r\n");
 	}else if(eMode == EN_CRP_CALIBRATE){
@@ -2144,6 +2145,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 3s
 			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
 			{
+				Mixing_Motor_Stop();
 				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
 				return 0;
 			}
@@ -2160,7 +2162,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 				return 0;
 			}
 			buffer[i] = HW_Get_ADC_CRP();
-			printf("CRP ADC=%d, 3.3V=%d\r\n", (int)buffer[i], (int)buffer[i]*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
+			printf("CRP ADC=%08d, 5V=%05d\r\n", (int)buffer[i], (int)AD7799_Get_Value(buffer[i]));
 			IT_SYS_DlyMs(100);
 		}
 		// send CRP data

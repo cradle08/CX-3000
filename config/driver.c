@@ -1542,7 +1542,12 @@ void EXTI9_5_IRQHandler(void)
 	if(RESET != EXTI_GetITStatus(MICRO_OC_EXIT_LINE))
     {      
 		// read micro oc status
-		//Delay_US(500);Delay_US(500);
+		Delay_US(500);Delay_US(500);
+		if(Get_Micro_OC_Status() == EN_OPEN)
+		{
+			EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
+			return;
+		}			
 		Beep(300);
 	    EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
 		if(Get_Micro_OC_Status() == EN_CLOSE)
@@ -1550,6 +1555,7 @@ void EXTI9_5_IRQHandler(void)
 			g_Micro_Switch = EN_CLOSE;
 		}
 		printf("Mirco Switch IRQ, S=%d\r\n", g_Micro_Switch);
+		EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
 	}
 }
 
