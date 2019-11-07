@@ -146,8 +146,8 @@ enum{
 	EN_LED_END = 8,
 };
 
-#define HGB_LED_NO  EN_LED2
-#define CRP_LED_NO  EN_LED6
+#define HGB_LED_INDEX	EN_LED6
+#define CRP_LED_INDEX   EN_LED3
 
 enum{
 	EN_POSITION_LED0 = 0,
@@ -163,17 +163,31 @@ enum{
 };
 
 
+//enum {
+//	EN_LED0_POSTION		= 138,	
+//	EN_LED1_POSTION		= 203,
+//	EN_LED2_POSTION		= 134,
+//	EN_LED3_POSTION		= 62,
+//	EN_LED4_POSTION		= 4,
+//	EN_LED5_POSTION		= 70,
+//	EN_LED6_POSTION		= 0,
+//	EN_LED7_POSTION		= 0,
+//};
+
+// form reset postion to select position
 enum {
-	EN_LED0_POSTION		= 138,	
-	EN_LED1_POSTION		= 203,
-	EN_LED2_POSTION		= 134,
-	EN_LED3_POSTION		= 62,
-	EN_LED4_POSTION		= 4,
-	EN_LED5_POSTION		= 70,
-	EN_LED6_POSTION		= 0,
-	EN_LED7_POSTION		= 0,
-	
+	EN_LED0_SELECT_STEP		= 0,	
+	EN_LED1_SELECT_STEP		= 0,
+	EN_LED2_SELECT_STEP		= 70,
+	EN_LED3_SELECT_STEP		= 4,
+	EN_LED4_SELECT_STEP		= 62,
+	EN_LED5_SELECT_STEP		= 134,
+	EN_LED6_SELECT_STEP		= 203,
+	EN_LED7_SELECT_STEP		= 138,
 };
+#define LED_SELETCT_STEP_DIFF  10
+
+
 extern  IO_ UINT8 g_Turn_Position;
 // turn motor
 void Turn_Motor_Init(void);
@@ -280,35 +294,35 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 
 
 // LED1-8, PI4--PI11
-// LED0
+// LED0, null
 #define LED0_PORT							GPIOI
 #define LED0_PIN							GPIO_Pin_4
 #define LED0_CLK_SRC						RCC_AHB1Periph_GPIOI
-// LED1
+// LED1, null
 #define LED1_PORT							GPIOI
-#define LED1_PIN							GPIO_Pin_10
+#define LED1_PIN							GPIO_Pin_5
 #define LED1_CLK_SRC						RCC_AHB1Periph_GPIOI
-// LED2
+// LED2, backup
 #define LED2_PORT							GPIOI
-#define LED2_PIN							GPIO_Pin_9
+#define LED2_PIN							GPIO_Pin_6
 #define LED2_CLK_SRC						RCC_AHB1Periph_GPIOI
-// LED3
+// LED3, 840nm CRP
 #define LED3_PORT							GPIOI
-#define LED3_PIN							GPIO_Pin_8
+#define LED3_PIN							GPIO_Pin_7
 #define LED3_CLK_SRC						RCC_AHB1Periph_GPIOI
-// LED4
+// LED4, 580nm
 #define LED4_PORT							GPIOI
-#define LED4_PIN							GPIO_Pin_7
+#define LED4_PIN							GPIO_Pin_8
 #define LED4_CLK_SRC						RCC_AHB1Periph_GPIOI
-// LED5
+// LED5, 640nm red
 #define LED5_PORT							GPIOI
-#define LED5_PIN							GPIO_Pin_5
+#define LED5_PIN							GPIO_Pin_9
 #define LED5_CLK_SRC						RCC_AHB1Periph_GPIOI
-// LED6
+// LED6, 525nm HGB green
 #define LED6_PORT							GPIOI
-#define LED6_PIN							GPIO_Pin_6
+#define LED6_PIN							GPIO_Pin_10
 #define LED6_CLK_SRC						RCC_AHB1Periph_GPIOI
-// LED7
+// LED7, 340nm
 #define LED7_PORT							GPIOI
 #define LED7_PIN							GPIO_Pin_11
 #define LED7_CLK_SRC						RCC_AHB1Periph_GPIOI

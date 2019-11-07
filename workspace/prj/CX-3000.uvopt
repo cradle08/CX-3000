@@ -144,7 +144,40 @@
           <Name>UL2CM3(-O207 -S0 -C0 -FO7 -FD20000000 -FC800 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL080000)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>2790</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134352174</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>2800</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -257,10 +290,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>26</ColumnNumber>
+      <ColumnNumber>45</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>358</TopLine>
-      <CurrentLine>362</CurrentLine>
+      <TopLine>360</TopLine>
+      <CurrentLine>357</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\app\ScopeMain.c</PathWithFileName>
       <FilenameWithoutPath>ScopeMain.c</FilenameWithoutPath>
@@ -291,7 +324,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>181</TopLine>
+      <TopLine>178</TopLine>
       <CurrentLine>182</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\HwLib\core\startup_stm32f40_41xxx.s</PathWithFileName>
@@ -315,7 +348,7 @@
       <Focus>0</Focus>
       <ColumnNumber>9</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>97</TopLine>
+      <TopLine>98</TopLine>
       <CurrentLine>99</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\SystemScope.c</PathWithFileName>
@@ -329,10 +362,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>37</ColumnNumber>
+      <ColumnNumber>32</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1902</TopLine>
-      <CurrentLine>1921</CurrentLine>
+      <TopLine>1903</TopLine>
+      <CurrentLine>1912</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\ProcessScope.c</PathWithFileName>
       <FilenameWithoutPath>ProcessScope.c</FilenameWithoutPath>
@@ -347,7 +380,7 @@
       <Focus>0</Focus>
       <ColumnNumber>1</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>494</TopLine>
+      <TopLine>492</TopLine>
       <CurrentLine>511</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\Protocol.c</PathWithFileName>
@@ -363,7 +396,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1659</TopLine>
+      <TopLine>1660</TopLine>
       <CurrentLine>1663</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\InterfaceScope.c</PathWithFileName>
@@ -587,7 +620,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>370</TopLine>
+      <TopLine>371</TopLine>
       <CurrentLine>378</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\HwLib\driver\src\stm32f4xx_dac.c</PathWithFileName>
@@ -729,10 +762,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>0</ColumnNumber>
+      <ColumnNumber>4</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>207</TopLine>
-      <CurrentLine>210</CurrentLine>
+      <TopLine>398</TopLine>
+      <CurrentLine>411</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\HwLib\driver\src\stm32f4xx_gpio.c</PathWithFileName>
       <FilenameWithoutPath>stm32f4xx_gpio.c</FilenameWithoutPath>
@@ -1025,9 +1058,9 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>43</ColumnNumber>
+      <ColumnNumber>61</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>64</TopLine>
+      <TopLine>65</TopLine>
       <CurrentLine>72</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\Scope_It.c</PathWithFileName>
@@ -1041,10 +1074,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>1</ColumnNumber>
+      <ColumnNumber>17</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>337</TopLine>
-      <CurrentLine>346</CurrentLine>
+      <TopLine>338</TopLine>
+      <CurrentLine>344</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\Scope_Eval.c</PathWithFileName>
       <FilenameWithoutPath>Scope_Eval.c</FilenameWithoutPath>
@@ -1153,10 +1186,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>8</ColumnNumber>
+      <ColumnNumber>14</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>1837</TopLine>
-      <CurrentLine>1845</CurrentLine>
+      <TopLine>1851</TopLine>
+      <CurrentLine>1863</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\driver.c</PathWithFileName>
       <FilenameWithoutPath>driver.c</FilenameWithoutPath>
@@ -1187,7 +1220,7 @@
       <Focus>0</Focus>
       <ColumnNumber>17</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>382</TopLine>
+      <TopLine>383</TopLine>
       <CurrentLine>387</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\AD7799.c</PathWithFileName>

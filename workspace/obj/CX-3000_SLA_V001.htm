@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\obj\CX-3000_SLA_V001.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\obj\CX-3000_SLA_V001.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Thu Nov 07 09:31:33 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Thu Nov 07 19:24:32 2019
 <BR><P>
 <H3>Maximum Stack Usage =        868 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -5760,8 +5760,7 @@ Global Symbols
 <LI><a href="#[215]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
 <LI><a href="#[23c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_AHB1PeriphClockCmd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
-<LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EVAL_Init
+<BR>[Called By]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EVAL_Init
 </UL>
 
 <P><STRONG><a name="[c4]"></a>Mixing_Motor_Run</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, driver.o(.text))
@@ -5769,8 +5768,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[21b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_SetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
-<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CRP_Test_Exec
+<BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CRP_Test_Exec
 </UL>
 
 <P><STRONG><a name="[c5]"></a>Mixing_Motor_Stop</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, driver.o(.text))
@@ -5778,8 +5776,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[21c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
 </UL>
-<BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
-<LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CRP_Test_Exec
+<BR>[Called By]<UL><LI><a href="#[c0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CRP_Test_Exec
 </UL>
 
 <P><STRONG><a name="[2e3]"></a>Valve_Init</STRONG> (Thumb, 100 bytes, Stack size 16 bytes, driver.o(.text))
@@ -5878,7 +5875,7 @@ Global Symbols
 <LI><a href="#[325]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Anti_ClockWise
 </UL>
 
-<P><STRONG><a name="[325]"></a>Turn_Motor_Anti_ClockWise</STRONG> (Thumb, 188 bytes, Stack size 32 bytes, driver.o(.text))
+<P><STRONG><a name="[325]"></a>Turn_Motor_Anti_ClockWise</STRONG> (Thumb, 190 bytes, Stack size 32 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = Turn_Motor_Anti_ClockWise &rArr; Get_Turn_Select_OC_Status &rArr; GPIO_ReadInputDataBit &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_DlyMs
@@ -5889,7 +5886,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[327]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Goto_Postion
 </UL>
 
-<P><STRONG><a name="[326]"></a>Turn_Motor_ClockWise</STRONG> (Thumb, 254 bytes, Stack size 32 bytes, driver.o(.text))
+<P><STRONG><a name="[326]"></a>Turn_Motor_ClockWise</STRONG> (Thumb, 260 bytes, Stack size 32 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = Turn_Motor_ClockWise &rArr; Get_Turn_Select_OC_Status &rArr; GPIO_ReadInputDataBit &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_DlyMs
@@ -5909,7 +5906,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Select_LED
 </UL>
 
-<P><STRONG><a name="[d1]"></a>Turn_Motor_Select_LED</STRONG> (Thumb, 100 bytes, Stack size 8 bytes, driver.o(.text))
+<P><STRONG><a name="[d1]"></a>Turn_Motor_Select_LED</STRONG> (Thumb, 164 bytes, Stack size 8 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = Turn_Motor_Select_LED &rArr; Turn_Motor_Goto_Postion &rArr; Turn_Motor_ClockWise &rArr; Get_Turn_Select_OC_Status &rArr; GPIO_ReadInputDataBit &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_DlyMs
@@ -5997,7 +5994,7 @@ Global Symbols
 <LI><a href="#[2e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Init
 </UL>
 
-<P><STRONG><a name="[2e8]"></a>LED_Init</STRONG> (Thumb, 630 bytes, Stack size 16 bytes, driver.o(.text))
+<P><STRONG><a name="[2e8]"></a>LED_Init</STRONG> (Thumb, 634 bytes, Stack size 16 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 96<LI>Call Chain = LED_Init &rArr; LED_Cur_DAC_Init &rArr; GPIO_Init &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[21c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_ResetBits
@@ -6046,7 +6043,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[21e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Write
 </UL>
-<BR>[Called By]<UL><LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Mode_Set
+<BR>[Called By]<UL><LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
+<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Mode_Set
 </UL>
 
 <P><STRONG><a name="[d0]"></a>LED_Exec</STRONG> (Thumb, 246 bytes, Stack size 16 bytes, driver.o(.text))
@@ -6069,7 +6067,7 @@ Global Symbols
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Mode_Set
 </UL>
 
-<P><STRONG><a name="[32d]"></a>DRegister_SPI_Init</STRONG> (Thumb, 252 bytes, Stack size 32 bytes, driver.o(.text), UNUSED)
+<P><STRONG><a name="[32d]"></a>DRegister_SPI_Init</STRONG> (Thumb, 266 bytes, Stack size 32 bytes, driver.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[220]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_PinAFConfig
 <LI><a href="#[215]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GPIO_Init
 <LI><a href="#[1c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;RCC_APB1PeriphResetCmd
@@ -6081,7 +6079,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[32e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DResistor_Init
 </UL>
 
-<P><STRONG><a name="[32e]"></a>DResistor_Init</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, driver.o(.text), UNUSED)
+<P><STRONG><a name="[32e]"></a>DResistor_Init</STRONG> (Thumb, 8 bytes, Stack size 8 bytes, driver.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[32d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRegister_SPI_Init
 </UL>
 
@@ -6096,7 +6094,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[32f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DRegister_Write
 </UL>
 
-<P><STRONG><a name="[e7]"></a>Driver_Debug</STRONG> (Thumb, 2184 bytes, Stack size 56 bytes, driver.o(.text))
+<P><STRONG><a name="[e7]"></a>Driver_Debug</STRONG> (Thumb, 2012 bytes, Stack size 56 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 168<LI>Call Chain = Driver_Debug &rArr; ADC3_Init &rArr; ADC3_GPIO_Init &rArr; GPIO_Init &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[126]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Valve_Liquid_Exec
@@ -6106,10 +6104,9 @@ Global Symbols
 <LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hw_filter_get_electrode
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Select_LED
 <LI><a href="#[ce]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Power
-<LI><a href="#[c5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mixing_Motor_Stop
-<LI><a href="#[c4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mixing_Motor_Run
 <LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Exec
 <LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Cur_Switch
+<LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Cur_ADC_Check_Channel
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_All_Reset
 <LI><a href="#[9e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_PUMP_Pulse
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_XK_ADC
@@ -6120,7 +6117,6 @@ Global Symbols
 <LI><a href="#[1cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DAC_SetChannel1Data
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Valve_Init
 <LI><a href="#[2e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Init
-<LI><a href="#[2e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mixing_Motor_Init
 <LI><a href="#[2e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Init
 <LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Elec_Init
 <LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC3_Init

@@ -1900,13 +1900,12 @@ UINT8 LED_Mode_Set(UINT8 nIndex)
 	{
 		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
-			
 			LED_All_Reset();
 			LED_Cur_Switch(EN_OPEN);
 			Turn_Motor_Power(EN_OPEN);
-			LED_Cur_ADC_Check_Channel(EN_LED1);
-			LED_Exec(EN_LED1, EN_OPEN); // open led
-			Turn_Motor_Select_LED(EN_LED1); // select led 
+			LED_Cur_ADC_Check_Channel(HGB_LED_INDEX);
+			LED_Exec(HGB_LED_INDEX, EN_OPEN); // open led
+			Turn_Motor_Select_LED(HGB_LED_INDEX); // select led 
 			
 			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
 			g_Test_Mode = EN_HGB_TEST;
@@ -1918,9 +1917,9 @@ UINT8 LED_Mode_Set(UINT8 nIndex)
 			LED_All_Reset();
 			LED_Cur_Switch(EN_OPEN); // open cur
 			Turn_Motor_Power(EN_OPEN);
-			LED_Cur_ADC_Check_Channel(EN_LED4);
-			LED_Exec(EN_LED4, EN_OPEN);		// open led
-			Turn_Motor_Select_LED(EN_LED4); // select led 
+			LED_Cur_ADC_Check_Channel(CRP_LED_INDEX);
+			LED_Exec(CRP_LED_INDEX, EN_OPEN);		// open led
+			Turn_Motor_Select_LED(CRP_LED_INDEX); // select led 
 			LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); // adjust cur		
 			g_Test_Mode = EN_CRP_TEST;
 			printf("CRP Mode Set Finished, M=%d\r\n", g_Test_Mode);
