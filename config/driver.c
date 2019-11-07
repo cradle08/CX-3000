@@ -1842,7 +1842,7 @@ void LED_Cur_Switch(UINT8 nOpt)
 	}	
 }
 
-void LEC_Cur_ADC_Check_Channel(UINT16 nIndex)
+void LED_Cur_ADC_Check_Channel(UINT16 nIndex)
 {
 	UINT8 nVal;
 	nVal = (nIndex<<13) & 0xE000;
@@ -2658,12 +2658,18 @@ void Driver_Debug(UINT8 nIndex)
 				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
 				nADC = AD7799_Get_Out_Data();
 				printf("AD7799 CH1, data=%d, adc=%d, V=%6.2f\r\n", (int)nADC, (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
-				IT_SYS_DlyMs(100);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
 
-//				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
-//				nADC = AD7799_Get_Out_Data();
-//				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
-				IT_SYS_DlyMs(200);
+				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
+				nADC = AD7799_Get_Out_Data();
+				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
 				
 			}
 			printf("AD7799 end\r\n");

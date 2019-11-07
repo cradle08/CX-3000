@@ -343,7 +343,7 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 void LED_Init(void);
 void LED_Cur_DAC_Init(void);
 void LED_Cur_Switch(UINT8 nOpt);
-void LEC_Cur_ADC_Check_Channel(UINT16 nIndex);
+void LED_Cur_ADC_Check_Channel(UINT16 nIndex); // chose whick channel through cd4051
 UINT16 Get_LED_Cur_ADC(void);      // ADC
 void LED_Cur_DAC_Set(UINT16 nVal); // DAC
 void LED_Cur_Auto_Adjust(UINT16 nVal); 
