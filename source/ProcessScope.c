@@ -68,6 +68,33 @@ void collect_return_hdl(UINT16 stat)
 
 }
 
+void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd)
+{
+    UINT8  dat[2] = {0}, n;
+    UINT32 tim;
+
+    n = 0;
+ //   dat[n++] = nResult;      /* 大小端模式转换，该处采用大端模式 */
+	
+	tim = IT_SYS_GetTicks();
+	if(eType == e_Msg_Status)
+	{
+		while (((UINT16)(IT_SYS_GetTicks() - tim)) < 50); /* 延时50毫秒后再发送结果 */
+		PL_NET_SendResult(PROTOCOL_HEAD_SEND_STATUS, nCmd, dat, n);  /* 44 53 57 53 - 00 10 00 00 */
+		while (((UINT16)(IT_SYS_GetTicks() - tim)) < 60); /* 延时10毫秒后再发送结果 */
+		PL_NET_SendResult(PROTOCOL_HEAD_SEND_STATUS, nCmd, dat, n);  /* 重发一次数据包 */
+		while (((UINT16)(IT_SYS_GetTicks() - tim)) < 70); /* 延时10毫秒后再发送结果 */
+		PL_NET_SendResult(PROTOCOL_HEAD_SEND_STATUS, nCmd, dat, n);  /* 重发一次数据包 */
+	}else if(eType == e_Msg_Data){
+		while (((UINT16)(IT_SYS_GetTicks() - tim)) < 50); /* 延时50毫秒后再发送结果 */
+		PL_NET_SendResult(PROTOCOL_HEAD_SEND_DATA, nCmd, dat, n);  /* 44 53 57 53 - 00 10 00 00 */
+		while (((UINT16)(IT_SYS_GetTicks() - tim)) < 60); /* 延时10毫秒后再发送结果 */
+		PL_NET_SendResult(PROTOCOL_HEAD_SEND_DATA, nCmd, dat, n);  /* 重发一次数据包 */
+		while (((UINT16)(IT_SYS_GetTicks() - tim)) < 70); /* 延时10毫秒后再发送结果 */
+		PL_NET_SendResult(PROTOCOL_HEAD_SEND_DATA, nCmd, dat, n);  /* 重发一次数据包 */
+	}
+}
+
 void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult)
 {
     UINT8  dat[2] = {0}, n;
@@ -1896,31 +1923,29 @@ void Micro_Switch_Check(void)
 UINT8 LED_Mode_Set(UINT8 nIndex)
 {
 	UINT16 nRet = 0;
+	
+	LED_All_Reset();
+	LED_Cur_Switch(EN_OPEN);	//led cur open
+	Turn_Motor_Power(EN_OPEN);	// turn motor power open
 	switch(nIndex)
 	{
 		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
-			LED_All_Reset();
-			LED_Cur_Switch(EN_OPEN);
-			Turn_Motor_Power(EN_OPEN);
-			LED_Cur_ADC_Check_Channel(HGB_LED_INDEX);
-			LED_Exec(HGB_LED_INDEX, EN_OPEN); // open led
-			Turn_Motor_Select_LED(HGB_LED_INDEX); // select led 
+			LED_Exec(HGB_LED_INDEX, EN_OPEN); 	  		// open led
+			Turn_Motor_Select_LED(HGB_LED_INDEX); 		// led go to test positon 
+			LED_Cur_ADC_Check_Channel(HGB_LED_INDEX); 	// CD4051 open the channel, and then start to adjust
 			
-			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
+			//LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
 			g_Test_Mode = EN_HGB_TEST;
 			printf("HGB Mode Set Finished M=%d\r\n", g_Test_Mode);
 		}
 		break;
 		case EN_CRP_TEST: // CRP need select LED and adjust LED Cur
 		{
-			LED_All_Reset();
-			LED_Cur_Switch(EN_OPEN); // open cur
-			Turn_Motor_Power(EN_OPEN);
-			LED_Cur_ADC_Check_Channel(CRP_LED_INDEX);
-			LED_Exec(CRP_LED_INDEX, EN_OPEN);		// open led
-			Turn_Motor_Select_LED(CRP_LED_INDEX); // select led 
-			LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); // adjust cur		
+			LED_Exec(CRP_LED_INDEX, EN_OPEN); 	 	 		 // open led
+			Turn_Motor_Select_LED(CRP_LED_INDEX); 			 // led go to test positon 
+			LED_Cur_ADC_Check_Channel(CRP_LED_INDEX);		 // CD4051 open the channel, and then start to adjust
+			//LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); 	 // adjust cur		
 			g_Test_Mode = EN_CRP_TEST;
 			printf("CRP Mode Set Finished, M=%d\r\n", g_Test_Mode);
 		}
@@ -2135,6 +2160,8 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		printf("CRP_Test_Exec End\r\n");
 	}else if(eMode == EN_CRP_CALIBRATE){
 		printf("CRP Calibrate Start\r\n");
+		// send crp calibrate start msg to app
+		Msg_Return_Handle_0(e_Msg_Status, CMD_STATUS_CRP_TEST_START);
 		// check micro switch status
 		if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
 		{

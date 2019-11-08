@@ -330,6 +330,7 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 #define LED_CUR_SWITCH_PORT					GPIOB
 #define LED_CUR_SWITCH_PIN					GPIO_Pin_8
 #define LED_CUR_SWITCH_SRC					RCC_AHB1Periph_GPIOB
+
 // LED Cur adjust, DAC, PA4
 #define LED_CUR_ADJUST_PORT					GPIOA
 #define LED_CUR_ADJUST_PIN					GPIO_Pin_4
@@ -340,9 +341,9 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 #define LED_CUR_ADC_PIN						GPIO_Pin_6
 #define LED_CUR_ADC_SRC						RCC_AHB1Periph_GPIOF
 #define LED_CUR_ADC_CHANNEL					ADC_Channel_4
-// LED Select group, PH13-A0, PH14-A1, PH15-A2
+// LED Select group, PH15-A0, PH14-A1, PH13-A2
 #define LED_SELECT_A0_PORT					GPIOH
-#define LED_SELECT_A0_PIN					GPIO_Pin_13
+#define LED_SELECT_A0_PIN					GPIO_Pin_15
 #define LED_SELECT_A0_SRC					RCC_AHB1Periph_GPIOH
 // LED Select group, PH14-A1
 #define LED_SELECT_A1_PORT					GPIOH
@@ -350,7 +351,7 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 #define LED_SELECT_A1_SRC					RCC_AHB1Periph_GPIOH
 // LED Select group, PH15-A2
 #define LED_SELECT_A2_PORT					GPIOH
-#define LED_SELECT_A2_PIN					GPIO_Pin_15
+#define LED_SELECT_A2_PIN					GPIO_Pin_13
 #define LED_SELECT_A2_SRC					RCC_AHB1Periph_GPIOH
 #define LED_SELECT_PORT						GPIOH
 //

@@ -1825,7 +1825,7 @@ void LED_Cur_Auto_Adjust(UINT16 nVal)
 	UINT32 nCurTick, nTempTick;
 	
 	LED_Cur_Switch(EN_OPEN);
-	DAC_SetChannel1Data(DAC_Align_12b_R, 0);  
+	LED_Cur_DAC_Set(0);
 	
 	nCurTick = IT_SYS_GetTicks();
 	nTempTick = nCurTick;
@@ -1856,12 +1856,68 @@ void LED_Cur_Switch(UINT8 nOpt)
 	}	
 }
 
+
 void LED_Cur_ADC_Check_Channel(UINT16 nIndex)
 {
-	UINT8 nVal;
-	nVal = (nIndex<<13) & 0xE000;
-	GPIO_Write(LED_SELECT_PORT, nVal);
-	
+	switch(nIndex)
+	{
+		case EN_LED0:
+		{
+			GPIO_ResetBits(LED_SELECT_A0_PORT, LED_SELECT_A0_PIN);
+			GPIO_ResetBits(LED_SELECT_A1_PORT, LED_SELECT_A1_PIN);
+			GPIO_ResetBits(LED_SELECT_A2_PORT, LED_SELECT_A2_PIN);
+		}
+		break;
+		case EN_LED1:
+		{
+			GPIO_SetBits(LED_SELECT_A0_PORT, LED_SELECT_A0_PIN);
+			GPIO_ResetBits(LED_SELECT_A1_PORT, LED_SELECT_A1_PIN);
+			GPIO_ResetBits(LED_SELECT_A2_PORT, LED_SELECT_A2_PIN);		
+		}
+		break;
+		case EN_LED2:
+		{
+			GPIO_ResetBits(LED_SELECT_A0_PORT, LED_SELECT_A0_PIN);
+			GPIO_SetBits(LED_SELECT_A1_PORT, LED_SELECT_A1_PIN);
+			GPIO_ResetBits(LED_SELECT_A2_PORT, LED_SELECT_A2_PIN);		
+		}
+		break;
+		case EN_LED3:
+		{
+			GPIO_SetBits(LED_SELECT_A0_PORT, LED_SELECT_A0_PIN);
+			GPIO_SetBits(LED_SELECT_A1_PORT, LED_SELECT_A1_PIN);
+			GPIO_ResetBits(LED_SELECT_A2_PORT, LED_SELECT_A2_PIN);		
+		}
+		break;
+		case EN_LED4:
+		{
+			GPIO_ResetBits(LED_SELECT_A0_PORT, LED_SELECT_A0_PIN);
+			GPIO_ResetBits(LED_SELECT_A1_PORT, LED_SELECT_A1_PIN);
+			GPIO_SetBits(LED_SELECT_A2_PORT, LED_SELECT_A2_PIN);		
+		}
+		break;
+		case EN_LED5:
+		{
+			GPIO_SetBits(LED_SELECT_A0_PORT, LED_SELECT_A0_PIN);
+			GPIO_ResetBits(LED_SELECT_A1_PORT, LED_SELECT_A1_PIN);
+			GPIO_SetBits(LED_SELECT_A2_PORT, LED_SELECT_A2_PIN);		
+		}
+		break;
+		case EN_LED6:
+		{
+			GPIO_ResetBits(LED_SELECT_A0_PORT, LED_SELECT_A0_PIN);
+			GPIO_SetBits(LED_SELECT_A1_PORT, LED_SELECT_A1_PIN);
+			GPIO_SetBits(LED_SELECT_A2_PORT, LED_SELECT_A2_PIN);		
+		}
+		break;
+		case EN_LED7:
+		{
+			GPIO_SetBits(LED_SELECT_A0_PORT, LED_SELECT_A0_PIN);
+			GPIO_SetBits(LED_SELECT_A1_PORT, LED_SELECT_A1_PIN);
+			GPIO_SetBits(LED_SELECT_A2_PORT, LED_SELECT_A2_PIN);		
+		}
+		break;
+	}
 }
 
 void LED_Exec(UINT8 nIndex, UINT8 nOpt)
@@ -2591,14 +2647,23 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 11:  // B  fix motor
 		{
-			for(i = 0; i < 50000; i++)
+			printf("B start\r\n");
+			LED_Cur_DAC_Set(0);
+			nADC = Get_LED_Cur_ADC();
+			printf("LED Cur ADC =%d\r\n", (int)nADC);
+			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+			val = 0;
+			for(i = 0; i < 4095;)
 			{
-				AD_SCK_1();
-				Delay_US(500);
-				AD_SCK_0();
-				Delay_US(500);
-				
+				i += 100;
+				LED_Cur_DAC_Set(i);
+				IT_SYS_DlyMs(200);
+				printf("i=%d LED Cur ADC=%d, DAC=%d\r\n", val, (int)Get_LED_Cur_ADC(), i);
+				val++;
+				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+				//IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
 			}
+			
 //			printf("start\r\n");
 //			Turn_Motor_Power(EN_OPEN);
 //			Turn_Motor_ClockWise(20000);
@@ -2794,7 +2859,7 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 15: //F , mix motor
 		{
-			
+			printf("F startd M=%d\r\n", g_Test_Mode);
 			LED_All_Reset();
 			LED_Cur_Switch(EN_OPEN);
 			Turn_Motor_Power(EN_OPEN);
@@ -2805,10 +2870,7 @@ void Driver_Debug(UINT8 nIndex)
 			//LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
 			g_Test_Mode = EN_HGB_TEST;
 			printf("HGB Mode Set Finished M=%d\r\n", g_Test_Mode);
-			
-			
-			
-			
+		
 //			Mixing_Motor_Init();
 //			printf("start\r\n");
 //			for(i = 0; i < 30; i++)

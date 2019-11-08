@@ -93,6 +93,7 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_STATUS_AIRLIGHT_PRESS 	0x01000004
 #define    CMD_STATUS_CRP_PARAM_SET     0x01000602
 #define    CMD_STATUS_TEST_MODE_SET     0x01000603
+#define    CMD_STATUS_CRP_TEST_START    0x01000701
 #define    CMD_STATUS_PART_TEST      	0x01000708
 #define    CMD_STATUS_PRESS_DATA     	0x00000100
 #define    CMD_STATUS_PRESS_ADD      	0x00000101
@@ -424,6 +425,7 @@ _EXT_ UINT8 MSG_Handling_MsgHandle(UINT8* pchCmdBuf, UINT8* pchFbkBuf);
 /* 采集报告处理 */
 void collect_return_hdl(UINT16 stat);
 /* 报告状态结果数据 */
+void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd);
 void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult);
 void Msg_Return_Handle_16(EN_MSG_TYPE eType, UINT32 nCmd, INT16 nResult);
 void Msg_Return_Handle_32(EN_MSG_TYPE eType, UINT32 nCmd, INT32 nResult);

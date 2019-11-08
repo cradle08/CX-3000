@@ -338,11 +338,12 @@ void EVAL_Init(void)
 	Turn_Motor_Init();
 	Mixing_Motor_Init();
 	LED_Init();
-	//ADC24Bit_Init();
+	LED_Cur_DAC_Init();
+	ADC24Bit_Init();
 	
 #endif
 	Beep(1, 400);
-	ADC24Bit_Init();
+	//ADC24Bit_Init();
 }
 
 
