@@ -273,6 +273,134 @@
           <ExecCommand></ExecCommand>
           <Expression></Expression>
         </Bp>
+        <Bp>
+          <Number>8</Number>
+          <Type>0</Type>
+          <LineNumber>2798</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>9</Number>
+          <Type>0</Type>
+          <LineNumber>2799</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>10</Number>
+          <Type>0</Type>
+          <LineNumber>2808</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>11</Number>
+          <Type>0</Type>
+          <LineNumber>2809</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>12</Number>
+          <Type>0</Type>
+          <LineNumber>2862</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>13</Number>
+          <Type>0</Type>
+          <LineNumber>2863</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>14</Number>
+          <Type>0</Type>
+          <LineNumber>2872</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+        <Bp>
+          <Number>15</Number>
+          <Type>0</Type>
+          <LineNumber>2873</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>..\..\config\driver.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
       </Breakpoint>
       <WatchWindow1>
         <Ww>
@@ -388,7 +516,7 @@
       <Focus>0</Focus>
       <ColumnNumber>24</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>366</TopLine>
+      <TopLine>374</TopLine>
       <CurrentLine>383</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\app\ScopeMain.c</PathWithFileName>
@@ -420,7 +548,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>180</TopLine>
+      <TopLine>181</TopLine>
       <CurrentLine>182</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\HwLib\core\startup_stm32f40_41xxx.s</PathWithFileName>
@@ -442,10 +570,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>5</ColumnNumber>
+      <ColumnNumber>6</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
       <TopLine>351</TopLine>
-      <CurrentLine>363</CurrentLine>
+      <CurrentLine>357</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\SystemScope.c</PathWithFileName>
       <FilenameWithoutPath>SystemScope.c</FilenameWithoutPath>
@@ -458,10 +586,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>1</ColumnNumber>
+      <ColumnNumber>33</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2055</TopLine>
-      <CurrentLine>2065</CurrentLine>
+      <TopLine>1932</TopLine>
+      <CurrentLine>1946</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\ProcessScope.c</PathWithFileName>
       <FilenameWithoutPath>ProcessScope.c</FilenameWithoutPath>
@@ -476,7 +604,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>344</TopLine>
+      <TopLine>352</TopLine>
       <CurrentLine>361</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\Protocol.c</PathWithFileName>
@@ -490,9 +618,9 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>22</ColumnNumber>
+      <ColumnNumber>25</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2563</TopLine>
+      <TopLine>2569</TopLine>
       <CurrentLine>2578</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\source\InterfaceScope.c</PathWithFileName>
@@ -716,7 +844,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>373</TopLine>
+      <TopLine>374</TopLine>
       <CurrentLine>378</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\HwLib\driver\src\stm32f4xx_dac.c</PathWithFileName>
@@ -860,7 +988,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>424</TopLine>
+      <TopLine>425</TopLine>
       <CurrentLine>433</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\HwLib\driver\src\stm32f4xx_gpio.c</PathWithFileName>
@@ -1154,9 +1282,9 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>97</ColumnNumber>
+      <ColumnNumber>115</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>67</TopLine>
+      <TopLine>68</TopLine>
       <CurrentLine>72</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\Scope_It.c</PathWithFileName>
@@ -1172,7 +1300,7 @@
       <Focus>0</Focus>
       <ColumnNumber>0</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>244</TopLine>
+      <TopLine>227</TopLine>
       <CurrentLine>228</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\Scope_Eval.c</PathWithFileName>
@@ -1282,10 +1410,10 @@
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>0</Focus>
-      <ColumnNumber>136</ColumnNumber>
+      <ColumnNumber>1</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>2457</TopLine>
-      <CurrentLine>2469</CurrentLine>
+      <TopLine>1480</TopLine>
+      <CurrentLine>1496</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\driver.c</PathWithFileName>
       <FilenameWithoutPath>driver.c</FilenameWithoutPath>
@@ -1316,7 +1444,7 @@
       <Focus>0</Focus>
       <ColumnNumber>17</ColumnNumber>
       <tvExpOptDlg>0</tvExpOptDlg>
-      <TopLine>385</TopLine>
+      <TopLine>386</TopLine>
       <CurrentLine>387</CurrentLine>
       <bDave2>0</bDave2>
       <PathWithFileName>..\..\config\AD7799.c</PathWithFileName>

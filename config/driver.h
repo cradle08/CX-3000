@@ -185,7 +185,7 @@ enum {
 	EN_LED6_SELECT_STEP		= 203,
 	EN_LED7_SELECT_STEP		= 138,
 };
-#define LED_SELETCT_STEP_DIFF  10
+#define LED_SELETCT_STEP_DIFF  5
 
 
 extern  IO_ UINT8 g_Turn_Position;

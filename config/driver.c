@@ -1412,7 +1412,7 @@ UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep)
 				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
 				{
 					g_Turn_Position = EN_POSITION_LED_UNSURE; /////////////
-					printf("nTemp Steps = %d \r\n", (int)nTemp);
+					printf("Anti Stop Steps = %d \r\n", (int)nTemp);
 					return e_Feedback_Success;
 				}
 			}			
@@ -1422,7 +1422,7 @@ UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep)
 				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
 				{
 					g_Turn_Position = EN_POSITION_LED_UNSURE; /////////////
-					printf("nTemp Steps = %d \r\n", (int)nTemp);
+					printf("Anti Stop Steps = %d \r\n", (int)nTemp);
 					return e_Feedback_Success;
 				}
 			}
@@ -1460,7 +1460,7 @@ UINT8 Turn_Motor_ClockWise(UINT32 nStep)
 				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
 				{
 					g_Turn_Position = EN_POSITION_LED_UNSURE; 
-					printf("nTemp Steps = %d \r\n", (int)nTemp);
+					printf("Stop Steps = %d \r\n", (int)nTemp);
 					return e_Feedback_Success;
 				}
 			}
@@ -1469,7 +1469,7 @@ UINT8 Turn_Motor_ClockWise(UINT32 nStep)
 				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
 				{
 					g_Turn_Position = EN_POSITION_LED_UNSURE; 
-					printf("nTemp Steps = %d \r\n", (int)nTemp);
+					printf("Stop Steps = %d \r\n", (int)nTemp);
 					return e_Feedback_Success;
 				}
 			}
@@ -1510,48 +1510,56 @@ void Turn_Motor_Select_LED(UINT8 nIndex)
 	{
 		case EN_LED0:
 		{
+			printf("LED0 Select Step=%d\r\n", EN_LED0_SELECT_STEP);
 			Turn_Motor_Goto_Postion(EN_ANTI_CLOCK_WISE, EN_LED0_SELECT_STEP);  
 			g_Turn_Position = EN_POSITION_LED0;
 		}
 		break;
 		case EN_LED1:
 		{
+			printf("LED1 Select Step=%d\r\n", EN_LED1_SELECT_STEP);
 			Turn_Motor_Goto_Postion(EN_CLOCK_WISE, EN_LED1_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED1;
 		}
 		break;
 		case EN_LED2:
 		{
+			printf("LED2 Select Step=%d\r\n", EN_LED2_SELECT_STEP);
 			Turn_Motor_Goto_Postion(EN_CLOCK_WISE, EN_LED2_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED2;
 		}
 		break;
 		case EN_LED3:
 		{
+			printf("LED3 Select Step=%d\r\n", EN_LED3_SELECT_STEP);
 			Turn_Motor_Goto_Postion(EN_CLOCK_WISE, EN_LED3_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED3;
 		}
 		break;
 		case EN_LED4:
 		{
+			printf("LED4 Select Step=%d\r\n", EN_LED4_SELECT_STEP);
 			Turn_Motor_Goto_Postion(EN_ANTI_CLOCK_WISE, EN_LED4_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED4;
 		}
 		break;
 		case EN_LED5:
 		{
+			printf("LED5 Select Step=%d\r\n", EN_LED5_SELECT_STEP);
 			Turn_Motor_Goto_Postion(EN_ANTI_CLOCK_WISE, EN_LED5_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED5;
 		}
 		break;
 		case EN_LED6:
 		{
+			printf("LED6 Select Step=%d\r\n", EN_LED6_SELECT_STEP);
 			Turn_Motor_Goto_Postion(EN_CLOCK_WISE, EN_LED6_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED6;
 		}
 		break;
 		case EN_LED7:
 		{
+			printf("LED7 Select Step=%d\r\n", EN_LED7_SELECT_STEP);
 			Turn_Motor_Goto_Postion(EN_CLOCK_WISE, EN_LED7_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED7;
 		}

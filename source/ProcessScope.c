@@ -2023,6 +2023,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+				printf(" cuvette out error\r\n");
 				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
 				return 0;
 			}
@@ -2136,7 +2137,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		if(g_CRP_Data.nTotal == INVAIL_VALUE) // check bi se ming error
 		{
 			memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
-			printf("bi se ming take out error\r\n");
+			printf(" cuvette out error\r\n");
 			collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
 			return 0;
 		}
@@ -2165,6 +2166,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		// check micro switch status
 		if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
 		{
+			printf(" cuvette out error\r\n");
 			collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
 			return 0;
 		}
@@ -2176,6 +2178,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
 			{
 				Mixing_Motor_Stop();
+				printf(" cuvette out error\r\n");
 				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
 				return 0;
 			}
@@ -2188,6 +2191,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		for(i = 0; i < CRP_CALIBRATE_DATA_NUM; i++)
 		{
 			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+				printf(" cuvette out error\r\n");
 				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
 				return 0;
 			}
