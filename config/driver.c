@@ -1827,25 +1827,57 @@ void LED_Cur_DAC_Set(UINT16 nVal)
 }
 
 //
-void LED_Cur_Auto_Adjust(UINT16 nVal)
+//void LED_Cur_Auto_Adjust(UINT16 nVal)
+//{
+//	UINT16 nTempADC;
+//	UINT32 nCurTick, nTempTick;
+//	
+//	LED_Cur_Switch(EN_OPEN);
+//	LED_Cur_DAC_Set(0);
+//	
+//	nCurTick = IT_SYS_GetTicks();
+//	nTempTick = nCurTick;
+//	nTempADC = Get_LED_Cur_ADC();
+//	//nTempV = nTempADC*3300/4095;
+//	while(nCurTick < nTempTick + 5000)
+//	{
+//		if(nTempADC - nVal > 3)
+//		{
+//			LED_Cur_DAC_Set(nTempADC - 3);
+//		}else if(nTempADC - nVal < 3){
+//			LED_Cur_DAC_Set(nTempADC + 3);
+//		}else{
+//			// not need to adjust
+//			break;
+//		}
+//		nTempADC = Get_LED_Cur_ADC();
+//		IT_SYS_DlyMs(5);
+//	}
+//}
+
+
+//  func exec after LED Cur and LED is open
+void LED_Cur_Auto_Adjust(UINT16 nCurrent) // nCurrent is the current need to set
 {
-	UINT16 nTempADC;
+	UINT16 nTempADC , nDACSet, nReal;
 	UINT32 nCurTick, nTempTick;
 	
-	LED_Cur_Switch(EN_OPEN);
 	LED_Cur_DAC_Set(0);
-	
+	IT_SYS_DlyMs(10);
+	nTempADC = Get_LED_Cur_ADC();
+	//
+	nDACSet = nCurrent*100*3300/4095; // nCurrent to DAC value
+	LED_Cur_DAC_Set(nDACSet);
+	//
 	nCurTick = IT_SYS_GetTicks();
 	nTempTick = nCurTick;
-	nTempADC = Get_LED_Cur_ADC();
-	//nTempV = nTempADC*3300/4095;
 	while(nCurTick < nTempTick + 5000)
 	{
-		if(nTempADC - nVal > 3)
+		if(nDACSet - nTempADC > 3)
 		{
-			LED_Cur_DAC_Set(nTempADC - 3);
-		}else if(nTempADC - nVal < 3){
 			LED_Cur_DAC_Set(nTempADC + 3);
+		}else if(nDACSet - nTempADC < 3){
+			LED_Cur_DAC_Set(nTempADC);  // keep
 		}else{
 			// not need to adjust
 			break;
