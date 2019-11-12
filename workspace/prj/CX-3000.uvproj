@@ -74,9 +74,9 @@
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
           </BeforeMake>
           <AfterMake>
-            <RunUserProg1>0</RunUserProg1>
+            <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name></UserProg1Name>
+            <UserProg1Name>"D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-3000_SLA_V001.bin" "..\obj\CX-3000_SLA_V001.axf"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -446,11 +446,6 @@
               <FilePath>..\..\source\InterfaceScope.c</FilePath>
             </File>
             <File>
-              <FileName>SamplingPort.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\source\SamplingPort.c</FilePath>
-            </File>
-            <File>
               <FileName>StorageManagement.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\source\StorageManagement.c</FilePath>
@@ -661,11 +656,6 @@
               <FilePath>..\..\config\Scope_It.c</FilePath>
             </File>
             <File>
-              <FileName>Scope_Eval.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\Scope_Eval.c</FilePath>
-            </File>
-            <File>
               <FileName>Scope_Move.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\config\Scope_Move.c</FilePath>
@@ -689,11 +679,6 @@
               <FileName>InterruptBufferCircle.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\config\InterruptBufferCircle.c</FilePath>
-            </File>
-            <File>
-              <FileName>SpiFlash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\SpiFlash.c</FilePath>
             </File>
             <File>
               <FileName>driver.c</FileName>

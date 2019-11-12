@@ -1902,23 +1902,23 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
 
 //------------------------------
 // the ADC of the slave CPU
-UINT16 HW_ADC_SlaveGetADC(void)
-{
-    _STA_ UINT16 nValue = 0;
-    //
-    if (E_PL_BUF_ENABLE == SPG_IsRecvCommandValid())
-    {
-        nValue = (((UINT16)g_SPG_achCmdRvBuf[1]) << 8) + g_SPG_achCmdRvBuf[2];
-        //
-        SPG_ResetRecvComand();
-    }
-    else
-    {
-        nValue = nValue;
-    }
-    //
-    return nValue;
-}
+//UINT16 HW_ADC_SlaveGetADC(void)
+//{
+//    _STA_ UINT16 nValue = 0;
+//    //
+//    if (E_PL_BUF_ENABLE == SPG_IsRecvCommandValid())
+//    {
+//        nValue = (((UINT16)g_SPG_achCmdRvBuf[1]) << 8) + g_SPG_achCmdRvBuf[2];
+//        //
+//        SPG_ResetRecvComand();
+//    }
+//    else
+//    {
+//        nValue = nValue;
+//    }
+//    //
+//    return nValue;
+//}
 
 //------------------------------
 // to control the direction
@@ -2650,26 +2650,26 @@ UINT8 MT_RESET_Software(void)
 }
 
 //-----------------------------------------------------------------------------------------
-//
-UINT8  MSG_SampleBoardFeedback(void)
-{
-    IO_ UINT8  XRAM_ chData;
+////
+//UINT8  MSG_SampleBoardFeedback(void)
+//{
+//    IO_ UINT8  XRAM_ chData;
 
-    //
-    while (1)
-    {
-        if (e_Feedback_Success != SPG_Recv_GetChar((UINT8 *)&chData))
-        {
-            break;
-        }
-        else
-        {
-            PL_COM_SendChar(chData);
-        }
-    }
+//    //
+//    while (1)
+//    {
+//        if (e_Feedback_Success != SPG_Recv_GetChar((UINT8 *)&chData))
+//        {
+//            break;
+//        }
+//        else
+//        {
+//            PL_COM_SendChar(chData);
+//        }
+//    }
 
-    return e_Feedback_Success;
-}
+//    return e_Feedback_Success;
+//}
 
 
 

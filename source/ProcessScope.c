@@ -697,7 +697,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
                 nCommand  = CMD_CTRL_DEBUG_WBC;
                 bSendBack = e_True;
                 //
-                MSG_Testing();
+//                MSG_Testing();
                 //
                 nParaLen         = 0;
                 //
@@ -952,199 +952,199 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 } // end of "MSG_Handling()"
 
 
-UINT8 MSG_Testing(void)
-{
-    IO_ UINT32 nCurTicks = 0;
-    IO_ UINT32 nLstTicks = 0;
-    //
-    IO_ UINT16 nPress1   = 0;
-    IO_ UINT16 nPress2   = 0;
-    IO_ UINT16 nHgb      = 0;
-#if 1
-    //==========================
-    // reset the ticks
-    //IT_SYS_SetTicks(0);
-    //
-    HW_ADC_SpiCtrl(e_True);
-    //
-    //--------- 1 --------------
-    nCurTicks = IT_SYS_GetTicks();
-    printf("\r\n\r\n === timing 1: %0.8d === \r\n", (int)nCurTicks);
-    //
-    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
-    HW_Valve_On(EN_VALVE_AIR);  // all the air way
-    HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
-    HW_Valve_Off(2); // RBC
-    // wait some time
-    nCurTicks = IT_SYS_GetTicks();
-    nLstTicks = nCurTicks;
-    while (nCurTicks <= (nLstTicks + TIMING_1))
-    {
-        nCurTicks = IT_SYS_GetTicks();
-        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-    }
-    //--------- 2 --------------
-    nCurTicks = IT_SYS_GetTicks();
-    printf("\r\n\r\n === timing 2: %0.8d === \r\n", (int)nCurTicks);
-    //
-    HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);  // on, 25000 ticks per ms
-    HW_Valve_On(EN_VALVE_AIR);    // all the air way
-    HW_Valve_Off(EN_VALVE_LIQUID);    // WBC
-    HW_Valve_Off(2); // RBC
-    // reset the LIST-TICK
-    IT_LIST_SetTicks(0);  //===================
-    // detect the press 1 and press 2 all the time
-    nCurTicks = IT_SYS_GetTicks();
-    nLstTicks = nCurTicks;
-    //
-    while (nCurTicks <= (nLstTicks + TIMING_2 - TIMING_1))
-    {
-        nCurTicks = IT_SYS_GetTicks();
-        if (0 == (nCurTicks % 10))
-        {
-            nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
-            nPress2   = HW_ADC_SlaveGetADC();
-            printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
-        }
-        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-    }
-    //--------- 3 --------------
-    nCurTicks = IT_SYS_GetTicks();
-    printf("\r\n\r\n === timing 3: %0.8d === \r\n", (int)nCurTicks);
-    //
-    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
-    HW_Valve_On(EN_VALVE_LIQUID);    // WBC
-    HW_Valve_On(2); // RBC
-    // detect the press 1 and press 2 all the time
-    nCurTicks = IT_SYS_GetTicks();
-    nLstTicks = nCurTicks;
-    while (nCurTicks <= (nLstTicks + TIMING_3 - TIMING_2))
-    {
-        nCurTicks = IT_SYS_GetTicks();
-        if (0 == (nCurTicks % 10))
-        {
-            nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
-            nPress2   = HW_ADC_SlaveGetADC();
-            printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
-        }
-        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-    }
-    //--------- 4 --------------
-    nCurTicks = IT_SYS_GetTicks();
-    printf("\r\n\r\n === timing 4: %0.8d === \r\n", (int)nCurTicks);
-    //
-    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
-    HW_Valve_On(EN_VALVE_LIQUID);    // WBC
-    HW_Valve_On(2); // RBC
-    //==========================
-    // switch on : WBC and RBC
-    HW_SW_AdcWBC(e_True);
-    HW_SW_AdcRBC(e_True);
-    //++++++++++++++++++++++++++
-    // get the ADC data
-    HW_EN_WBC(e_True);
-    // reset the ADC-TICK
-    IT_ADC_SetTicks(0);   //===================
-    //
-    // detect the press 1 and press 2 all the time
-    nCurTicks = IT_SYS_GetTicks();
-    nLstTicks = nCurTicks;
-    while (nCurTicks <= (nLstTicks + TIMING_4 - TIMING_3))
-    {
-        nCurTicks = IT_SYS_GetTicks();
-        if (0 == (nCurTicks % 10))
-        {
-            nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 1: press1
-            nPress2   = HW_ADC_SlaveGetADC();
-            nHgb	  = HW_ADC_SpiGetADC(0);  // 0: HGB, get the sample of the HGB channel
-            printf("\r\n %0.8d: %0.5d, %0.5d, HGB = %0.5d", (int)nCurTicks, nPress1, nPress2, nHgb);
-        }
-        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-    }
-    //==========================
-    // switch off : WBC and RBC
-    HW_SW_AdcWBC(e_False);
-    HW_SW_AdcRBC(e_False);
-    //++++++++++++++++++++++++++
-    // close the ADC channel
-    HW_EN_WBC(e_False);
-    //
-    //--------- 5 --------------
-    nCurTicks = IT_SYS_GetTicks();
-    printf("\r\n\r\n === timing 5: %0.8d === \r\n", (int)nCurTicks);
-    //
-    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
-    //HW_Valve_Off(EN_VALVE_LIQUID); // WBC
-    //HW_Valve_Off(2); // RBC
-    // detect the press 1 and press 2 all the time
-    nCurTicks = IT_SYS_GetTicks();
-    nLstTicks = nCurTicks;
-    while (nCurTicks <= (nLstTicks + TIMING_5 - TIMING_4))
-    {
-        nCurTicks = IT_SYS_GetTicks();
-        if (0 == (nCurTicks % 10))
-        {
-            nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
-            nPress2   = HW_ADC_SlaveGetADC();
-            printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
-        }
-        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-    }
-    //--------- 6 --------------
-    nCurTicks = IT_SYS_GetTicks();
-    printf("\r\n\r\n === timing 6: %0.8d === \r\n", (int)nCurTicks);
-    //
-    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
-    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
-    //HW_Valve_Off(EN_VALVE_LIQUID); // WBC
-    //HW_Valve_Off(2); // RBC
-    // detect the press 1 and press 2 all the time
-    nCurTicks = IT_SYS_GetTicks();
-    nLstTicks = nCurTicks;
-    while (nCurTicks <= (nLstTicks + TIMING_6 - TIMING_5))
-    {
-        nCurTicks = IT_SYS_GetTicks();
-        // do not get press 1
-        // do not get press 2
-        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-    }
-    //--------- 7 --------------
-    nCurTicks = IT_SYS_GetTicks();
-    printf("\r\n\r\n === timing 7: %0.8d === \r\n", (int)nCurTicks);
-    nCurTicks = IT_SYS_GetTicks();
-    nLstTicks = nCurTicks;
-    while (nCurTicks <= (nLstTicks + TIMING_7 - TIMING_6))
-    {
-        nCurTicks = IT_SYS_GetTicks();
-        // do nothing
-        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
-	}
-    //
-    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
-    HW_Valve_Off(EN_VALVE_AIR); // all the air way
-    HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
-    HW_Valve_Off(2); // RBC
-    //
-    // off
-    HW_SW_AdcWBC(e_True);
-    //
-#if 0
-    while (1)	 // attention: it must be stoped here !
-    {
-        nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
-        nPress2   = HW_ADC_SlaveGetADC();
-        printf("%0.8d: %0.5d, %0.5d\r\n", nCurTicks, nPress1, nPress2);
-        //
-        IT_SYS_DlyMs(1000);
-    }
-#endif
-    //
-    return e_Feedback_Success;
-#endif
-}
+//UINT8 MSG_Testing(void)
+//{
+//    IO_ UINT32 nCurTicks = 0;
+//    IO_ UINT32 nLstTicks = 0;
+//    //
+//    IO_ UINT16 nPress1   = 0;
+//    IO_ UINT16 nPress2   = 0;
+//    IO_ UINT16 nHgb      = 0;
+//#if 1
+//    //==========================
+//    // reset the ticks
+//    //IT_SYS_SetTicks(0);
+//    //
+//    HW_ADC_SpiCtrl(e_True);
+//    //
+//    //--------- 1 --------------
+//    nCurTicks = IT_SYS_GetTicks();
+//    printf("\r\n\r\n === timing 1: %0.8d === \r\n", (int)nCurTicks);
+//    //
+//    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
+//    HW_Valve_On(EN_VALVE_AIR);  // all the air way
+//    HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
+//    HW_Valve_Off(2); // RBC
+//    // wait some time
+//    nCurTicks = IT_SYS_GetTicks();
+//    nLstTicks = nCurTicks;
+//    while (nCurTicks <= (nLstTicks + TIMING_1))
+//    {
+//        nCurTicks = IT_SYS_GetTicks();
+//        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+//    }
+//    //--------- 2 --------------
+//    nCurTicks = IT_SYS_GetTicks();
+//    printf("\r\n\r\n === timing 2: %0.8d === \r\n", (int)nCurTicks);
+//    //
+//    HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);  // on, 25000 ticks per ms
+//    HW_Valve_On(EN_VALVE_AIR);    // all the air way
+//    HW_Valve_Off(EN_VALVE_LIQUID);    // WBC
+//    HW_Valve_Off(2); // RBC
+//    // reset the LIST-TICK
+//    IT_LIST_SetTicks(0);  //===================
+//    // detect the press 1 and press 2 all the time
+//    nCurTicks = IT_SYS_GetTicks();
+//    nLstTicks = nCurTicks;
+//    //
+//    while (nCurTicks <= (nLstTicks + TIMING_2 - TIMING_1))
+//    {
+//        nCurTicks = IT_SYS_GetTicks();
+//        if (0 == (nCurTicks % 10))
+//        {
+//            nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
+//            nPress2   = HW_ADC_SlaveGetADC();
+//            printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
+//        }
+//        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+//    }
+//    //--------- 3 --------------
+//    nCurTicks = IT_SYS_GetTicks();
+//    printf("\r\n\r\n === timing 3: %0.8d === \r\n", (int)nCurTicks);
+//    //
+//    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+//    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+//    HW_Valve_On(EN_VALVE_LIQUID);    // WBC
+//    HW_Valve_On(2); // RBC
+//    // detect the press 1 and press 2 all the time
+//    nCurTicks = IT_SYS_GetTicks();
+//    nLstTicks = nCurTicks;
+//    while (nCurTicks <= (nLstTicks + TIMING_3 - TIMING_2))
+//    {
+//        nCurTicks = IT_SYS_GetTicks();
+//        if (0 == (nCurTicks % 10))
+//        {
+//            nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
+//            nPress2   = HW_ADC_SlaveGetADC();
+//            printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
+//        }
+//        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+//    }
+//    //--------- 4 --------------
+//    nCurTicks = IT_SYS_GetTicks();
+//    printf("\r\n\r\n === timing 4: %0.8d === \r\n", (int)nCurTicks);
+//    //
+//    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+//    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+//    HW_Valve_On(EN_VALVE_LIQUID);    // WBC
+//    HW_Valve_On(2); // RBC
+//    //==========================
+//    // switch on : WBC and RBC
+//    HW_SW_AdcWBC(e_True);
+//    HW_SW_AdcRBC(e_True);
+//    //++++++++++++++++++++++++++
+//    // get the ADC data
+//    HW_EN_WBC(e_True);
+//    // reset the ADC-TICK
+//    IT_ADC_SetTicks(0);   //===================
+//    //
+//    // detect the press 1 and press 2 all the time
+//    nCurTicks = IT_SYS_GetTicks();
+//    nLstTicks = nCurTicks;
+//    while (nCurTicks <= (nLstTicks + TIMING_4 - TIMING_3))
+//    {
+//        nCurTicks = IT_SYS_GetTicks();
+//        if (0 == (nCurTicks % 10))
+//        {
+//            nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 1: press1
+//            nPress2   = HW_ADC_SlaveGetADC();
+//            nHgb	  = HW_ADC_SpiGetADC(0);  // 0: HGB, get the sample of the HGB channel
+//            printf("\r\n %0.8d: %0.5d, %0.5d, HGB = %0.5d", (int)nCurTicks, nPress1, nPress2, nHgb);
+//        }
+//        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+//    }
+//    //==========================
+//    // switch off : WBC and RBC
+//    HW_SW_AdcWBC(e_False);
+//    HW_SW_AdcRBC(e_False);
+//    //++++++++++++++++++++++++++
+//    // close the ADC channel
+//    HW_EN_WBC(e_False);
+//    //
+//    //--------- 5 --------------
+//    nCurTicks = IT_SYS_GetTicks();
+//    printf("\r\n\r\n === timing 5: %0.8d === \r\n", (int)nCurTicks);
+//    //
+//    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+//    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+//    //HW_Valve_Off(EN_VALVE_LIQUID); // WBC
+//    //HW_Valve_Off(2); // RBC
+//    // detect the press 1 and press 2 all the time
+//    nCurTicks = IT_SYS_GetTicks();
+//    nLstTicks = nCurTicks;
+//    while (nCurTicks <= (nLstTicks + TIMING_5 - TIMING_4))
+//    {
+//        nCurTicks = IT_SYS_GetTicks();
+//        if (0 == (nCurTicks % 10))
+//        {
+//            nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
+//            nPress2   = HW_ADC_SlaveGetADC();
+//            printf("\r\n %0.8d: %0.5d, %0.5d", (int)nCurTicks, nPress1, nPress2);
+//        }
+//        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+//    }
+//    //--------- 6 --------------
+//    nCurTicks = IT_SYS_GetTicks();
+//    printf("\r\n\r\n === timing 6: %0.8d === \r\n", (int)nCurTicks);
+//    //
+//    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);     // off
+//    HW_Valve_Off(EN_VALVE_AIR);  // all the air way
+//    //HW_Valve_Off(EN_VALVE_LIQUID); // WBC
+//    //HW_Valve_Off(2); // RBC
+//    // detect the press 1 and press 2 all the time
+//    nCurTicks = IT_SYS_GetTicks();
+//    nLstTicks = nCurTicks;
+//    while (nCurTicks <= (nLstTicks + TIMING_6 - TIMING_5))
+//    {
+//        nCurTicks = IT_SYS_GetTicks();
+//        // do not get press 1
+//        // do not get press 2
+//        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+//    }
+//    //--------- 7 --------------
+//    nCurTicks = IT_SYS_GetTicks();
+//    printf("\r\n\r\n === timing 7: %0.8d === \r\n", (int)nCurTicks);
+//    nCurTicks = IT_SYS_GetTicks();
+//    nLstTicks = nCurTicks;
+//    while (nCurTicks <= (nLstTicks + TIMING_7 - TIMING_6))
+//    {
+//        nCurTicks = IT_SYS_GetTicks();
+//        // do nothing
+//        //HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
+//	}
+//    //
+//    HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);    // off
+//    HW_Valve_Off(EN_VALVE_AIR); // all the air way
+//    HW_Valve_Off(EN_VALVE_LIQUID);  // WBC
+//    HW_Valve_Off(2); // RBC
+//    //
+//    // off
+//    HW_SW_AdcWBC(e_True);
+//    //
+//#if 0
+//    while (1)	 // attention: it must be stoped here !
+//    {
+//        nPress1   = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
+//        nPress2   = HW_ADC_SlaveGetADC();
+//        printf("%0.8d: %0.5d, %0.5d\r\n", nCurTicks, nPress1, nPress2);
+//        //
+//        IT_SYS_DlyMs(1000);
+//    }
+//#endif
+//    //
+//    return e_Feedback_Success;
+//#endif
+//}
 
 #ifdef  DEBUG_INFO_UP_LOAD
 void Append_Debug_Info(INT8 *pInfo, INT8 *pTemp, UINT16 *pInfoLen)
@@ -3334,21 +3334,7 @@ void Reset_ADC_InitDataType(void)
 	memset((void*)&ADC2_Status, 0, sizeof(ADC_Status_InitTypeDef));		
 }
 
-void Eable_ADC(EN_TypeADC eType)
-{
-	if(eType == EN_ADC1){
-		Reset_ADC_InitDataType();
-		ADC1_Init(); //APP_ADC_Init(EN_ADC1);
-		ADC_SoftwareStartConv(ADC1);
-	}else if(eType == EN_ADC2){
-		Reset_ADC_InitDataType();
-		//DMA_Cmd(DMA2_Stream3, DISABLE);
-		ADC2_Init(); //APP_ADC_Init(EN_ADC2);
-		ADC_SoftwareStartConv(ADC2);
-	}else if(eType == EN_ADC3){
-		
-	}
-}
+
 
 // yaolan_
 UINT8 HW_Enable_Data_Channel(eTestMode eMode)
@@ -3416,22 +3402,6 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode)
 	return 0;
 }
 
-void Disable_ADC(EN_TypeADC eType)
-{
-	if(eType == EN_ADC1){
-		//ADC_Cmd(ADC1, DISABLE);
-		ADC_DMACmd(ADC1, DISABLE);
-		DMA_Cmd(DMA2_Stream0, DISABLE);
-		
-	}else if(eType == EN_ADC2){
-		ADC_Cmd(ADC2, DISABLE);
-		ADC_DMACmd(ADC2, DISABLE);
-		DMA_Cmd(DMA2_Stream3, DISABLE);
-		
-	}else if(eType == EN_ADC3){
-		//
-	}
-}
 
 // yaolan_
 UINT8 HW_Disable_Data_Channel(eTestMode eMode)
@@ -3520,6 +3490,113 @@ UINT8 HW_Clear_Data_Channel(eTestMode eMode)
 	
 	return 0;
 }
+
+
+
+
+
+void start_run(void)
+{
+#if !USE_STM32F407_ONLY
+	  HW_FPGA_RST_H();
+	  IT_SYS_DlyMs(100);
+	  HW_FPGA_RST_L();
+	  IT_SYS_DlyMs(20);
+	  HW_FPGA_RST_L();
+	  IT_SYS_DlyMs(20);
+	  HW_FPGA_RST_L();
+	  IT_SYS_DlyMs(20);
+	  HW_FPGA_RST_L();
+#endif 
+//	IT_SYS_DlyMs(1000);
+//	IT_SYS_DlyMs(1000);
+//	IT_SYS_DlyMs(1000);
+//	IT_SYS_DlyMs(1000);
+//	IT_SYS_DlyMs(1000);
+	// read parameter form flash
+	memset(&g_Record_Param, 0, RECORD_PARAM_LEN);
+	if(e_Feedback_Fail == Flash_Read_Param(&g_Record_Param, sizeof(RECORD_PARAM)))
+	{
+		// maybe need to send a status msg to app
+		printf("read record param fail, reset those\r\n");
+		Set_Default_Param(&g_Record_Param);	
+		//Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+	}
+	if(g_Record_Param.nFlag != FLASH_INIT_FLAG)
+	{
+		printf("record param flag error, reset those\r\n");
+		Set_Default_Param(&g_Record_Param);	
+		Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+	}
+//	Flash_Read_Param(&g_Record_Param, sizeof(RECORD_PARAM));
+	
+	printf("Param: wbc register=%d, addstep=%d, addpress=%010d\r\n",\
+			g_Record_Param.nRegister_WBC, g_Record_Param.nXAddStep, (int)g_Record_Param.nAddPress);
+	printf("CRP Param: Time=%d, HZ=%d, Total_Num=%d\r\n",\
+			g_Record_Param.nTime, g_Record_Param.nHZ, (int)g_Record_Param.nTotal_Num);
+	
+	//Msg_Return_Handle_32(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nWBC);
+	//Msg_Return_Handle_32(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nXAddStep);
+	//Msg_Return_Handle_32(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nAddPress);
+	
+	// wbc 
+    //HW_ADJ_SetResistor(0, 255);  /*  */
+#if !USE_STM32F407_ONLY
+	printf("wbc ticks=%d\n", (int)IT_SYS_GetTicks());
+	HW_ADJ_SetResistor(0, g_Record_Param.nRegister_WBC); // (0-50K)-->(0-255)
+    //HW_ADJ_SetResistor(0, 128);
+	HW_ADJ_SetResistor(1, 255);  /*  */
+    HW_ADJ_SetResistor(2, 255);  /*  */
+    HW_ADJ_SetResistor(3, 255);  /*  */
+ #endif
+    //----------------------------------------------
+    // init, stuatus's parameters
+    EVAL_OutputSet(O_MCU_LED_1);
+    EVAL_OutputClr(O_MCU_LED_2);
+    IT_SYS_DlyMs(200);
+    EVAL_OutputClr(O_MCU_LED_1);
+    EVAL_OutputSet(O_MCU_LED_2);
+    IT_SYS_DlyMs(200);
+    EVAL_OutputSet(O_MCU_LED_1);
+    EVAL_OutputClr(O_MCU_LED_2);
+    IT_SYS_DlyMs(200);
+    EVAL_OutputClr(O_MCU_LED_1);
+    EVAL_OutputSet(O_MCU_LED_2);
+    IT_SYS_DlyMs(200);
+    EVAL_OutputSet(O_MCU_LED_1);
+    EVAL_OutputClr(O_MCU_LED_2);
+    IT_SYS_DlyMs(200);
+    EVAL_OutputClr(O_MCU_LED_1);
+    EVAL_OutputSet(O_MCU_LED_2);
+}
+
+
+
+
+
+//-----------------------------------------------------------------------------------------
+// define "USE_FULL_ASSERT" in the project options setting
+void assert_failed(uint8_t* file, uint32_t line)
+{ 
+    /* User can add his own implementation to report the file name and line number,
+       ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+
+    printf("Wrong parameters value: file %s on line %d\r\n", file, line);
+	
+    /* Infinite loop */
+#if 1	
+    while (1)
+    {
+    
+    }
+#endif
+
+}
+
+
+
+
+
 
 
 #endif

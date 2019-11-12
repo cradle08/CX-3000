@@ -4,8 +4,8 @@
 #define    __PROCESS_SCOPE_H__
 
 #include  "MyType.h"
-//#include "InterfaceScope.h"
-#include "Scope_Eval.h"
+#include "KernelHeader.h"
+
 extern const UINT8 softver_edtion[];
 
 typedef struct{
@@ -243,8 +243,7 @@ UINT8 HW_Enable_Data_Channel(eTestMode eMode);
 UINT8 HW_Disable_Data_Channel(eTestMode eMode);
 UINT8 HW_Clear_Data_Channel(eTestMode eMode);
 UINT8 Data_Circle_Handle(IO_ eTestMode eMode);
-void Eable_ADC(EN_TypeADC eType);
-void Disable_ADC(EN_TypeADC eType);
+
 void Reset_ADC_InitDataType(void);
 //yaolan_end
 //----------------------------------------------------------------------------------------------
@@ -483,6 +482,19 @@ void Part_Test_WBC_Elec(UINT8 nNo, UINT32 nNum);
 void Part_Test_AirFaucet(UINT8 nNo, UINT32 nNum);
 
 void Send_Packets_Test(UINT16 Time, UINT32 Num); // at time send num packet test
+void start_run(void);
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif
 

@@ -134,85 +134,85 @@ UINT32 SPG_UnionFourBytes(UINT8 chByteHH, UINT8 chByteHL, UINT8 chByteLH, UINT8 
 // function definition: transmit-receive
 
 //
-UINT8  SPG_TriggerSend(void)
-{
-    IO_ UINT8  XRAM_ ch = 'E';
-	IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
+//UINT8  SPG_TriggerSend(void)
+//{
+//    IO_ UINT8  XRAM_ ch = 'E';
+//	IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
 
-    //---------------------------------
-    // 1. It must be added here to disable the interrupt of sending chars
-    SPG_DISABLE_TX_INT();
-	// 2. checking
-    if( 1 == SPG_CHECK_FLAG_TXE() )  // transmit buffer is empty
-    {
-    	chReturn = SPG_Send_GetChar((UINT8*)&ch);
-        if( e_Feedback_Success == chReturn )
-        {
-            SPG_SET_SBUF(ch);
-    	}
-    	else
-    	{
-            // do nothing
-    	}
-    }
-	// 3. enable the interrupt of sending chars
-	SPG_ENABLE_TX_INT();
+//    //---------------------------------
+//    // 1. It must be added here to disable the interrupt of sending chars
+//    SPG_DISABLE_TX_INT();
+//	// 2. checking
+//    if( 1 == SPG_CHECK_FLAG_TXE() )  // transmit buffer is empty
+//    {
+//    	chReturn = SPG_Send_GetChar((UINT8*)&ch);
+//        if( e_Feedback_Success == chReturn )
+//        {
+//            SPG_SET_SBUF(ch);
+//    	}
+//    	else
+//    	{
+//            // do nothing
+//    	}
+//    }
+//	// 3. enable the interrupt of sending chars
+//	SPG_ENABLE_TX_INT();
 
-	return chReturn;
-}
+//	return chReturn;
+//}
+
+////
+//UINT8  SPG_SendChar(UINT8 ch)
+//{
+//    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
+//    
+//    chReturn = SPG_Send_PutChar(ch);
+//	if( e_Feedback_Success == chReturn)
+//	{
+//        chReturn = SPG_TriggerSend();
+//	}
+//	
+//	return chReturn;    
+//}
+
+////
+//UINT8  SPG_SendNChar(UINT8* pStr, UINT16 nNum)
+//{
+//    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
+//	
+//	chReturn = SPG_Send_PutNChar(pStr, nNum);
+//	if( e_Feedback_Success == chReturn)
+//	{
+//        chReturn = SPG_TriggerSend();
+//	}
+//   
+//    return chReturn;
+
+//}
 
 //
-UINT8  SPG_SendChar(UINT8 ch)
-{
-    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
-    
-    chReturn = SPG_Send_PutChar(ch);
-	if( e_Feedback_Success == chReturn)
-	{
-        chReturn = SPG_TriggerSend();
-	}
-	
-	return chReturn;    
-}
-
-//
-UINT8  SPG_SendNChar(UINT8* pStr, UINT16 nNum)
-{
-    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
-	
-	chReturn = SPG_Send_PutNChar(pStr, nNum);
-	if( e_Feedback_Success == chReturn)
-	{
-        chReturn = SPG_TriggerSend();
-	}
-   
-    return chReturn;
-
-}
-
-//
-UINT8  SPG_SendString(UINT8* pStr)
-{
-	IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
-	IO_ UINT16 XRAM_ nCount   = 0;
-   
-	while(*(pStr + nCount) != '\0')
-	{
-		chReturn = SPG_Send_PutChar(*(pStr + nCount));		
-		nCount += 1;
-		//
-		if( e_Feedback_Success != chReturn )
-		{
-			break;
-		}
-	}
-	if( e_Feedback_Success == chReturn)
-	{
-		chReturn = SPG_TriggerSend();
-	}
-   
-	return chReturn;
-}
+//UINT8  SPG_SendString(UINT8* pStr)
+//{
+//	IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
+//	IO_ UINT16 XRAM_ nCount   = 0;
+//   
+//	while(*(pStr + nCount) != '\0')
+//	{
+//		chReturn = SPG_Send_PutChar(*(pStr + nCount));		
+//		nCount += 1;
+//		//
+//		if( e_Feedback_Success != chReturn )
+//		{
+//			break;
+//		}
+//	}
+//	if( e_Feedback_Success == chReturn)
+//	{
+//		chReturn = SPG_TriggerSend();
+//	}
+//   
+//	return chReturn;
+//}
 
 
 //-----------------------------------------------------------------------------------------
@@ -541,53 +541,53 @@ void   SPG_WaitingFrame(void) // waiting a frame
 #endif
 
 
-//
-void   SPG_IsrHandling(void) 
-{ 
-	IO_ UINT8 IRAM_ chRecv = 'E';  
-	IO_ UINT8 IRAM_ chReturn = e_Feedback_Success;
-	  
-	// attention: when enable the interrupt of transmitting, the flag of transmit-finished
-	//			  must be clean, or it will trigger another interrupt of transmission.
+////
+//void   SPG_IsrHandling(void) 
+//{ 
+//	IO_ UINT8 IRAM_ chRecv = 'E';  
+//	IO_ UINT8 IRAM_ chReturn = e_Feedback_Success;
+//	  
+//	// attention: when enable the interrupt of transmitting, the flag of transmit-finished
+//	//			  must be clean, or it will trigger another interrupt of transmission.
 
-	// has received a char
-	if(1 == SPG_CHECK_FLAG_RI())
-	{
-		SPG_CLEAN_FLAG_RI(); 	  // clean the flag
-		SPG_DISABLE_RX_INT();	  // disable interrupt
-		//----------------------
-		SPG_GET_SBUF(chRecv);	  // get the char from the buffer
-		SPG_Recv_PutChar(chRecv); // put the char in the buffer-circle of receiving chars
-		 
+//	// has received a char
+//	if(1 == SPG_CHECK_FLAG_RI())
+//	{
+//		SPG_CLEAN_FLAG_RI(); 	  // clean the flag
+//		SPG_DISABLE_RX_INT();	  // disable interrupt
+//		//----------------------
+//		SPG_GET_SBUF(chRecv);	  // get the char from the buffer
+//		SPG_Recv_PutChar(chRecv); // put the char in the buffer-circle of receiving chars
+//		 
 
-		//----------------------   
-		SPG_ENABLE_RX_INT(); 	  // enable the interrupt of receiving
-		   
-	} // end of "else if(1 == RI0)"
-	   
-	if(1 == SPG_CHECK_FLAG_TI())
-	{
-		SPG_CLEAN_FLAG_TI(); 	  // clean the flag
-		SPG_DISABLE_TX_INT();	  // disable interrupt
-		//----------------------	
-		if(1 == SPG_CHECK_FLAG_TXE()) // 2015_03_05-17shi-added, load the data when the buffer is empty
-        {                             // or it will ignore some chars when sending chars too flast.
-            chReturn = SPG_Send_GetChar((UINT8*)&chRecv);
-			//
-    		if( e_Feedback_Success == chReturn )
-    		{
-    			SPG_SET_SBUF(chRecv);  // perpare to send		 
-    		}
-    	}
-		//----------------------
-		SPG_ENABLE_TX_INT(); 	  // enable interrupt
-	}
+//		//----------------------   
+//		SPG_ENABLE_RX_INT(); 	  // enable the interrupt of receiving
+//		   
+//	} // end of "else if(1 == RI0)"
+//	   
+//	if(1 == SPG_CHECK_FLAG_TI())
+//	{
+//		SPG_CLEAN_FLAG_TI(); 	  // clean the flag
+//		SPG_DISABLE_TX_INT();	  // disable interrupt
+//		//----------------------	
+//		if(1 == SPG_CHECK_FLAG_TXE()) // 2015_03_05-17shi-added, load the data when the buffer is empty
+//        {                             // or it will ignore some chars when sending chars too flast.
+//            chReturn = SPG_Send_GetChar((UINT8*)&chRecv);
+//			//
+//    		if( e_Feedback_Success == chReturn )
+//    		{
+//    			SPG_SET_SBUF(chRecv);  // perpare to send		 
+//    		}
+//    	}
+//		//----------------------
+//		SPG_ENABLE_TX_INT(); 	  // enable interrupt
+//	}
 
-	// test  --- trigger led output
-	//	  
-   
-	return;
-}
+//	// test  --- trigger led output
+//	//	  
+//   
+//	return;
+//}
 
 
 //

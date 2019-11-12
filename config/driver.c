@@ -1,7 +1,7 @@
 // Scope_Eval.c
 
-#ifndef    __DRIVER_C__
-#define    __DRIVER_C__
+/////#ifndef    __DRIVER_C__
+//#define    __DRIVER_C__
 
 #include "ChainHeader.h"
 
@@ -82,6 +82,218 @@ void Delay_US(UINT32 us)
 //        //delta = start > now ? start - now : reload + start - now;
 //    } while(delta < us_tick * us);
 //}
+
+////---------------------------OUT PIN-------------------
+GPIO_TypeDef*  CODE_ OUT_PORT[OUTPUT_NUM]= 
+{
+       
+    OUT_MCU_LED1_GPIO_PORT,
+    OUT_MCU_LED2_GPIO_PORT,
+    OUT_LAN8720_RST_GPIO_PORT,
+};
+
+UINT16 CODE_ OUT_PIN[OUTPUT_NUM]= 
+{
+    OUT_MCU_LED1_GPIO_PIN,
+    OUT_MCU_LED2_GPIO_PIN,
+    OUT_LAN8720_RST_GPIO_PIN,
+};
+UINT32 CODE_ OUT_CLK[OUTPUT_NUM]= 
+{
+    //
+    OUT_MCU_LED1_GPIO_CLK,
+    OUT_MCU_LED2_GPIO_CLK,
+    OUT_LAN8720_RST_GPIO_CLK,
+};
+void EVAL_OutputInit(Output_TypeDef eOut)
+{
+    GPIO_InitTypeDef  GPIO_InitStructure;
+ 
+    // 1. enable the GPIO Clock  
+    RCC_AHB1PeriphClockCmd(OUT_CLK[eOut], ENABLE);  // AHB1
+
+    // 2. configure the GPIO pin
+	GPIO_InitStructure.GPIO_Pin = OUT_PIN[eOut]; 
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT; 
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP; 
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; 
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; 
+    GPIO_Init(OUT_PORT[eOut], &GPIO_InitStructure);  // init gpio
+}
+
+void EVAL_OutputSet(Output_TypeDef eOut)
+{
+    OUT_PORT[eOut]->BSRRL = OUT_PIN[eOut];
+}
+
+void EVAL_OutputClr(Output_TypeDef eOut)
+{
+    OUT_PORT[eOut]->BSRRH = OUT_PIN[eOut];
+}
+
+void EVAL_OutputToggle(Output_TypeDef eOut)
+{
+    OUT_PORT[eOut]->ODR ^= OUT_PIN[eOut];
+}
+
+//-----------------------------------------------------------------------------------------
+//// GPIO input contorl 
+//void EVAL_InputInit(Input_TypeDef eIn, InModel_Typedef eModel)
+//{
+//    GPIO_InitTypeDef GPIO_InitStructure;
+//    EXTI_InitTypeDef EXTI_InitStructure;
+//    NVIC_InitTypeDef NVIC_InitStructure;
+//  
+//    // 1. enable the input pin Clock 
+//    RCC_AHB1PeriphClockCmd(IN_CLK[eIn], ENABLE);
+//  
+//    // 2. configure the pin as input floating 
+//	GPIO_InitStructure.GPIO_Pin = IN_PIN[eIn];  
+//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;   
+//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; //100M
+//    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; 
+//    GPIO_Init(IN_PORT[eIn], &GPIO_InitStructure); 
+
+//    // 3. extinal-interrupt model 
+//    if (eModel == IN_MODEL_EXTI)     
+//    {
+//        // 1). enable the SYSCFG-clock
+//        RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);       
+//        // 2). Connects EXTI Line to Button GPIO Pin 
+//        SYSCFG_EXTILineConfig(IN_ET_PORT[eIn], IN_ET_PIN[eIn]);    
+//        // 3). Configure EXTI line 
+//        EXTI_InitStructure.EXTI_Line = IN_ET_LINE[eIn];
+//        EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;   
+//        EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  // all pins are rising detected         
+//        EXTI_InitStructure.EXTI_LineCmd = ENABLE;               // enable interrupt line 		
+//        EXTI_Init(&EXTI_InitStructure);                           
+//        // 4). enable and set input EXTI Interrupt to the lowest priority 
+//        NVIC_InitStructure.NVIC_IRQChannel = IN_ET_IRQn[eIn];
+//        NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;
+//        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x03;
+//        NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;        // enable interrupt
+//        NVIC_Init(&NVIC_InitStructure);    	
+//    }
+//}
+
+//UINT8 EVAL_InputGetState(Input_TypeDef eIn)
+//{
+//    return GPIO_ReadInputDataBit(IN_PORT[eIn], IN_PIN[eIn]);
+//}
+
+
+UINT8  PF_InitTimer2(void)
+{
+    NVIC_InitTypeDef NVIC_InitStructure;
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure; 
+
+    // reset the timerX
+	TIM_DeInit(TIM2); 
+    // enable the clock
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE); 
+	// interrupt configuration
+	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn; 
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2; 
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;   
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 
+    NVIC_Init(&NVIC_InitStructure); 
+	//----------------------------------------------------------------
+	// TIMx configuration  11059200 * 15 = (256*432*100) * 15 = 165888000  
+	// attention: "== SYSCLK / 3"
+	//            ".TIM_Period" is autoreload value, and must bigger 
+	//            than 1000, or it case many interrupts too frequently
+	//            that consumes all the interrupt-resource of the MCU
+    TIM_TimeBaseStructure.TIM_Period = 6480;                      // 10ms, 100Hz = 648000 / 6480
+    TIM_TimeBaseStructure.TIM_Prescaler = 256;                    // 165888000 / 256 = 648000 Hz
+    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;       // none   
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;   // up 
+    TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure); 
+    //----------------------------------------------
+	// enable the autoreload 
+	TIM_ARRPreloadConfig(TIM2, ENABLE);
+	// Clear TIMx update pending flag
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update); 
+    // Enable TIMx Update interrupt 
+    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+	// TIMx disable counter
+    TIM_Cmd(TIM2, ENABLE);   
+
+    
+	return e_Feedback_Success;
+}
+
+
+#if 1
+#pragma import(__use_no_semihosting)             
+//标准库需要的支持函数                 
+struct __FILE 
+{ 
+	int handle; 
+}; 
+
+FILE __stdout;       
+//定义_sys_exit()以避免使用半主机模式    
+int _sys_exit(int x) 
+{ 
+	x = x; 
+} 
+//重定义fputc函数 
+int fputc(int ch, FILE *f)
+{ 	
+	while((USART1->SR&0X40)==0);//循环发送,直到发送完毕   
+	USART1->DR = (u8) ch;      
+	return ch;
+}
+#endif
+
+void Debug_Uart_Init(void)
+{
+	COM_Init();
+}
+
+
+void COM_Init(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;	
+	USART_InitTypeDef USART_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+    // 1. enable GPIO clock 
+	RCC_AHB1PeriphClockCmd(COM1_TX_GPIO_CLK | COM1_RX_GPIO_CLK | COM1_CLK, ENABLE);
+	RCC_APB2PeriphClockCmd(COM1_CLK, ENABLE);
+
+	// 3. configure AFIO  
+	GPIO_PinAFConfig(COM1_TX_GPIO_PORT, COM1_AF_TX_PIN_SOURCE, COM1_AF_UART); // tx-pin
+	GPIO_PinAFConfig(COM1_RX_GPIO_PORT, COM1_AF_RX_PIN_SOURCE, COM1_AF_UART); // rx-pin
+    // 4. IO configuration 
+    GPIO_InitStructure.GPIO_Pin = COM1_RX_PIN | COM1_TX_PIN; // tx-pin and rx-pin
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;       // AF model
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;  // 50MHz 
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;     // push output
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;       // 
+    GPIO_Init(COM1_TX_GPIO_PORT,&GPIO_InitStructure);
+	// uart init
+	USART_InitStructure.USART_BaudRate = 115200;
+    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+    USART_InitStructure.USART_Parity = USART_Parity_No;
+    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+    // 
+    USART_Init(COMM1, &USART_InitStructure);  
+    // 6. Enable USART
+    USART_Cmd(COMM1, ENABLE);
+//	// 7. enable Receive and Transmit interrupts 
+//    USART_ITConfig(COMM1, USART_IT_TC, ENABLE);      //  TX_INT = 1;
+//    USART_ITConfig(COMM1, USART_IT_RXNE, ENABLE);    //  RX_INT = 1;	
+//	// 8. configure and enable USART interrupt  
+//    NVIC_InitStructure.NVIC_IRQChannel = COM1_IRQn;       
+//    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+//    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+//    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+//    NVIC_Init(&NVIC_InitStructure);	
+
+}
 
 
 void ADC1_DMA_Config()
@@ -570,6 +782,39 @@ void ADC3_GPIO_Init(void){
 	
 #endif //ADC3_INIT_WITH_DMA
 
+	
+void Disable_ADC(EN_TypeADC eType)
+{
+	if(eType == EN_ADC1){
+		//ADC_Cmd(ADC1, DISABLE);
+		ADC_DMACmd(ADC1, DISABLE);
+		DMA_Cmd(DMA2_Stream0, DISABLE);
+		
+	}else if(eType == EN_ADC2){
+		ADC_Cmd(ADC2, DISABLE);
+		ADC_DMACmd(ADC2, DISABLE);
+		DMA_Cmd(DMA2_Stream3, DISABLE);
+		
+	}else if(eType == EN_ADC3){
+		//
+	}
+}
+
+void Eable_ADC(EN_TypeADC eType)
+{
+	if(eType == EN_ADC1){
+		Reset_ADC_InitDataType();
+		ADC1_Init(); //APP_ADC_Init(EN_ADC1);
+		ADC_SoftwareStartConv(ADC1);
+	}else if(eType == EN_ADC2){
+		Reset_ADC_InitDataType();
+		//DMA_Cmd(DMA2_Stream3, DISABLE);
+		ADC2_Init(); //APP_ADC_Init(EN_ADC2);
+		ADC_SoftwareStartConv(ADC2);
+	}else if(eType == EN_ADC3){
+		
+	}
+}
 
 UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
 {
@@ -2408,6 +2653,146 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal)
 }
 
 
+
+
+void EVAL_Init(void)
+{
+    USART_InitTypeDef USART_InitStructure;	
+	RCC_ClocksTypeDef  tClockTree;
+	
+	//-------------------------------------------
+    // 1. update the system's clock
+ // HSI_Sysclock_Init(); //SystemCoreClockUpdate(); //todo use-HSE
+	RCC_GetClocksFreq(&tClockTree);
+	Debug_Uart_Init();
+#if 0
+    // printf("\r\n--- SystemCoreClock = %d ---\r\n", SystemCoreClock);
+    printf("\r\n SYS-clk = %d", tClockTree.SYSCLK_Frequency);
+    printf("\r\n AHB-clk = %d", tClockTree.HCLK_Frequency);
+    printf("\r\n APB1-clk = %d", tClockTree.PCLK1_Frequency);
+    printf("\r\n APB2-clk = %d", tClockTree.PCLK2_Frequency);
+   // printf("\r\n ");
+#endif
+	
+    //-------------------------------------------
+    // 2. Initialize and start the SysTick counter and its interrupt. 
+    //    take attention: when want to use IRQ_DelayMs(), this must be called first !!!
+	if(SysTick_Config(SystemCoreClock / 1000))   // Setup SysTick Timer for 1 millisecond interrupts. 
+    { 
+        // Capture error / 
+	    printf("\r\nSysTick_Config error\r\n");
+        while (1);
+    }
+    // attentio: set to the higher priority
+	NVIC_SetPriority(SysTick_IRQn, 0);
+    // IT_SYS_DlyMs(100);
+    
+    //-------------------------------------------
+	// 3. priority setting
+	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+	
+    //-------------------------------------------   
+	// Disable the JTAG interface and enable the SWJ interface. // GPIO_Remap_SWJ_JTAGDisable	
+	// Enable the AFIO Clock  
+	// RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+	// mapping
+    // GPIO_PinRemapConfig(GPIO_Remap_SWJ_JTAGDisable, ENABLE);     // AFIO->MAPR |= 0x02000000; // GPIO_Remap_SWJ_JTAGDisable
+
+    /*******************************************/
+    // 4. initialize  com 
+//	USART_InitStructure.USART_BaudRate = 115200;
+//    USART_InitStructure.USART_WordLength = USART_WordLength_8b;
+//    USART_InitStructure.USART_StopBits = USART_StopBits_1;
+//    USART_InitStructure.USART_Parity = USART_Parity_No;
+//    USART_InitStructure.USART_HardwareFlowControl = USART_HardwareFlowControl_None;
+//    USART_InitStructure.USART_Mode = USART_Mode_Rx | USART_Mode_Tx;
+//    // 
+//    EVAL_ComInit(E_COM_MAIN, &USART_InitStructure);  
+
+
+	//-------------------------------------------
+	// 5. Initialize  IO output  
+	// led and the reset pin of the FPGA 
+    // EVAL_OutputInit(O_STATUS_LED_1);
+	//EVAL_OutputInit(O_STATUS_LED_2);
+	EVAL_OutputInit(O_MCU_LED_1);
+	EVAL_OutputInit(O_MCU_LED_2);
+	EVAL_OutputInit(O_LAN8720_RST);
+	//EVAL_OutputInit(O_HEAT_1);//yaolan_20190715
+	//EVAL_OutputInit(O_HEAT_2);//yaolan_20190715
+
+
+	//-------------------------------------------
+    // 6. FPGA init
+    //IT_SYS_DlyMs(500); // attention: waiting the FPGA to be ready
+#if !USE_STM32F407_ONLY
+	FPGA_Init();
+	FPGA_ResetHardware();
+ #endif
+
+	//-------------------------------------------
+	// 7. initialize  IO input --- normal and exti interrupt 
+	// input
+	//EVAL_InputInit(I_HOME_X, IN_MODEL_GPIO);      // //yaolan_20190715
+	//EVAL_InputInit(I_HOME_Y, IN_MODEL_GPIO);      // //yaolan_20190715
+	//EVAL_InputInit(I_HOME_Z, IN_MODEL_GPIO);      // //yaolan_20190715
+	//EVAL_InputInit(I_HOME_M, IN_MODEL_GPIO);      // //yaolan_20190715
+#if !USE_STM32F407_ONLY
+	EVAL_InputInit(I_FEEDBACK_1, IN_MODEL_EXTI);  //EXTI15-10 PB13// EXTI9_5_IRQn  EXTI_Line7
+#endif
+	//-------------------------------------------
+	// 8. Initialize the spi-flash 
+    // SPI_FLASH_Init();
+    //-------------------------------------------
+	// 9. the timer of the system messages
+	PF_InitTimer2();
+#if USE_STM32F407_ONLY
+
+	ADC1_Init();//APP_ADC_Init(EN_ADC1);
+//	// ...?
+//	ADC_SoftwareStartConv(ADC1);
+//	IT_SYS_DlyMs(10);
+//	Disable_ADC(EN_ADC1);
+//	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));	
+
+	ADC2_Init();//APP_ADC_Init(EN_ADC2);
+		
+	ADC3_Init();//APP_ADC_Init(EN_ADC3);
+	
+	Elec_Init();
+	Beep_Init();
+	Pump_init();
+	Valve_Init();
+	OC_Init();
+	Press_Init();
+	Turn_Motor_Init();
+	Mixing_Motor_Init();
+	LED_Init();
+	LED_Cur_DAC_Init();
+	ADC24Bit_Init();
+	
+#endif
+	Beep(1, 400);
+	//ADC24Bit_Init();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 void Driver_Debug(UINT8 nIndex)
 {
 //	UINT32 nCurTime, nTempTime;
@@ -2444,9 +2829,9 @@ void Driver_Debug(UINT8 nIndex)
 			
 			printf("end\r\n");
 			
-//			printf("Beep start\r\n");
-//			Beep(200);
-//			printf("Beep end\r\n");
+			printf("Beep start\r\n");
+			Beep(1,200);
+			printf("Beep end\r\n");
 		}
 		break;
 		case 1: // pump
@@ -2935,5 +3320,5 @@ void Driver_Debug(UINT8 nIndex)
 
 
 
-#endif
+//#endif
 

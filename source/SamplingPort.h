@@ -60,7 +60,7 @@ struct tSampleBufferStatus
 // global variables declaration
 
 // buffer
-_EXT_ IO_ UINT8 XRAM_ g_SPG_achCmdRvBuf[SAMPLE_RECV_BUF_LENGTH];    //  received buffer
+//_EXT_ IO_ UINT8 XRAM_ g_SPG_achCmdRvBuf[SAMPLE_RECV_BUF_LENGTH];    //  received buffer
 // _EXT_ IO_ UINT8 XRAM_ g_SPG_achFbkSdBuf[SAMPLE_SEND_BUF_LENGTH];    //  transmitted buffer
 
 
@@ -69,7 +69,7 @@ _EXT_ IO_ UINT8 XRAM_ g_SPG_achCmdRvBuf[SAMPLE_RECV_BUF_LENGTH];    //  received
 
 _EXT_ UINT8  SPG_InitProtocol(void);
 
-_EXT_ UINT8  SPG_ResetRecvComand(void);                         // reset the buffer
+//_EXT_ UINT8  SPG_ResetRecvComand(void);                         // reset the buffer
 
 _EXT_ UINT8  SPG_GetDataLength(UINT16* nLen);
 

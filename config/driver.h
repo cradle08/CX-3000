@@ -20,6 +20,126 @@ extern IO_ UINT8 g_Elec_Status;
 
 void Delay_US(UINT32 us);
 
+
+//---------------GPIO OUT------------
+typedef enum              // take attention of sequence
+{
+    O_MCU_LED_1     = 0,
+    O_MCU_LED_2     = 1,
+    O_LAN8720_RST   = 2,
+	OUTPUT_NUM      = 3,
+	
+} Output_TypeDef;
+
+// net rst
+#define OUT_LAN8720_RST_GPIO_PIN        GPIO_Pin_3
+#define OUT_LAN8720_RST_GPIO_PORT       GPIOD
+#define OUT_LAN8720_RST_GPIO_CLK        RCC_AHB1Periph_GPIOD
+
+// PE4  mcu_led_1 
+#define OUT_MCU_LED1_GPIO_PIN           GPIO_Pin_4 
+#define OUT_MCU_LED1_GPIO_PORT          GPIOE 
+#define OUT_MCU_LED1_GPIO_CLK           RCC_AHB1Periph_GPIOE 
+// PE5 mcu_led_2   
+#define OUT_MCU_LED2_GPIO_PIN           GPIO_Pin_5 
+#define OUT_MCU_LED2_GPIO_PORT          GPIOE 
+#define OUT_MCU_LED2_GPIO_CLK           RCC_AHB1Periph_GPIOE 
+
+// Output def --- led and speaker
+
+void EVAL_OutputInit(Output_TypeDef eOut);
+void EVAL_OutputSet(Output_TypeDef eOut);
+void EVAL_OutputClr(Output_TypeDef eOut);
+void EVAL_OutputToggle(Output_TypeDef eOut);
+
+
+
+
+////---------------GPIO IN------------
+
+//typedef enum 
+//{
+//    // for homing, common input
+//    I_HOME_X       = 0,
+//    I_HOME_Y       = 1,
+//    I_HOME_Z       = 2,
+//    I_HOME_M       = 3,
+//    I_HOME_5       = 4,
+//    I_HOME_6       = 5,
+//    // the motor status, to be used as a extinal-interrupt
+//    I_FEEDBACK_1   = 6, 
+//	INPUT_NUM      = 7
+
+//} Input_TypeDef;  
+
+
+//// Input def  --- commom input and exti interrupt
+//GPIO_TypeDef* CODE_ IN_PORT[INPUT_NUM]= 
+//{
+
+//};
+//UINT16 CODE_ IN_PIN[INPUT_NUM]=
+//{
+
+//};	
+//UINT32 CODE_ IN_CLK[INPUT_NUM]=
+//{
+
+//};
+//UINT16 CODE_ IN_ET_LINE[INPUT_NUM]=
+//{
+
+//};
+//UINT16 CODE_ IN_ET_PORT[INPUT_NUM]=
+//{
+
+//};
+//UINT16 CODE_ IN_ET_PIN[INPUT_NUM]=
+//{
+//    //
+
+//};
+//UINT16 CODE_ IN_ET_IRQn[INPUT_NUM]=
+//{
+//    //
+
+//};
+
+
+//typedef enum
+//{
+//    IN_MODEL_GPIO = 0,
+//	IN_MODEL_EXTI = 1,	
+
+//} InModel_Typedef;
+//void EVAL_InputInit(Input_TypeDef eIn, InModel_Typedef eModel);
+//UINT8 EVAL_InputGetState(Input_TypeDef eIn);
+
+
+
+
+// Timer 2
+UINT8  PF_InitTimer2(void);
+
+
+// uart3 debug PA9, PA10  
+#define COMM1                       USART1
+#define COM1_CLK                    RCC_APB2Periph_USART1
+#define COM1_IRQn                   USART1_IRQn
+#define COM1_TX_PIN                 GPIO_Pin_9
+#define COM1_TX_GPIO_PORT           GPIOA
+#define COM1_TX_GPIO_CLK            RCC_AHB1Periph_GPIOA     
+#define COM1_RX_PIN                 GPIO_Pin_10
+#define COM1_RX_GPIO_PORT           GPIOA
+#define COM1_RX_GPIO_CLK            RCC_AHB1Periph_GPIOA
+#define COM1_AF_TX_PIN_SOURCE       GPIO_PinSource9
+#define COM1_AF_RX_PIN_SOURCE       GPIO_PinSource10
+#define COM1_AF_UART                GPIO_AF_USART1
+
+void Debug_Uart_Init(void);
+void COM_Init(void);
+
+
 // elec switch PA11 (9-5 for micro switch)
 #define ELEC_PORT							GPIOA
 #define ELEC_PIN							GPIO_Pin_11
@@ -496,6 +616,12 @@ enum{
 	EN_ADC_END		= 10,
 };
 
+typedef enum{
+	EN_ADC1 = 0,
+	EN_ADC2 = 1,
+	EN_ADC3 = 3
+} EN_TypeADC;
+
 static IO_ UINT8 g_ADC3_IN[EN_ADC_END] = \
 	{PRESS_ADC_CHANNEL,   XK_ADC_CHANNEL,	   CUR12N_ADC_CHANNEL, \
 	 CUR12P_ADC_CHANNEL,  CUR_56V_ADC_CHANNEL, ELEC_ADC_CHANNEL, \
@@ -504,6 +630,8 @@ static IO_ UINT8 g_ADC3_IN[EN_ADC_END] = \
 
 extern IO_ UINT16 g_ADC3_Value[EN_ADC_END];
 
+void Eable_ADC(EN_TypeADC eType);
+void Disable_ADC(EN_TypeADC eType);
 void ADC1_Init(void);
 void ADC2_Init(void);
 void ADC3_Init(void);
@@ -527,9 +655,11 @@ UINT32  Get_CRP_Value(void);
 
 //
 
-
-//
+void EVAL_Init(void);
 void Driver_Debug(UINT8 nIndex);
+
+
+
 
 
 //void Fix_Motor_Init(void);

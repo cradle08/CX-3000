@@ -6,7 +6,7 @@
 
 // toolchain 
 #include "ChainHeader.h"        
-#include "KernelHeader.h"
+//#include "KernelHeader.h"
 // kernel code
 #include "Protocol.h"
 #include "SamplingPort.h"
@@ -15,7 +15,6 @@
 #include "SystemScope.h"
 //
 #include "StorageManagement.h"
-
 
 #define USE_STM32F407_ONLY		1	// if = 0, use FPGA
 #define SIMUATION_TEST          0

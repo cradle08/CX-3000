@@ -60,7 +60,7 @@ void IRQ_SysTimer(void)
     	if( 0 == (s_count % 5))   // 20ms
         {
 			// sampling port timeout
-    	    SPG_IsrTime();
+    	    //SPG_IsrTime();
 			// timer get CRP data per 100ms
 			//if(g_CRP_Data.eEnable == e_True)
 			if(g_CRP_Data.eEnable == 1)
@@ -127,7 +127,7 @@ void IRQ_SysTimer(void)
 		// 2) dealing with the feedback-messages, the slave module 
 #if (1 == 1)		
 		//PL_SLaveFeedBack();     
-		SPG_WaitingFrame();
+//		SPG_WaitingFrame();
 #else
         // attention: allow all the chars return back to the main-caller immedately, it
         //            will disturb the caller to determine others' perfect frame.
@@ -184,30 +184,30 @@ void IRQ_MotorStatus(void)
 //
 
 
-// COMx interrupt, command translation
-void IRQ_ComCommand(void)
-{
-    //----------------------------------------------
-    // to main board
-    PL_COM_IsrHandling();
-    //----------------------------------------------
-    EVAL_OutputToggle(O_MCU_LED_1);
-    
-	return;
-}
+//// COMx interrupt, command translation
+//void IRQ_ComCommand(void)
+//{
+//    //----------------------------------------------
+//    // to main board
+//    PL_COM_IsrHandling();
+//    //----------------------------------------------
+//    EVAL_OutputToggle(O_MCU_LED_1);
+//    
+//	return;
+//}
 
 
-// COMx interrupt, sampling port
-void IRQ_ComSampling(void)
-{
-    //----------------------------------------------
-    // to auto-sampling board
-    SPG_IsrHandling();
-    //----------------------------------------------
-    EVAL_OutputToggle(O_MCU_LED_2);
-	
-	return;
-}
+//// COMx interrupt, sampling port
+//void IRQ_ComSampling(void)
+//{
+//    //----------------------------------------------
+//    // to auto-sampling board
+//    SPG_IsrHandling();
+//    //----------------------------------------------
+//    EVAL_OutputToggle(O_MCU_LED_2);
+//	
+//	return;
+//}
 
 
 

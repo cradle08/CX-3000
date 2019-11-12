@@ -118,188 +118,188 @@ UINT32 PL_UnionFourBytes(UINT8 chByteHH, UINT8 chByteHL, UINT8 chByteLH, UINT8 c
 //-----------------------------------------------------------------------------------------
 // function definition: for the uart port
 
-//
-UINT8  PL_COM_TriggerSend(void)
-{
-    IO_ UINT8  XRAM_ ch = 'E';
-    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
+////
+//UINT8  PL_COM_TriggerSend(void)
+//{
+//    IO_ UINT8  XRAM_ ch = 'E';
+//    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
 
-    //---------------------------------
-    // 1. It must be added here to disable the interrupt of sending chars
-    PL_DISABLE_TX_INT();
-    // 2. checking
-    if (1 == PL_CHECK_FLAG_TXE())   // transmit buffer is empty
-    {
-        chReturn = BUF_Send_GetChar((UINT8 *)&ch);
-        if (e_Feedback_Success == chReturn)
-        {
-            PL_SET_SBUF(ch);
-        }
-        else
-        {
-            // do nothing
-        }
-    }
-    // 3. enable the interrupt of sending chars
-    PL_ENABLE_TX_INT();
-    //
-    return chReturn;
-}
-
-//
-UINT8  PL_COM_SendChar(UINT8 ch)
-{
-#if 0
-    // --- test ---
-    // EVAL_OutputToggle(O_LED);
-
-    PL_DISABLE_TX_INT();
-    PL_CLEAN_FLAG_TI();
-    //
-    PL_SET_SBUF(ch);
-    //
-    while (0 == PL_CHECK_FLAG_TI());   // wait until bit "TI0" to be "1"
-    PL_CLEAN_FLAG_TI();
-    //
-    PL_ENABLE_TX_INT();
-    //
-    return e_Feedback_Success;
-#else
-    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
-
-    chReturn = BUF_Send_PutChar(ch);
-    if (e_Feedback_Success == chReturn)
-    {
-        chReturn = PL_COM_TriggerSend();
-    }
-    //
-    return chReturn;
-#endif
-}
+//    //---------------------------------
+//    // 1. It must be added here to disable the interrupt of sending chars
+//    PL_DISABLE_TX_INT();
+//    // 2. checking
+//    if (1 == PL_CHECK_FLAG_TXE())   // transmit buffer is empty
+//    {
+//        chReturn = BUF_Send_GetChar((UINT8 *)&ch);
+//        if (e_Feedback_Success == chReturn)
+//        {
+//            PL_SET_SBUF(ch);
+//        }
+//        else
+//        {
+//            // do nothing
+//        }
+//    }
+//    // 3. enable the interrupt of sending chars
+//    PL_ENABLE_TX_INT();
+//    //
+//    return chReturn;
+//}
 
 //
-UINT8  PL_COM_SendNChar(UINT8 * pStr, UINT16 nNum)
-{
-    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
+//UINT8  PL_COM_SendChar(UINT8 ch)
+//{
+//#if 0
+//    // --- test ---
+//    // EVAL_OutputToggle(O_LED);
 
-    chReturn = BUF_Send_PutNChar(pStr, nNum);
-    if (e_Feedback_Success == chReturn)
-    {
-        chReturn = PL_COM_TriggerSend();
-    }
-    //
-    return chReturn;
-}
+//    PL_DISABLE_TX_INT();
+//    PL_CLEAN_FLAG_TI();
+//    //
+//    PL_SET_SBUF(ch);
+//    //
+//    while (0 == PL_CHECK_FLAG_TI());   // wait until bit "TI0" to be "1"
+//    PL_CLEAN_FLAG_TI();
+//    //
+//    PL_ENABLE_TX_INT();
+//    //
+//    return e_Feedback_Success;
+//#else
+//    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
 
-//
-UINT8  PL_COM_SendString(UINT8 * pStr)
-{
-    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
-    IO_ UINT16 XRAM_ nCount   = 0;
-
-    while (*(pStr + nCount) != '\0')
-    {
-        chReturn = BUF_Send_PutChar(*(pStr + nCount));
-        nCount += 1;
-        //
-        if (e_Feedback_Success != chReturn)
-        {
-            break;
-        }
-    }
-    if (e_Feedback_Success == chReturn)
-    {
-        chReturn = PL_COM_TriggerSend();
-    }
-    //
-    return chReturn;
-}
+//    chReturn = BUF_Send_PutChar(ch);
+//    if (e_Feedback_Success == chReturn)
+//    {
+//        chReturn = PL_COM_TriggerSend();
+//    }
+//    //
+//    return chReturn;
+//#endif
+//}
 
 //
-UINT8  PL_COM_SendValue(UINT32 nValue)
-{
-    UINT8 chI;
-    UINT8 chJ;
-    UINT8 chByte;
-    UINT8 achStr[16];
-    UINT32 nData;
+//UINT8  PL_COM_SendNChar(UINT8 * pStr, UINT16 nNum)
+//{
+//    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
 
-    //
-    nData = nValue;
-    chI = 0;
-    while (nData > 0)
-    {
-        achStr[chI] = (nData % 10) + '0';
-        nData       = nData / 10;
-        chI++;
-    }
-    //
-    achStr[chI] = '\0';                   // len + 1
-    // swap the string
-    for (chJ = 0; chJ < (chI / 2); chJ++) // times: len/2
-    {
-        chByte                = achStr[chJ];
-        achStr[chJ]           = achStr[chI - 1 - chJ];
-        achStr[chI - 1 - chJ] = chByte;
-    }
-    //
-    PL_COM_SendString(achStr);
-    //
-    return e_Feedback_Success;
-}
+//    chReturn = BUF_Send_PutNChar(pStr, nNum);
+//    if (e_Feedback_Success == chReturn)
+//    {
+//        chReturn = PL_COM_TriggerSend();
+//    }
+//    //
+//    return chReturn;
+//}
 
+////
+//UINT8  PL_COM_SendString(UINT8 * pStr)
+//{
+//    IO_ UINT8  XRAM_ chReturn = e_Feedback_Success;
+//    IO_ UINT16 XRAM_ nCount   = 0;
+
+//    while (*(pStr + nCount) != '\0')
+//    {
+//        chReturn = BUF_Send_PutChar(*(pStr + nCount));
+//        nCount += 1;
+//        //
+//        if (e_Feedback_Success != chReturn)
+//        {
+//            break;
+//        }
+//    }
+//    if (e_Feedback_Success == chReturn)
+//    {
+//        chReturn = PL_COM_TriggerSend();
+//    }
+//    //
+//    return chReturn;
+//}
 
 //
-void   PL_COM_IsrHandling(void)
-{
-    IO_ UINT8 IRAM_ chRecv = 'E';
-    IO_ UINT8 IRAM_ chReturn = e_Feedback_Success;
+//UINT8  PL_COM_SendValue(UINT32 nValue)
+//{
+//    UINT8 chI;
+//    UINT8 chJ;
+//    UINT8 chByte;
+//    UINT8 achStr[16];
+//    UINT32 nData;
 
-    // attention: when enable the interrupt of transmitting, the flag of transmit-finished
-    //			  must be clean, or it will trigger another interrupt of transmission.
+//    //
+//    nData = nValue;
+//    chI = 0;
+//    while (nData > 0)
+//    {
+//        achStr[chI] = (nData % 10) + '0';
+//        nData       = nData / 10;
+//        chI++;
+//    }
+//    //
+//    achStr[chI] = '\0';                   // len + 1
+//    // swap the string
+//    for (chJ = 0; chJ < (chI / 2); chJ++) // times: len/2
+//    {
+//        chByte                = achStr[chJ];
+//        achStr[chJ]           = achStr[chI - 1 - chJ];
+//        achStr[chI - 1 - chJ] = chByte;
+//    }
+//    //
+//    PL_COM_SendString(achStr);
+//    //
+//    return e_Feedback_Success;
+//}
 
-    // has received a char
-    if (1 == PL_CHECK_FLAG_RI())
-    {
-        PL_CLEAN_FLAG_RI(); 	  // clean the flag
-        PL_DISABLE_RX_INT();	  // disable interrupt
-        //----------------------
-        PL_GET_SBUF(chRecv);	  // get the char from the buffer
-        chReturn = BUF_Recv_PutChar(chRecv); // put the char in the buffer-circle of receiving chars
-        if (e_Feedback_Success != chReturn)
-        {
-            // 2014_11_29-added
-            // SYS_ErrorMark((UINT8)ERR_COMMAND_RECEIVE_OVERFLOW, 0);
-        }
-        //----------------------
-        PL_ENABLE_RX_INT(); 	  // enable the interrupt of receiving
 
-    } // end of "else if(1 == RI0)"
+////
+//void   PL_COM_IsrHandling(void)
+//{
+//    IO_ UINT8 IRAM_ chRecv = 'E';
+//    IO_ UINT8 IRAM_ chReturn = e_Feedback_Success;
 
-    if (1 == PL_CHECK_FLAG_TI())
-    {
-        PL_CLEAN_FLAG_TI(); 	  // clean the flag
-        PL_DISABLE_TX_INT();	  // disable interrupt
-        //----------------------
-        if (1 == PL_CHECK_FLAG_TXE()) // 2015_03_05-17shi-added, load the data when the buffer is empty
-        {
-            // or it will ignore some chars when sending chars too flast.
-            chReturn = BUF_Send_GetChar((UINT8 *)&chRecv);
-            //
-            if (e_Feedback_Success == chReturn)
-            {
-                PL_SET_SBUF(chRecv);  // perpare to send
-            }
-        }
-        //----------------------
-        PL_ENABLE_TX_INT(); 	  // enable interrupt
-    }
+//    // attention: when enable the interrupt of transmitting, the flag of transmit-finished
+//    //			  must be clean, or it will trigger another interrupt of transmission.
 
-    // test  --- trigger led output
-    //
+//    // has received a char
+//    if (1 == PL_CHECK_FLAG_RI())
+//    {
+//        PL_CLEAN_FLAG_RI(); 	  // clean the flag
+//        PL_DISABLE_RX_INT();	  // disable interrupt
+//        //----------------------
+//        PL_GET_SBUF(chRecv);	  // get the char from the buffer
+//        chReturn = BUF_Recv_PutChar(chRecv); // put the char in the buffer-circle of receiving chars
+//        if (e_Feedback_Success != chReturn)
+//        {
+//            // 2014_11_29-added
+//            // SYS_ErrorMark((UINT8)ERR_COMMAND_RECEIVE_OVERFLOW, 0);
+//        }
+//        //----------------------
+//        PL_ENABLE_RX_INT(); 	  // enable the interrupt of receiving
 
-    return;
-}
+//    } // end of "else if(1 == RI0)"
+
+//    if (1 == PL_CHECK_FLAG_TI())
+//    {
+//        PL_CLEAN_FLAG_TI(); 	  // clean the flag
+//        PL_DISABLE_TX_INT();	  // disable interrupt
+//        //----------------------
+//        if (1 == PL_CHECK_FLAG_TXE()) // 2015_03_05-17shi-added, load the data when the buffer is empty
+//        {
+//            // or it will ignore some chars when sending chars too flast.
+//            chReturn = BUF_Send_GetChar((UINT8 *)&chRecv);
+//            //
+//            if (e_Feedback_Success == chReturn)
+//            {
+//                PL_SET_SBUF(chRecv);  // perpare to send
+//            }
+//        }
+//        //----------------------
+//        PL_ENABLE_TX_INT(); 	  // enable interrupt
+//    }
+
+//    // test  --- trigger led output
+//    //
+
+//    return;
+//}
 
 //-----------------------------------------------------------------------------------------
 // function definition: for the net port
@@ -396,7 +396,8 @@ UINT8  PL_NET_SendResult(UINT8 chType, UINT32 nCommand, UINT8 * pchData, UINT16 
     chReturn = udp_echoserver_senddata((UINT8 *)&g_NET_achCmdRvBuf[0], (nDataLen + 8));
     if (e_Feedback_Success != chReturn)
     {
-        PL_COM_SendString("*** Frame back error ! ***\r\n");
+		//yaolan_20191112
+        //PL_COM_SendString("*** Frame back error ! ***\r\n");
     }
     else
     {

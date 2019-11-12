@@ -190,9 +190,9 @@ void   udp_echoserver_receive_callback(void *arg, struct udp_pcb *upcb, struct p
 			    NET_BUF_Recv_PutNChar(q->payload, q->len);
 				//
 				//-------------------------
-				// for testing
-				PL_COM_SendNChar(q->payload, q->len);
-				PL_COM_SendString("\r\n");
+				// for testing  yaolan_20191112
+				//PL_COM_SendNChar(q->payload, q->len);
+				//PL_COM_SendString("\r\n");
 			}
 		}
 		//-----------------------------------------------------------
