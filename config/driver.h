@@ -373,6 +373,8 @@ void Micro_OC_Init(void);
 #define IN_OC_CLK_PIN					GPIO_Pin_7
 #define IN_OC_CLK_SRC					RCC_AHB1Periph_GPIOB
 //
+_EXT_ IO_ UINT8 g_Micro_Switch;
+
 void OC_Init(void);
 UINT8 Get_Micro_OC_Status(void);
 UINT8 Get_Turn_Select_OC_Status(void); 
@@ -598,6 +600,29 @@ typedef enum{
 }eModeType;
 
 
+
+
+
+typedef struct{
+	UINT8 nSFlag;
+	UINT16 nPos;
+	UINT32 nID;
+	UINT32 nSendID;
+}ADC_Status_InitTypeDef;
+
+// ADC1
+#define ADC1_BUFFER_LEN		512
+#define ADC1_BUFFER_LEN_HALF	 (ADC1_BUFFER_LEN/2)
+extern IO_ ADC_Status_InitTypeDef ADC1_Status;
+extern  UINT16 g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF];
+
+// ADC2
+#define ADC2_BUFFER_LEN		512
+#define ADC2_BUFFER_LEN_HALF	 (ADC2_BUFFER_LEN/2)
+extern IO_ ADC_Status_InitTypeDef ADC2_Status;
+extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
+
+
 #define ADC_SMOOTH_NUM_5	5
 #define ADC_SMOOTH_NUM_10	10
 #define ADC_SMOOTH_NUM_20	20
@@ -630,6 +655,8 @@ static IO_ UINT8 g_ADC3_IN[EN_ADC_END] = \
 
 extern IO_ UINT16 g_ADC3_Value[EN_ADC_END];
 
+	 
+void Reset_ADC_InitDataType(void);
 void Eable_ADC(EN_TypeADC eType);
 void Disable_ADC(EN_TypeADC eType);
 void ADC1_Init(void);

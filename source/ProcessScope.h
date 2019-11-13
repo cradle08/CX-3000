@@ -8,24 +8,7 @@
 
 extern const UINT8 softver_edtion[];
 
-typedef struct{
-	UINT8 nSFlag;
-	UINT16 nPos;
-	UINT32 nID;
-	UINT32 nSendID;
-}ADC_Status_InitTypeDef;
 
-// ADC1
-#define ADC1_BUFFER_LEN		512
-#define ADC1_BUFFER_LEN_HALF	 (ADC1_BUFFER_LEN/2)
-extern IO_ ADC_Status_InitTypeDef ADC1_Status;
-extern  UINT16 g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF];
-
-// ADC2
-#define ADC2_BUFFER_LEN		512
-#define ADC2_BUFFER_LEN_HALF	 (ADC2_BUFFER_LEN/2)
-extern IO_ ADC_Status_InitTypeDef ADC2_Status;
-extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 
 // ADC3
 
@@ -400,7 +383,7 @@ void Append_Debug_Info(INT8 *pInfo, INT8 *pTemp, UINT16 *pInfoLen);
 
 // yaolan_start
 _EXT_ IO_ UINT8 g_Test_Mode;
-_EXT_ IO_ UINT8 g_Micro_Switch;
+
 
 //enum {
 //	TEST_MODE_HGB	= 0,

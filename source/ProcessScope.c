@@ -6,13 +6,7 @@
 #include "KernelHeader.h"
 #include "stdlib.h"
 
-// ADC1
-IO_ ADC_Status_InitTypeDef ADC1_Status = {0};
-UINT16 g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF] = {0};
 
-// ADC2
-IO_ ADC_Status_InitTypeDef ADC2_Status = {0};
-UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF] = {0};
 
 /* const UINT8 softver_edtion[] = "CX2100_SLA_V004_20180521_1000"; */  /* 统一版本号命名 */
 
@@ -24,7 +18,7 @@ IO_ struct CRP_DataType g_CRP_Data;
 
 //
 IO_ UINT8 g_Test_Mode = 0xFF;
-IO_ UINT8 g_Micro_Switch = 0xFF;
+
 
 #ifdef DEBUG_INFO_UP_LOAD
 //	_STA_ IO_ UINT16 XRAM_ pDInfo[DEBUG_INFO_UP_LEN];
@@ -3327,13 +3321,6 @@ UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal)
 //		HW_Valve_On(nFlag);
 //	}
 //}
-
-void Reset_ADC_InitDataType(void)
-{
-	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
-	memset((void*)&ADC2_Status, 0, sizeof(ADC_Status_InitTypeDef));		
-}
-
 
 
 // yaolan_

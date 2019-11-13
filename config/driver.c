@@ -6,12 +6,24 @@
 #include "ChainHeader.h"
 
 
+// ADC1
+IO_ ADC_Status_InitTypeDef ADC1_Status = {0};
+UINT16 g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF] = {0};
+
+// ADC2
+IO_ ADC_Status_InitTypeDef ADC2_Status = {0};
+UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF] = {0};
+
+
 IO_ UINT8 g_Elec_Status = 0;
 //IO_ UINT16 g_ADC2_Value[ADC2_CHECK_NUM] = {0};
 IO_ UINT16 g_ADC3_Value[EN_ADC_END] = {0};
 
 const unsigned int g_Turn_Motor_Table[4]={0xC000,0x6000,0x3000,0x9000};
 IO_ UINT8 g_Turn_Position = EN_POSITION_LED_RESET;
+
+IO_ UINT8 g_Micro_Switch = 0xFF;
+
 
 //IO_ static UINT32  fac_us=0;							//us—” ±±∂≥À ˝			   
 //IO_ static UINT32  fac_ms=0;	
@@ -799,6 +811,14 @@ void Disable_ADC(EN_TypeADC eType)
 		//
 	}
 }
+
+
+void Reset_ADC_InitDataType(void)
+{
+	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));
+	memset((void*)&ADC2_Status, 0, sizeof(ADC_Status_InitTypeDef));		
+}
+
 
 void Eable_ADC(EN_TypeADC eType)
 {

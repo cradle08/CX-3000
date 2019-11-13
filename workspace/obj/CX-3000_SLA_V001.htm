@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\obj\CX-3000_SLA_V001.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\obj\CX-3000_SLA_V001.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Tue Nov 12 17:42:47 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Wed Nov 13 15:38:40 2019
 <BR><P>
 <H3>Maximum Stack Usage =        868 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -988,13 +988,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_Handling
 </UL>
 
-<P><STRONG><a name="[cd]"></a>Reset_ADC_InitDataType</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, processscope.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Eable_ADC
-<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_Handling
-<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_TestingFunc
-</UL>
-
-<P><STRONG><a name="[c6]"></a>Append_Debug_Info</STRONG> (Thumb, 474 bytes, Stack size 24 bytes, processscope.o(.text))
+<P><STRONG><a name="[c6]"></a>Append_Debug_Info</STRONG> (Thumb, 490 bytes, Stack size 24 bytes, processscope.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 48<LI>Call Chain = Append_Debug_Info &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
@@ -1022,10 +1016,11 @@ Global Symbols
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_TestingFunc
 </UL>
 
-<P><STRONG><a name="[cb]"></a>MSG_TestingFunc</STRONG> (Thumb, 4626 bytes, Stack size 288 bytes, processscope.o(.text))
+<P><STRONG><a name="[cb]"></a>MSG_TestingFunc</STRONG> (Thumb, 4598 bytes, Stack size 288 bytes, processscope.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 796<LI>Call Chain = MSG_TestingFunc &rArr; Data_Circle_Handle &rArr; LwIP_Periodic_Handle &rArr; tcp_tmr &rArr; tcp_fasttmr &rArr; tcp_process_refused_data &rArr; tcp_recv_null &rArr; tcp_close &rArr; tcp_close_shutdown &rArr; tcp_pcb_remove &rArr; tcp_output &rArr; tcp_output_segment &rArr; ip_output &rArr; ip_output_if &rArr; ip_frag &rArr; pbuf_alloc &rArr; pbuf_free &rArr; mem_free &rArr; plug_holes
 </UL>
 <BR>[Calls]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;hw_filter_get_electrode
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reset_ADC_InitDataType
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_GetTicks
 <LI><a href="#[8f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_LIST_SetTicks
 <LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_LIST_GetTicks
@@ -1041,7 +1036,6 @@ Global Symbols
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_Enable_Data_Channel
 <LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_Disable_Data_Channel
 <LI><a href="#[c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Append_Debug_Info
-<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reset_ADC_InitDataType
 <LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reset_Udp_Count
 <LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;collect_return_hdl
 <LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_Udp_Count
@@ -1056,6 +1050,7 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 860<LI>Call Chain = MSG_Handling &rArr; MSG_TestingFunc &rArr; Data_Circle_Handle &rArr; LwIP_Periodic_Handle &rArr; tcp_tmr &rArr; tcp_fasttmr &rArr; tcp_process_refused_data &rArr; tcp_recv_null &rArr; tcp_close &rArr; tcp_close_shutdown &rArr; tcp_pcb_remove &rArr; tcp_output &rArr; tcp_output_segment &rArr; ip_output &rArr; ip_output_if &rArr; ip_frag &rArr; pbuf_alloc &rArr; pbuf_free &rArr; mem_free &rArr; plug_holes
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;udp_echoserver_senddata
+<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reset_ADC_InitDataType
 <LI><a href="#[d3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PL_UnionTwoBytes_2
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PL_UnionTwoBytes
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;PL_UnionFourBytes
@@ -1081,7 +1076,6 @@ Global Symbols
 <LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Flash_Write_Param
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
 <LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_TestingFunc
-<LI><a href="#[cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reset_ADC_InitDataType
 <LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Mode_Set
 <LI><a href="#[bc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HGB_Test_Exec
 <LI><a href="#[b4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CRP_Test_Exec
@@ -5125,6 +5119,12 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_Disable_Data_Channel
 </UL>
 
+<P><STRONG><a name="[cd]"></a>Reset_ADC_InitDataType</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, driver.o(.text))
+<BR><BR>[Called By]<UL><LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Eable_ADC
+<LI><a href="#[d0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_Handling
+<LI><a href="#[cb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MSG_TestingFunc
+</UL>
+
 <P><STRONG><a name="[ca]"></a>Eable_ADC</STRONG> (Thumb, 48 bytes, Stack size 8 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = Eable_ADC &rArr; ADC2_Init &rArr; ADC2_DMA_Config &rArr; NVIC_Init &rArr; assert_failed &rArr; __2printf
 </UL>
@@ -5166,7 +5166,7 @@ Global Symbols
 <LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_WBC_V_Value
 </UL>
 
-<P><STRONG><a name="[2d8]"></a>Get_12V_N_ADC</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, driver.o(.text))
+<P><STRONG><a name="[2d8]"></a>Get_12V_N_ADC</STRONG> (Thumb, 72 bytes, Stack size 8 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = Get_12V_N_ADC &rArr; Get_ADC3_Channel_Value &rArr; ADC_RegularChannelConfig &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_ADC3_Channel_Value
@@ -5174,7 +5174,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
 </UL>
 
-<P><STRONG><a name="[2d9]"></a>Get_12V_P_ADC</STRONG> (Thumb, 62 bytes, Stack size 8 bytes, driver.o(.text))
+<P><STRONG><a name="[2d9]"></a>Get_12V_P_ADC</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = Get_12V_P_ADC &rArr; Get_ADC3_Channel_Value &rArr; ADC_RegularChannelConfig &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_ADC3_Channel_Value
@@ -5353,7 +5353,7 @@ Global Symbols
 <LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EVAL_Init
 </UL>
 
-<P><STRONG><a name="[2ee]"></a>Get_Elec_ADC</STRONG> (Thumb, 134 bytes, Stack size 16 bytes, driver.o(.text))
+<P><STRONG><a name="[2ee]"></a>Get_Elec_ADC</STRONG> (Thumb, 136 bytes, Stack size 16 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = Get_Elec_ADC &rArr; ADC_RegularChannelConfig &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[19e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_ClearFlag
