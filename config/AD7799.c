@@ -75,35 +75,35 @@ void ADC24Bit_GPIO_Init(void)
 	RCC_AHB1PeriphClockCmd(ADC24BIT_CLK_SRC|ADC24BIT_MOSI_SRC|ADC24BIT_MISO_SRC|ADC24BIT_CS_SRC, ENABLE);
 	//cs
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_CS_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(ADC24BIT_CS_PORT, &GPIO_InitStructure);
 	GPIO_SetBits(ADC24BIT_CS_PORT, ADC24BIT_CS_PIN);
 	
 	//Di	
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MISO_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;//复用功能
-	//GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;
+	//GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//GPIO_PuPd_DOWN; //GPIO_PuPd_UP
 	GPIO_Init(ADC24BIT_MISO_PORT, &GPIO_InitStructure);
 	GPIO_ResetBits(ADC24BIT_MISO_PORT, ADC24BIT_MISO_PIN);
 	// Do
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_MOSI_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(ADC24BIT_MOSI_PORT, &GPIO_InitStructure);
 	GPIO_ResetBits(ADC24BIT_MOSI_PORT, ADC24BIT_MOSI_PIN);
 	// clk
 	GPIO_InitStructure.GPIO_Pin = ADC24BIT_CLK_PIN;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;//复用功能
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;//推挽输出
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//上拉
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(ADC24BIT_CLK_PORT, &GPIO_InitStructure);
 	GPIO_SetBits(ADC24BIT_CLK_PORT, ADC24BIT_CLK_PIN);
 }
@@ -212,7 +212,7 @@ void SPI_Write(UINT8 *pBuf, UINT8 nCount)
 			nVal <<= 1;	//Rotate data
 		}
 	}
-//	AD_CS_1();
+	AD_CS_1();
 	//Delay_US(2);
 	__enable_irq();
 	
@@ -260,7 +260,7 @@ void SPI_Read(UINT8 *pBuf, UINT8 nCount)
 		}
 		*(pBuf + j )= nVal;
 	}	 
-//	AD_CS_1();
+	AD_CS_1();
 	__enable_irq();
 	
 #endif

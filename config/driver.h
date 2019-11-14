@@ -339,7 +339,7 @@ void Turn_Motor_Power(UINT8 nOpt);
 //#define OUTIN_MOTOR_SRC_4					RCC_AHB1Periph_GPIO*
 
 
-// OC for micro switch(cx3000), PD6
+// --------- OC for micro switch(cx3000), PD6
 #define MICRO_OC_PORT					GPIOD
 #define MICRO_OC_PIN					GPIO_Pin_6
 #define MICRO_OC_SRC					RCC_AHB1Periph_GPIOD
@@ -352,9 +352,7 @@ void Turn_Motor_Power(UINT8 nOpt);
 #define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
 void Micro_OC_Init(void);
 
-/////////////////
-
-// OC for turn motor reset, and than select LED, PB6
+// --------- OC for turn motor reset, and than select LED, PB6
 #define TURN_RESET_OC_CLK_PORT			GPIOG
 #define TURN_RESET_OC_CLK_PIN			GPIO_Pin_4
 #define TURN_RESET_OC_CLK_SRC			RCC_AHB1Periph_GPIOG
@@ -382,25 +380,38 @@ UINT8 Get_Turn_Reset_OC_Status(void);
 UINT8 Get_Out_OC_Status(void);
 UINT8 Get_In_OC_Status(void);
 
-//cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS
+
+// --------- cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS 
 #define D_REGISTER_CLK_PORT					GPIOI
 #define D_REGISTER_CLK_PIN					GPIO_Pin_1
 #define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER_CLK_AF_SRC 				GPIO_PinSource1
-//
+// MOSI
 #define D_REGISTER_MOSI_PORT				GPIOI
 #define D_REGISTER_MOSI_PIN					GPIO_Pin_3
 #define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER_MOSI_AF_SRC 				GPIO_PinSource3
-//
+// CS
 #define D_REGISTER_CS_PORT					GPIOI
 #define D_REGISTER_CS_PIN					GPIO_Pin_0
 #define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER_CS_AF_SRC 				GPIO_PinSource0
+//// MISO Digital Register is 3lines SP, not need MISO
+//#define D_REGISTER_MISO_PORT				GPIOI
+//#define D_REGISTER_MISO_PIN				GPIO_Pin_2
+//#define D_REGISTER_MISO_SRC				RCC_AHB1Periph_GPIOI
+//#define D_REGISTER_MISO_AF_SRC 			GPIO_PinSource2
 //
 #define D_REGISTER_SPI						SPI2
 #define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI2
 #define D_REGISTER_SPI_AF 					GPIO_AF_SPI2
+
+#define DREGISTER_CLK_1()	GPIO_SetBits(D_REGISTER_CLK_PORT, D_REGISTER_CLK_PIN)
+#define DREGISTER_CLK_0()	GPIO_ResetBits(D_REGISTER_CLK_PORT, D_REGISTER_CLK_PIN)
+#define DREGISTER_CS_1()	GPIO_SetBits(D_REGISTER_CS_PORT, D_REGISTER_CS_PIN)
+#define DREGISTER_CS_0()	GPIO_ResetBits(D_REGISTER_CS_PORT, D_REGISTER_CS_PIN)
+#define DREGISTER_MOSI_1()	GPIO_SetBits(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_PIN)
+#define DREGISTER_MOSI_0()	GPIO_ResetBits(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_PIN)
 // 
 enum {
 	EN_DRESISTOR_CHAN0 = 0,
@@ -410,12 +421,10 @@ enum {
 };
 //
 void DResistor_Init(void);
-void DRegister_SPI_Init(void);
-void DResistor_Set(UINT8 nIndex, UINT8 nVal);
+void DRegister_Write(UINT8 nIndex, UINT8 nVal);
 
 
-
-// LED1-8, PI4--PI11
+// --------- LED1-8, PI4--PI11
 // LED0, null
 #define LED0_PORT							GPIOI
 #define LED0_PIN							GPIO_Pin_4
@@ -487,7 +496,7 @@ void LED_Cur_Auto_Adjust(UINT16 nCurrent);
 void LED_Exec(UINT8 nIndex, UINT8 nOpt);
 void LED_All_Reset(void);
 
-// XK ADC, PC3_ADC3_IN13	
+// ---------  XK ADC, PC3_ADC3_IN13	
 #define XK_ADC_PORT							GPIOC
 #define XK_ADC_PIN							GPIO_Pin_3
 #define XK_ADC_SRC							RCC_AHB1Periph_GPIOC
@@ -537,7 +546,7 @@ void LED_All_Reset(void);
 #define CUR12P_ADC_CHANNEL					ADC_Channel_10
 
 
-// press check, PH4_SCl, PH5_SDA I2C, I2C
+// ---------  press check, PH4_SCl, PH5_SDA I2C, I2C
 // PH4
 #define PRESS_I2C_SCL_PORT					GPIOH
 #define PRESS_I2C_SCL_PIN					GPIO_Pin_4
@@ -573,7 +582,7 @@ INT32 Get_Press_I2C(void);
 
 
 
-// led cur adjust
+// --------- led cur adjust
 #define HGB_LED_CUR_ADJUST_VALUE					8
 #define CRP_LED_CUR_ADJUST_VALUE					8
 
@@ -598,9 +607,6 @@ typedef enum{
 	EN_MODE_NORMAL = 0,
 	EN_MODE_SELF_CHECK = 1
 }eModeType;
-
-
-
 
 
 typedef struct{
