@@ -2647,13 +2647,12 @@ void DRegister_Write(UINT8 nIndex, UINT8 nVal)
 	DREGISTER_CS_1();
 	Delay_US(5);
 	DREGISTER_CS_0();
-	Delay_US(5);
+	Delay_US(10);
 	nCmd = (UINT16)(( nIndex & 0x03) << 8) | nVal;
 	printf("CMD =%X\r\n", nCmd);
 	for(i = 0; i < DREGISTER_DATA_LEN; i++)
 	{
 		DREGISTER_CLK_0();
-		//Delay_US(5);
 		if(0x0200 == (nCmd & 0x0200))
 		{
 			DREGISTER_MOSI_1();
@@ -2666,6 +2665,7 @@ void DRegister_Write(UINT8 nIndex, UINT8 nVal)
 		nCmd <<= 1;
 	}
 	DREGISTER_CS_1();
+	Delay_US(2);
 	DREGISTER_CLK_1();
 }
 
@@ -3038,21 +3038,24 @@ void Driver_Debug(UINT8 nIndex)
 		case 9: // pump, wave
 		{
 			printf("start\r\n");
-//			DRegister_Write(0, 50);
-//			DRegister_Write(1, 50);
-//			DRegister_Write(2, 50);
-//			DRegister_Write(3, 50);
+			DRegister_Write(0, 250);
+			IT_SYS_DlyMs(500);
+			DRegister_Write(1, 250);
+			IT_SYS_DlyMs(500);
+			DRegister_Write(2, 250);
+			IT_SYS_DlyMs(500);
+			DRegister_Write(3, 250);
 			
 //			for(val = 50; val <= 250; val += 50)
 //			{
-				for(i = 0; i < 40000; i++)
-				{
-					DRegister_Write(0, 0x55);
-					printf("i=%d, val=%d, val=%X\r\n", i, val, val);
-					IT_SYS_DlyMs(10);
-					//IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-					//IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-				}
+//				for(i = 0; i < 40000; i++)
+//				{
+//					DRegister_Write(0, 0x55);
+//					printf("i=%d, val=%d, val=%X\r\n", i, val, val);
+//					IT_SYS_DlyMs(10);
+//					//IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//					//IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//				}
 //			}
 			
 			//WBC_48V_Self_Check();
