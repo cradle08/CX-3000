@@ -4,17 +4,15 @@
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
 F:\CX-3000\CX-3000\workspace\prj\CX-3000.uvproj
-Project File Date:  11/12/2019
+Project File Date:  12/02/2019
 
 <h2>Output:</h2>
 Build target 'Scope'
 linking...
-Program Size: Code=135516 RO-data=4664 RW-data=960 ZI-data=85824  
+Program Size: Code=135616 RO-data=4744 RW-data=960 ZI-data=85824  
 FromELF: creating hex file...
 After Build - User command #1: "D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-3000_SLA_V001.bin" "..\obj\CX-3000_SLA_V001.axf"
 "..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 0 Warning(s).
-Load "..\\obj\\CX-3000_SLA_V001.axf" 
-Error: Flash Download failed  -  Target DLL has been cancelled
 Load "..\\obj\\CX-3000_SLA_V001.axf" 
 Erase Done.
 Programming Done.
@@ -23,36 +21,265 @@ Application running ...
 </pre>
 </body>
 </html>
-07): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(920): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(933): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(945): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(1147): warning:  #550-D: variable "Status" was set but never used
-        UINT8 Status;
-..\..\config\driver.c(1148): warning:  #550-D: variable "Tempertaure_data" was set but never used
-        INT32 Pressure_data,Tempertaure_data;
-..\..\config\driver.c(1228): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+
+..\..\source\ProcessScope.c(2214): warning:  #550-D: variable "nTempTicks" was set but never used
+        UINT32 nCurTicks, nTempTicks, i, j;
+..\..\source\ProcessScope.c: 4 warnings, 0 errors
+compiling Protocol.c...
+compiling InterfaceScope.c...
+compiling StorageManagement.c...
+compiling Fpga.c...
+compiling Scope_It.c...
+compiling Scope_Move.c...
+compiling BufferCircle.c...
+compiling NetBufferCircle.c...
+compiling SampleBufferCircle.c...
+compiling InterruptBufferCircle.c...
+compiling driver.c...
+..\..\config\driver.c(156): warning:  #188-D: enumerated type mixed with another type
+                EVAL_OutputInit(i);
+..\..\config\driver.c(207): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
       EXTI_InitTypeDef EXTI_InitStructure;
-..\..\config\driver.c(1711): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
+..\..\config\driver.c(208): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+      NVIC_InitTypeDef NVIC_InitStructure;
+..\..\config\driver.c(226): warning:  #188-D: enumerated type mixed with another type
+                EVAL_InputInit(i);
+..\..\config\driver.c(322): warning:  #177-D: variable "GPIO_InitStructure" was declared but never referenced
+        GPIO_InitTypeDef  GPIO_InitStructure;
+..\..\config\driver.c(406): warning:  #177-D: variable "GPIO_InitStructure" was declared but never referenced
+        GPIO_InitTypeDef  GPIO_InitStructure;
+..\..\config\driver.c(467): warning:  #940-D: missing return statement at end of non-void function "_sys_exit"
+  } 
+..\..\config\driver.c(487): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+        NVIC_InitTypeDef NVIC_InitStructure;
+..\..\config\driver.c(1081): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1111): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1123): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1136): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1149): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1161): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1363): warning:  #550-D: variable "Status" was set but never used
+        UINT8 Status;
+..\..\config\driver.c(1364): warning:  #550-D: variable "Tempertaure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(1444): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(1927): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
   }
-..\..\config\driver.c(1758): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
+..\..\config\driver.c(1974): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
   }
-..\..\config\driver.c(2127): warning:  #177-D: variable "nReal" was declared but never referenced
+..\..\config\driver.c(2346): warning:  #177-D: variable "nReal" was declared but never referenced
         UINT16 nTempADC , nDACSet, nReal;
-..\..\config\driver.c(2677): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+..\..\config\driver.c(2896): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
       USART_InitTypeDef USART_InitStructure;    
-..\..\config\driver.c: 15 warnings, 0 errors
+..\..\config\driver.c: 21 warnings, 0 errors
+compiling AD7799.c...
+..\..\config\AD7799.c(511): warning:  #940-D: missing return statement at end of non-void function "AD7799_Get_ADC_Value"
+  }
+..\..\config\AD7799.c(508): warning:  #550-D: variable "nADC" was set but never used
+        UINT32  nADC;
+..\..\config\AD7799.c: 2 warnings, 0 errors
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
 linking...
-Program Size: Code=135516 RO-data=4664 RW-data=960 ZI-data=85824  
+Program Size: Code=135616 RO-data=4744 RW-data=960 ZI-data=85824  
 FromELF: creating hex file...
 After Build - User command #1: "D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-3000_SLA_V001.bin" "..\obj\CX-3000_SLA_V001.axf"
-"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 15 Warning(s).
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 27 Warning(s).
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Error: Flash Download failed  -  Target DLL has been cancelled
 Load "..\\obj\\CX-3000_SLA_V001.axf" 
 Erase Done.
-Programming Done.
-Verify OK.
-Application running ...
+Programming Failed!
+Internal command error
+Internal command error
+Error: Flash Download failed  -  "Cortex-M4"
+and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_PWM_Init multiply defined (by udp_echoserver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by systemscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by processscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by protocol.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by interfacescope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by storagemanagement.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by fpga.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by scope_it.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by scope_move.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by buffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by netbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by samplebuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by interruptbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by driver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by ad7799.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by ethernetif.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by udp_echoserver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by systemscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by processscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by protocol.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by interfacescope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by storagemanagement.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by fpga.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by scope_it.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by scope_move.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by buffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by netbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by samplebuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by interruptbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by driver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by ad7799.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by ethernetif.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by udp_echoserver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by systemscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by processscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by protocol.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by interfacescope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by storagemanagement.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by fpga.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by scope_it.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by scope_move.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by buffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by netbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by samplebuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by interruptbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by driver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by ad7799.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by ethernetif.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by udp_echoserver.o and scopemain.o).
+Not enough information to list image symbols.
+Not enough information to list the image map.
+Finished: 2 information, 0 warning and 72 error messages.
+"..\obj\CX-3000_SLA_V001.axf" - 72 Error(s), 20 Warning(s).
+Target not created
+: L6200E: Symbol OutIn_Motor_Init multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Init multiply defined (by udp_echoserver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by systemscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by processscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by protocol.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by interfacescope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by storagemanagement.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by fpga.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by scope_it.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by scope_move.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by buffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by netbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by samplebuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by interruptbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by driver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by ad7799.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by ethernetif.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by udp_echoserver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by systemscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by processscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by protocol.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by interfacescope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by storagemanagement.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by fpga.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by scope_it.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by scope_move.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by buffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by netbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by samplebuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by interruptbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by driver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by ad7799.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by ethernetif.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by udp_echoserver.o and scopemain.o).
+Not enough information to list image symbols.
+Not enough information to list the image map.
+Finished: 2 information, 0 warning and 72 error messages.
+"..\obj\CX-3000_SLA_V001.axf" - 72 Error(s), 44 Warning(s).
+Target not created
+ defined (by processscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by protocol.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by interfacescope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by storagemanagement.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by fpga.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by scope_it.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by scope_move.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by buffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by netbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by samplebuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by interruptbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by driver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by ad7799.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by ethernetif.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_AntiClockWise multiply defined (by udp_echoserver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by systemscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by processscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by protocol.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by interfacescope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by storagemanagement.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by fpga.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by scope_it.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by scope_move.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by buffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by netbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by samplebuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by interruptbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by driver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by ad7799.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by ethernetif.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_ClockWise multiply defined (by udp_echoserver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by systemscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by processscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by protocol.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by interfacescope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by storagemanagement.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by fpga.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by scope_it.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by scope_move.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by buffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by netbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by samplebuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by interruptbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by driver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by ad7799.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by ethernetif.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Speed_Set multiply defined (by udp_echoserver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by systemscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by processscope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by protocol.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by interfacescope.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by storagemanagement.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by fpga.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by scope_it.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by scope_move.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by buffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by netbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by samplebuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by interruptbuffercircle.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by driver.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by ad7799.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by ethernetif.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by netconf.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
+..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OutIn_Motor_Run multiply defined (by udp_echoserver.o and scopemain.o).
+Not enough information to list image symbols.
+Not enough information to list the image map.
+Finished: 2 information, 0 warning and 144 error messages.
+"..\obj\CX-3000_SLA_V001.axf" - 144 Error(s), 44 Warning(s).
+Target not created

@@ -446,11 +446,6 @@
               <FilePath>..\..\source\InterfaceScope.c</FilePath>
             </File>
             <File>
-              <FileName>SamplingPort.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\source\SamplingPort.c</FilePath>
-            </File>
-            <File>
               <FileName>StorageManagement.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\source\StorageManagement.c</FilePath>
@@ -684,11 +679,6 @@
               <FileName>InterruptBufferCircle.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\config\InterruptBufferCircle.c</FilePath>
-            </File>
-            <File>
-              <FileName>SpiFlash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\SpiFlash.c</FilePath>
             </File>
             <File>
               <FileName>driver.c</FileName>

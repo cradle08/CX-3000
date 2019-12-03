@@ -95,6 +95,7 @@ void Delay_US(UINT32 us)
 //    } while(delta < us_tick * us);
 //}
 
+
 ////---------------------------OUT PIN-------------------
 GPIO_TypeDef*  CODE_ OUT_PORT[OUTPUT_NUM]= 
 {
@@ -102,6 +103,10 @@ GPIO_TypeDef*  CODE_ OUT_PORT[OUTPUT_NUM]=
     OUT_MCU_LED1_GPIO_PORT,
     OUT_MCU_LED2_GPIO_PORT,
     OUT_LAN8720_RST_GPIO_PORT,
+	OUTIN_MOTOR_EN_PORT,
+	OUTIN_MOTOR_DIR_PORT,
+	TURN_MOTOR_EN_PORT,
+	TURN_MOTOR_DIR_PORT,
 };
 
 UINT16 CODE_ OUT_PIN[OUTPUT_NUM]= 
@@ -109,14 +114,24 @@ UINT16 CODE_ OUT_PIN[OUTPUT_NUM]=
     OUT_MCU_LED1_GPIO_PIN,
     OUT_MCU_LED2_GPIO_PIN,
     OUT_LAN8720_RST_GPIO_PIN,
+	OUTIN_MOTOR_EN_PIN,
+	OUTIN_MOTOR_DIR_PIN,
+	TURN_MOTOR_EN_PIN,
+	TURN_MOTOR_DIR_PIN,
 };
+
 UINT32 CODE_ OUT_CLK[OUTPUT_NUM]= 
 {
     //
     OUT_MCU_LED1_GPIO_CLK,
     OUT_MCU_LED2_GPIO_CLK,
     OUT_LAN8720_RST_GPIO_CLK,
+	OUTIN_MOTOR_EN_SRC,
+	OUTIN_MOTOR_DIR_SRC,
+	TURN_MOTOR_EN_SRC,
+	TURN_MOTOR_DIR_SRC,
 };
+
 void EVAL_OutputInit(Output_TypeDef eOut)
 {
     GPIO_InitTypeDef  GPIO_InitStructure;
@@ -133,6 +148,16 @@ void EVAL_OutputInit(Output_TypeDef eOut)
     GPIO_Init(OUT_PORT[eOut], &GPIO_InitStructure);  // init gpio
 }
 
+void EVAL_OutputInit_All(void)
+{
+	UINT8 i;
+	for(i = 0; i < OUTPUT_NUM; i++)
+	{
+		EVAL_OutputInit(i);
+	}
+}
+
+
 void EVAL_OutputSet(Output_TypeDef eOut)
 {
     OUT_PORT[eOut]->BSRRL = OUT_PIN[eOut];
@@ -148,50 +173,67 @@ void EVAL_OutputToggle(Output_TypeDef eOut)
     OUT_PORT[eOut]->ODR ^= OUT_PIN[eOut];
 }
 
-//-----------------------------------------------------------------------------------------
-//// GPIO input contorl 
-//void EVAL_InputInit(Input_TypeDef eIn, InModel_Typedef eModel)
-//{
-//    GPIO_InitTypeDef GPIO_InitStructure;
-//    EXTI_InitTypeDef EXTI_InitStructure;
-//    NVIC_InitTypeDef NVIC_InitStructure;
-//  
-//    // 1. enable the input pin Clock 
-//    RCC_AHB1PeriphClockCmd(IN_CLK[eIn], ENABLE);
-//  
-//    // 2. configure the pin as input floating 
-//	GPIO_InitStructure.GPIO_Pin = IN_PIN[eIn];  
-//    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;   
-//    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; //100M
-//    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; 
-//    GPIO_Init(IN_PORT[eIn], &GPIO_InitStructure); 
 
-//    // 3. extinal-interrupt model 
-//    if (eModel == IN_MODEL_EXTI)     
-//    {
-//        // 1). enable the SYSCFG-clock
-//        RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);       
-//        // 2). Connects EXTI Line to Button GPIO Pin 
-//        SYSCFG_EXTILineConfig(IN_ET_PORT[eIn], IN_ET_PIN[eIn]);    
-//        // 3). Configure EXTI line 
-//        EXTI_InitStructure.EXTI_Line = IN_ET_LINE[eIn];
-//        EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;   
-//        EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;  // all pins are rising detected         
-//        EXTI_InitStructure.EXTI_LineCmd = ENABLE;               // enable interrupt line 		
-//        EXTI_Init(&EXTI_InitStructure);                           
-//        // 4). enable and set input EXTI Interrupt to the lowest priority 
-//        NVIC_InitStructure.NVIC_IRQChannel = IN_ET_IRQn[eIn];
-//        NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;
-//        NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x03;
-//        NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;        // enable interrupt
-//        NVIC_Init(&NVIC_InitStructure);    	
-//    }
-//}
+// commom input and exti interrupt
+GPIO_TypeDef* CODE_ IN_PORT[INPUT_NUM]= 
+{
+	TURN_RESET_OC_GPIO_PORT,
+	TURN_SELECT_OC_GPIO_PORT,
+	IN_OC_GPIO_PORT,
+	OUT_OC_GPIO_PORT,
+};
 
-//UINT8 EVAL_InputGetState(Input_TypeDef eIn)
-//{
-//    return GPIO_ReadInputDataBit(IN_PORT[eIn], IN_PIN[eIn]);
-//}
+UINT16 CODE_ IN_PIN[INPUT_NUM]=
+{
+	TURN_RESET_OC_GPIO_PIN,
+	TURN_SELECT_OC_GPIO_PIN,
+	IN_OC_GPIO_PIN,
+	OUT_OC_GPIO_PIN,
+};	
+
+UINT32 CODE_ IN_CLK[INPUT_NUM]=
+{
+	TURN_RESET_OC_GPIO_SRC,
+	TURN_SELECT_OC_GPIO_SRC,
+	IN_OC_GPIO_SRC,
+	OUT_OC_GPIO_SRC,
+};
+
+
+// GPIO input contorl 
+void EVAL_InputInit(Input_TypeDef eIn)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+    EXTI_InitTypeDef EXTI_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+  
+    // 1. enable the input pin Clock 
+    RCC_AHB1PeriphClockCmd(IN_CLK[eIn], ENABLE);
+  
+    // 2. configure the pin as input floating 
+	GPIO_InitStructure.GPIO_Pin = IN_PIN[eIn];  
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;   
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; //100M
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL; 
+    GPIO_Init(IN_PORT[eIn], &GPIO_InitStructure); 
+}
+
+void EVAL_InputInit_All(void)
+{
+	UINT8 i;
+	for(i = 0; i < INPUT_NUM; i++)
+	{
+		EVAL_InputInit(i);
+	}
+}
+	
+// Get GPIO Status
+UINT8 EVAL_GetInputStatus(Input_TypeDef eIn)
+{
+    return GPIO_ReadInputDataBit(IN_PORT[eIn], IN_PIN[eIn]);
+}
+
+
 
 
 UINT8  PF_InitTimer2(void)
@@ -233,6 +275,180 @@ UINT8  PF_InitTimer2(void)
     
 	return e_Feedback_Success;
 }
+
+
+void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc)
+{
+	// TIM3_CH3
+	GPIO_InitTypeDef GPIO_InitStructure;
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	TIM_OCInitTypeDef  TIM_OCInitStructure;
+
+	RCC_APB1PeriphClockCmd(OUTIN_MOTOR_PWM_TIM_SRC,ENABLE);
+	RCC_AHB1PeriphClockCmd(OUTIN_MOTOR_CLK_SRC, ENABLE);
+	GPIO_PinAFConfig(OUTIN_MOTOR_CLK_PORT,OUTIN_MOTOR_CLK_PIN_AF, OUTIN_MOTOR_CLK_PORT_AF); 
+
+	// PC8
+	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_CLK_PIN;          
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;     
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(OUTIN_MOTOR_CLK_PORT, &GPIO_InitStructure);        
+	GPIO_SetBits(OUTIN_MOTOR_CLK_PORT, OUTIN_MOTOR_CLK_PIN);
+	
+	TIM_DeInit(OUTIN_MOTOR_PWM_TIM);
+	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  
+	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; 
+	TIM_TimeBaseStructure.TIM_Period=Arr; 
+	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
+	TIM_TimeBaseInit(OUTIN_MOTOR_PWM_TIM,&TIM_TimeBaseStructure);
+
+	// pwm
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
+	TIM_OC3Init(OUTIN_MOTOR_PWM_TIM, &TIM_OCInitStructure);  
+
+	TIM_OC3PreloadConfig(OUTIN_MOTOR_PWM_TIM, TIM_OCPreload_Enable); 
+	TIM_ARRPreloadConfig(OUTIN_MOTOR_PWM_TIM,ENABLE);
+	TIM_Cmd(OUTIN_MOTOR_PWM_TIM, ENABLE);  //
+}
+
+
+// Out_In Motor
+void OutIn_Motor_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	//RCC_AHB1PeriphClockCmd(OUTIN_MOTOR_EN_SRC|OUTIN_MOTOR_DIR_SRC|OUTIN_MOTOR_CLK_SRC, ENABLE);
+	
+	// enable
+	EVAL_OutputInit(O_OutIn_Motor_EN);
+	EVAL_OutputClr(O_OutIn_Motor_EN);
+	// dir
+	EVAL_OutputInit(O_OutIn_Motor_DIR);
+	EVAL_OutputClr(O_OutIn_Motor_DIR);
+	// clk
+	OutIn_Motor_PWM_Init(OUTIN_MOTOR_PWM_TIM_ARR, OUTIN_MOTOR_PWM_TIM_PSC); //84M/42=2M, 1M/25000=59.52
+}
+
+
+void OutIn_Motor_Speed_Set(UINT16 nSpeed) 
+{
+	if(nSpeed > OUTIN_MOTOR_PWM_LEVEL_HIGHEST){
+		TIM_SetCompare3(OUTIN_MOTOR_PWM_TIM, OUTIN_MOTOR_PWM_LEVEL_HIGHEST);
+	}else{
+		TIM_SetCompare3(OUTIN_MOTOR_PWM_TIM, nSpeed);
+	}
+}
+
+
+void OutIn_Motor_Run(UINT8 nDir, UINT16 nFreq)
+{
+	//if(nFreq > OUTIN_MOTOR_PWM_LEVEL_HIGHEST) return;
+	//if(nDir != e_Dir_Neg || nDir != e_Dir_Pos) return;
+	
+	if(nDir == e_Dir_Pos){
+		EVAL_OutputSet(O_OutIn_Motor_DIR);// out
+	}else if(nDir == e_Dir_Neg){
+		EVAL_OutputClr(O_OutIn_Motor_DIR); //in
+	}
+	//Pump_init();
+	OutIn_Motor_Speed_Set(nFreq);
+}
+
+
+
+
+
+void Turn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc)
+{
+	// TIM3_CH3
+	GPIO_InitTypeDef GPIO_InitStructure;
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	TIM_OCInitTypeDef  TIM_OCInitStructure;
+
+	RCC_APB1PeriphClockCmd(OUTIN_MOTOR_PWM_TIM_SRC,ENABLE);
+	RCC_AHB1PeriphClockCmd(OUTIN_MOTOR_CLK_SRC, ENABLE);
+	GPIO_PinAFConfig(OUTIN_MOTOR_CLK_PORT,OUTIN_MOTOR_CLK_PIN_AF, OUTIN_MOTOR_CLK_PORT_AF); 
+
+	// PC8
+	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_CLK_PIN;          
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;     
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(OUTIN_MOTOR_CLK_PORT, &GPIO_InitStructure);        
+	GPIO_SetBits(OUTIN_MOTOR_CLK_PORT, OUTIN_MOTOR_CLK_PIN);
+	
+	TIM_DeInit(OUTIN_MOTOR_PWM_TIM);
+	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  
+	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; 
+	TIM_TimeBaseStructure.TIM_Period=Arr; 
+	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
+	TIM_TimeBaseInit(OUTIN_MOTOR_PWM_TIM,&TIM_TimeBaseStructure);
+
+	// pwm
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
+	TIM_OC3Init(OUTIN_MOTOR_PWM_TIM, &TIM_OCInitStructure);  
+
+	TIM_OC3PreloadConfig(OUTIN_MOTOR_PWM_TIM, TIM_OCPreload_Enable); 
+	TIM_ARRPreloadConfig(OUTIN_MOTOR_PWM_TIM,ENABLE);
+	TIM_Cmd(OUTIN_MOTOR_PWM_TIM, ENABLE);  //
+}
+
+
+// Out_In Motor
+void Turn_Motor_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	//RCC_AHB1PeriphClockCmd(OUTIN_MOTOR_EN_SRC|OUTIN_MOTOR_DIR_SRC|OUTIN_MOTOR_CLK_SRC, ENABLE);
+	
+	// enable
+	EVAL_OutputInit(O_OutIn_Motor_EN);
+	EVAL_OutputClr(O_OutIn_Motor_EN);
+	// dir
+	EVAL_OutputInit(O_OutIn_Motor_DIR);
+	EVAL_OutputClr(O_OutIn_Motor_DIR);
+	// clk
+	OutIn_Motor_PWM_Init(OUTIN_MOTOR_PWM_TIM_ARR, OUTIN_MOTOR_PWM_TIM_PSC); //84M/42=2M, 1M/25000=59.52
+}
+
+
+void Turn_Motor_Speed_Set(UINT16 nSpeed) 
+{
+	if(nSpeed > OUTIN_MOTOR_PWM_LEVEL_HIGHEST){
+		TIM_SetCompare3(OUTIN_MOTOR_PWM_TIM, OUTIN_MOTOR_PWM_LEVEL_HIGHEST);
+	}else{
+		TIM_SetCompare3(OUTIN_MOTOR_PWM_TIM, nSpeed);
+	}
+}
+
+
+void Turn_Motor_Run(UINT8 nDir, UINT16 nFreq)
+{
+	//if(nFreq > OUTIN_MOTOR_PWM_LEVEL_HIGHEST) return;
+	//if(nDir != e_Dir_Neg || nDir != e_Dir_Pos) return;
+	
+	if(nDir == e_Dir_Pos){
+		EVAL_OutputSet(O_OutIn_Motor_DIR);// out
+	}else if(nDir == e_Dir_Neg){
+		EVAL_OutputClr(O_OutIn_Motor_DIR); //in
+	}
+	//Pump_init();
+	OutIn_Motor_Speed_Set(nFreq);
+}
+
+
+
+
+
+
+
+
+
 
 
 #if 1
@@ -1492,52 +1708,52 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt)
 
 }
 
-void Turn_Motor_Init(void)
-{
-	GPIO_InitTypeDef  GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(TURN_MOTOR_SRC_1|TURN_MOTOR_SRC_2|TURN_MOTOR_SRC_3|TURN_MOTOR_SRC_4|TURN_MOTOR_POWER_SRC, ENABLE);
-	// turn pin 1
-	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_1; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
-	GPIO_Init(TURN_MOTOR_PORT_1, &GPIO_InitStructure);
-	GPIO_ResetBits(TURN_MOTOR_PORT_1, TURN_MOTOR_PIN_1);
-	// turn pin 2
-	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_2; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;
-	GPIO_Init(TURN_MOTOR_PORT_2, &GPIO_InitStructure);
-	GPIO_ResetBits(TURN_MOTOR_PORT_2, TURN_MOTOR_PIN_2);
-	// turn pin 3
-	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_3; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
-	GPIO_Init(TURN_MOTOR_PORT_3, &GPIO_InitStructure);
-	GPIO_ResetBits(TURN_MOTOR_PORT_3, TURN_MOTOR_PIN_3);
-	// turn pin 4
-	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_4; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
-	GPIO_Init(TURN_MOTOR_PORT_4, &GPIO_InitStructure);
-	GPIO_ResetBits(TURN_MOTOR_PORT_4, TURN_MOTOR_PIN_4);
-	
-	// turn motor power control, PH9
-	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_POWER_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	GPIO_Init(TURN_MOTOR_POWER_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(TURN_MOTOR_POWER_PORT, TURN_MOTOR_POWER_PIN);
-}
+//void Turn_Motor_Init(void)
+//{
+//	GPIO_InitTypeDef  GPIO_InitStructure;
+//	RCC_AHB1PeriphClockCmd(TURN_MOTOR_SRC_1|TURN_MOTOR_SRC_2|TURN_MOTOR_SRC_3|TURN_MOTOR_SRC_4|TURN_MOTOR_POWER_SRC, ENABLE);
+//	// turn pin 1
+//	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_1; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
+//	GPIO_Init(TURN_MOTOR_PORT_1, &GPIO_InitStructure);
+//	GPIO_ResetBits(TURN_MOTOR_PORT_1, TURN_MOTOR_PIN_1);
+//	// turn pin 2
+//	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_2; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;
+//	GPIO_Init(TURN_MOTOR_PORT_2, &GPIO_InitStructure);
+//	GPIO_ResetBits(TURN_MOTOR_PORT_2, TURN_MOTOR_PIN_2);
+//	// turn pin 3
+//	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_3; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
+//	GPIO_Init(TURN_MOTOR_PORT_3, &GPIO_InitStructure);
+//	GPIO_ResetBits(TURN_MOTOR_PORT_3, TURN_MOTOR_PIN_3);
+//	// turn pin 4
+//	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_PIN_4; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
+//	GPIO_Init(TURN_MOTOR_PORT_4, &GPIO_InitStructure);
+//	GPIO_ResetBits(TURN_MOTOR_PORT_4, TURN_MOTOR_PIN_4);
+//	
+//	// turn motor power control, PH9
+//	GPIO_InitStructure.GPIO_Pin = TURN_MOTOR_POWER_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+//	GPIO_Init(TURN_MOTOR_POWER_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(TURN_MOTOR_POWER_PORT, TURN_MOTOR_POWER_PIN);
+//}
 
 void Turn_Motor_Power(UINT8 nOpt)
 {
@@ -1570,7 +1786,7 @@ UINT8 Turn_Motor_Reset(void)
 	{
 		if(nStep < 480)
 		{
-			if(Get_Turn_Reset_OC_Status()== EN_CLOSE)
+			if(EVAL_GetInputStatus(I_LED_OC_RST)== EN_CLOSE)
 			{
 				g_Turn_Position = EN_POSITION_LED_RESET;
 				printf("reset step = %d\r\n", (int)nStep);
@@ -1674,7 +1890,7 @@ UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep)
 		{
 			if(nTemp <= 2*LED_SELETCT_STEP_DIFF)
 			{
-				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL)) 
 				{
 					g_Turn_Position = EN_POSITION_LED_UNSURE; /////////////
 					printf("Anti Stop Steps = %d \r\n", (int)nTemp);
@@ -1684,7 +1900,7 @@ UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep)
 		}else{
 			if(nTemp < (nStep - 10))
 			{
-				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL)) 
 				{
 					g_Turn_Position = EN_POSITION_LED_UNSURE; /////////////
 					printf("Anti Stop Steps = %d \r\n", (int)nTemp);
@@ -1722,7 +1938,7 @@ UINT8 Turn_Motor_ClockWise(UINT32 nStep)
 		{
 			if((nTemp >= nStep - LED_SELETCT_STEP_DIFF) && (nTemp <= nStep + LED_SELETCT_STEP_DIFF))
 			{
-				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL)) 
 				{
 					g_Turn_Position = EN_POSITION_LED_UNSURE; 
 					printf("Stop Steps = %d \r\n", (int)nTemp);
@@ -1731,7 +1947,7 @@ UINT8 Turn_Motor_ClockWise(UINT32 nStep)
 			}
 		}else{
 			if(nTemp > 10){
-				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL)) 
 				{
 					g_Turn_Position = EN_POSITION_LED_UNSURE; 
 					printf("Stop Steps = %d \r\n", (int)nTemp);
@@ -1892,67 +2108,70 @@ void Micro_OC_Init(void)
 	NVIC_Init(&NVIC_InitStructure);
 }
 
-// OC for fix motor, OC for out_in motor
-void OC_Init(void)
-{
-	GPIO_InitTypeDef  GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(TURN_RESET_OC_CLK_SRC|TURN_SELECT_OC_CLK_SRC|OUT_OC_CLK_SRC|IN_OC_CLK_SRC, ENABLE);
-	// turn reset
-	GPIO_InitStructure.GPIO_Pin = TURN_RESET_OC_CLK_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(TURN_RESET_OC_CLK_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(TURN_RESET_OC_CLK_PORT, TURN_RESET_OC_CLK_PIN);
-	// turn select
-	GPIO_InitStructure.GPIO_Pin = TURN_SELECT_OC_CLK_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(TURN_SELECT_OC_CLK_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(TURN_SELECT_OC_CLK_PORT, TURN_SELECT_OC_CLK_PIN);
-	// oc for out
-	GPIO_InitStructure.GPIO_Pin = OUT_OC_CLK_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(OUT_OC_CLK_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(OUT_OC_CLK_PORT, OUT_OC_CLK_PIN);
-	// oc for in
-	GPIO_InitStructure.GPIO_Pin = IN_OC_CLK_PIN; 
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(IN_OC_CLK_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(IN_OC_CLK_PORT, IN_OC_CLK_PIN);
-	// micro oc
-	Micro_OC_Init();
-}
-
 UINT8 Get_Micro_OC_Status(void)
 {
 	return GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN);
 }
-	
-UINT8 Get_Turn_Reset_OC_Status(void)
-{
-	return GPIO_ReadInputDataBit(TURN_RESET_OC_CLK_PORT, TURN_RESET_OC_CLK_PIN);
-}
 
-UINT8 Get_Turn_Select_OC_Status(void)
-{
-	return GPIO_ReadInputDataBit(TURN_SELECT_OC_CLK_PORT, TURN_SELECT_OC_CLK_PIN);
-}
 
-UINT8 Get_Out_OC_Status(void)
-{
-	return GPIO_ReadInputDataBit(OUT_OC_CLK_PORT, OUT_OC_CLK_PIN);
-}
+// OC for fix motor, OC for out_in motor
+//void OC_Init(void)
+//{
+//	GPIO_InitTypeDef  GPIO_InitStructure;
+//	RCC_AHB1PeriphClockCmd(TURN_RESET_OC_CLK_SRC|TURN_SELECT_OC_CLK_SRC|OUT_OC_CLK_SRC|IN_OC_CLK_SRC, ENABLE);
+//	// turn reset
+//	GPIO_InitStructure.GPIO_Pin = TURN_RESET_OC_CLK_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+//	GPIO_Init(TURN_RESET_OC_CLK_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(TURN_RESET_OC_CLK_PORT, TURN_RESET_OC_CLK_PIN);
+//	// turn select
+//	GPIO_InitStructure.GPIO_Pin = TURN_SELECT_OC_CLK_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+//	GPIO_Init(TURN_SELECT_OC_CLK_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(TURN_SELECT_OC_CLK_PORT, TURN_SELECT_OC_CLK_PIN);
+//	// oc for out
+//	GPIO_InitStructure.GPIO_Pin = OUT_OC_CLK_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+//	GPIO_Init(OUT_OC_CLK_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(OUT_OC_CLK_PORT, OUT_OC_CLK_PIN);
+//	// oc for in
+//	GPIO_InitStructure.GPIO_Pin = IN_OC_CLK_PIN; 
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+//	GPIO_Init(IN_OC_CLK_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(IN_OC_CLK_PORT, IN_OC_CLK_PIN);
+//	// micro oc
+//	Micro_OC_Init();
+//}
 
-UINT8 Get_In_OC_Status(void)
-{
-	return GPIO_ReadInputDataBit(IN_OC_CLK_PORT, IN_OC_CLK_PIN);
-}
+
+//	
+//UINT8 Get_Turn_Reset_OC_Status(void)
+//{
+//	return GPIO_ReadInputDataBit(TURN_RESET_OC_CLK_PORT, TURN_RESET_OC_CLK_PIN);
+//}
+
+//UINT8 Get_Turn_Select_OC_Status(void)
+//{
+//	return GPIO_ReadInputDataBit(TURN_SELECT_OC_CLK_PORT, TURN_SELECT_OC_CLK_PIN);
+//}
+
+//UINT8 Get_Out_OC_Status(void)
+//{
+//	return GPIO_ReadInputDataBit(OUT_OC_CLK_PORT, OUT_OC_CLK_PIN);
+//}
+
+//UINT8 Get_In_OC_Status(void)
+//{
+//	return GPIO_ReadInputDataBit(IN_OC_CLK_PORT, IN_OC_CLK_PIN);
+//}
 
 void LED_Init(void)
 {
@@ -2729,16 +2948,13 @@ void EVAL_Init(void)
 
 	//-------------------------------------------
 	// 5. Initialize  IO output  
-	// led and the reset pin of the FPGA 
-    // EVAL_OutputInit(O_STATUS_LED_1);
-	//EVAL_OutputInit(O_STATUS_LED_2);
+
 	EVAL_OutputInit(O_MCU_LED_1);
 	EVAL_OutputInit(O_MCU_LED_2);
 	EVAL_OutputInit(O_LAN8720_RST);
-	//EVAL_OutputInit(O_HEAT_1);//yaolan_20190715
-	//EVAL_OutputInit(O_HEAT_2);//yaolan_20190715
-
-
+	
+	
+	
 	//-------------------------------------------
     // 6. FPGA init
     //IT_SYS_DlyMs(500); // attention: waiting the FPGA to be ready
@@ -2765,29 +2981,24 @@ void EVAL_Init(void)
 	PF_InitTimer2();
 #if USE_STM32F407_ONLY
 
-	ADC1_Init();//APP_ADC_Init(EN_ADC1);
-//	// ...?
-//	ADC_SoftwareStartConv(ADC1);
-//	IT_SYS_DlyMs(10);
-//	Disable_ADC(EN_ADC1);
-//	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));	
+//	ADC1_Init();//APP_ADC_Init(EN_ADC1);
 
-	ADC2_Init();//APP_ADC_Init(EN_ADC2);
+//	ADC2_Init();//APP_ADC_Init(EN_ADC2);
 		
-	ADC3_Init();//APP_ADC_Init(EN_ADC3);
+//	ADC3_Init();//APP_ADC_Init(EN_ADC3);
 	
-	Elec_Init();
+//	Elec_Init();
 	Beep_Init();
-	Pump_init();
-	Valve_Init();
-	OC_Init();
-	Press_Init();
-	Turn_Motor_Init();
-	Mixing_Motor_Init();
-	LED_Init();
-	LED_Cur_DAC_Init();
-	ADC24Bit_Init();
-	DResistor_Init();
+//	Pump_init();
+//	Valve_Init();
+//	OC_Init();
+//	Press_Init();
+//	Turn_Motor_Init();
+//	Mixing_Motor_Init();
+//	LED_Init();
+//	LED_Cur_DAC_Init();
+//	ADC24Bit_Init();
+//	DResistor_Init();
 	
 #endif
 	Beep(1, 400);
@@ -2799,57 +3010,42 @@ void EVAL_Init(void)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 void Driver_Debug(UINT8 nIndex)
 {
 //	UINT32 nCurTime, nTempTime;
+	UINT8 T1 = 0, T2 = 0;
 	UINT16 i = 0, val = 0;
 	UINT32 nPress, nADC = 0;
 	switch(nIndex)
 	{
-		case 0: //beep
+		case 0:  // OC , close is 1, open is 0
 		{
 			printf("start\r\n");
-
-			//g_Test_Mode = EN_HGB_TEST;
-			//Turn_Motor_Init();
-			Turn_Motor_Power(EN_OPEN);
-			LED_Cur_Switch(EN_OPEN);
-			for(i = 0; i < EN_LED_END; i++)
+			OutIn_Motor_Init();
+			for(i = 0; i < 10; i++)
 			{
-				LED_Exec(i, EN_OPEN);
-				printf("i =%d\r\n", i);
-				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-				LED_Exec(i, EN_CLOSE);
+				printf("Turn_Reset_OC=%d, Turn_Selct=%d, OUI_OC=%d, IN_OC=%d\r\n", EVAL_GetInputStatus(I_LED_OC_RST), EVAL_GetInputStatus(I_LED_OC_SEL),\
+				EVAL_GetInputStatus(I_MOTOR_OC_OUT), EVAL_GetInputStatus(I_MOTOR_OC_IN));
+				IT_SYS_DlyMs(500);
+				//IT_SYS_DlyMs(500);
 			}
-			
-//			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
-			LED_Exec(EN_LED1, EN_OPEN); 	// open led
-			Turn_Motor_Select_LED(EN_LED1); // select led 
-			printf("HGB had select\r\n");
-		
-			LED_All_Reset();
-			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-			LED_Exec(EN_LED4, EN_OPEN);		// open led
-			Turn_Motor_Select_LED(EN_LED4); // select led 
-			printf("CRP had select\r\n");
+			EVAL_OutputSet(O_OutIn_Motor_EN);
+			OutIn_Motor_Run(e_Dir_Pos, 500);
+			//
+			T1 = EVAL_GetInputStatus(I_MOTOR_OC_IN);
+			T2 = EVAL_GetInputStatus(I_MOTOR_OC_OUT);
+			printf("T1=%d, T2=%d\r\n", T1, T2);
+			while(EN_CLOSE ==  T2 && EN_CLOSE == T1)
+			{
+				T1 = EVAL_GetInputStatus(I_MOTOR_OC_IN);
+				T2 = EVAL_GetInputStatus(I_MOTOR_OC_OUT);
+				printf("T1=%d, T2=%d\r\n", T1, T2);
+				IT_SYS_DlyMs(5);
+			}
+			EVAL_OutputClr(O_OutIn_Motor_EN);
+			OutIn_Motor_Run(e_Dir_Pos, 0);
 			
 			printf("end\r\n");
-			
-			printf("Beep start\r\n");
-			Beep(1,200);
-			printf("Beep end\r\n");
 		}
 		break;
 		case 1: // pump
@@ -2905,15 +3101,9 @@ void Driver_Debug(UINT8 nIndex)
 			printf("Valve end\r\n");
 		}
 		break;
-		case 3: //oc
+		case 3: 
 		{
-			for(i = 0; i < 10; i++)
-			{
-				printf("Turn_Reset_OC=%d, Turn_Selct=%d, OUI_OC=%d, IN_OC=%d\r\n", Get_Turn_Reset_OC_Status(), Get_Turn_Select_OC_Status(),\
-				Get_Out_OC_Status(), Get_In_OC_Status());
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-			}
+
 		}
 		break;
 		case 4:
