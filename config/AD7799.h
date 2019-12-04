@@ -142,63 +142,30 @@
 //#define ADC24BIT_CS_AF_SRC 					GPIO_PinSource15
 
 
-
-#if 0 
-//////////////////for fei xian
+///////////////////for route
 // PC10_SP3_CLK
 #define ADC24BIT_CLK_PORT					GPIOC
 #define ADC24BIT_CLK_PIN					GPIO_Pin_10
 #define ADC24BIT_CLK_SRC					RCC_AHB1Periph_GPIOC
 #define ADC24BIT_CLK_AF_SRC 				GPIO_PinSource10
 
-// PC12_SP3_MOSI
-#define ADC24BIT_MOSI_PORT					GPIOC
-#define ADC24BIT_MOSI_PIN					GPIO_Pin_12
-#define ADC24BIT_MOSI_SRC					RCC_AHB1Periph_GPIOC
-#define ADC24BIT_MOSI_AF_SRC 				GPIO_PinSource12
+// PB5_SP3_MOSI
+#define ADC24BIT_MOSI_PORT					GPIOB
+#define ADC24BIT_MOSI_PIN					GPIO_Pin_5
+#define ADC24BIT_MOSI_SRC					RCC_AHB1Periph_GPIOB
+#define ADC24BIT_MOSI_AF_SRC 				GPIO_PinSource5
 
-// PC11_SP3_MISO
-#define ADC24BIT_MISO_PORT					GPIOC
-#define ADC24BIT_MISO_PIN					GPIO_Pin_11
-#define ADC24BIT_MISO_SRC					RCC_AHB1Periph_GPIOC
-#define ADC24BIT_MISO_AF_SRC 				GPIO_PinSource11
+// PB4_SP3_MISO   
+#define ADC24BIT_MISO_PORT					GPIOB
+#define ADC24BIT_MISO_PIN					GPIO_Pin_4   
+#define ADC24BIT_MISO_SRC					RCC_AHB1Periph_GPIOB
+#define ADC24BIT_MISO_AF_SRC 				GPIO_PinSource4
 
-// PA15_SP3_CS
+// PA15_SP3_CS  
 #define ADC24BIT_CS_PORT					GPIOA
 #define ADC24BIT_CS_PIN						GPIO_Pin_15
 #define ADC24BIT_CS_SRC						RCC_AHB1Periph_GPIOA
 #define ADC24BIT_CS_AF_SRC 					GPIO_PinSource15
-
-
-#else
-///////////////////for route
-// PC10_SP3_CLK
-#define ADC24BIT_CLK_PORT					GPIOA
-#define ADC24BIT_CLK_PIN					GPIO_Pin_8
-#define ADC24BIT_CLK_SRC					RCC_AHB1Periph_GPIOA
-#define ADC24BIT_CLK_AF_SRC 				GPIO_PinSource8
-
-// PC12_SP3_MOSI
-#define ADC24BIT_MOSI_PORT					GPIOC
-#define ADC24BIT_MOSI_PIN					GPIO_Pin_9
-#define ADC24BIT_MOSI_SRC					RCC_AHB1Periph_GPIOC
-#define ADC24BIT_MOSI_AF_SRC 				GPIO_PinSource7
-
-// PC11_SP3_MISO    PC10
-#define ADC24BIT_MISO_PORT					GPIOC
-#define ADC24BIT_MISO_PIN					GPIO_Pin_10     //start pc7
-#define ADC24BIT_MISO_SRC					RCC_AHB1Periph_GPIOC
-#define ADC24BIT_MISO_AF_SRC 				GPIO_PinSource10
-
-// PA15_SP3_CS  PC6
-#define ADC24BIT_CS_PORT					GPIOC
-#define ADC24BIT_CS_PIN						GPIO_Pin_6
-#define ADC24BIT_CS_SRC						RCC_AHB1Periph_GPIOC
-#define ADC24BIT_CS_AF_SRC 					GPIO_PinSource6
-
-#endif
-
-
 
 #define ADC24BIT_SPI						SPI3
 #define ADC24BIT_SPI_SRC 					RCC_APB1Periph_SPI3
