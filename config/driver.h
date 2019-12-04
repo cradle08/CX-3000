@@ -27,10 +27,10 @@ typedef enum              // take attention of sequence
     O_MCU_LED_1     		= 0,
     O_MCU_LED_2     		= 1,
     O_LAN8720_RST  			= 2,
-	O_OutIn_Motor_EN	 	= 3,
-	O_OutIn_Motor_DIR 		= 4,
-	O_Turn_Motor_EN	 		= 5,
-	O_Turn_Motor_DIR 		= 6,	
+	O_OUTIN_MOTOR_EN	 	= 3,
+	O_OUTIN_MOTOR_DIR 		= 4,
+	O_TURN_MOTOR_EN	 		= 5,
+	O_TURN_MOTOR_DIR 		= 6,	
 	OUTPUT_NUM      		= 7,
 	
 } Output_TypeDef;
@@ -57,6 +57,11 @@ void EVAL_OutputClr(Output_TypeDef eOut);
 void EVAL_OutputToggle(Output_TypeDef eOut);
 
 void OC_Init(void);
+//UINT8 Get_Turn_Select_OC_Status(void); 
+//UINT8 Get_Turn_Reset_OC_Status(void); 
+//UINT8 Get_Out_OC_Status(void);
+//UINT8 Get_In_OC_Status(void);
+
 
 //---------------GPIO IN------------
 // --------- OC for turn motor reset, and than select LED, PA12
@@ -80,19 +85,28 @@ void OC_Init(void);
 #define OUT_OC_GPIO_SRC					RCC_AHB1Periph_GPIOG
 
 
+// PD8, check counter exist or not
+#define COUNTER_CHECK_GPIO_PORT				GPIOD
+#define COUNTER_CHECK_GPIO_PIN				GPIO_Pin_8
+#define COUNTER_CHECK_GPIO_SRC				RCC_AHB1Periph_GPIOD
+void Counter_Check_Init(void);
+UINT8 Get_Counter_Check_Status(void);
+
 typedef enum 
 {
     I_LED_OC_RST       = 0,
     I_LED_OC_SEL       = 1,
     I_MOTOR_OC_IN      = 2,
     I_MOTOR_OC_OUT     = 3,
-	INPUT_NUM     	   = 4
+	I_COUNTER_CHECK	   = 4,
+	INPUT_NUM     	   = 5,
 
 } Input_TypeDef;  
 
 void EVAL_InputInit(Input_TypeDef eIn);
 void EVAL_InputInit_All(void);
 UINT8 EVAL_GetInputStatus(Input_TypeDef eIn);
+
 
 
 
@@ -121,7 +135,7 @@ UINT8  PF_InitTimer2(void);
 #define OUTIN_MOTOR_PWM_TIM_PSC			11   //42    //84M/12=4M, 7M/1000=7k
 #define OUTIN_MOTOR_PWM_LEVEL_CLOSE		0
 #define OUTIN_MOTOR_PWM_LEVEL_BEST		400
-#define OUTIN_MOTOR_PWM_LEVEL_HIGHEST	1000
+#define OUTIN_MOTOR_PWM_LEVEL_HIGHEST	OUTIN_MOTOR_PWM_TIM_ARR
 
 // Time3_CH3  Out_In_Motor clk
 void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc);
@@ -197,28 +211,44 @@ void Beep(UINT8 nNo, UINT16 nDelay);
 #define PUMP_PWM_TIM_PSC					41    //42
 #define PUMP_PWM_LEVEL_CLOSE				0
 #define PUMP_PWM_LEVEL_BEST					15000
-#define PUMP_PWM_LEVEL_HIGHEST				25000
+#define PUMP_PWM_LEVEL_HIGHEST				PUMP_PWM_TIM_ARR
 //
-#define PUMP_DIR_PORT						GPIOD
-#define PUMP_DIR_PIN						GPIO_Pin_4
-#define PUMP_DIR_SRC						RCC_AHB1Periph_GPIOD
+//#define PUMP_DIR_PORT						GPIOD
+//#define PUMP_DIR_PIN						GPIO_Pin_4
+//#define PUMP_DIR_SRC						RCC_AHB1Periph_GPIOD
 //
 void Pump_init(void);
 void Pump_PWM_Init(UINT32 Arr, UINT32 Psc);
 //void TIM4_PWM_Init(UINT32 Arr, UINT32 Psc);
-void Pump_Speed_Set(UINT16 nSpeed);
+void Pump_Speed_Set(UINT16 nSpeed);		// dir is invable
 void Pump_AntiClockWise(void);
 void Pump_ClockWise(void);
 void Pump_Exec(UINT8 nDir, UINT16 nFreq);
 
 // mixing motor, PB10
-#define MIXING_DIR_PORT						GPIOE
-#define MIXING_DIR_PIN						GPIO_Pin_6
-#define MIXING_DIR_SRC						RCC_AHB1Periph_GPIOE
+#define MIXING_DIR_PORT						GPIOB
+#define MIXING_DIR_PIN						GPIO_Pin_10
+#define MIXING_DIR_SRC						RCC_AHB1Periph_GPIOB
 // mixing motor
 void Mixing_Motor_Init(void);
 void Mixing_Motor_Run(void);
 void Mixing_Motor_Stop(void);
+
+// --------- OC for micro switch(cx3000), PD6
+#define MICRO_OC_PORT					GPIOD
+#define MICRO_OC_PIN					GPIO_Pin_6
+#define MICRO_OC_SRC					RCC_AHB1Periph_GPIOD
+#define MICRO_OC_EXIT_PORT				EXTI_PortSourceGPIOD
+#define MICRO_OC_EXIT_PIN				EXTI_PinSource6
+#define MICRO_OC_EXIT_LINE				EXTI_Line6
+#if USE_STM32F407_ONLY
+#define MICRO_OC_EXIT_FUNC				EXTI9_5_IRQHandler
+#endif
+#define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
+void Micro_OC_Init(void);
+UINT8 Get_Micro_OC_Status(void);
+_EXT_ IO_ UINT8 g_Micro_Switch;
+
 
 
 //switch 1_PF11, 2_PH6
@@ -312,7 +342,7 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 //#define LED_SELETCT_STEP_DIFF  5
 
 
-//extern  IO_ UINT8 g_Turn_Position;
+
 //// turn motor
 ////void Turn_Motor_Init(void);
 //void Turn_Motor_Break(void);
@@ -344,16 +374,25 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 #define TURN_MOTOR_CLK_PORT				GPIOH
 #define TURN_MOTOR_CLK_PIN				GPIO_Pin_12
 #define TURN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOH
-// TIM5_CH3
-#define TURN_MOTOR_CLK_PIN_AF			GPIO_PinSource12
-#define TURN_MOTOR_CLK_PORT_AF			GPIO_AF_TIM5
-#define TURN_MOTOR_PWM_TIM				TIM5
-#define TURN_MOTOR_PWM_TIM_SRC			RCC_APB1Periph_TIM5
-#define TURN_MOTOR_PWM_TIM_ARR			8000 //25000
-#define TURN_MOTOR_PWM_TIM_PSC			11   //42    //84M/12=4M, 7M/1000=7k
-#define TURN_MOTOR_PWM_LEVEL_CLOSE		0
-#define TURN_MOTOR_PWM_LEVEL_BEST		800
-#define TURN_MOTOR_PWM_LEVEL_HIGHEST	1000
+
+#define TURN_MOTOR_USE_TIM_PWM		0
+#if TURN_MOTOR_USE_TIM_PWM
+//	// TIM5_CH3
+//	#define TURN_MOTOR_CLK_PIN_AF			GPIO_PinSource12
+//	#define TURN_MOTOR_CLK_PORT_AF			GPIO_AF_TIM5
+//	#define TURN_MOTOR_PWM_TIM				TIM5
+//	#define TURN_MOTOR_PWM_TIM_SRC			RCC_APB1Periph_TIM5
+//	#define TURN_MOTOR_PWM_TIM_ARR			1000 
+//	#define TURN_MOTOR_PWM_TIM_PSC			11   //42    //84M/12=4M, 7M/1000=7k
+//	#define TURN_MOTOR_PWM_LEVEL_CLOSE		0
+//	#define TURN_MOTOR_PWM_LEVEL_BEST		400
+//	#define TURN_MOTOR_PWM_LEVEL_HIGHEST	TURN_MOTOR_PWM_TIM_ARR
+//	#define MOTOR_RESOLUTION				8*10
+//	#define DELAY_MOTOR  					((TURN_MOTOR_PWM_TIM_ARR*MOTOR_RESOLUTION)/7)
+#else
+	#define TURN_MOTOR_UP_TIME					150
+	#define TURN_MOTOR_DOWN_TIME				150//3000	
+#endif
 
 enum{
 	EN_LED0 = 0,	//
@@ -370,49 +409,71 @@ enum{
 #define HGB_LED_INDEX	EN_LED6
 #define CRP_LED_INDEX   EN_LED3
 
-// e_Dir_Pos=click, e_Dir_Neg=auti-click
-enum{
-	EN_LED0_TRIGGER_OC_TIMES = 0,
-	EN_LED1_TRIGGER_OC_TIMES = 0,
-	EN_LED2_TRIGGER_OC_TIMES = 1, // e_Dir_Neg=auti-click
-	EN_LED3_TRIGGER_OC_TIMES = 1, // e_Dir_Neg=auti-click
-	EN_LED4_TRIGGER_OC_TIMES = 1, // e_Dir_Pos=click
-	EN_LED5_TRIGGER_OC_TIMES = 2, // e_Dir_Pos=click
-	EN_LED6_TRIGGER_OC_TIMES = 3, // e_Dir_Pos=click
-	EN_LED7_TRIGGER_OC_TIMES = 2, // e_Dir_Neg=auti-click
+
+#if TURN_MOTOR_USE_TIM_PWM
+//// e_Dir_Pos=click, e_Dir_Neg=auti-click
+//enum{
+//	EN_LED0_TRIGGER_OC_TIMES = 0,
+//	EN_LED1_TRIGGER_OC_TIMES = 0,
+//	EN_LED2_TRIGGER_OC_TIMES = 1, // e_Dir_Neg=auti-click
+//	EN_LED3_TRIGGER_OC_TIMES = 1, // e_Dir_Neg=auti-click
+//	EN_LED4_TRIGGER_OC_TIMES = 1, // e_Dir_Pos=click
+//	EN_LED5_TRIGGER_OC_TIMES = 2, // e_Dir_Pos=click
+//	EN_LED6_TRIGGER_OC_TIMES = 3, // e_Dir_Pos=click
+//	EN_LED7_TRIGGER_OC_TIMES = 2, // e_Dir_Neg=auti-click
+//};
+//// Time4_CH3  Turn Motor clk
+//void Turn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc);
+
+#else
+extern  IO_ UINT8 g_Turn_Position;
+#define TURN_MOTOR_RESET_MAX_STEPS	60000
+enum {
+	EN_LED0_SELECT_STEP		= 0,	
+	EN_LED1_SELECT_STEP		= 0,
+	EN_LED2_SELECT_STEP		= 70,
+	EN_LED3_SELECT_STEP		= 4,
+	EN_LED4_SELECT_STEP		= 62,
+	EN_LED5_SELECT_STEP		= 134,
+	EN_LED6_SELECT_STEP		= 203,
+	EN_LED7_SELECT_STEP		= 138,
 };
 
-// Time4_CH3  Turn Motor clk
-void Turn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc);
-// Turn Motor
-void Turn_Motor_Init(void);
-void Turn_Motor_Speed_Set(UINT16 nSpeed);
-void Turn_Motor_Run(UINT8 nDir, UINT16 nFreq);
-UINT8 Turn_Motor_Reset(void);
-UINT8 Turn_Motor_Select_LED(UINT8 nIndex);
-UINT8 Turn_Motor_Goto_Postion(UINT8 nDir, UINT32 nOCTimes);
-
-//UINT8 Turn_Motor_ClockWise(UINT32 nStep);
-//UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep);
-//void Turn_Motor_Goto_Postion(UINT8 nOpt, UINT32 nStep);
-//void Turn_Motor_Select_LED(UINT8 nIndex);
-//void Turn_Motor_Power(UINT8 nOpt);
-
-
-// --------- OC for micro switch(cx3000), PD6
-#define MICRO_OC_PORT					GPIOD
-#define MICRO_OC_PIN					GPIO_Pin_6
-#define MICRO_OC_SRC					RCC_AHB1Periph_GPIOD
-#define MICRO_OC_EXIT_PORT				EXTI_PortSourceGPIOD
-#define MICRO_OC_EXIT_PIN				EXTI_PinSource6
-#define MICRO_OC_EXIT_LINE				EXTI_Line6
-#if USE_STM32F407_ONLY
-#define MICRO_OC_EXIT_FUNC				EXTI9_5_IRQHandler
+enum{
+	EN_POSITION_LED0 = 0,
+	EN_POSITION_LED1 = 1,
+	EN_POSITION_LED2 = 2,
+	EN_POSITION_LED3 = 3,
+	EN_POSITION_LED4 = 4,
+	EN_POSITION_LED5 = 5,
+	EN_POSITION_LED6 = 6,
+	EN_POSITION_LED7 = 7,
+	EN_POSITION_LED_RESET = 8,
+	EN_POSITION_LED_UNSURE = 9
+};
+void Turn_CLK_Set(void);
+void Turn_CLK_Reset(void);
 #endif
-#define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
-void Micro_OC_Init(void);
-UINT8 Get_Micro_OC_Status(void);
-_EXT_ IO_ UINT8 g_Micro_Switch;
+
+
+void Turn_Motor_Init(void);
+#if TURN_MOTOR_USE_TIM_PWM
+//	// Turn Motor
+//	void Turn_Motor_Speed_Set(UINT16 nSpeed);
+//	void Turn_Motor_Run(UINT8 nDir, UINT16 nFreq);
+//	UINT8 Turn_Motor_Reset(void);
+//	UINT8 Turn_Motor_Select_LED(UINT8 nIndex);
+//	UINT8 Turn_Motor_Goto_Postion(UINT8 nDir, UINT32 nOCTimes);
+#else
+	void Turn_Motor_Enable(void);
+	void Turn_Motor_Disable(void);
+	void Turn_Motor_Dir(UINT8 nDir); // e_Dir_Pos=clockwise. e_Dir_Neg=anti-clockwise
+	void Turn_Motor_Reset();	
+	void Turn_Motor_Run(UINT32 nSteps);
+	UINT8 Turn_Motor_Goto_Postion(UINT8 nDir, UINT32 nSteps);
+	UINT8 Turn_Motor_Select_LED(UINT8 nIndex);
+#endif
+
 
 
 //// --------- OC for turn motor reset, and than select LED, PB6
@@ -434,11 +495,7 @@ _EXT_ IO_ UINT8 g_Micro_Switch;
 //#define IN_OC_CLK_PIN					GPIO_Pin_7
 //#define IN_OC_CLK_SRC					RCC_AHB1Periph_GPIOB
 
-//void OC_Init(void);
-//UINT8 Get_Turn_Select_OC_Status(void); 
-//UINT8 Get_Turn_Reset_OC_Status(void); 
-//UINT8 Get_Out_OC_Status(void);
-//UINT8 Get_In_OC_Status(void);
+
 
 
 // --------- cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS 
@@ -547,14 +604,16 @@ void DRegister_Write(UINT8 nIndex, UINT8 nVal);
 #define LED_SELECT_PORT						GPIOH
 //
 void LED_Init(void);
-void LED_Cur_DAC_Init(void);
 void LED_Cur_Switch(UINT8 nOpt);
+void LED_Exec(UINT8 nIndex, UINT8 nOpt);
+void LED_All_Reset(void);
+
+void LED_Cur_DAC_Init(void);
 void LED_Cur_ADC_Check_Channel(UINT16 nIndex); // chose whick channel through cd4051
 UINT16 Get_LED_Cur_ADC(void);      // ADC
 void LED_Cur_DAC_Set(UINT16 nVal); // DAC
 void LED_Cur_Auto_Adjust(UINT16 nCurrent); 
-void LED_Exec(UINT8 nIndex, UINT8 nOpt);
-void LED_All_Reset(void);
+
 
 // ---------  XK ADC, PC3_ADC3_IN13	
 #define XK_ADC_PORT							GPIOC
@@ -657,10 +716,10 @@ enum{
 	 EN_VALVE_LIQUID	= 1
 };
 
-enum{
-	EN_ANTI_CLOCK_WISE = 0,
-	EN_CLOCK_WISE = 1
-};
+//enum{
+//	EN_ANTI_CLOCK_WISE = 0,
+//	EN_CLOCK_WISE = 1
+//};
 
 
 typedef enum{

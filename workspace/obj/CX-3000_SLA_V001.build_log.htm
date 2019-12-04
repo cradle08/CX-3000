@@ -4,91 +4,95 @@
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
 F:\CX-3000\CX-3000\workspace\prj\CX-3000.uvproj
-Project File Date:  12/02/2019
+Project File Date:  12/04/2019
 
 <h2>Output:</h2>
 Build target 'Scope'
-linking...
-Program Size: Code=134976 RO-data=4744 RW-data=956 ZI-data=85828  
-FromELF: creating hex file...
-After Build - User command #1: "D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-3000_SLA_V001.bin" "..\obj\CX-3000_SLA_V001.axf"
-"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 0 Warning(s).
-</pre>
-</body>
-</html>
-ProcessScope.c(2060): warning:  #177-D: variable "j" was declared but never referenced
-        UINT16 i, j;
-..\..\source\ProcessScope.c(2213): warning:  #550-D: variable "nTempTicks" was set but never used
-        UINT32 nCurTicks, nTempTicks, i, j;
-..\..\source\ProcessScope.c: 4 warnings, 0 errors
-compiling Protocol.c...
-compiling InterfaceScope.c...
-compiling StorageManagement.c...
-compiling Fpga.c...
-compiling Scope_It.c...
-compiling Scope_Move.c...
-compiling BufferCircle.c...
-compiling NetBufferCircle.c...
-compiling SampleBufferCircle.c...
-compiling InterruptBufferCircle.c...
 compiling driver.c...
+..\..\config\driver.h(471): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+        void Turn_Motor_Reset();        
 ..\..\config\driver.c(156): warning:  #188-D: enumerated type mixed with another type
                 EVAL_OutputInit(i);
-..\..\config\driver.c(207): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+..\..\config\driver.c(210): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
       EXTI_InitTypeDef EXTI_InitStructure;
-..\..\config\driver.c(208): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+..\..\config\driver.c(211): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
       NVIC_InitTypeDef NVIC_InitStructure;
-..\..\config\driver.c(226): warning:  #188-D: enumerated type mixed with another type
+..\..\config\driver.c(229): warning:  #188-D: enumerated type mixed with another type
                 EVAL_InputInit(i);
-..\..\config\driver.c(322): warning:  #177-D: variable "GPIO_InitStructure" was declared but never referenced
+..\..\config\driver.c(325): warning:  #177-D: variable "GPIO_InitStructure" was declared but never referenced
         GPIO_InitTypeDef  GPIO_InitStructure;
-..\..\config\driver.c(462): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Reset"
+..\..\config\driver.c(642): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Goto_Postion"
   }
-..\..\config\driver.c(545): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Select_LED"
+..\..\config\driver.c(724): error:  #20: identifier "EN_CLOCK_WISE" is undefined
+                        Turn_Motor_Goto_Postion(EN_CLOCK_WISE, EN_LED6_SELECT_STEP);
+..\..\config\driver.c(731): error:  #20: identifier "EN_CLOCK_WISE" is undefined
+                        Turn_Motor_Goto_Postion(EN_CLOCK_WISE, EN_LED7_SELECT_STEP);
+..\..\config\driver.c(737): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Select_LED"
   }
-..\..\config\driver.c(589): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+..\..\config\driver.c(784): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
         NVIC_InitTypeDef NVIC_InitStructure;
-..\..\config\driver.c(1213): warning:  #177-D: variable "i" was declared but never referenced
+..\..\config\driver.c(1408): warning:  #177-D: variable "i" was declared but never referenced
         UINT16 nVal = 0, i;
-..\..\config\driver.c(1225): warning:  #177-D: variable "i" was declared but never referenced
+..\..\config\driver.c(1420): warning:  #177-D: variable "i" was declared but never referenced
         UINT16 nVal = 0, i;
-..\..\config\driver.c(1263): warning:  #177-D: variable "i" was declared but never referenced
+..\..\config\driver.c(1458): warning:  #177-D: variable "i" was declared but never referenced
         UINT16 nVal = 0, i;
-..\..\config\driver.c(1465): warning:  #550-D: variable "Status" was set but never used
+..\..\config\driver.c(1660): warning:  #550-D: variable "Status" was set but never used
         UINT8 Status;
-..\..\config\driver.c(1466): warning:  #550-D: variable "Tempertaure_data" was set but never used
+..\..\config\driver.c(1661): warning:  #550-D: variable "Tempertaure_data" was set but never used
         INT32 Pressure_data,Tempertaure_data;
-..\..\config\driver.c(3007): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+..\..\config\driver.c(3215): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
       USART_InitTypeDef USART_InitStructure;    
-..\..\config\driver.c: 14 warnings, 0 errors
-compiling AD7799.c...
-..\..\config\AD7799.c(511): warning:  #940-D: missing return statement at end of non-void function "AD7799_Get_ADC_Value"
+..\..\config\driver.c: 15 warnings, 2 errors
+"..\obj\CX-3000_SLA_V001.axf" - 2 Error(s), 15 Warning(s).
+Target not created
+
+..\..\config\driver.h(471): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+        void Turn_Motor_Reset();        
+..\..\config\BufferCircle.c: 1 warning, 0 errors
+compiling NetBufferCircle.c...
+..\..\config\driver.h(471): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+        void Turn_Motor_Reset();        
+..\..\config\NetBufferCircle.c: 1 warning, 0 errors
+compiling SampleBufferCircle.c...
+..\..\config\driver.h(471): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+        void Turn_Motor_Reset();        
+..\..\config\SampleBufferCircle.c: 1 warning, 0 errors
+compiling InterruptBufferCircle.c...
+..\..\config\driver.h(471): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+        void Turn_Motor_Reset();        
+..\..\config\InterruptBufferCircle.c: 1 warning, 0 errors
+compiling driver.c...
+..\..\config\driver.h(471): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+        void Turn_Motor_Reset();        
+..\..\config\driver.c(156): warning:  #188-D: enumerated type mixed with another type
+                EVAL_OutputInit(i);
+..\..\config\driver.c(210): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(211): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+      NVIC_InitTypeDef NVIC_InitStructure;
+..\..\config\driver.c(229): warning:  #188-D: enumerated type mixed with another type
+                EVAL_InputInit(i);
+..\..\config\driver.c(325): warning:  #177-D: variable "GPIO_InitStructure" was declared but never referenced
+        GPIO_InitTypeDef  GPIO_InitStructure;
+..\..\config\driver.c(642): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Goto_Postion"
   }
-..\..\config\AD7799.c(508): warning:  #550-D: variable "nADC" was set but never used
-        UINT32  nADC;
-..\..\config\AD7799.c: 2 warnings, 0 errors
-compiling ethernetif.c...
-compiling netconf.c...
-compiling stm32f4x7_eth_bsp.c...
-compiling udp_echoserver.c...
-linking...
-Program Size: Code=134976 RO-data=4744 RW-data=956 ZI-data=85828  
-FromELF: creating hex file...
-After Build - User command #1: "D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-3000_SLA_V001.bin" "..\obj\CX-3000_SLA_V001.axf"
-"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 20 Warning(s).
-Load "..\\obj\\CX-3000_SLA_V001.axf" 
-Set JLink Project File to "F:\CX-3000\CX-3000\workspace\prj\JLinkSettings.ini"
-* JLink Info: Device "STM32F407ZE" selected.
- 
-JLink info:
-------------
-DLL: V6.14b, compiled Mar  9 2017 08:46:04
-Firmware: J-Link ARM V8 compiled Nov 28 2014 13:44:46
-Hardware: V8.00
-S/N : 17935099 
-Feature(s) : RDI,FlashDL,FlashBP,JFlash 
- 
-* JLink Info: STM32 (connect): Can not attach to CPU. Trying connect under reset.
-* JLink Info: STM32 (connect): Can not attach to CPU. Trying connect under reset.
-***JLink Error: STM32: Connecting to CPU via connect under reset failed.
-Error: Flash Download failed  -  Target DLL has been cancelled
+..\..\config\driver.c(724): error:  #20: identifier "EN_CLOCK_WISE" is undefined
+                        Turn_Motor_Goto_Postion(EN_CLOCK_WISE, EN_LED6_SELECT_STEP);
+..\..\config\driver.c(731): error:  #20: identifier "EN_CLOCK_WISE" is undefined
+                        Turn_Motor_Goto_Postion(EN_CLOCK_WISE, EN_LED7_SELECT_STEP);
+..\..\config\driver.c(737): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Select_LED"
+  }
+..\..\config\driver.c(784): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+        NVIC_InitTypeDef NVIC_InitStructure;
+..\..\config\driver.c(1408): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1420): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1458): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1660): warning:  #550-D: variable "Status" was set but never used
+        UINT8 Status;
+..\..\config\driver.c(1661): warning:  #550-D: variable "Tempertaure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(321
