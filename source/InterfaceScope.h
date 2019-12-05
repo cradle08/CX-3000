@@ -68,7 +68,7 @@
 //#define EN_VALVE_AIR 		 0  // yaolan_20190220
 //#define EN_VALVE_LIQUID     		 1
 
-#define MOTO_SELF_CHECK_TIMEOUT  6000
+#define MOTO_SELF_CHECK_TIMEOUT   10000
 
 
 //-----------------------------------------------------------------------------------------
@@ -143,7 +143,7 @@ UINT8 Poll_SendDMA_ADC2_Data(UINT32 nCmd);
 //-----------------------------------------------------------------------------------------
 
 
-
+UINT16 AddStep_To_MS(UINT32 nStep);
 // 电机的控制接口声明
 // init
 _EXT_ UINT8 MT_ALL_Init(void);

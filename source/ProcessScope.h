@@ -272,7 +272,7 @@ void Reset_ADC_InitDataType(void);
 #ifdef   DEBUG_TEST
 //#define  PRESS_BUILD                   600000000   /* 60kPa 适合检测的气压 */
 //#define  TIME_OVER_TS_BUILD_PRESS      60000       /* 60秒  负压泵建立负压超时时间 */
-//#define  TIME_OVER_TS_ADC              20000       /* 15秒  临时调试用 */
+//#define  TIME_OVER_TS_ADC              15000       /* 15秒  临时调试用 */
 #else
 #define  PRESS_BUILD                   2200000 //230000000   /* 30kPa->22kPa 适合检测的气压 */
 #define  TIME_OVER_TS_BUILD_PRESS      15000       /* 10秒  负压泵建立负压超时时间 */
@@ -331,6 +331,10 @@ typedef enum
 }
 MOTO_WORK_STAT_E;
 
+enum {
+	EN_MOTOR_OUTIN = 0,
+
+};
 
 typedef enum
 {

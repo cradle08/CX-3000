@@ -646,12 +646,12 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
             case CMD_CTRL_MOT_RELEASE:  /* 释放芯片 */
 			{
-                MT_Y_Home(e_NormalCheck_Call);
+              //  MT_Y_Home(e_NormalCheck_Call);
 			}
             break;
             case CMD_CTRL_MOT_LOCK:     /* 锁定芯片 */
 			{
-                MT_Y_MoveToPosRel(e_NormalCheck_Call);
+              //  MT_Y_MoveToPosRel(e_NormalCheck_Call);
 			}
             break;
             case CMD_CTRL_MOT_IN_ONLY:  /* 单独驱动大电机进仓 */

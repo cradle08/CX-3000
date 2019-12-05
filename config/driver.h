@@ -31,7 +31,8 @@ typedef enum              // take attention of sequence
 	O_OUTIN_MOTOR_DIR 		= 4,
 	O_TURN_MOTOR_EN	 		= 5,
 	O_TURN_MOTOR_DIR 		= 6,	
-	OUTPUT_NUM      		= 7,
+	O_COUNTER_ADJUST		= 7,
+	OUTPUT_NUM      		= 8,
 	
 } Output_TypeDef;
 
@@ -56,7 +57,11 @@ void EVAL_OutputSet(Output_TypeDef eOut);
 void EVAL_OutputClr(Output_TypeDef eOut);
 void EVAL_OutputToggle(Output_TypeDef eOut);
 
+// 1 is cover, 0 is empty
 void OC_Init(void);
+UINT8 Get_Out_OC_Status(void);
+UINT8 Get_In_OC_Status(void);
+
 //UINT8 Get_Turn_Select_OC_Status(void); 
 //UINT8 Get_Turn_Reset_OC_Status(void); 
 //UINT8 Get_Out_OC_Status(void);
@@ -131,20 +136,23 @@ UINT8  PF_InitTimer2(void);
 #define OUTIN_MOTOR_CLK_PORT_AF			GPIO_AF_TIM3
 #define OUTIN_MOTOR_PWM_TIM				TIM3
 #define OUTIN_MOTOR_PWM_TIM_SRC			RCC_APB1Periph_TIM3
-#define OUTIN_MOTOR_PWM_TIM_ARR			1000 //25000
-#define OUTIN_MOTOR_PWM_TIM_PSC			11   //42    //84M/12=4M, 7M/1000=7k
+#define OUTIN_MOTOR_PWM_TIM_ARR			800 //25000
+#define OUTIN_MOTOR_PWM_TIM_PSC			11   //42    //84M/12=4M, 
 #define OUTIN_MOTOR_PWM_LEVEL_CLOSE		0
 #define OUTIN_MOTOR_PWM_LEVEL_BEST		400
 #define OUTIN_MOTOR_PWM_LEVEL_HIGHEST	OUTIN_MOTOR_PWM_TIM_ARR
-
+#define OUTIN_MOTOR_USE_PWM				1
+#define	OUTIN_MOTOR_HOME_TIME			10000
 // Time3_CH3  Out_In_Motor clk
 void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc);
 // Out_In Motor
 void OutIn_Motor_Init(void);
 void OutIn_Motor_Speed_Set(UINT16 nSpeed);
 void OutIn_Motor_Run(UINT8 nDir, UINT16 nFreq); //e_Dir_Pos=in, e_Dir_Neg=out
-
-
+void OutIn_Motor_Enable(void);
+void OutIn_Motor_Disable(void);
+void OutIn_Motor_Out(void); //out
+void OutIn_Motor_In(void); // in
 
 
 
@@ -210,7 +218,7 @@ void Beep(UINT8 nNo, UINT16 nDelay);
 #define PUMP_PWM_TIM_ARR					24999 //25000
 #define PUMP_PWM_TIM_PSC					41    //42
 #define PUMP_PWM_LEVEL_CLOSE				0
-#define PUMP_PWM_LEVEL_BEST					15000
+#define PUMP_PWM_LEVEL_BEST					20000
 #define PUMP_PWM_LEVEL_HIGHEST				PUMP_PWM_TIM_ARR
 //
 //#define PUMP_DIR_PORT						GPIOD
@@ -392,6 +400,7 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 #else
 	#define TURN_MOTOR_UP_TIME					150
 	#define TURN_MOTOR_DOWN_TIME				150//3000	
+	#define TURN_MOTOR_DISCARD_NUM				1000
 #endif
 
 enum{
@@ -431,12 +440,12 @@ extern  IO_ UINT8 g_Turn_Position;
 enum {
 	EN_LED0_SELECT_STEP		= 0,	
 	EN_LED1_SELECT_STEP		= 0,
-	EN_LED2_SELECT_STEP		= 70,
-	EN_LED3_SELECT_STEP		= 4,
-	EN_LED4_SELECT_STEP		= 62,
-	EN_LED5_SELECT_STEP		= 134,
-	EN_LED6_SELECT_STEP		= 203,
-	EN_LED7_SELECT_STEP		= 138,
+	EN_LED2_SELECT_STEP		= 8945,
+	EN_LED3_SELECT_STEP		= 260,
+	EN_LED4_SELECT_STEP		= 8185,
+	EN_LED5_SELECT_STEP		= 16755,
+	EN_LED6_SELECT_STEP		= 25205,
+	EN_LED7_SELECT_STEP		= 17411,
 };
 
 enum{
@@ -805,12 +814,36 @@ UINT16  Get_HGB_Value(void);
 UINT32  Get_CRP_Value(void);
 
 
+// counter adjust
+
+// PE7 counter switch 
+#define COUNTER_SWITCH_PORT			GPIOE
+#define COUNTER_SWITCH_PIN 			GPIO_Pin_7
+#define COUNTER_SWITCH_SRC			RCC_AHB1Periph_GPIOE
+// PE10 PWM
+#define COUNTER_PWM_PORT			GPIOE
+#define COUNTER_PWM_PIN				GPIO_Pin_10
+#define COUNTER_PWM_SRC				RCC_AHB1Periph_GPIOE
+
+// TIM1 CH1N PE10
+#define COUNTER_PWM_PIN_AF			GPIO_PinSource10
+#define COUNTER_PWM_PORT_AF			GPIO_AF_TIM1
+#define COUNTER_PWM_TIM				TIM1
+#define COUNTER_PWM_TIM_SRC			RCC_APB2Periph_TIM1
+#define COUNTER_PWM_TIM_ARR			200 
+#define COUNTER_PWM_TIM_PSC			6     //42M/7=6M,  6M/200=30k
+#define COUNTER_PWM_LEVEL_CLOSE		0
+#define COUNTER_PWM_DEFAULT_FREQ    6000000
+#define COUNTER_PWM_LEVEL_HIGHEST	OUTIN_MOTOR_PWM_TIM_ARR
+void Counter_Adjust_Init(void);
+void Counter_Adjust_Start(UINT32 nFreq);
+void Counter_Adjust_Switch(UINT8 nOpt);
+void Counter_Adjust_PWM_Init(UINT32 Arr,UINT32 Psc);
+
 //
 
 void EVAL_Init(void);
 void Driver_Debug(UINT8 nIndex);
-
-
 
 
 
@@ -828,8 +861,8 @@ void Driver_Debug(UINT8 nIndex);
 //
 //void OutIn_Motor_Enable(void);
 //void OutIn_Motor_Disable(void);
-//void OutIn_Motor_AntiClockWise(void); //out
-//void OutIn_Motor_ClockWise(void); // in
+//void OutIn_Motor_Out(void); //out
+//void OutIn_Motor_In(void); // in
 //void OutIn_Motor_Run(UINT16 nUp, UINT16 nDown);
 //UINT8 OutIn_Motor_Home(eModeType eMode);
 //UINT8 OutIn_Motor_Out(eModeType eMode);
