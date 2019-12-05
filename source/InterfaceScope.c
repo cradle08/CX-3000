@@ -1989,9 +1989,9 @@ UINT8 Send_Data_HGB(UINT32 nCmd, UINT32* pData, UINT16 nLen)
 	UINT8 chReturn;
 	IO_ UINT16 pos, i = 0, j = 0;
 	UINT32 nData;
-	// head
-    s_anBufNet[0] = 0x4243;
-    s_anBufNet[1] = 0x5757;
+	// head ,data frame
+    s_anBufNet[0] = 0x4353;
+    s_anBufNet[1] = 0x5744;
 	// cmd
 	s_anBufNet[2] = (((nCmd >> 24)&0x00FF) | ((nCmd >> 8)&0xFF00));
 	s_anBufNet[3] = (((nCmd >> 8)&0x00FF) | ((nCmd << 8)&0xFF00));
@@ -2038,9 +2038,9 @@ UINT8 Send_Data_CRP(UINT32 nCmd, IO_ UINT32* pData, UINT16 nLen)
 	
 	LwIP_Periodic_Handle(IT_SYS_GetTicks());
 	
-	// head
-    s_anBufNet[0] = 0x4243;
-    s_anBufNet[1] = 0x5757;
+	// head, data frame
+    s_anBufNet[0] = 0x4353;
+    s_anBufNet[1] = 0x5744;
 	// cmd
 	s_anBufNet[2] = (((nCmd >> 24)&0x00FF) | ((nCmd >> 8)&0xFF00));
 	s_anBufNet[3] = (((nCmd >> 8)&0x00FF) | ((nCmd << 8)&0xFF00));
