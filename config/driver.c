@@ -658,10 +658,19 @@ void Turn_Motor_Run(UINT32 nSteps)
 		{
 			if((i > nSteps -TURN_MOTOR_DISCARD_NUM) && (i < nSteps + TURN_MOTOR_DISCARD_NUM))
 			{
+				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL))
+				{
+					IT_SYS_DlyMs(1);
+					if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL)) break;
+				}
+			}
+		}else{
+			if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL))
+			{
+				IT_SYS_DlyMs(1);
 				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL)) break;
 			}
 		}
-		if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL)) break;
 		Turn_Motor_One_Step(TURN_MOTOR_UP_TIME, TURN_MOTOR_DOWN_TIME);
 	}
 	Turn_Motor_Disable();
@@ -679,23 +688,28 @@ void Turn_Motor_Reset()
 	UINT32 i = 0;
 	
 	Turn_Motor_Enable();
-	if(g_Turn_Position == EN_POSITION_LED4 || g_Turn_Position == EN_POSITION_LED5 || g_Turn_Position == EN_POSITION_LED6)
-	{
+//	if(g_Turn_Position == EN_POSITION_LED4 || g_Turn_Position == EN_POSITION_LED5 || g_Turn_Position == EN_POSITION_LED6)
+//	{
 		Turn_Motor_Dir(e_Dir_Neg);
-	}else{
-		Turn_Motor_Dir(e_Dir_Pos);
-	}
+//	}else{
+//		Turn_Motor_Dir(e_Dir_Pos);
+//	}
 	//
+	printf("Turn Motor Reset Start, Step=%d\r\n", (int)i);
 	if(EN_OPEN == EVAL_GetInputStatus(I_LED_OC_RST))
 	{
 		for(i = 0; i < TURN_MOTOR_RESET_MAX_STEPS; i++)
 		{
-			if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST)) break;
+			if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST))
+			{
+				IT_SYS_DlyMs(1);
+				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST)) break;
+			}				
 			Turn_Motor_One_Step(TURN_MOTOR_UP_TIME, TURN_MOTOR_DOWN_TIME);
 		}
 	}
 	Turn_Motor_Disable();
-	printf("go on %d to reset\r\n", (int)i);
+	printf("Turn Motor Reset End, Step=%d\r\n", (int)i);
 }
 
 
@@ -711,11 +725,11 @@ void Turn_Motor_Pass_Kong(void)
 UINT8 Turn_Motor_Select_LED(UINT8 nIndex)
 {
 	Turn_Motor_Reset();
-	IT_SYS_DlyMs(100);
+	IT_SYS_DlyMs(200);  
 	if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST) && EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST)) 
 	{
 		if(nIndex == EN_LED3) return 0;
-		Turn_Motor_Pass_Kong();
+		//Turn_Motor_Pass_Kong();
 	}
 	switch(nIndex)
 	{
@@ -736,42 +750,42 @@ UINT8 Turn_Motor_Select_LED(UINT8 nIndex)
 		case EN_LED2:
 		{
 			printf("LED2 Select Step=%d\r\n", EN_LED2_SELECT_STEP);
-			Turn_Motor_Goto_Postion(e_Dir_Neg, EN_LED2_SELECT_STEP);
+			Turn_Motor_Goto_Postion(e_Dir_Pos, EN_LED2_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED2;
 		}
 		break;
 		case EN_LED3:
 		{
 			printf("LED3 Select Step=%d\r\n", EN_LED3_SELECT_STEP);
-			Turn_Motor_Goto_Postion(e_Dir_Neg, EN_LED3_SELECT_STEP);
+			Turn_Motor_Goto_Postion(e_Dir_Pos, EN_LED3_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED3;
 		}
 		break;
 		case EN_LED4:
 		{
 			printf("LED4 Select Step=%d\r\n", EN_LED4_SELECT_STEP);
-			Turn_Motor_Goto_Postion(e_Dir_Pos, EN_LED4_SELECT_STEP);
+			Turn_Motor_Goto_Postion(e_Dir_Neg, EN_LED4_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED4;
 		}
 		break;
 		case EN_LED5:
 		{
 			printf("LED5 Select Step=%d\r\n", EN_LED5_SELECT_STEP);
-			Turn_Motor_Goto_Postion(e_Dir_Pos, EN_LED5_SELECT_STEP);
+			Turn_Motor_Goto_Postion(e_Dir_Neg, EN_LED5_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED5;
 		}
 		break;
 		case EN_LED6:
 		{
 			printf("LED6 Select Step=%d\r\n", EN_LED6_SELECT_STEP);
-			Turn_Motor_Goto_Postion(e_Dir_Pos, EN_LED6_SELECT_STEP);
+			Turn_Motor_Goto_Postion(e_Dir_Neg, EN_LED6_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED6;
 		}
 		break;
 		case EN_LED7:
 		{
 			printf("LED7 Select Step=%d\r\n", EN_LED7_SELECT_STEP);
-			Turn_Motor_Goto_Postion(e_Dir_Neg, EN_LED7_SELECT_STEP);
+			Turn_Motor_Goto_Postion(e_Dir_Pos, EN_LED7_SELECT_STEP);
 			g_Turn_Position = EN_POSITION_LED7;
 		}
 		break;
@@ -3446,23 +3460,28 @@ void EVAL_Init(void)
 	
 	Elec_Init();
 	Beep_Init();
-	Pump_init();
-	Valve_Init();
+	
 	OC_Init();
 	OutIn_Motor_Init();
+	Turn_Motor_Init();
+	// Counter 
 	Counter_Check_Init(); 
 	Counter_Adjust_Init();
+	
+	Pump_init();
 	Press_Init();
+	Valve_Init();
+	
 	Turn_Motor_Init();
 	Mixing_Motor_Init();
 	LED_Init();
 	LED_Cur_DAC_Init();
 	ADC24Bit_Init();
+	
 	DResistor_Init();
 	
 #endif
 	Beep(1, 400);
-	//ADC24Bit_Init();
 }
 
 
@@ -3511,41 +3530,58 @@ void Driver_Debug(UINT8 nIndex)
 		{
 			printf("start\r\n");
 			Turn_Motor_Init();
-			IT_SYS_DlyMs(100);
+			LED_Init();
+			LED_Cur_Switch(EN_OPEN);
 
-			Turn_Motor_Enable();
-			Turn_Motor_Dir(e_Dir_Neg); //e_Dir_Pos=anti
-			//
-			for(i = 0; i < 60000; i++)
-			{
-				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST)) break;
-				Turn_Motor_One_Step(TURN_MOTOR_UP_TIME, TURN_MOTOR_DOWN_TIME);
-			}
-			printf("Reset step = %d\r\n", (int)i);
+//			
+//			if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST) && EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST)) 
+//			{
+//				if(nIndex == EN_LED3) return 0;
+//				Turn_Motor_Pass_Kong();
+//			}
+
+			i = EN_LED6;
+			printf("LED Select Step=%d\r\n", EN_LED2_SELECT_STEP);
+			LED_Exec(i, EN_OPEN);
+			Turn_Motor_Select_LED(i);
+			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+			//LED_Exec(i, EN_CLOSE);
+			//Turn_Motor_Goto_Postion(e_Dir_Pos, EN_LED2_SELECT_STEP);
 			
-			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-			//
-			Turn_Motor_Dir(e_Dir_Neg); //e_Dir_Pos=anti
-			for(i = 0; i < 50000; i++)
-			{
-				//T1 = 0; T2=0;
-				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL)) 
-				{
-					printf("kong Had Checked, pass it\r\n");
-					T1 = i;
-					for(j = 0; j < 1000; j++)//while(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL))
-					{
-						i++;
-						Turn_Motor_One_Step(TURN_MOTOR_UP_TIME, TURN_MOTOR_DOWN_TIME);
-					}
-					T2 = i;
-					printf("kong had pass had,j=%d, T1=%d, T2=%d, i=%d\r\n\r\n", (int)j, T1, T2, (int)i);
-					IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-					IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-				}
-				Turn_Motor_One_Step(TURN_MOTOR_UP_TIME, TURN_MOTOR_DOWN_TIME);
-			}
+			
+			//Turn_Motor_Enable();
+//			Turn_Motor_Dir(e_Dir_Neg); //e_Dir_Pos=anti
+//			//
+//			for(i = 0; i < 60000; i++)
+//			{
+//				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST)) break;
+//				Turn_Motor_One_Step(TURN_MOTOR_UP_TIME, TURN_MOTOR_DOWN_TIME);
+//			}
+//			printf("Reset step = %d\r\n", (int)i);
+//			
+//			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+			
+//			Turn_Motor_Dir(e_Dir_Neg); //e_Dir_Pos=anti
+//			for(i = 0; i < 50000; i++)
+//			{
+//				//T1 = 0; T2=0;
+//				if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL)) 
+//				{
+//					printf("kong Had Checked, pass it\r\n");
+//					T1 = i;
+//					for(j = 0; j < 1000; j++)//while(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL))
+//					{
+//						i++;
+//						Turn_Motor_One_Step(TURN_MOTOR_UP_TIME, TURN_MOTOR_DOWN_TIME);
+//					}
+//					T2 = i;
+//					printf("kong had pass had,j=%d, T1=%d, T2=%d, i=%d\r\n\r\n", (int)j, T1, T2, (int)i);
+//					IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//					IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//				}
+//				Turn_Motor_One_Step(TURN_MOTOR_UP_TIME, TURN_MOTOR_DOWN_TIME);
+//			}
 			printf("end i=%d\r\n", (int)i);
 			printf("end\r\n");
 		}

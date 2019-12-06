@@ -398,8 +398,8 @@ void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 //	#define MOTOR_RESOLUTION				8*10
 //	#define DELAY_MOTOR  					((TURN_MOTOR_PWM_TIM_ARR*MOTOR_RESOLUTION)/7)
 #else
-	#define TURN_MOTOR_UP_TIME					150
-	#define TURN_MOTOR_DOWN_TIME				150//3000	
+	#define TURN_MOTOR_UP_TIME					40
+	#define TURN_MOTOR_DOWN_TIME				40//3000	
 	#define TURN_MOTOR_DISCARD_NUM				1000
 #endif
 

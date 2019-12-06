@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\obj\CX-3000_SLA_V001.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\obj\CX-3000_SLA_V001.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Thu Dec 05 21:04:58 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Fri Dec 06 11:51:54 2019
 <BR><P>
 <H3>Maximum Stack Usage =        868 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -4671,6 +4671,8 @@ Global Symbols
 <LI><a href="#[32c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Calibrate
 <LI><a href="#[32b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Init
 <LI><a href="#[317]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;LED_Cur_Auto_Adjust
+<LI><a href="#[2e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Reset
+<LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Run
 <LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_One_Step
 <LI><a href="#[3f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ETH_GPIO_Config
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ETH_link_callback
@@ -5156,8 +5158,7 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EVAL_OutputSet
 <LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EVAL_OutputClr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
-<LI><a href="#[2e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Reset
+<BR>[Called By]<UL><LI><a href="#[2e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Reset
 <LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Goto_Postion
 </UL>
 
@@ -5169,16 +5170,16 @@ Global Symbols
 <LI><a href="#[2dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_CLK_Set
 <LI><a href="#[2e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Delay_US
 </UL>
-<BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
-<LI><a href="#[2e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Pass_Kong
+<BR>[Called By]<UL><LI><a href="#[2e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Pass_Kong
 <LI><a href="#[2e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Reset
 <LI><a href="#[2e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Run
 </UL>
 
-<P><STRONG><a name="[2e4]"></a>Turn_Motor_Run</STRONG> (Thumb, 78 bytes, Stack size 16 bytes, driver.o(.text))
+<P><STRONG><a name="[2e4]"></a>Turn_Motor_Run</STRONG> (Thumb, 106 bytes, Stack size 16 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = Turn_Motor_Run &rArr; Turn_Motor_One_Step &rArr; Turn_CLK_Reset &rArr; GPIO_ResetBits &rArr; assert_failed &rArr; __2printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_One_Step
+<BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_DlyMs
+<LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_One_Step
 <LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Disable
 <LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Enable
 <LI><a href="#[2d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EVAL_GetInputStatus
@@ -5195,10 +5196,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Select_LED
 </UL>
 
-<P><STRONG><a name="[2e6]"></a>Turn_Motor_Reset</STRONG> (Thumb, 104 bytes, Stack size 8 bytes, driver.o(.text))
+<P><STRONG><a name="[2e6]"></a>Turn_Motor_Reset</STRONG> (Thumb, 94 bytes, Stack size 8 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = Turn_Motor_Reset &rArr; Turn_Motor_One_Step &rArr; Turn_CLK_Reset &rArr; GPIO_ResetBits &rArr; assert_failed &rArr; __2printf
 </UL>
-<BR>[Calls]<UL><LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_One_Step
+<BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_DlyMs
+<LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_One_Step
 <LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Dir
 <LI><a href="#[2e0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Disable
 <LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Enable
@@ -5208,19 +5210,14 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Select_LED
 </UL>
 
-<P><STRONG><a name="[2e7]"></a>Turn_Motor_Pass_Kong</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, driver.o(.text))
-<BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = Turn_Motor_Pass_Kong &rArr; Turn_Motor_One_Step &rArr; Turn_CLK_Reset &rArr; GPIO_ResetBits &rArr; assert_failed &rArr; __2printf
-</UL>
-<BR>[Calls]<UL><LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_One_Step
-</UL>
-<BR>[Called By]<UL><LI><a href="#[c3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Select_LED
+<P><STRONG><a name="[2e7]"></a>Turn_Motor_Pass_Kong</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, driver.o(.text), UNUSED)
+<BR><BR>[Calls]<UL><LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_One_Step
 </UL>
 
-<P><STRONG><a name="[c3]"></a>Turn_Motor_Select_LED</STRONG> (Thumb, 238 bytes, Stack size 8 bytes, driver.o(.text))
+<P><STRONG><a name="[c3]"></a>Turn_Motor_Select_LED</STRONG> (Thumb, 234 bytes, Stack size 8 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = Turn_Motor_Select_LED &rArr; Turn_Motor_Goto_Postion &rArr; Turn_Motor_Run &rArr; Turn_Motor_One_Step &rArr; Turn_CLK_Reset &rArr; GPIO_ResetBits &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;IT_SYS_DlyMs
-<LI><a href="#[2e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Pass_Kong
 <LI><a href="#[2e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Reset
 <LI><a href="#[2e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Goto_Postion
 <LI><a href="#[2d5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EVAL_GetInputStatus
@@ -5299,7 +5296,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f40_41xxx.o(RESET)
 </UL>
-<P><STRONG><a name="[45]"></a>DMA2_Stream3_IRQHandler</STRONG> (Thumb, 296 bytes, Stack size 8 bytes, driver.o(.text))
+<P><STRONG><a name="[45]"></a>DMA2_Stream3_IRQHandler</STRONG> (Thumb, 346 bytes, Stack size 8 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 64<LI>Call Chain = DMA2_Stream3_IRQHandler &rArr; DMA_GetITStatus &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_ClearITPendingBit
@@ -5307,7 +5304,7 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> startup_stm32f40_41xxx.o(RESET)
 </UL>
-<P><STRONG><a name="[2ec]"></a>ADC2_DMA_Config</STRONG> (Thumb, 194 bytes, Stack size 72 bytes, driver.o(.text))
+<P><STRONG><a name="[2ec]"></a>ADC2_DMA_Config</STRONG> (Thumb, 178 bytes, Stack size 72 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = ADC2_DMA_Config &rArr; NVIC_Init &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1c6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DMA_ClearITPendingBit
@@ -5390,7 +5387,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[c7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HW_Enable_Data_Channel
 </UL>
 
-<P><STRONG><a name="[2f0]"></a>Get_ADC3_Channel_Value</STRONG> (Thumb, 154 bytes, Stack size 24 bytes, driver.o(.text))
+<P><STRONG><a name="[2f0]"></a>Get_ADC3_Channel_Value</STRONG> (Thumb, 102 bytes, Stack size 24 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = Get_ADC3_Channel_Value &rArr; ADC_RegularChannelConfig &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC_ClearFlag
@@ -5420,7 +5417,7 @@ Global Symbols
 <LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_WBC_V_Value
 </UL>
 
-<P><STRONG><a name="[2f1]"></a>Get_12V_N_ADC</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, driver.o(.text))
+<P><STRONG><a name="[2f1]"></a>Get_12V_N_ADC</STRONG> (Thumb, 70 bytes, Stack size 8 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = Get_12V_N_ADC &rArr; Get_ADC3_Channel_Value &rArr; ADC_RegularChannelConfig &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_ADC3_Channel_Value
@@ -5985,7 +5982,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Driver_Debug
 </UL>
 
-<P><STRONG><a name="[6c]"></a>EVAL_Init</STRONG> (Thumb, 308 bytes, Stack size 24 bytes, driver.o(.text))
+<P><STRONG><a name="[6c]"></a>EVAL_Init</STRONG> (Thumb, 312 bytes, Stack size 24 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 200<LI>Call Chain = EVAL_Init &rArr; ADC2_Init &rArr; ADC2_DMA_Config &rArr; NVIC_Init &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[b6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Beep
@@ -6018,7 +6015,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[d2]"></a>Driver_Debug</STRONG> (Thumb, 2922 bytes, Stack size 72 bytes, driver.o(.text))
+<P><STRONG><a name="[d2]"></a>Driver_Debug</STRONG> (Thumb, 2380 bytes, Stack size 72 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 184<LI>Call Chain = Driver_Debug &rArr; AD7799_SetChannel &rArr; AD7799_GetRegisterValue &rArr; SPI_Read &rArr; GPIO_ResetBits &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OutIn_Motor_Run
@@ -6050,8 +6047,6 @@ Global Symbols
 <LI><a href="#[2f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_12V_P_ADC
 <LI><a href="#[2f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_12V_N_ADC
 <LI><a href="#[2ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ADC3_Init
-<LI><a href="#[2e2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_One_Step
-<LI><a href="#[2e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Dir
 <LI><a href="#[2df]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Enable
 <LI><a href="#[2de]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Turn_Motor_Init
 <LI><a href="#[2d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OutIn_Motor_Init
