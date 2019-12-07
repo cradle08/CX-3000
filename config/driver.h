@@ -598,9 +598,9 @@ void DRegister_Write(UINT8 nIndex, UINT8 nVal);
 #define LED_CUR_ADC_PIN						GPIO_Pin_6
 #define LED_CUR_ADC_SRC						RCC_AHB1Periph_GPIOF
 #define LED_CUR_ADC_CHANNEL					ADC_Channel_4
-// LED Select group, PH15-A0, PH14-A1, PH13-A2
+// LED Select group, PH15-A2, PH14-A1, PH13-A0,    A0-A1-A2=low->high
 #define LED_SELECT_A0_PORT					GPIOH
-#define LED_SELECT_A0_PIN					GPIO_Pin_15
+#define LED_SELECT_A0_PIN					GPIO_Pin_13
 #define LED_SELECT_A0_SRC					RCC_AHB1Periph_GPIOH
 // LED Select group, PH14-A1
 #define LED_SELECT_A1_PORT					GPIOH
@@ -608,7 +608,7 @@ void DRegister_Write(UINT8 nIndex, UINT8 nVal);
 #define LED_SELECT_A1_SRC					RCC_AHB1Periph_GPIOH
 // LED Select group, PH15-A2
 #define LED_SELECT_A2_PORT					GPIOH
-#define LED_SELECT_A2_PIN					GPIO_Pin_13
+#define LED_SELECT_A2_PIN					GPIO_Pin_15
 #define LED_SELECT_A2_SRC					RCC_AHB1Periph_GPIOH
 #define LED_SELECT_PORT						GPIOH
 //
@@ -618,9 +618,10 @@ void LED_Exec(UINT8 nIndex, UINT8 nOpt);
 void LED_All_Reset(void);
 
 void LED_Cur_DAC_Init(void);
-void LED_Cur_ADC_Check_Channel(UINT16 nIndex); // chose whick channel through cd4051
-UINT16 Get_LED_Cur_ADC(void);      // ADC
 void LED_Cur_DAC_Set(UINT16 nVal); // DAC
+
+UINT16 Get_LED_Cur_ADC(void);      // ADC
+void LED_Cur_ADC_Check_Channel(UINT16 nIndex); // chose whick channel through cd4051
 void LED_Cur_Auto_Adjust(UINT16 nCurrent); 
 
 
@@ -683,9 +684,18 @@ void LED_Cur_Auto_Adjust(UINT16 nCurrent);
 #define PRESS_I2C_SDA_PORT					GPIOH
 #define PRESS_I2C_SDA_PIN					GPIO_Pin_5
 #define PRESS_I2C_SDA_SCLCLK_SRC			RCC_AHB1Periph_GPIOH
+
+// PB1
+#define PRESS_I2C_EOC_PORT					GPIOB
+#define PRESS_I2C_EOC_PIN					GPIO_Pin_1
+#define PRESS_I2C_EOC_SRC					RCC_AHB1Periph_GPIOB
+
 //
+
 #define PRESS_I2C_SDA_IN()  {PRESS_I2C_SDA_PORT->MODER&=~(3<<(5*2));PRESS_I2C_SDA_PORT->MODER|=0<<5*2;}	//PB9输入模式
 #define PRESS_I2C_SDA_OUT() {PRESS_I2C_SDA_PORT->MODER&=~(3<<(5*2));PRESS_I2C_SDA_PORT->MODER|=1<<5*2;} //PB9输出模式
+
+ #define PRESS_I2C_EOC_STATUS	 GPIO_ReadInputDataBit(PRESS_I2C_EOC_PORT, PRESS_I2C_EOC_PIN)
 //
 #define PRESS_I2C_SCL    					 PHout(4) //SCL 
 #define PRESS_I2C_SDA   	 				 PHout(5) //SDA	 
@@ -843,7 +853,7 @@ void Counter_Adjust_PWM_Init(UINT32 Arr,UINT32 Psc);
 //
 
 void EVAL_Init(void);
-void Driver_Debug(UINT8 nIndex);
+void Driver_Debug(UINT8 nIndex, UINT32 nData);
 
 
 

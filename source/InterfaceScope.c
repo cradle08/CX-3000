@@ -1706,30 +1706,30 @@ INT32 HW_ADC_SpiGetPress(void)
 
 
 // yaolan_
-UINT8  HW_LED_On(UINT8 Index)
-{
-	if(Index == LED_CRP_INDEX)
-	{
-	
-	}else if(Index == LED_HGB_INDEX){
-		
-		
-	}
-	return 0;	
-}
+//UINT8  HW_LED_On(UINT8 Index)
+//{
+//	if(Index == LED_CRP_INDEX)
+//	{
+//	
+//	}else if(Index == LED_HGB_INDEX){
+//		
+//		
+//	}
+//	return 0;	
+//}
 
-// yaolan_
-UINT8  HW_LED_Off(UINT8 Index)
-{
-	if(Index == LED_HGB_INDEX)
-	{
-	
-	}else if(Index == LED_CRP_INDEX){
-		
-		
-	}
-	return 0;
-}
+//// yaolan_
+//UINT8  HW_LED_Off(UINT8 Index)
+//{
+//	if(Index == LED_HGB_INDEX)
+//	{
+//	
+//	}else if(Index == LED_CRP_INDEX){
+//		
+//		
+//	}
+//	return 0;
+//}
 
 // yaolan_   the context is same with HW_ADC_SpiGetADC
 UINT16 HW_Get_ADC_Perip(UINT8 Index)
@@ -1898,11 +1898,13 @@ INT32 Get_Press_Value(UINT8 nNum)
 {
 	UINT8 i;
 	INT32 nPress = 0;
-	for(i = 0; i < nNum; i++)
-	{
+//	for(i = 0; i < nNum; i++)
+//	{
 		nPress += HW_Get_Press(ADC_PRESS_INDEX);
-	}
-	nPress /= nNum;
+//		printf("i=%d, p=%d\r\n", i, (int)nPress);
+//		IT_SYS_DlyMs(15);
+//	}
+//	nPress /= nNum;
 	return nPress;
 }
 

@@ -18,7 +18,6 @@ extern const UINT8 softver_edtion[];
 //----- control --------------------------------------
 #define    CMD_CTRL_VALVE         0x00000000
 #define    CMD_CTRL_PUMP          0x00000001
-#define    CMD_CTRL_LED           0x00000002
 
 #define    CMD_CTRL_MOT_IN        0x00000100
 #define    CMD_CTRL_MOT_OUT       0x00000101
@@ -56,6 +55,7 @@ extern const UINT8 softver_edtion[];
 #define    CMD_CTRL_PART_TEST   		0x00000708
 #define    CMD_CTRL_NET_TEST   		    0x00000808
 #define    CMD_CTRL_DEBUG_TEST 		    0x00000809
+#define    CMD_CTRL_LED                 0x00000901
 // debug cmd
 #define    CMD_CTRL_DEBUG_GET_PRESS 	0x00000709 // get the press value
 
@@ -395,7 +395,7 @@ _EXT_ IO_ UINT8 g_Test_Mode;
 //	TEST_MODE_END	= 2,
 //};
 void Micro_Switch_Check(void);
-UINT8 LED_Mode_Set(UINT8 nIndex);
+UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED);
 UINT8 HGB_Test_Exec(eTestMode eMode);
 UINT8 CRP_Test_Exec(eTestMode eMode);
 //UINT8 HGB_Calibrate_Exec(void);

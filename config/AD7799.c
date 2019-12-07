@@ -295,7 +295,7 @@ UINT32 AD7799_GetRegisterValue(UINT8 regAddress, UINT8 size)
 		receivedData += (data[1] << 8);
 		receivedData += (data[2] << 0);
 	}
-        return receivedData;
+    return receivedData;
 }
 
 

@@ -449,6 +449,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
     UINT16 nShort = 0, nAdd = 0, nParam1 = 0, nParam2 = 0;
 	UINT32 nWord    = 0;
     UINT32 nWord_p  = 0;
+	INT32 nVal = 0;
     //
     chType   = *(pchCmdBuf + 3);
     nCommand = PL_UnionFourBytes(*(pchCmdBuf + 4),
@@ -503,8 +504,8 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_TEST_MODE_SET:
 			{
-				printf("Test Mode = %d\r\n", *(pchCmdBuf + 8));
-				LED_Mode_Set(*(pchCmdBuf + 8));
+				printf("Test Mode = %d, led_no=%d\r\n", *(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				LED_Mode_Set(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
 			}
 			break;
 			case CMD_CTRL_TEST_HGB:
@@ -538,7 +539,9 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_LED:
 			{
-				LED_Test_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				printf("LED Ctl, No=%d, Opt=%d\r\n", *(pchCmdBuf + 8),*(pchCmdBuf + 9));
+				LED_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				//LED_Test_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
 			}
 			break;					
             case CMD_CTRL_VALVE: //
@@ -624,8 +627,12 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_DEBUG_TEST:
 			{
-				printf("index: %d\r\n", *(pchCmdBuf +  8));
-				Driver_Debug(*(pchCmdBuf +  8));
+				nWord = PL_UnionFourBytes(*(pchCmdBuf +  9),
+										*(pchCmdBuf +  10),
+										*(pchCmdBuf + 11),
+										*(pchCmdBuf + 12));
+				printf("index=%d, data=%d\r\n", *(pchCmdBuf +  8), (int)nWord);
+				Driver_Debug(*(pchCmdBuf +  8), nWord);
 			}
 			break;
 					
@@ -751,11 +758,17 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
             {
                 nCommand  = CMD_STATUS_PRESSURE;
                 bSendBack = e_True;
-                //
-                nShort = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
-                *(pchFbkBuf + 0) = (UINT8)((nShort >> 8) & 0xff);
-                *(pchFbkBuf + 1) = (UINT8)((nShort >> 0) & 0xff);
-                nParaLen         = 2;
+                nVal = Get_Press_Value(GET_PRESS_NUM_FIVE);
+				printf("press=%d\r\n", (int)nVal);
+				*(pchFbkBuf + 0) = (UINT8)((nVal >> 24) & 0xff);
+				*(pchFbkBuf + 1) = (UINT8)((nVal >> 16) & 0xff);
+				*(pchFbkBuf + 2) = (UINT8)((nVal >> 8) & 0xff);
+				*(pchFbkBuf + 3) = (UINT8)((nVal >> 0) & 0xff);
+				
+//                nShort = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
+//                *(pchFbkBuf + 0) = (UINT8)((nShort >> 8) & 0xff);
+//                *(pchFbkBuf + 1) = (UINT8)((nShort >> 0) & 0xff);
+                nParaLen         = 4;
             }
 			break;
             case CMD_QUERY_ELECTRODE:
@@ -1913,21 +1926,27 @@ void Micro_Switch_Check(void)
 	}
 }
 
-// 
-UINT8 LED_Mode_Set(UINT8 nIndex)
+
+
+#define LED_525_DEFUALT_CUR_VALUE  2480   // HGB
+#define LED_840_DEFUALT_CUR_VALUE  2480   // CRP
+
+UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 {
 	UINT16 nRet = 0;
 	
 	LED_All_Reset();
-	LED_Cur_Switch(EN_OPEN);	//led cur open
-//	Turn_Motor_Power(EN_OPEN);	// turn motor power open
+	
+	Turn_Motor_Enable();	// turn motor power open
 	switch(nIndex)
 	{
 		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
-			LED_Exec(HGB_LED_INDEX, EN_OPEN); 	  		// open led
-			Turn_Motor_Select_LED(HGB_LED_INDEX); 		// led go to test positon 
-			//LED_Cur_ADC_Check_Channel(HGB_LED_INDEX); 	// CD4051 open the channel, and then start to adjust	
+			LED_Exec(nLED, EN_OPEN); 	  		// open led
+			Turn_Motor_Select_LED(nLED); 		// led go to test positon 
+			LED_Cur_ADC_Check_Channel(nLED); 	// CD4051 open the channel, and then start to adjust	
+			LED_Cur_DAC_Set(LED_525_DEFUALT_CUR_VALUE);
+			LED_Cur_Switch(EN_OPEN);	//led cur open
 			//LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
 			g_Test_Mode = EN_HGB_TEST;
 			printf("HGB Mode Set Finished M=%d\r\n", g_Test_Mode);
@@ -1935,9 +1954,12 @@ UINT8 LED_Mode_Set(UINT8 nIndex)
 		break;
 		case EN_CRP_TEST: // CRP need select LED and adjust LED Cur
 		{
-			LED_Exec(CRP_LED_INDEX, EN_OPEN); 	 	 		 // open led
-			Turn_Motor_Select_LED(CRP_LED_INDEX); 			 // led go to test positon 
-			//LED_Cur_ADC_Check_Channel(CRP_LED_INDEX);		 // CD4051 open the channel, and then start to adjust
+			LED_Exec(nLED, EN_OPEN); 	 	 		 // open led
+			Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
+			LED_Cur_ADC_Check_Channel(nLED);		 // CD4051 open the channel, and then start to adjust
+			LED_Cur_DAC_Set(LED_840_DEFUALT_CUR_VALUE);
+			LED_Cur_Switch(EN_OPEN);	//led cur open
+			
 			//LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); 	 // adjust cur		
 			g_Test_Mode = EN_CRP_TEST;
 			printf("CRP Mode Set Finished, M=%d\r\n", g_Test_Mode);
@@ -1945,7 +1967,15 @@ UINT8 LED_Mode_Set(UINT8 nIndex)
 		break;
 		default:
 		{
-			printf("Test Mode Prameter Error\r\n");
+			LED_Exec(nLED, EN_OPEN); 	 	 		 // open led
+			Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
+			LED_Cur_ADC_Check_Channel(nLED);		 // CD4051 open the channel, and then start to adjust
+			LED_Cur_DAC_Set(LED_840_DEFUALT_CUR_VALUE);
+			LED_Cur_Switch(EN_OPEN);	//led cur open
+			
+			//LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); 	 // adjust cur		
+			//g_Test_Mode = EN_CRP_TEST;
+			printf("CRP Mode Set Finished, M=%d\r\n", g_Test_Mode);
 		}
 		break;	
 	}
@@ -1954,27 +1984,27 @@ UINT8 LED_Mode_Set(UINT8 nIndex)
 }
 
 //
-UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
-{
-	if(nFlag == LED_STATUS_OPEN) // HGB LED
-	{
-		if(Index == LED_HGB_INDEX || Index == LED_CRP_INDEX)
-		{
-			HW_LED_On(Index);
-		}else{
-			return e_Feedback_Fail;
-		}
-	
-	}else if(nFlag == LED_STATUS_CLOSE){ // CRP LED
-		if(Index == LED_HGB_INDEX || Index == LED_CRP_INDEX)
-		{
-			HW_LED_Off(Index);	
-		}else{
-			return e_Feedback_Fail;
-		}
-	}
-	return e_Feedback_Success;
-}
+//UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
+//{
+//	if(nFlag == LED_STATUS_OPEN) // HGB LED
+//	{
+//		if(Index == LED_HGB_INDEX || Index == LED_CRP_INDEX)
+//		{
+//			HW_LED_On(Index);
+//		}else{
+//			return e_Feedback_Fail;
+//		}
+//	
+//	}else if(nFlag == LED_STATUS_CLOSE){ // CRP LED
+//		if(Index == LED_HGB_INDEX || Index == LED_CRP_INDEX)
+//		{
+//			HW_LED_Off(Index);	
+//		}else{
+//			return e_Feedback_Fail;
+//		}
+//	}
+//	return e_Feedback_Success;
+//}
 
 
 UINT8 HGB_Test_Exec(eTestMode eMode)
@@ -2937,7 +2967,7 @@ INT32 Build_Press_Self_Check(void)
         while (nCurTicks <= (nLstTicks + TIME_OVER_TS_BUILD_PRESS)) // 
         {
             nCurTicks = IT_SYS_GetTicks();
-            if (nCurTicks - nTempTicks >= 10)    // 10 ms
+            if (nCurTicks - nTempTicks >= 20)   // 10 ms
             {
 				nTempTicks = nCurTicks;
 				nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
@@ -3079,7 +3109,7 @@ void Return_Press_Value(void)
 	for(i = 0; i < 10; i++)
 	{
 		nCurTicks = IT_SYS_GetTicks();
-		nCurPress = HW_ADC_SpiGetPress();
+		nCurPress = Get_Press_Value(GET_PRESS_NUM_FIVE);;
 		//Debug_Send_32(nCurPress);
 		printf("Return_Press_Value ticks=%08d, press=%010d, addpress=%010d\r\n", (int)(nCurTicks - nLstTicks), (int)nCurPress, (int)g_Record_Param.nAddPress);
 		IT_SYS_DlyMs(10);
