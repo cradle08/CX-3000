@@ -315,7 +315,7 @@ void EVAL_Init(void)
     // SPI_FLASH_Init();
     //-------------------------------------------
 	// 9. the timer of the system messages
-	PF_InitTimer2();
+	
 #if USE_STM32F407_ONLY
 
 	ADC1_Init();//APP_ADC_Init(EN_ADC1);
@@ -329,6 +329,7 @@ void EVAL_Init(void)
 		
 	ADC3_Init();//APP_ADC_Init(EN_ADC3);
 	
+	PF_InitTimer2();
 	Elec_Init();
 	Beep_Init();
 	Pump_init();
@@ -340,6 +341,8 @@ void EVAL_Init(void)
 	LED_Init();
 	LED_Cur_DAC_Init();
 	ADC24Bit_Init();
+	DResistor_Init();
+	OutIn_Motor_Init();
 	
 #endif
 	Beep(1, 400);

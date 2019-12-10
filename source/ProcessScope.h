@@ -409,7 +409,7 @@ _EXT_ IO_ UINT8 g_Micro_Switch;
 //	TEST_MODE_END	= 2,
 //};
 void Micro_Switch_Check(void);
-UINT8 LED_Mode_Set(UINT8 nIndex);
+UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED);
 UINT8 HGB_Test_Exec(eTestMode eMode);
 UINT8 CRP_Test_Exec(eTestMode eMode);
 //UINT8 HGB_Calibrate_Exec(void);

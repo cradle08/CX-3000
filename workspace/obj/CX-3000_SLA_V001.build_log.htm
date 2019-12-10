@@ -3,19 +3,94 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
-F:\CX-3000\CX-3000\workspace\prj\CX-3000.uvproj
-Project File Date:  11/07/2019
+F:\CX-3000\CX-3000_From_V1\workspace\prj\CX-3000.uvproj
+Project File Date:  12/10/2019
 
 <h2>Output:</h2>
 Build target 'Scope'
 linking...
-Program Size: Code=139324 RO-data=4940 RW-data=996 ZI-data=86084  
+Program Size: Code=139400 RO-data=4924 RW-data=996 ZI-data=86084  
 FromELF: creating hex file...
 "..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 0 Warning(s).
 </pre>
 </body>
 </html>
-able "i" was declared but never referenced
+_V001.axf" 
+Error: Flash Download failed  -  Target DLL has been cancelled
+ize: Code=139400 RO-data=4924 RW-data=996 ZI-data=86084  
+FromELF: creating hex file...
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 1 Warning(s).
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Error: Flash Download failed  -  Target DLL has been cancelled
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Error: Flash Download failed  -  Target DLL has been cancelled
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Error: Flash Download failed  -  Target DLL has been cancelled
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Error: Flash Download failed  -  Target DLL has been cancelled
+Load "..\\obj\\CX-3000_SLA_V001.axf" 
+Error: Flash Download failed  -  Target DLL has been cancelled
+aure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(1089): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(1501): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Goto_Postion"
+  }
+..\..\config\driver.c(1611): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Select_LED"
+  }
+..\..\config\driver.c: 11 warnings, 0 errors
+linking...
+Program Size: Code=139396 RO-data=4924 RW-data=996 ZI-data=86084  
+FromELF: creating hex file...
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 11 Warning(s).
+55): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(668): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(680): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(791): error:  #20: identifier "O_OUTIN_MOTOR_EN" is undefined
+        EVAL_OutputInit(O_OUTIN_MOTOR_EN);
+..\..\config\driver.c(795): error:  #20: identifier "O_OUTIN_MOTOR_DIR" is undefined
+        EVAL_OutputInit(O_OUTIN_MOTOR_DIR);
+..\..\config\driver.c(787): warning:  #177-D: variable "GPIO_InitStructure" was declared but never referenced
+        GPIO_InitTypeDef  GPIO_InitStructure;
+..\..\config\driver.c(828): error:  #20: identifier "O_OUTIN_MOTOR_EN" is undefined
+        EVAL_OutputSet(O_OUTIN_MOTOR_EN);
+..\..\config\driver.c(833): error:  #20: identifier "O_OUTIN_MOTOR_EN" is undefined
+        EVAL_OutputClr(O_OUTIN_MOTOR_EN);
+..\..\config\driver.c(838): error:  #20: identifier "O_OUTIN_MOTOR_DIR" is undefined
+        EVAL_OutputClr(O_OUTIN_MOTOR_DIR);
+..\..\config\driver.c(843): error:  #20: identifier "O_OUTIN_MOTOR_DIR" is undefined
+        EVAL_OutputSet(O_OUTIN_MOTOR_DIR);
+..\..\config\driver.c(990): warning:  #550-D: variable "Status" was set but never used
+        UINT8 Status;
+..\..\config\driver.c(991): warning:  #550-D: variable "Tempertaure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(1071): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(1483): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Goto_Postion"
+  }
+..\..\config\driver.c(1593): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Select_LED"
+  }
+..\..\config\Scope_Eval.h(335): error:  #114: function "EVAL_OutputInit" was referenced but not defined
+  static void EVAL_OutputInit(Output_TypeDef eGpio);
+..\..\config\driver.c: 12 warnings, 7 errors
+compiling AD7799.c...
+..\..\config\AD7799.c(511): warning:  #940-D: missing return statement at end of non-void function "AD7799_Get_ADC_Value"
+  }
+..\..\config\AD7799.c(508): warning:  #550-D: variable "nADC" was set but never used
+        UINT32  nADC;
+..\..\config\AD7799.c: 2 warnings, 0 errors
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
+"..\obj\CX-3000_SLA_V001.axf" - 7 Error(s), 19 Warning(s).
+Target not created
+fig\driver.c(600): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(630): warning:  #177-D: variable "i" was declared but never referenced
         UINT16 nVal = 0, i;
 ..\..\config\driver.c(642): warning:  #177-D: variable "i" was declared but never referenced
         UINT16 nVal = 0, i;
@@ -31,48 +106,56 @@ able "i" was declared but never referenced
         INT32 Pressure_data,Tempertaure_data;
 ..\..\config\driver.c(963): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
       EXTI_InitTypeDef EXTI_InitStructure;
-..\..\config\driver.c(1446): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
+..\..\config\driver.c(1341): warning:  #223-D: function "EVAL_GetInputStatus" declared implicitly
+                                if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL))
+..\..\config\driver.c(1341): error:  #20: identifier "I_LED_OC_SEL" is undefined
+                                if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL))
+..\..\config\driver.c(1348): warning:  #223-D: function "EVAL_GetInputStatus" declared implicitly
+                        if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL))
+..\..\config\driver.c(1348): error:  #20: identifier "I_LED_OC_SEL" is undefined
+                        if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_SEL))
+..\..\config\driver.c(1364): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Goto_Postion"
   }
-..\..\config\driver.c(1493): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
+..\..\config\driver.c(1379): warning:  #223-D: function "EVAL_GetInputStatus" declared implicitly
+        if(EN_OPEN == EVAL_GetInputStatus(I_LED_OC_RST))
+..\..\config\driver.c(1379): error:  #20: identifier "I_LED_OC_RST" is undefined
+        if(EN_OPEN == EVAL_GetInputStatus(I_LED_OC_RST))
+..\..\config\driver.c(1409): warning:  #223-D: function "EVAL_GetInputStatus" declared implicitly
+        if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST) && EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST)) 
+..\..\config\driver.c(1409): error:  #20: identifier "I_LED_OC_RST" is undefined
+        if(EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST) && EN_CLOSE == EVAL_GetInputStatus(I_LED_OC_RST)) 
+..\..\config\driver.c(1474): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Select_LED"
   }
-..\..\config\driver.c: 11 warnings, 0 errors
-linking...
-Program Size: Code=139324 RO-data=4940 RW-data=996 ZI-data=86084  
-FromELF: creating hex file...
-"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 11 Warning(s).
-(655): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(668): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(680): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(882): warning:  #550-D: variable "Status" was set but never used
-        UINT8 Status;
-..\..\config\driver.c(883): warning:  #550-D: variable "Tempertaure_data" was set but never used
-        INT32 Pressure_data,Tempertaure_data;
-..\..\config\driver.c(963): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
-      EXTI_InitTypeDef EXTI_InitStructure;
-..\..\config\driver.c(1446): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
-  }
-..\..\config\driver.c(1493): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
-  }
-..\..\config\driver.c: 11 warnings, 0 errors
+..\..\config\driver.c(2646): warning:  #223-D: function "Turn_Motor_Power" declared implicitly
+                        Turn_Motor_Power(EN_OPEN);
+..\..\config\driver.c(3080): warning:  #223-D: function "Turn_Motor_Power" declared implicitly
+                        Turn_Motor_Power(EN_OPEN);
+..\..\config\driver.c(3127): warning:  #223-D: function "Turn_Motor_Power" declared implicitly
+                        Turn_Motor_Power(EN_OPEN);
+..\..\config\driver.c: 19 warnings, 4 errors
 compiling AD7799.c...
+..\..\config\driver.h(178): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+  void Turn_Motor_Reset();      
 ..\..\config\AD7799.c(511): warning:  #940-D: missing return statement at end of non-void function "AD7799_Get_ADC_Value"
   }
 ..\..\config\AD7799.c(508): warning:  #550-D: variable "nADC" was set but never used
         UINT32  nADC;
-..\..\config\AD7799.c: 2 warnings, 0 errors
+..\..\config\AD7799.c: 3 warnings, 0 errors
 compiling ethernetif.c...
+..\..\config\driver.h(178): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+  void Turn_Motor_Reset();      
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c: 1 warning, 0 errors
 compiling netconf.c...
+..\..\config\driver.h(178): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+  void Turn_Motor_Reset();      
+..\..\lwip_app\netconf.c: 1 warning, 0 errors
 compiling stm32f4x7_eth_bsp.c...
+..\..\config\driver.h(178): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+  void Turn_Motor_Reset();      
+..\..\lwip_app\stm32f4x7_eth_bsp.c: 1 warning, 0 errors
 compiling udp_echoserver.c...
-linking...
-Program Size: Code=139300 RO-data=4940 RW-data=996 ZI-data=86084  
-FromELF: creating hex file...
-"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 18 Warning(s).
-Load "..\\obj\\CX-3000_SLA_V001.axf" 
-Erase Done.
-Programming Done.
-Verify OK.
-Application running ...
+..\..\config\driver.h(178): warning:  #1295-D: Deprecated declaration Turn_Motor_Reset - give arg types
+  void Turn_Motor_Reset();      
+..\..\lwip_app\udp_echoserver.c: 1 warning, 0 errors
+"..\obj\CX-3000_SLA_V001.axf" - 4 Error(s), 47 Warning(s).
+Target not created

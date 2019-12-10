@@ -79,9 +79,9 @@ void Pump_ClockWise(void);
 void Pump_Exec(UINT8 nDir, UINT16 nFreq);
 
 // mixing motor, PB10
-#define MIXING_DIR_PORT						GPIOE
-#define MIXING_DIR_PIN						GPIO_Pin_6
-#define MIXING_DIR_SRC						RCC_AHB1Periph_GPIOE
+#define MIXING_DIR_PORT						GPIOB
+#define MIXING_DIR_PIN						GPIO_Pin_10
+#define MIXING_DIR_SRC						RCC_AHB1Periph_GPIOB
 // mixing motor
 void Mixing_Motor_Init(void);
 void Mixing_Motor_Run(void);
@@ -103,51 +103,58 @@ void Valve_Liquid_Exec(UINT8 nOpt);
 void Valve_Exec(UINT8 nIndex, UINT8 nOpt);
 
 
-#define STEP_NUMBER  0x03
-// turn motor, PB12, PB13, PB14, PB15
-#define TURN_MOTOR_PORT_1					GPIOB
-#define TURN_MOTOR_PIN_1					GPIO_Pin_12
-#define TURN_MOTOR_SRC_1					RCC_AHB1Periph_GPIOB
 
-#define TURN_MOTOR_PORT_2					GPIOB
-#define TURN_MOTOR_PIN_2					GPIO_Pin_13
-#define TURN_MOTOR_SRC_2					RCC_AHB1Periph_GPIOB
+// TIM5_CH3, turn motor
+// PD7_Enalb
+#define TURN_MOTOR_EN_PORT				GPIOD
+#define TURN_MOTOR_EN_PIN				GPIO_Pin_7
+#define TURN_MOTOR_EN_SRC				RCC_AHB1Periph_GPIOD
+// PD0_Dir
+#define TURN_MOTOR_DIR_PORT				GPIOD
+#define TURN_MOTOR_DIR_PIN 				GPIO_Pin_0
+#define TURN_MOTOR_DIR_SRC				RCC_AHB1Periph_GPIOD
 
-#define TURN_MOTOR_PORT_3					GPIOB
-#define TURN_MOTOR_PIN_3					GPIO_Pin_14
-#define TURN_MOTOR_SRC_3					RCC_AHB1Periph_GPIOB
+// PD14_Clk
+//#define TURN_MOTOR_CLK_PORT				GPIOD
+//#define TURN_MOTOR_CLK_PIN				GPIO_Pin_14
+//#define TURN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOD
 
-#define TURN_MOTOR_PORT_4					GPIOB
-#define TURN_MOTOR_PIN_4					GPIO_Pin_15
-#define TURN_MOTOR_SRC_4					RCC_AHB1Periph_GPIOB
-#define TURN_MOTOR_PORT						GPIOB
+// PH12 CLK , 89_GPIO
+#define TURN_MOTOR_CLK_PORT				GPIOH
+#define TURN_MOTOR_CLK_PIN				GPIO_Pin_12
+#define TURN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOH
 
-#define TURN_MOTOR_POWER_PORT				GPIOH
-#define TURN_MOTOR_POWER_PIN				GPIO_Pin_9
-#define TURN_MOTOR_POWER_SRC				RCC_AHB1Periph_GPIOH
-
-#define	OUTIN_MOTOR_HOME_TIME					10000
-// turn motor 
-#define TURN_MOTOR_MAX_ANTI_CLOCKWISE_STEP		500
-#define TURN_MOTOR_MAX_CLOCKWISE_STEP			500
-#define TURN_MOTOR_MAX_DELAY					4000
-#define TURN_MOTOR_MIN_DELAY					3000//3000
-
+#define TURN_MOTOR_UP_TIME					40
+#define TURN_MOTOR_DOWN_TIME				40//3000	
+#define TURN_MOTOR_DISCARD_NUM				1000
 
 enum{
-	EN_LED0 = 0,
-	EN_LED1 = 1,
-	EN_LED2 = 2,
-	EN_LED3 = 3,
-	EN_LED4 = 4,
-	EN_LED5 = 5,
-	EN_LED6 = 6,
-	EN_LED7 = 7,
+	EN_LED0 = 0,	//
+	EN_LED1 = 1,	//
+	EN_LED2 = 2,	// back
+	EN_LED3 = 3,	// 840nm CRP
+	EN_LED4 = 4,	// 580nm
+	EN_LED5 = 5,	// 640nm red
+	EN_LED6 = 6,	// 525nm green HGB
+	EN_LED7 = 7,	// 340nm
 	EN_LED_END = 8,
 };
 
 #define HGB_LED_INDEX	EN_LED6
 #define CRP_LED_INDEX   EN_LED3
+
+extern  IO_ UINT8 g_Turn_Position;
+#define TURN_MOTOR_RESET_MAX_STEPS	60000
+enum {
+	EN_LED0_SELECT_STEP		= 0,	
+	EN_LED1_SELECT_STEP		= 0,
+	EN_LED2_SELECT_STEP		= 8945,
+	EN_LED3_SELECT_STEP		= 260,
+	EN_LED4_SELECT_STEP		= 8185,
+	EN_LED5_SELECT_STEP		= 16755,
+	EN_LED6_SELECT_STEP		= 25205,
+	EN_LED7_SELECT_STEP		= 17411,
+};
 
 enum{
 	EN_POSITION_LED0 = 0,
@@ -161,62 +168,27 @@ enum{
 	EN_POSITION_LED_RESET = 8,
 	EN_POSITION_LED_UNSURE = 9
 };
+void Turn_CLK_Set(void);
+void Turn_CLK_Reset(void);
 
-
-//enum {
-//	EN_LED0_POSTION		= 138,	
-//	EN_LED1_POSTION		= 203,
-//	EN_LED2_POSTION		= 134,
-//	EN_LED3_POSTION		= 62,
-//	EN_LED4_POSTION		= 4,
-//	EN_LED5_POSTION		= 70,
-//	EN_LED6_POSTION		= 0,
-//	EN_LED7_POSTION		= 0,
-//};
-
-// form reset postion to select position
-enum {
-	EN_LED0_SELECT_STEP		= 0,	
-	EN_LED1_SELECT_STEP		= 0,
-	EN_LED2_SELECT_STEP		= 70,
-	EN_LED3_SELECT_STEP		= 4,
-	EN_LED4_SELECT_STEP		= 62,
-	EN_LED5_SELECT_STEP		= 134,
-	EN_LED6_SELECT_STEP		= 203,
-	EN_LED7_SELECT_STEP		= 138,
-};
-#define LED_SELETCT_STEP_DIFF  5
-
-
-extern  IO_ UINT8 g_Turn_Position;
-// turn motor
 void Turn_Motor_Init(void);
+void Turn_Motor_Enable(void);
+void Turn_Motor_Disable(void);
+void Turn_Motor_Dir(UINT8 nDir); // e_Dir_Pos=clockwise. e_Dir_Neg=anti-clockwise
+void Turn_Motor_Reset(void);	
+void Turn_Motor_Run(UINT32 nSteps);
+UINT8 Turn_Motor_Goto_Postion(UINT8 nDir, UINT32 nSteps);
+UINT8 Turn_Motor_Select_LED(UINT8 nIndex);
 
-void Turn_Motor_Break(void);
-void Turn_Motor_Free(void);
-UINT8 Turn_Motor_Reset(void);
-UINT8 Turn_Motor_ClockWise(UINT32 nStep);
-UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep);
-void Turn_Motor_Goto_Postion(UINT8 nOpt, UINT32 nStep);
-void Turn_Motor_Select_LED(UINT8 nIndex);
-void Turn_Motor_Power(UINT8 nOpt);
 
-// out in motor, not sure by now
-//#define OUTIN_MOTOR_PORT_1					GPIO*
-//#define OUTIN_MOTOR_PIN_1					GPIO_Pin_*
-//#define OUTIN_MOTOR_SRC_1					RCC_AHB1Periph_GPIO*
-
-//#define OUTIN_MOTOR_PORT_2					GPIO*
-//#define OUTIN_MOTOR_PIN_2					GPIO_Pin_*
-//#define OUTIN_MOTOR_SRC_2					RCC_AHB1Periph_GPIO*
-
-//#define OUTIN_MOTOR_PORT_3					GPIO*
-//#define OUTIN_MOTOR_PIN_3					GPIO_Pin_*
-//#define OUTIN_MOTOR_SRC_3					RCC_AHB1Periph_GPIO*
-
-//#define OUTIN_MOTOR_PORT_4					GPIO*
-//#define OUTIN_MOTOR_PIN_4					GPIO_Pin_*
-//#define OUTIN_MOTOR_SRC_4					RCC_AHB1Periph_GPIO*
+//void Turn_Motor_Break(void);
+//void Turn_Motor_Free(void);
+//UINT8 Turn_Motor_Reset(void);
+//UINT8 Turn_Motor_ClockWise(UINT32 nStep);
+//UINT8 Turn_Motor_Anti_ClockWise(UINT32 nStep);
+//void Turn_Motor_Goto_Postion(UINT8 nOpt, UINT32 nStep);
+//void Turn_Motor_Select_LED(UINT8 nIndex);
+//void Turn_Motor_Power(UINT8 nOpt);
 
 
 // OC for micro switch(cx3000), PD6
@@ -231,28 +203,30 @@ void Turn_Motor_Power(UINT8 nOpt);
 #endif
 #define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
 void Micro_OC_Init(void);
-
-/////////////////
-
-// OC for turn motor reset, and than select LED, PB6
-#define TURN_RESET_OC_CLK_PORT			GPIOG
-#define TURN_RESET_OC_CLK_PIN			GPIO_Pin_4
-#define TURN_RESET_OC_CLK_SRC			RCC_AHB1Periph_GPIOG
-
-// OC LED select
-#define TURN_SELECT_OC_CLK_PORT			GPIOG
-#define TURN_SELECT_OC_CLK_PIN			GPIO_Pin_5
-#define TURN_SELECT_OC_CLK_SRC			RCC_AHB1Periph_GPIOG
-
-// OC  for Out(cx3000), P**???? //todo...
-#define OUT_OC_CLK_PORT					GPIOI
-#define OUT_OC_CLK_PIN					GPIO_Pin_1
-#define OUT_OC_CLK_SRC					RCC_AHB1Periph_GPIOI
-// OC for in (cx3000), PB7
-#define IN_OC_CLK_PORT					GPIOB
-#define IN_OC_CLK_PIN					GPIO_Pin_7
-#define IN_OC_CLK_SRC					RCC_AHB1Periph_GPIOB
 //
+
+// --------- OC for turn motor reset, and than select LED, PA12
+#define TURN_RESET_OC_GPIO_PORT			GPIOA
+#define TURN_RESET_OC_GPIO_PIN			GPIO_Pin_12
+#define TURN_RESET_OC_GPIO_SRC			RCC_AHB1Periph_GPIOA
+
+// OC LED select, PG6
+#define TURN_SELECT_OC_GPIO_PORT		GPIOG
+#define TURN_SELECT_OC_GPIO_PIN			GPIO_Pin_6
+#define TURN_SELECT_OC_GPIO_SRC			RCC_AHB1Periph_GPIOG
+
+// OC for in (cx3000), PC13
+#define IN_OC_GPIO_PORT					GPIOC
+#define IN_OC_GPIO_PIN					GPIO_Pin_13
+#define IN_OC_GPIO_SRC					RCC_AHB1Periph_GPIOC
+
+// OC  for Out(cx3000), PG9
+#define OUT_OC_GPIO_PORT				GPIOG
+#define OUT_OC_GPIO_PIN					GPIO_Pin_9
+#define OUT_OC_GPIO_SRC					RCC_AHB1Periph_GPIOG
+
+
+
 void OC_Init(void);
 UINT8 Get_Micro_OC_Status(void);
 UINT8 Get_Turn_Select_OC_Status(void); 
@@ -260,25 +234,39 @@ UINT8 Get_Turn_Reset_OC_Status(void);
 UINT8 Get_Out_OC_Status(void);
 UINT8 Get_In_OC_Status(void);
 
-//cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS
+
+
+// --------- cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS 
 #define D_REGISTER_CLK_PORT					GPIOI
 #define D_REGISTER_CLK_PIN					GPIO_Pin_1
 #define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER_CLK_AF_SRC 				GPIO_PinSource1
-//
+// MOSI
 #define D_REGISTER_MOSI_PORT				GPIOI
 #define D_REGISTER_MOSI_PIN					GPIO_Pin_3
 #define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER_MOSI_AF_SRC 				GPIO_PinSource3
-//
+// CS
 #define D_REGISTER_CS_PORT					GPIOI
 #define D_REGISTER_CS_PIN					GPIO_Pin_0
 #define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER_CS_AF_SRC 				GPIO_PinSource0
+//// MISO Digital Register is 3lines SP, not need MISO
+//#define D_REGISTER_MISO_PORT				GPIOI
+//#define D_REGISTER_MISO_PIN				GPIO_Pin_2
+//#define D_REGISTER_MISO_SRC				RCC_AHB1Periph_GPIOI
+//#define D_REGISTER_MISO_AF_SRC 			GPIO_PinSource2
 //
 #define D_REGISTER_SPI						SPI2
 #define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI2
 #define D_REGISTER_SPI_AF 					GPIO_AF_SPI2
+
+#define DREGISTER_CLK_1()	GPIO_SetBits(D_REGISTER_CLK_PORT, D_REGISTER_CLK_PIN)
+#define DREGISTER_CLK_0()	GPIO_ResetBits(D_REGISTER_CLK_PORT, D_REGISTER_CLK_PIN)
+#define DREGISTER_CS_1()	GPIO_SetBits(D_REGISTER_CS_PORT, D_REGISTER_CS_PIN)
+#define DREGISTER_CS_0()	GPIO_ResetBits(D_REGISTER_CS_PORT, D_REGISTER_CS_PIN)
+#define DREGISTER_MOSI_1()	GPIO_SetBits(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_PIN)
+#define DREGISTER_MOSI_0()	GPIO_ResetBits(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_PIN)
 // 
 enum {
 	EN_DRESISTOR_CHAN0 = 0,
@@ -288,8 +276,7 @@ enum {
 };
 //
 void DResistor_Init(void);
-void DRegister_SPI_Init(void);
-void DResistor_Set(UINT8 nIndex, UINT8 nVal);
+void DRegister_Write(UINT8 nIndex, UINT8 nVal);
 
 
 
@@ -341,9 +328,9 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 #define LED_CUR_ADC_PIN						GPIO_Pin_6
 #define LED_CUR_ADC_SRC						RCC_AHB1Periph_GPIOF
 #define LED_CUR_ADC_CHANNEL					ADC_Channel_4
-// LED Select group, PH15-A0, PH14-A1, PH13-A2
+// LED Select group, PH15-A2, PH14-A1, PH13-A0,    A0-A1-A2
 #define LED_SELECT_A0_PORT					GPIOH
-#define LED_SELECT_A0_PIN					GPIO_Pin_15
+#define LED_SELECT_A0_PIN					GPIO_Pin_13
 #define LED_SELECT_A0_SRC					RCC_AHB1Periph_GPIOH
 // LED Select group, PH14-A1
 #define LED_SELECT_A1_PORT					GPIOH
@@ -351,7 +338,7 @@ void DResistor_Set(UINT8 nIndex, UINT8 nVal);
 #define LED_SELECT_A1_SRC					RCC_AHB1Periph_GPIOH
 // LED Select group, PH15-A2
 #define LED_SELECT_A2_PORT					GPIOH
-#define LED_SELECT_A2_PIN					GPIO_Pin_13
+#define LED_SELECT_A2_PIN					GPIO_Pin_15
 #define LED_SELECT_A2_SRC					RCC_AHB1Periph_GPIOH
 #define LED_SELECT_PORT						GPIOH
 //
@@ -425,9 +412,16 @@ void LED_All_Reset(void);
 #define PRESS_I2C_SDA_PIN					GPIO_Pin_5
 #define PRESS_I2C_SDA_SCLCLK_SRC			RCC_AHB1Periph_GPIOH
 //
+// PB1 EOC
+#define PRESS_I2C_EOC_PORT					GPIOB
+#define PRESS_I2C_EOC_PIN					GPIO_Pin_1
+#define PRESS_I2C_EOC_SRC					RCC_AHB1Periph_GPIOB
+
 #define PRESS_I2C_SDA_IN()  {PRESS_I2C_SDA_PORT->MODER&=~(3<<(5*2));PRESS_I2C_SDA_PORT->MODER|=0<<5*2;}	//PB9输入模式
 #define PRESS_I2C_SDA_OUT() {PRESS_I2C_SDA_PORT->MODER&=~(3<<(5*2));PRESS_I2C_SDA_PORT->MODER|=1<<5*2;} //PB9输出模式
+#define PRESS_I2C_EOC_STATUS	 GPIO_ReadInputDataBit(PRESS_I2C_EOC_PORT, PRESS_I2C_EOC_PIN)
 //
+
 #define PRESS_I2C_SCL    					 PHout(4) //SCL 
 #define PRESS_I2C_SDA   	 				 PHout(5) //SDA	 
 #define PRESS_I2C_READ_SDA  				 PHin(5)  //SDA 
@@ -443,11 +437,6 @@ void Press_I2C_Send_Byte(UINT8 nVal);
 UINT8 Press_I2C_Read_Byte(UINT8 nAck);
 INT32 Get_Press_I2C(void);
 
-// parameter define
-#define FIX_MOTOR_PULSE_UP_TIME					155
-#define FIX_MOTOR_PULSE_DOWN_TIME				155
-#define OUTIN_MOTOR_PULSE_UP_TIME				60
-#define OUTIN_MOTOR_PULSE_DOWN_TIME				60
 
 
 
@@ -529,7 +518,7 @@ UINT32  Get_CRP_Value(void);
 
 
 //
-void Driver_Debug(UINT8 nIndex);
+
 
 
 //void Fix_Motor_Init(void);
@@ -554,6 +543,41 @@ void Driver_Debug(UINT8 nIndex);
 
 
 
+// TIM3_CH3,     Out_In_Motor, PD8_clk(TIM3_CH3), PD9_Dir, PD10_Enable
+// PD10_Enalb
+#define OUTIN_MOTOR_EN_PORT				GPIOD
+#define OUTIN_MOTOR_EN_PIN				GPIO_Pin_10
+#define OUTIN_MOTOR_EN_SRC				RCC_AHB1Periph_GPIOD
+// PD9_Dir
+#define OUTIN_MOTOR_DIR_PORT			GPIOD
+#define OUTIN_MOTOR_DIR_PIN 			GPIO_Pin_9
+#define OUTIN_MOTOR_DIR_SRC				RCC_AHB1Periph_GPIOD
+// PC8_Clk
+#define OUTIN_MOTOR_CLK_PORT			GPIOC
+#define OUTIN_MOTOR_CLK_PIN				GPIO_Pin_8
+#define OUTIN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOC
+// TIM3_CH3
+#define OUTIN_MOTOR_CLK_PIN_AF			GPIO_PinSource8
+#define OUTIN_MOTOR_CLK_PORT_AF			GPIO_AF_TIM3
+#define OUTIN_MOTOR_PWM_TIM				TIM3
+#define OUTIN_MOTOR_PWM_TIM_SRC			RCC_APB1Periph_TIM3
+#define OUTIN_MOTOR_PWM_TIM_ARR			800 //25000
+#define OUTIN_MOTOR_PWM_TIM_PSC			11   //42    //84M/12=4M, 
+#define OUTIN_MOTOR_PWM_LEVEL_CLOSE		0
+#define OUTIN_MOTOR_PWM_LEVEL_BEST		400
+#define OUTIN_MOTOR_PWM_LEVEL_HIGHEST	OUTIN_MOTOR_PWM_TIM_ARR
+#define OUTIN_MOTOR_USE_PWM				1
+#define	OUTIN_MOTOR_HOME_TIME			10000
+// Time3_CH3  Out_In_Motor clk
+void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc);
+// Out_In Motor
+void OutIn_Motor_Init(void);
+void OutIn_Motor_Speed_Set(UINT16 nSpeed);
+void OutIn_Motor_Run(UINT8 nDir, UINT16 nFreq); //e_Dir_Pos=in, e_Dir_Neg=out
+void OutIn_Motor_Enable(void);
+void OutIn_Motor_Disable(void);
+void OutIn_Motor_Out(void); //out
+void OutIn_Motor_In(void); // in
 
 
 
@@ -563,7 +587,7 @@ void Driver_Debug(UINT8 nIndex);
 
 
 
-
+void Driver_Debug(UINT8 nIndex);
 
 
 

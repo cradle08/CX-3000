@@ -510,7 +510,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			case CMD_CTRL_TEST_MODE_SET:
 			{
 				printf("Test Mode = %d\r\n", *(pchCmdBuf + 8));
-				LED_Mode_Set(*(pchCmdBuf + 8));
+				LED_Mode_Set(*(pchCmdBuf + 8),  *(pchCmdBuf + 9));
 			}
 			break;
 			case CMD_CTRL_TEST_HGB:
@@ -1919,22 +1919,25 @@ void Micro_Switch_Check(void)
 	}
 }
 
-// 
-UINT8 LED_Mode_Set(UINT8 nIndex)
+#define LED_525_DEFUALT_CUR_VALUE  2480   // HGB
+#define LED_840_DEFUALT_CUR_VALUE  2480   // CRP
+
+UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 {
 	UINT16 nRet = 0;
 	
 	LED_All_Reset();
-	LED_Cur_Switch(EN_OPEN);	//led cur open
-	Turn_Motor_Power(EN_OPEN);	// turn motor power open
+	
+	Turn_Motor_Enable();	// turn motor power open
 	switch(nIndex)
 	{
 		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
-			LED_Exec(HGB_LED_INDEX, EN_OPEN); 	  		// open led
-			Turn_Motor_Select_LED(HGB_LED_INDEX); 		// led go to test positon 
-			LED_Cur_ADC_Check_Channel(HGB_LED_INDEX); 	// CD4051 open the channel, and then start to adjust
-			
+			LED_Exec(nLED, EN_OPEN); 	  		// open led
+			Turn_Motor_Select_LED(nLED); 		// led go to test positon 
+			LED_Cur_ADC_Check_Channel(nLED); 	// CD4051 open the channel, and then start to adjust	
+			LED_Cur_DAC_Set(LED_525_DEFUALT_CUR_VALUE);
+			LED_Cur_Switch(EN_OPEN);	//led cur open
 			//LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
 			g_Test_Mode = EN_HGB_TEST;
 			printf("HGB Mode Set Finished M=%d\r\n", g_Test_Mode);
@@ -1942,9 +1945,12 @@ UINT8 LED_Mode_Set(UINT8 nIndex)
 		break;
 		case EN_CRP_TEST: // CRP need select LED and adjust LED Cur
 		{
-			LED_Exec(CRP_LED_INDEX, EN_OPEN); 	 	 		 // open led
-			Turn_Motor_Select_LED(CRP_LED_INDEX); 			 // led go to test positon 
-			LED_Cur_ADC_Check_Channel(CRP_LED_INDEX);		 // CD4051 open the channel, and then start to adjust
+			LED_Exec(nLED, EN_OPEN); 	 	 		 // open led
+			Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
+			LED_Cur_ADC_Check_Channel(nLED);		 // CD4051 open the channel, and then start to adjust
+			LED_Cur_DAC_Set(LED_840_DEFUALT_CUR_VALUE);
+			LED_Cur_Switch(EN_OPEN);	//led cur open
+			
 			//LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); 	 // adjust cur		
 			g_Test_Mode = EN_CRP_TEST;
 			printf("CRP Mode Set Finished, M=%d\r\n", g_Test_Mode);
@@ -1952,11 +1958,19 @@ UINT8 LED_Mode_Set(UINT8 nIndex)
 		break;
 		default:
 		{
-			printf("Test Mode Prameter Error\r\n");
+			LED_Exec(nLED, EN_OPEN); 	 	 		 // open led
+			Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
+			LED_Cur_ADC_Check_Channel(nLED);		 // CD4051 open the channel, and then start to adjust
+			LED_Cur_DAC_Set(LED_840_DEFUALT_CUR_VALUE);
+			LED_Cur_Switch(EN_OPEN);	//led cur open
+			
+			//LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); 	 // adjust cur		
+			//g_Test_Mode = EN_CRP_TEST;
+			printf("CRP Mode Set Finished, M=%d\r\n", g_Test_Mode);
 		}
 		break;	
 	}
-	Turn_Motor_Power(EN_CLOSE);
+//	Turn_Motor_Power(EN_CLOSE);
 	Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_TEST_MODE_SET, nRet);
 }
 
