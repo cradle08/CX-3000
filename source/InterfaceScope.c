@@ -251,191 +251,343 @@ enum eAxisYPos MT_Y_get_posi(void)
 //    return e_Feedback_Success;
 //}
 
-
-UINT8 MT_X_Home(CALL_STYLE_E eCall) // flag=0: normal check callback, =1: self check callback
+UINT16 AddStep_To_MS(UINT32 nStep)
 {
-    struct tMvMotorPara  tMvoingPara;
-	UINT32 nStep = 0;
-//	char buf[30] = {0}; UINT8 OC;
+	UINT16  nTime;
+	nTime = (nStep*15)/100;
+	return nTime;
+}
 
-	if(1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) 
+#if USE_STM32F407_ONLY
+	UINT8 MT_X_Home(CALL_STYLE_E eCall) //UINT8 OutIn_Motor_Home(eModeType eMode)
 	{
-#ifdef  MOTO_DOBULE_ENABLE
-		MT_Y_MoveToPosRel(eCall);
-#endif
-	}else{ // not need move, but the status msg need feekback to app
+		UINT32 nCurTime = 0, nTempTime = 0, nDlyTime = 0, i;
+		
+		// start status msg
 		if(eCall == e_NormalCheck_Call)
 		{
-			moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
-			moto_work_stat_2(1, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+			moto_work_stat_2(EN_MOTOR_OUTIN, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
 		}
+		// check outin motor in
+		printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL));
+		if(EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // not at in position
+		{
+			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL));
+			OutIn_Motor_Enable();
+			//OutIn_Motor_In(); // in
+			nCurTime = IT_SYS_GetTicks();
+			nTempTime = nCurTime;
+			#if OUTIN_MOTOR_USE_PWM
+				OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST); // in
+				while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
+				{
+					if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
+					{
+						IT_SYS_DlyMs(1);
+						if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))	break;
+					}
+					nCurTime = IT_SYS_GetTicks();					
+				}
+				//OutIn_Motor_Disable();
+				OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
+				printf("In OC triggle sTime=%d, eTime=%d, npress=%010d\r\n", (int)nTempTime, (int)nCurTime, (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+				if(nCurTime >= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
+				{
+					//printf("In time out,ST=%d, ET=%d\r\n", (int)nTempTime, (int)nCurTime);
+					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+					OutIn_Motor_Disable();
+					return e_Feedback_Error;
+				}
+				// add step
+				nDlyTime = AddStep_To_MS(g_Record_Param.nXAddStep);
+				printf("addstep =%d, dlytime=%d\r\n", g_Record_Param.nXAddStep, (int)nDlyTime);
+				OutIn_Motor_Enable();
+				OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST);
+				nCurTime = IT_SYS_GetTicks();
+				nTempTime = nCurTime;
+				while(nCurTime <= nTempTime + nDlyTime)
+				{
+					nCurTime = IT_SYS_GetTicks();
+					IT_SYS_DlyMs(1);
+				}
+				//OutIn_Motor_Disable();
+				OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
+				printf("add step over sTime=%d, eTime=%d, npress=%010d\r\n", (int)nTempTime, (int)nCurTime, (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+			#else
+				for(i = 0; i < 35000; i++)
+				{
+					if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
+					{
+						IT_SYS_DlyMs(2);
+						if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) break;
+					}
+					OutIn_Motor_Run(OUTIN_MOTOR_PULSE_UP_TIME, OUTIN_MOTOR_PULSE_DOWN_TIME);
+					nCurTime = IT_SYS_GetTicks();
+					if(nCurTime >= nTempTime + OUTIN_MOTOR_HOME_TIME)
+					{
+						printf("In time out,ST=%d, ET=%d\r\n", (int)nTempTime, (int)nCurTime);
+						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+						moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+						OutIn_Motor_Disable();
+						return e_Feedback_Error;
+					}			
+				}
+				printf("step over i=%d, npress=%010d\r\n", (int)i, (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+				// add step
+				if(g_Record_Param.nXAddStep > 0)
+				{
+					for(i = 0; i < g_Record_Param.nXAddStep; i++)
+					{
+						OutIn_Motor_Run(OUTIN_MOTOR_PULSE_UP_TIME, OUTIN_MOTOR_PULSE_DOWN_TIME);
+					}
+				}
+				printf("add step over i=%d, npress=%010d\r\n", (int)i, (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+			#endif
+		}else{
+			//
+		}
+		OutIn_Motor_Disable();
+		// end status msg
+		if(eCall == e_NormalCheck_Call)
+		{
+			moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+		}
+		
+		return e_Feedback_Success;
 	}
 	
-	if(eCall == e_NormalCheck_Call)
+#else
+	
+	UINT8 MT_X_Home(CALL_STYLE_E eCall) // flag=0: normal check callback, =1: self check callback
 	{
-		//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
-		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);  /* 动作开始执行 */
-	}
-    // record the motor's para
-    tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-    tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-    tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-    tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+		struct tMvMotorPara  tMvoingPara;
+		UINT32 nStep = 0;
+	//	char buf[30] = {0}; UINT8 OC;
 
-    // not detect the single of home at the begining, moving long diatance
-    if (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
-    {
-		// long distance
-		MV_InitPara(Motor_X, 1920, 10000, 100, 10);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
-        // OC is on the right, right step
-        MV_Move(Motor_X, 30000, e_Dir_Neg); // comes near the OC
-		while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(Motor_X))
-		{			
-            if (e_True == MV_IsFinished(Motor_X))
-            {
-                MV_Stop(Motor_X);
-                break;
-            }
-        }
-		MV_InitPara(Motor_X, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
-        // OC is on the right, right step
-        MV_Move(Motor_X, 5000, e_Dir_Neg); // comes near the OC
-		while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(Motor_X))
+		if(1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) 
 		{
-            if (e_True == MV_IsFinished(Motor_X))
-            {
-                MV_Stop(Motor_X);
-				if(eCall == e_NormalCheck_Call)
-				{
-					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-					//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  // 动作执行失败					
-					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-				}
-                return e_Feedback_Error;
-            }
-        }
-        MV_Stop(Motor_X); 
-		
-#if 1 // add step 
-//		IT_SYS_DlyMs(1000);
-//		IT_SYS_DlyMs(1000);
-		if(g_Record_Param.nXAddStep > 0)
-		{
-			MV_InitPara(Motor_X, 1920, 1920, 100, 10);
-			MV_Move(Motor_X, (UINT32)g_Record_Param.nXAddStep, e_Dir_Neg); // comes near the OC 
-			while(1)
+	#ifdef  MOTO_DOBULE_ENABLE
+			MT_Y_MoveToPosRel(eCall);
+	#endif
+		}else{ // not need move, but the status msg need feekback to app
+			if(eCall == e_NormalCheck_Call)
 			{
-				MV_GetStepsExecuted(Motor_X, &nStep);
-				if(g_Record_Param.nXAddStep - nStep <= 5)
+				moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+				moto_work_stat_2(1, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+			}
+		}
+		
+		if(eCall == e_NormalCheck_Call)
+		{
+			//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
+			moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);  /* 动作开始执行 */
+		}
+		// record the motor's para
+		tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+		tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+		tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+		tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+
+		// not detect the single of home at the begining, moving long diatance
+		if (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
+		{
+			// long distance
+			MV_InitPara(Motor_X, 1920, 10000, 100, 10);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+			// OC is on the right, right step
+			MV_Move(Motor_X, 30000, e_Dir_Neg); // comes near the OC
+			while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(Motor_X))
+			{			
+				if (e_True == MV_IsFinished(Motor_X))
 				{
 					MV_Stop(Motor_X);
 					break;
 				}
-				IT_SYS_DlyMs(2);
+			}
+			MV_InitPara(Motor_X, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+			// OC is on the right, right step
+			MV_Move(Motor_X, 5000, e_Dir_Neg); // comes near the OC
+			while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(Motor_X))
+			{
+				if (e_True == MV_IsFinished(Motor_X))
+				{
+					MV_Stop(Motor_X);
+					if(eCall == e_NormalCheck_Call)
+					{
+						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+						//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  // 动作执行失败					
+						moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+					}
+					return e_Feedback_Error;
+				}
+			}
+			MV_Stop(Motor_X); 
+			
+	#if 1 // add step 
+	//		IT_SYS_DlyMs(1000);
+	//		IT_SYS_DlyMs(1000);
+			if(g_Record_Param.nXAddStep > 0)
+			{
+				MV_InitPara(Motor_X, 1920, 1920, 100, 10);
+				MV_Move(Motor_X, (UINT32)g_Record_Param.nXAddStep, e_Dir_Neg); // comes near the OC 
+				while(1)
+				{
+					MV_GetStepsExecuted(Motor_X, &nStep);
+					if(g_Record_Param.nXAddStep - nStep <= 5)
+					{
+						MV_Stop(Motor_X);
+						break;
+					}
+					IT_SYS_DlyMs(2);
+				}
+			}
+			printf("Moto X Add Step(%d) Finshed\r\n", (int)g_Record_Param.nXAddStep);
+	#endif
+			MV_Stop(Motor_X); 
+			
+			
+		}
+		else
+		{
+	#if  0    /* 样本仓到位，不再运行 */
+			//------------------------------------------------------------------
+			// short distance, home detect
+			MV_InitPara(Motor_X, 2000, 3000, 100, 1);
+			//------------------------------------------
+			// OC is on the right, left step
+			MV_Move(Motor_X, 2000, e_Dir_Pos); // goes far away the OC
+			while (0 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
+			{
+				if (e_True == MV_IsFinished(Motor_X))
+				{
+					MV_Stop(Motor_X);
+					return e_Feedback_Error;
+				}
+			}
+			IT_SYS_DlyMs(3);      //
+			MV_Stop(Motor_X);
+	#endif
+		}
+		//
+		g_tAxisPosStatus.nAxisX = 0;
+		g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_HOME;
+		//---------------------------------------------------
+		// set to the default moving parameters
+		MV_InitPara(Motor_X,
+					tMvoingPara.nFreqMin,
+					tMvoingPara.nFreqMax,
+					tMvoingPara.nFreqInc,
+					tMvoingPara.nFreqSam);
+		//
+		if(eCall == e_NormalCheck_Call)
+		{
+			//moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
+			moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+		}
+		return e_Feedback_Success;
+	}
+#endif //USE_STM32F407_ONLY
+
+
+	
+
+	
+#if USE_STM32F407_ONLY
+	UINT8 MT_X_Home_only(void)
+	{
+		UINT32 nCurTime, nTempTime, i = 0;
+		//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
+		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);	
+		// not detect the single of home at the begining, moving long diatance
+		nCurTime = IT_SYS_GetTicks();
+		nTempTime = nCurTime;
+		OutIn_Motor_Enable();
+		OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST);
+		while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
+		{
+			if (EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
+			{
+				if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
+				{
+					IT_SYS_DlyMs(2);
+					if(EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) break;
+				}
 			}
 		}
-		printf("Moto X Add Step(%d) Finshed\r\n", (int)g_Record_Param.nXAddStep);
-#endif
-		MV_Stop(Motor_X); 
-		
-		
-    }
-    else
-    {
-#if  0    /* 样本仓到位，不再运行 */
-        //------------------------------------------------------------------
-        // short distance, home detect
-        MV_InitPara(Motor_X, 2000, 3000, 100, 1);
-        //------------------------------------------
-        // OC is on the right, left step
-        MV_Move(Motor_X, 2000, e_Dir_Pos); // goes far away the OC
-        while (0 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
-        {
-            if (e_True == MV_IsFinished(Motor_X))
-            {
-                MV_Stop(Motor_X);
-                return e_Feedback_Error;
-            }
-        }
-        IT_SYS_DlyMs(3);      //
-        MV_Stop(Motor_X);
-#endif
-    }
-    //
-    g_tAxisPosStatus.nAxisX = 0;
-    g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_HOME;
-    //---------------------------------------------------
-    // set to the default moving parameters
-    MV_InitPara(Motor_X,
-                tMvoingPara.nFreqMin,
-                tMvoingPara.nFreqMax,
-                tMvoingPara.nFreqInc,
-                tMvoingPara.nFreqSam);
-    //
-	if(eCall == e_NormalCheck_Call)
-	{
+		OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
+		if(nCurTime > nTempTime + MOTO_SELF_CHECK_TIMEOUT)
+		{
+			collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+			//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
+			moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+		}
 		//moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
 		moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+		return e_Feedback_Success;
 	}
-    return e_Feedback_Success;
-}
+	
+#else
+	UINT8 MT_X_Home_only(void)
+	{
+		struct tMvMotorPara  tMvoingPara;
+
+		//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
+		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+
+		// record the motor's para
+		tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+		tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+		tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+		tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+
+		
+		// not detect the single of home at the begining, moving long diatance
+		if (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
+		{
+			// long distance
+			MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+			// OC is on the right, right step
+			MV_Move(Motor_X, 35000, e_Dir_Neg); // comes near the OC
+
+			while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // OC detection is not enable
+			{
+				if (e_True == MV_IsFinished(Motor_X))
+				{
+					MV_Stop(Motor_X);
+					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+
+					//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
+					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+					return e_Feedback_Error;
+				}
+			}
+			IT_SYS_DlyMs(3);      //
+			MV_Stop(Motor_X);
+		}
+		else
+		{
+			;
+		}
+		//
+		g_tAxisPosStatus.nAxisX = 0;
+		g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_HOME;
+		//---------------------------------------------------
+		// set to the default moving parameters
+		MV_InitPara(Motor_X,
+					tMvoingPara.nFreqMin,
+					tMvoingPara.nFreqMax,
+					tMvoingPara.nFreqInc,
+					tMvoingPara.nFreqSam);
+		//
+		//moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
+		moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+		return e_Feedback_Success;
+	}
+#endif //UINT8 MT_X_Home_only(void)
+
+	
 
 
-UINT8 MT_X_Home_only(void)
-{
-    struct tMvMotorPara  tMvoingPara;
-
-    //moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
-	moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
-
-    // record the motor's para
-    tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-    tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-    tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-    tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
-
-    // not detect the single of home at the begining, moving long diatance
-    if (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
-    {
-        // long distance
-        MV_InitPara(Motor_X, 4000, 8000, 100, 10);
-        // OC is on the right, right step
-        MV_Move(Motor_X, 35000, e_Dir_Neg); // comes near the OC
-
-        while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // OC detection is not enable
-        {
-            if (e_True == MV_IsFinished(Motor_X))
-            {
-                MV_Stop(Motor_X);
-                collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-
-                //moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
-				moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-                return e_Feedback_Error;
-            }
-        }
-        IT_SYS_DlyMs(3);      //
-        MV_Stop(Motor_X);
-    }
-    else
-    {
-        ;
-    }
-    //
-    g_tAxisPosStatus.nAxisX = 0;
-    g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_HOME;
-    //---------------------------------------------------
-    // set to the default moving parameters
-    MV_InitPara(Motor_X,
-                tMvoingPara.nFreqMin,
-                tMvoingPara.nFreqMax,
-                tMvoingPara.nFreqInc,
-                tMvoingPara.nFreqSam);
-    //
-    //moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
-	moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
-    return e_Feedback_Success;
-}
 
 #ifdef  MOTO_Y_VERSION_V4
 /* 4.0版本结构 */
@@ -628,235 +780,417 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
     return e_Feedback_Success;
 }
 
-#if  0    /* 增加出仓光耦检测，所以修改该函数 */
-UINT8 MT_X_MoveToPosRel(void)
-{
-    // MV_InitPara(Motor_X, 4000, 8000, 100, 10);
-    //
-    if (E_AXIS_X_POS_UNSURE == g_tAxisPosStatus.eAxisX)
-    {
-        MT_X_Home();
-    }
-    //
-    if (E_AXIS_X_POS_HOME == g_tAxisPosStatus.eAxisX)
-    {
-        MV_Move(Motor_X, 30000, e_Dir_Pos);
-        //
-        g_tAxisPosStatus.eAxisX = E_AXIS_X_POS_CTRL;
-    }
-    //
-    return e_Feedback_Success;
-}
-#else
 
-UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
-{
-    struct tMvMotorPara  tMvoingPara;
-	INT32 nPress = 0;
-	
-	UINT32 StartTicks = 0, EndTicks = 0;
-//	UINT8 i = 0;
-	IO_ UINT8 flag = 0;
-	
-	if(eCall == e_NormalCheck_Call)
+
+
+#if USE_STM32F407_ONLY
+	UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
 	{
-		//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
-		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
-		nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
-		printf("\r\n1 X out-check press at first: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
-		//StartTicks = IT_SYS_GetTicks();
-		if(nPress < PRESS_BUILD)
+		UINT32 nCurTime, nTempTime;
+		INT32 nPress = 0;
+		
+		UINT32 StartTicks = 0, EndTicks = 0;
+	//	UINT8 i = 0;
+		IO_ UINT8 flag = 0;
+		
+		if(eCall == e_NormalCheck_Call)
 		{
-			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
-			HW_Valve_On(EN_VALVE_AIR);
-			HW_Valve_Off(EN_VALVE_LIQUID);			
-		}
-	}
-    // record the motor's para
-    tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-    tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-    tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-    tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
-	
-    // not detect the single of home at the begining, moving long diatance
-    if (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
-    {
-        // long distance
-		MV_InitPara(Motor_X, 3000, 10000, 100, 10);   // ZZC_0904 : MV_InitPara(Motor_X, 4000, 8000, 100, 10); 
-        // OC is on the right, right step
-        MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
-
-        while(1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // OC detection is not enable
-        {
-			if(eCall == e_NormalCheck_Call)
+			//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
+			moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+			nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
+			printf("\r\n1 X out-check press at first: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
+			//StartTicks = IT_SYS_GetTicks();
+			if(nPress < PRESS_BUILD)
 			{
-				//nPress = HW_ADC_SpiGetPress();
-				nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
-				if(nPress >= PRESS_BUILD)
+				flag = 1; // low 
+				Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_BEST);
+				Valve_Air_Exec(EN_OPEN);
+				Valve_Liquid_Exec(EN_CLOSE);
+			}
+		}
+		//	
+		printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_OUT_CHANNEL));
+		if(EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // not at out position
+		{
+			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_OUT_CHANNEL));
+			OutIn_Motor_Enable();
+			//OutIn_Motor_Out(); // out
+			nCurTime = IT_SYS_GetTicks();
+			nTempTime = nCurTime;
+			#if OUTIN_MOTOR_USE_PWM
+				OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_BEST); // out
+				while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 				{
-					if(flag == 0 || flag == 1)
+					if(EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
 					{
-						HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-						HW_Valve_Off(EN_VALVE_AIR);
-						HW_Valve_Off(EN_VALVE_LIQUID);
-						flag = 2;
+						IT_SYS_DlyMs(1);
+						if(EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))	break;
 					}
+					nCurTime = IT_SYS_GetTicks();	
+					// build press
+					if(eCall == e_NormalCheck_Call && flag != 0) // check press
+					{
+						nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
+						if(nPress >= PRESS_BUILD)
+						{
+							flag = 0;
+							Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+							Valve_Air_Exec(EN_CLOSE);
+							Valve_Liquid_Exec(EN_CLOSE);		
+							//printf("2 X out-check press at first: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
+						}
+					}
+				}
+				//OutIn_Motor_Disable();
+				OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
+			#else
+				for(i = 0; i < 35000; i++)
+				{
+					if(EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
+					{
+						IT_SYS_DlyMs(2);
+						if(EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
+						{
+							printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_OUT_CHANNEL));
+							break;
+						}						
+					}
+					if(eCall == e_NormalCheck_Call && flag != 0) // check press
+					{
+						nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
+						if(nPress >= PRESS_BUILD)
+						{
+							flag = 0;
+							Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+							Valve_Air_Exec(EN_CLOSE);
+							Valve_Liquid_Exec(EN_CLOSE);		
+							//printf("2 X out-check press at first: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
+						}
+					}
+					OutIn_Motor_Run(OUTIN_MOTOR_PULSE_UP_TIME, OUTIN_MOTOR_PULSE_DOWN_TIME);
+					nCurTime = IT_SYS_GetTicks();
+					if(nCurTime >= nTempTime + OUTIN_MOTOR_HOME_TIME)
+					{
+						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+						moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+						printf("Out-in motor out timeout\r\n");
+						break;
+					}			
+				}
+				printf("step over i=%d, npress=%010d\r\n", (int)i, (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+			#endif
+		}else{
+			//
+		}
+		//OutIn_Motor_Disable();
+		OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
+		// check press again
+		if(eCall == e_NormalCheck_Call)
+		{
+			nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
+			printf("3 X out-check press at first: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
+			//StartTicks = IT_SYS_GetTicks();
+			if(nPress >= PRESS_BUILD)
+			{
+				Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+				Valve_Air_Exec(EN_CLOSE);
+				Valve_Liquid_Exec(EN_CLOSE);
+			}else{ // press is not enough, create press 	
+				Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_BEST);
+				Valve_Air_Exec(EN_OPEN);
+				Valve_Liquid_Exec(EN_CLOSE);
+				StartTicks = IT_SYS_GetTicks();
+				EndTicks = StartTicks;
+				while((EndTicks - StartTicks) <= TIME_OVER_TS_BUILD_PRESS)
+				{
+					nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
+					if(nPress >= PRESS_BUILD) 
+					{
+//						Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+//						Valve_Air_Exec(EN_CLOSE);
+//						Valve_Liquid_Exec(EN_CLOSE);
+						break;
+					}
+					IT_SYS_DlyMs(5);
+					EndTicks = IT_SYS_GetTicks();
+				}
+				// create press timeout chec
+			}
+		}
+		Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+		Valve_Air_Exec(EN_CLOSE);
+		Valve_Liquid_Exec(EN_CLOSE);
+		if(eCall == e_NormalCheck_Call)
+		{
+			if((EndTicks - StartTicks) > TIME_OVER_TS_BUILD_PRESS) // create press fail
+			{
+				//Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_BUILD_PRESS, e_Feedback_Fail);	
+				moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_FAIL);
+				printf("5 X out at last,build press error: t=%08d, npress=%010d, addpress=%010d\r\n", (int)(EndTicks - StartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
+			}else{
+				moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+				printf("5 X out at last,build press success: t=%08d, npress=%010d, addpress=%010d\r\n", (int)(EndTicks - StartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
+			}
+		}
+		printf("6 X out-check press: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
+
+		Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+		OutIn_Motor_Disable();
+//		#ifdef  MOTO_DOBULE_ENABLE
+//			MT_Y_Home(eCall);
+//		#endif	
+		return e_Feedback_Success;
+	}
+	
+
+#else // USE_STM32F407_ONLY
+	
+	UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
+	{
+		struct tMvMotorPara  tMvoingPara;
+		INT32 nPress = 0;
+		
+		UINT32 StartTicks = 0, EndTicks = 0;
+	//	UINT8 i = 0;
+		IO_ UINT8 flag = 0;
+		
+		if(eCall == e_NormalCheck_Call)
+		{
+			//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
+			moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+			nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
+			printf("\r\n1 X out-check press at first: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
+			//StartTicks = IT_SYS_GetTicks();
+			if(nPress < PRESS_BUILD)
+			{
+				HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
+				HW_Valve_On(INDEX_VALVE_PUMP);
+				HW_Valve_Off(INDEX_VALVE_WBC);			
+			}
+		}
+		// record the motor's para
+		tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+		tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+		tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+		tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+		
+		// not detect the single of home at the begining, moving long diatance
+		if (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
+		{
+			// long distance
+			MV_InitPara(Motor_X, 3000, 10000, 100, 10);   // ZZC_0904 : MV_InitPara(Motor_X, 4000, 8000, 100, 10); 
+			// OC is on the right, right step
+			MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
+
+			while(1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // OC detection is not enable
+			{
+				if(eCall == e_NormalCheck_Call)
+				{
+					//nPress = HW_ADC_SpiGetPress();
+					nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
+					if(nPress >= PRESS_BUILD)
+					{
+						if(flag == 0 || flag == 1)
+						{
+							HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
+							HW_Valve_Off(INDEX_VALVE_PUMP);
+							HW_Valve_Off(INDEX_VALVE_WBC);
+							flag = 2;
+						}
+					}else{
+						if(flag == 0)
+						{
+							HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
+							HW_Valve_On(INDEX_VALVE_PUMP);
+							HW_Valve_Off(INDEX_VALVE_WBC);
+							flag = 1;
+						}
+					}
+				}
+				//
+				if (e_True == MV_IsFinished(Motor_X))
+				{
+					MV_Stop(Motor_X);
+					if(eCall == e_NormalCheck_Call)
+					{
+						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+						//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
+						moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+					}
+					return e_Feedback_Error;
+				}
+			}
+			printf("2 X out-build press over: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
+			IT_SYS_DlyMs(3);      //
+			MV_Stop(Motor_X);
+		}
+		else
+		{
+			;  /* 样本仓到位，不再运行 */
+		}
+		// 
+		flag = 0;
+		if(eCall == e_NormalCheck_Call)
+		{
+			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
+			HW_Valve_Off(INDEX_VALVE_PUMP);
+			HW_Valve_Off(INDEX_VALVE_WBC);	
+			IT_SYS_DlyMs(500);
+		}
+		if(eCall == e_NormalCheck_Call)
+		{
+			StartTicks = IT_SYS_GetTicks();
+			EndTicks = StartTicks;
+			while((EndTicks - StartTicks) <= TIME_OVER_TS_BUILD_PRESS)
+			{
+				EndTicks = IT_SYS_GetTicks();
+				nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
+				if(nPress >= PRESS_BUILD) 
+				{
+					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
+					HW_Valve_Off(INDEX_VALVE_PUMP);
+					HW_Valve_Off(INDEX_VALVE_WBC);	
+					break;
 				}else{
 					if(flag == 0)
 					{
 						HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
-						HW_Valve_On(EN_VALVE_AIR);
-						HW_Valve_Off(EN_VALVE_LIQUID);
+						HW_Valve_On(INDEX_VALVE_PUMP);
+						HW_Valve_Off(INDEX_VALVE_WBC);
 						flag = 1;
 					}
 				}
+				IT_SYS_DlyMs(6);
 			}
-			//
-            if (e_True == MV_IsFinished(Motor_X))
-            {
-                MV_Stop(Motor_X);
-				if(eCall == e_NormalCheck_Call)
-				{
-					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-					//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
-					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-				}
-                return e_Feedback_Error;
-            }
+			printf("3 X out check press after build: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
+			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
+			HW_Valve_Off(INDEX_VALVE_PUMP);
+			HW_Valve_Off(INDEX_VALVE_WBC);	
 		}
-		printf("2 X out-build press over: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
-		IT_SYS_DlyMs(3);      //
-		MV_Stop(Motor_X);
-    }
-    else
-    {
-        ;  /* 样本仓到位，不再运行 */
-    }
-	// 
-	flag = 0;
-	if(eCall == e_NormalCheck_Call)
-	{
-		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-		HW_Valve_Off(EN_VALVE_AIR);
-		HW_Valve_Off(EN_VALVE_LIQUID);	
-		IT_SYS_DlyMs(500);
-	}
-	if(eCall == e_NormalCheck_Call)
-	{
-		StartTicks = IT_SYS_GetTicks();
-		EndTicks = StartTicks;
-		while((EndTicks - StartTicks) <= TIME_OVER_TS_BUILD_PRESS)
+		//
+		g_tAxisPosStatus.nAxisX = 0;
+		g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_CTRL;
+		//---------------------------------------------------
+		// set to the default moving parameters
+		MV_InitPara(Motor_X,
+					tMvoingPara.nFreqMin,
+					tMvoingPara.nFreqMax,
+					tMvoingPara.nFreqInc,
+					tMvoingPara.nFreqSam);
+		//EndTicks = IT_SYS_GetTicks();
+		if(eCall == e_NormalCheck_Call)
 		{
-			EndTicks = IT_SYS_GetTicks();
-			nPress = Get_Press_Value(GET_PRESS_NUM_FIVE);
-			if(nPress >= PRESS_BUILD) 
+			if((EndTicks - StartTicks) > TIME_OVER_TS_BUILD_PRESS)
 			{
-				HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-				HW_Valve_Off(EN_VALVE_AIR);
-				HW_Valve_Off(EN_VALVE_LIQUID);	
-				break;
+				moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_FAIL);
+				printf("4 X out at last,build press error: t=%08d, npress=%010d, addpress=%010d\r\n", (int)(EndTicks - StartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
 			}else{
-				if(flag == 0)
-				{
-					HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
-					HW_Valve_On(EN_VALVE_AIR);
-					HW_Valve_Off(EN_VALVE_LIQUID);
-					flag = 1;
-				}
+				moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+				printf("4 X out at last,build press success: t=%08d, npress=%010d, addpress=%010d\r\n", (int)(EndTicks - StartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
 			}
-			IT_SYS_DlyMs(6);
 		}
-		printf("3 X out check press after build: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
-		HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-		HW_Valve_Off(EN_VALVE_AIR);
-		HW_Valve_Off(EN_VALVE_LIQUID);	
+	#ifdef  MOTO_DOBULE_ENABLE
+		MT_Y_Home(eCall);
+	#endif
+
+		return e_Feedback_Success;
 	}
-	//
-    g_tAxisPosStatus.nAxisX = 0;
-    g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_CTRL;
-    //---------------------------------------------------
-    // set to the default moving parameters
-    MV_InitPara(Motor_X,
-                tMvoingPara.nFreqMin,
-                tMvoingPara.nFreqMax,
-                tMvoingPara.nFreqInc,
-                tMvoingPara.nFreqSam);
-	//EndTicks = IT_SYS_GetTicks();
-	if(eCall == e_NormalCheck_Call)
+#endif // USE_STM32F407_ONLY
+
+	
+
+
+	
+#if USE_STM32F407_ONLY
+	UINT8 MT_X_MoveToPosRel_only(void)
 	{
-		if((EndTicks - StartTicks) > TIME_OVER_TS_BUILD_PRESS)
+		UINT32 nCurTime, nTempTime;
+		
+		nCurTime = IT_SYS_GetTicks();
+		nTempTime = nCurTime;
+		OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_BEST);
+		while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 		{
-			moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_FAIL);
-			printf("4 X out at last,build press error: t=%08d, npress=%010d, addpress=%010d\r\n", (int)(EndTicks - StartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
+			if (EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
+			{
+				if(EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
+				{
+					IT_SYS_DlyMs(2);
+					if(EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL))	break;
+				}
+				nCurTime = IT_SYS_GetTicks();	
+			}
+		}
+		if(nCurTime > nTempTime + MOTO_SELF_CHECK_TIMEOUT)
+		{
+			collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+			//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
+			moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+			return e_Feedback_Error;
 		}else{
 			moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
-			printf("4 X out at last,build press success: t=%08d, npress=%010d, addpress=%010d\r\n", (int)(EndTicks - StartTicks), (int)nPress, (int)g_Record_Param.nAddPress);
+			return e_Feedback_Success;
 		}
 	}
-#ifdef  MOTO_DOBULE_ENABLE
-    MT_Y_Home(eCall);
+	
+#else
+	UINT8 MT_X_MoveToPosRel_only(void)
+	{
+		struct tMvMotorPara  tMvoingPara;
+
+	   // moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
+		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+		// record the motor's para
+		tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+		tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+		tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+		tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+
+		// not detect the single of home at the begining, moving long diatance
+		if (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
+		{
+			// long distance
+			MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+			// OC is on the right, right step
+			MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
+
+			while (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // OC detection is not enable
+			{
+				if (e_True == MV_IsFinished(Motor_X))
+				{
+					MV_Stop(Motor_X);
+					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+
+					//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
+					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+					return e_Feedback_Error;
+				}
+			}
+			IT_SYS_DlyMs(3);      //
+			MV_Stop(Motor_X);
+		}
+		else
+		{
+			;  /* 样本仓到位，不再运行 */
+		}
+		//
+		g_tAxisPosStatus.nAxisX = 0;
+		g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_CTRL;
+		//---------------------------------------------------
+		// set to the default moving parameters
+		MV_InitPara(Motor_X,
+					tMvoingPara.nFreqMin,
+					tMvoingPara.nFreqMax,
+					tMvoingPara.nFreqInc,
+					tMvoingPara.nFreqSam);
+		//
+		//moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
+		moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+
+		return e_Feedback_Success;
+	}
 #endif
 
-    return e_Feedback_Success;
-}
-
-
-UINT8 MT_X_MoveToPosRel_only(void)
-{
-    struct tMvMotorPara  tMvoingPara;
-
-   // moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
-	moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
-    // record the motor's para
-    tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-    tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-    tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-    tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
-
-    // not detect the single of home at the begining, moving long diatance
-    if (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
-    {
-        // long distance
-        MV_InitPara(Motor_X, 4000, 8000, 100, 10);
-        // OC is on the right, right step
-        MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
-
-        while (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // OC detection is not enable
-        {
-            if (e_True == MV_IsFinished(Motor_X))
-            {
-                MV_Stop(Motor_X);
-                collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-
-                //moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
-				moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-                return e_Feedback_Error;
-            }
-        }
-        IT_SYS_DlyMs(3);      //
-        MV_Stop(Motor_X);
-    }
-    else
-    {
-        ;  /* 样本仓到位，不再运行 */
-    }
-    //
-    g_tAxisPosStatus.nAxisX = 0;
-    g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_CTRL;
-    //---------------------------------------------------
-    // set to the default moving parameters
-    MV_InitPara(Motor_X,
-                tMvoingPara.nFreqMin,
-                tMvoingPara.nFreqMax,
-                tMvoingPara.nFreqInc,
-                tMvoingPara.nFreqSam);
-    //
-    //moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
-	moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
-
-    return e_Feedback_Success;
-}
-#endif
 
 
 
@@ -1761,59 +2095,91 @@ UINT32 HW_ADC_PressPara(UINT32 nK, UINT32 nB)
 //------------------------------
 // get the level of the OC and the electrode
 /* 预留的悬空位返回状态1表示光耦未被遮挡 */
-UINT8  HW_LEVEL_GetOC(UINT8 chIndex)
-{
-    IO_ UINT32 IRAM_  nAddr 	= 0;
-    IO_ UINT16 IRAM_  anBuffer[2];
-    IO_ UINT8  IRAM_  chValue   = 1;  /* 预留的悬空位返回状态1表示光耦未被遮挡 */
+#if USE_STM32F407_ONLY  // 1 is cover, 0 is empty
+	UINT8  HW_LEVEL_GetOC(UINT8 chIndex)
+	{
+		UINT8 nVal;
+		switch(chIndex)
+		{
+			case OC_HOME_CHANNEL:
+			{
+				nVal =  Get_In_OC_Status();
+			}
+			break;
+			case OC_OUT_CHANNEL:
+			{
+				nVal =  Get_Out_OC_Status();
+			}
+			break;
+			case OC_SAMPLE_RELEA_CHANNEL:
+			{
+			//	nVal = Get_Fix_OC_Status();
+			}
+			break;
+			default:break;
+		}
+		return nVal;
+	}
+	
+#else
+	
+	UINT8  HW_LEVEL_GetOC(UINT8 chIndex)
+	{
+		IO_ UINT32 IRAM_  nAddr 	= 0;
+		IO_ UINT16 IRAM_  anBuffer[2];
+		IO_ UINT8  IRAM_  chValue   = 1;  /* 预留的悬空位返回状态1表示光耦未被遮挡 */
 
-    //
-    nAddr = (UINT32)FPGA_RD_OC_01_03;
-    //
-    FPGA_ReadBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-    //
-    switch (chIndex)
-    {
-        case 0:
-        {
-            if (0 != (anBuffer[0] & 0x0001))
-                chValue = 0x01;
-            else
-                chValue = 0x00;
-            break;
-        }
-        case 1:
-        {
-            if (0 != (anBuffer[0] & 0x0002))
-                chValue = 0x01;
-            else
-                chValue = 0x00;
-            break;
-        }
-        case 2:
-        {
-            if (0 != (anBuffer[0] & 0x0004))
-                chValue = 0x01;
-            else
-                chValue = 0x00;
-            break;
-        }
-        case 3:
-        {
-            if (0 != (anBuffer[0] & 0x0008))
-                chValue = 0x01;
-            else
-                chValue = 0x00;
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
+		//
+		nAddr = (UINT32)FPGA_RD_OC_01_03;
+		//
+		FPGA_ReadBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+		//
+		switch (chIndex)
+		{
+			case 0:
+			{
+				if (0 != (anBuffer[0] & 0x0001))
+					chValue = 0x01;
+				else
+					chValue = 0x00;
+				break;
+			}
+			case 1:
+			{
+				if (0 != (anBuffer[0] & 0x0002))
+					chValue = 0x01;
+				else
+					chValue = 0x00;
+				break;
+			}
+			case 2:
+			{
+				if (0 != (anBuffer[0] & 0x0004))
+					chValue = 0x01;
+				else
+					chValue = 0x00;
+				break;
+			}
+			case 3:
+			{
+				if (0 != (anBuffer[0] & 0x0008))
+					chValue = 0x01;
+				else
+					chValue = 0x00;
+				break;
+			}
+			default:
+			{
+				break;
+			}
+		}
 
-    return chValue;
-}
+		return chValue;
+	}
+#endif
+
+	
+
 
 UINT8  HW_LEVEL_GetElectrode(UINT8 chIndex)
 {
@@ -1874,8 +2240,6 @@ UINT8  HW_LEVEL_GetElectrode(UINT8 chIndex)
 UINT8 hw_filter_get_electrode(UINT8 chIndex)
 {
     IO_ UINT8 n, cnt = 0;
-	//return  0;
-	//__disable_irq();
     for (n = 0; n < ELECTRODE_GET_FILTER_NUM; n++)
     {
 		#if USE_STM32F407_ONLY
@@ -1891,16 +2255,10 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
     {
         return  1;
     }
-	//__enable_irq();
-
-//#ifdef   DEBUG_TEST  /* 临时调试用，设置电极永远无法获取溢出信号 */
-//    return  1;
-//#else
     return  0;
-//endif
 }
 
-//------------------------------
+
 // the ADC of the slave CPU
 UINT16 HW_ADC_SlaveGetADC(void)
 {

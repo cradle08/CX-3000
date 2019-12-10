@@ -44,6 +44,7 @@ UINT8 Get_Elec_Status(void);
 void Elec_Init(void);
 
 
+
 //beep PE3	
 #define BEEP_PORT							GPIOE
 #define BEEP_PIN							GPIO_Pin_3
@@ -203,7 +204,42 @@ UINT8 Turn_Motor_Select_LED(UINT8 nIndex);
 #endif
 #define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
 void Micro_OC_Init(void);
+
+
+// PD8, check counter exist or not
+#define COUNTER_CHECK_GPIO_PORT				GPIOD
+#define COUNTER_CHECK_GPIO_PIN				GPIO_Pin_8
+#define COUNTER_CHECK_GPIO_SRC				RCC_AHB1Periph_GPIOD
+void Counter_Check_Init(void);
+UINT8 Get_Counter_Check_Status(void);
+
+
+
+// PE7 counter switch 
+#define COUNTER_SWITCH_PORT			GPIOE
+#define COUNTER_SWITCH_PIN 			GPIO_Pin_7
+#define COUNTER_SWITCH_SRC			RCC_AHB1Periph_GPIOE
+// PE10 PWM
+#define COUNTER_PWM_PORT			GPIOE
+#define COUNTER_PWM_PIN				GPIO_Pin_10
+#define COUNTER_PWM_SRC				RCC_AHB1Periph_GPIOE
+// TIM1 CH1N PE10(sumulation signal)
+#define COUNTER_PWM_PIN_AF			GPIO_PinSource10
+#define COUNTER_PWM_PORT_AF			GPIO_AF_TIM1
+#define COUNTER_PWM_TIM				TIM1
+#define COUNTER_PWM_TIM_SRC			RCC_APB2Periph_TIM1
+#define COUNTER_PWM_TIM_ARR			200 
+#define COUNTER_PWM_TIM_PSC			6     //42M/7=6M,  6M/200=30k
+#define COUNTER_PWM_LEVEL_CLOSE		0
+#define COUNTER_PWM_DEFAULT_FREQ    6000000
+#define COUNTER_PWM_LEVEL_HIGHEST	OUTIN_MOTOR_PWM_TIM_ARR
+void Counter_Adjust_Init(void);
+void Counter_Adjust_Start(UINT32 nFreq);
+void Counter_Adjust_Switch(UINT8 nOpt);
+void Counter_Adjust_PWM_Init(UINT32 Arr,UINT32 Psc);
+
 //
+
 
 // --------- OC for turn motor reset, and than select LED, PA12
 #define TURN_RESET_OC_GPIO_PORT			GPIOA

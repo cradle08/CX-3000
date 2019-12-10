@@ -652,12 +652,12 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
             case CMD_CTRL_MOT_RELEASE:  /* 释放芯片 */
 			{
-                MT_Y_Home(e_NormalCheck_Call);
+               // MT_Y_Home(e_NormalCheck_Call);
 			}
             break;
             case CMD_CTRL_MOT_LOCK:     /* 锁定芯片 */
 			{
-                MT_Y_MoveToPosRel(e_NormalCheck_Call);
+             //   MT_Y_MoveToPosRel(e_NormalCheck_Call);
 			}
             break;
             case CMD_CTRL_MOT_IN_ONLY:  /* 单独驱动大电机进仓 */
@@ -1972,6 +1972,7 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 	}
 //	Turn_Motor_Power(EN_CLOSE);
 	Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_TEST_MODE_SET, nRet);
+	return 0;
 }
 
 //
@@ -2000,7 +2001,7 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 
 UINT8 HGB_Test_Exec(eTestMode eMode)
 {
-	UINT16 nVal = 0, i;
+	UINT16 i;
     UINT32 buffer[HGB_CALIBRATE_DATA_NUM] = {0};
 	
 	// check postion 
@@ -2076,9 +2077,10 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 }
 
 
+
 UINT8 CRP_Test_Exec(eTestMode eMode)
 {
-	UINT16 i, j;
+	UINT16 i;
 	UINT32 buffer[CRP_CALIBRATE_DATA_NUM] = {0};
 	UINT32 nCurTicks, nTempTicks;
 //	printf("CRP_Test_Exec Start\r\n");
@@ -2124,7 +2126,8 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		}		
 #else
 		memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
-		g_CRP_Data.eEnable = e_True;
+		g_CRP_Data.eEnable = 0x55;
+		IT_SYS_SetTicks(0);
 		while(g_CRP_Data.nTotal < g_Record_Param.nTotal_Num)
 		{
 //			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out

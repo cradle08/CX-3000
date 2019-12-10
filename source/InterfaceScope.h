@@ -150,6 +150,7 @@ _EXT_ UINT8 MT_ALL_Init(void);
 // axis x
 _EXT_ enum eAxisXPos MT_X_get_posi(void);
 //_EXT_ UINT8 MT_X_Home(void);
+UINT16 AddStep_To_MS(UINT32 nStep);
 _EXT_ UINT8 MT_X_Home(CALL_STYLE_E eCall);
 //_EXT_ UINT8 MT_X_Home_2(CALL_STYLE_E eCall);
 _EXT_ UINT8 MT_X_Home_only(void);

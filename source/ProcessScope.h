@@ -341,6 +341,11 @@ typedef enum{
 }EN_MSG_TYPE;
 
 
+enum {
+	EN_MOTOR_OUTIN = 0,
+};
+
+
 typedef enum
 {
     MOTO_WORK_STAT_RUN = 0,  /* ÕýÔÚÖ´ÐÐ */

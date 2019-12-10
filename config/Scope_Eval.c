@@ -344,9 +344,11 @@ void EVAL_Init(void)
 	DResistor_Init();
 	OutIn_Motor_Init();
 	
+	Counter_Check_Init();
+	Counter_Adjust_Init();
+	
 #endif
 	Beep(1, 400);
-	//ADC24Bit_Init();
 }
 
 

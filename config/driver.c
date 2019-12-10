@@ -2080,6 +2080,130 @@ UINT8 Get_In_OC_Status(void)
 	return GPIO_ReadInputDataBit(IN_OC_GPIO_PORT, IN_OC_GPIO_PIN);
 }
 
+
+void Counter_Check_Init(void)
+{
+	//EVAL_InputInit(I_COUNTER_CHECK);
+	GPIO_InitTypeDef GPIO_InitStructure;
+    NVIC_InitTypeDef NVIC_InitStructure;
+  
+    // 1. enable the input pin Clock 
+    RCC_AHB1PeriphClockCmd(COUNTER_CHECK_GPIO_SRC, ENABLE);
+  
+    // 2. configure the pin as input floating 
+	GPIO_InitStructure.GPIO_Pin = COUNTER_CHECK_GPIO_PIN;  
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;   
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz; //100M
+    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN; 
+    GPIO_Init(COUNTER_CHECK_GPIO_PORT, &GPIO_InitStructure); 
+	GPIO_ResetBits(COUNTER_CHECK_GPIO_PORT, COUNTER_CHECK_GPIO_PIN);
+	
+}
+
+UINT8 Get_Counter_Check_Status(void)
+{
+	return GPIO_ReadInputDataBit(COUNTER_CHECK_GPIO_PORT, COUNTER_CHECK_GPIO_PIN);
+}
+
+
+// counter adjust init
+void Counter_Adjust_Init(void)
+{
+	//EVAL_OutputInit(O_COUNTER_ADJUST);
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHB1PeriphClockCmd(COUNTER_SWITCH_SRC, ENABLE);
+	// turn reset
+	GPIO_InitStructure.GPIO_Pin = COUNTER_SWITCH_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(COUNTER_SWITCH_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(COUNTER_SWITCH_PORT, COUNTER_SWITCH_PIN);
+	
+	Counter_Adjust_PWM_Init(COUNTER_PWM_TIM_ARR, COUNTER_PWM_TIM_PSC);
+}
+
+// TIM1 CH1N PWM
+void Counter_Adjust_PWM_Init(UINT32 Arr,UINT32 Psc)
+{		 					 
+	// TIM1_CH1N
+	GPIO_InitTypeDef GPIO_InitStructure;
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	TIM_OCInitTypeDef  TIM_OCInitStructure;
+
+	RCC_APB1PeriphClockCmd(COUNTER_PWM_TIM_SRC, ENABLE);
+	RCC_AHB1PeriphClockCmd(COUNTER_PWM_SRC | COUNTER_SWITCH_SRC, ENABLE);
+	// PE10
+	GPIO_PinAFConfig(COUNTER_PWM_PORT, COUNTER_PWM_PIN_AF, COUNTER_PWM_PORT_AF); 
+	GPIO_InitStructure.GPIO_Pin = COUNTER_PWM_PIN;          
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;	
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;     
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(COUNTER_PWM_PORT, &GPIO_InitStructure);        
+	GPIO_ResetBits(COUNTER_PWM_PORT, COUNTER_PWM_PIN);
+	
+	TIM_DeInit(COUNTER_PWM_TIM);
+	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  
+	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; 
+	TIM_TimeBaseStructure.TIM_Period=Arr; 
+	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
+	TIM_TimeBaseInit(COUNTER_PWM_TIM,&TIM_TimeBaseStructure);
+
+	// pwm
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
+	TIM_OC3Init(OUTIN_MOTOR_PWM_TIM, &TIM_OCInitStructure);  
+
+
+//	TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;//??????     ?,?????????TIM_OCPolarity ?????,?1?????
+//	TIM_OCInitStructure.TIM_Pulse = 2000; //????1 CCR1(?????)
+//	TIM_OC1Init(TIM1, &TIM_OCInitStructure); //Ch1???
+//	TIM_OCInitStructure.TIM_Pulse = 5000;
+//	TIM_OC4Init(TIM1, &TIM_OCInitStructure);//??4
+//	TIM_OC1PreloadConfig(TIM1, TIM_OCPreload_Enable);  //??TIM1?CCR1????????,CCR???????????
+
+	TIM_OC1NPolarityConfig(COUNTER_PWM_TIM, TIM_OCPreload_Enable); 
+	//TIM_OC3PreloadConfig(COUNTER_PWM_TIM, TIM_OCPreload_Enable); 
+	TIM_ARRPreloadConfig(COUNTER_PWM_TIM, ENABLE);
+	TIM_Cmd(COUNTER_PWM_TIM, ENABLE);  //
+	
+	TIM_SetCompare1(COUNTER_PWM_TIM, COUNTER_PWM_LEVEL_CLOSE);
+}
+
+
+void Counter_Adjust_Start(UINT32 nFreq)
+{
+	UINT32 nArr = 0;
+	if(nFreq == COUNTER_PWM_LEVEL_CLOSE)
+	{
+		Counter_Adjust_Switch(EN_CLOSE);
+		printf("Counter Adjust Open nFreq = %d\r\n", COUNTER_PWM_LEVEL_CLOSE);
+		TIM_SetCompare1(COUNTER_PWM_TIM, COUNTER_PWM_LEVEL_CLOSE);
+	}else{
+		nArr = COUNTER_PWM_DEFAULT_FREQ/nFreq;
+		printf("Counter Adjust Open nFreq = %d\r\n", (int)nFreq);
+		Counter_Adjust_Switch(EN_OPEN);
+		TIM_SetCompare1(COUNTER_PWM_TIM, nArr);
+	}
+}
+
+void Counter_Adjust_Switch(UINT8 nOpt)
+{
+	if(nOpt == EN_OPEN)
+	{
+		GPIO_SetBits(COUNTER_SWITCH_PORT, COUNTER_SWITCH_PIN);
+	}else if(nOpt == EN_CLOSE){
+		GPIO_ResetBits(COUNTER_SWITCH_PORT, COUNTER_SWITCH_PIN);
+	}
+}
+
+
+
+
+
+
 void LED_Init(void)
 {
 	GPIO_InitTypeDef  GPIO_InitStructure;
@@ -3143,6 +3267,13 @@ void Driver_Debug(UINT8 nIndex)
 				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
 				nADC = AD7799_Get_Out_Data();
 				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
+				IT_SYS_DlyMs(500);
+				IT_SYS_DlyMs(500);
+				
+				
+				AD7799_SetChannel(AD7799_CH_AIN3P_AIN3M);
+				nADC = AD7799_Get_Out_Data();
+				printf("AD7799 CH3, adc=%d, V=%6.2f\r\n", (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
 				IT_SYS_DlyMs(500);
 				IT_SYS_DlyMs(500);
 				

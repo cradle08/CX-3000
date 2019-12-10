@@ -50,7 +50,7 @@ void IRQ_SysTimer(void)
         // clear the bit
         TIM_ClearITPendingBit(TIM2 , TIM_FLAG_Update); 
 		// disable TIM2 counter
-        TIM_Cmd(TIM2, DISABLE);
+//        TIM_Cmd(TIM2, DISABLE);
 
 		// period: 10ms
 		s_count++;
@@ -62,14 +62,13 @@ void IRQ_SysTimer(void)
 			// sampling port timeout
     	    SPG_IsrTime();
 			// timer get CRP data per 100ms
-			//if(g_CRP_Data.eEnable == e_True)
-			if(g_CRP_Data.eEnable == 1)
+			if(g_CRP_Data.eEnable == 0x55)
 			{					
 				if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 0)
 				{
 					g_CRP_Data.crpBuffer[g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
-					printf("ADC=%08d,5V=%6.2f,total=%04d,index=%04d\r\n", \
-						(int)g_CRP_Data.crpBuffer[g_CRP_Data.nIndex], (float)(g_CRP_Data.crpBuffer[g_CRP_Data.nIndex])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
+					printf("T=%d, ADC=%08d,5V=%6.2f,total=%04d,index=%04d\r\n", \
+						(int)IT_SYS_GetTicks(), (int)g_CRP_Data.crpBuffer[g_CRP_Data.nIndex], (float)(g_CRP_Data.crpBuffer[g_CRP_Data.nIndex])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_4BYTE - 1)
 					{
 						g_CRP_Data.eSend  = e_True;
@@ -79,8 +78,8 @@ void IRQ_SysTimer(void)
 					}
 				}else if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 1){
 					g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
-					printf("ADC=%08d,5V=%6.2f,total=%04d,index=%04d\r\n", \
-						(int)g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex], (float)(g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
+					printf("T=%d,ADC=%08d,5V=%6.2f,total=%04d,index=%04d\r\n", \
+						(int)IT_SYS_GetTicks(),(int)g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex], (float)(g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_4BYTE - 1)
 					{
 						g_CRP_Data.eSend  = e_True;
@@ -137,7 +136,7 @@ void IRQ_SysTimer(void)
         //----------------------------------------------
         //----------------------------------------------
 		// enable TIM2 counter
-        TIM_Cmd(TIM2, ENABLE);
+//        TIM_Cmd(TIM2, ENABLE);
     }
 	
     return;
