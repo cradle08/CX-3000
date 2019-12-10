@@ -511,6 +511,7 @@ UINT32 AD7799_Get_ADC_Value(UINT32 nData)
 }
 
 
+// san_shi:PIN5_CH3, tou_shi:PIN7_CH2, HGB:PIN3_CH1
 double AD7799_Get_Value(UINT32 nData)
 {
 	UINT32 value = (nData - 0X800000);

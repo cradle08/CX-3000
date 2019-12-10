@@ -2026,6 +2026,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 //	HW_EN_ADC_HGB(e_True);
 //	IT_SYS_DlyMs(100);
 	//
+	AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
 	if(eMode ==  EN_HGB_TEST)
 	{
 		// get HGB adc data
@@ -2109,6 +2110,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 	// get CRP adc data
 //	printf("CRP_Test_Exec:");
 	
+	AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
 	if(eMode ==  EN_CRP_TEST)
 	{
 		printf("CRP_Test_Exec Start\r\n");

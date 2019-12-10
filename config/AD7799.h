@@ -83,8 +83,8 @@
 #define AD7799_REFDET_ENA   1	
 #define AD7799_REFDET_DIS   0
 /* AD7799_CONF_CHAN(x) options */
-#define AD7799_CH_AIN1P_AIN1M	1 /* AIN1(+) - AIN1(-) */
-#define AD7799_CH_AIN2P_AIN2M	0 /* AIN2(+) - AIN2(-) */
+#define AD7799_CH_AIN1P_AIN1M	0 /* AIN1(+) - AIN1(-) */
+#define AD7799_CH_AIN2P_AIN2M	1 /* AIN2(+) - AIN2(-) */
 #define AD7799_CH_AIN3P_AIN3M	2 /* AIN3(+) - AIN3(-) */
 #define AD7799_CH_AIN1M_AIN1M	3 /* AIN1(-) - AIN1(-) */
 #define AD7799_CH_AVDD_MONITOR	7 /* AVDD Monitor */
