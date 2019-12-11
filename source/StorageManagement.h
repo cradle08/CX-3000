@@ -99,6 +99,34 @@ typedef void (*pAppFunc)(void);
 
 typedef void (*pAppFunc)(void);
 
+/*
+cx-2000 all
+IROM1 0x8000000  0x3FFF
+IROM2 0x8008000  0x37FFF (app end addr, not include fireware save flash)
+
+cx-2000 app
+IROM1 0x8020000  0x1FFFF
+IROM2
+
+cx-2000 boot
+IROM1 0x8000000  0x1FFFF
+IROM2 0x8008000  0x17FFF
+*/
+
+/*
+cx-3000 all
+IROM1 0x8000000  0x3FFF
+IROM2 0x8008000  0x97FFF
+
+cx-3000 app
+IROM1 0x08020000  0x1FFFF (app end addr, not include fireware save flash)
+IROM2 
+
+cx-3000 boot
+IROM1 0x8000000  0x3FFF
+IROM2 0x8008000  0x17FFF
+*/
+
 //sector 1 ,0x08004000-0x08007FFF=16k, 0x08005000-0x08007FFF=12k
 #define FLASH_PARAM_SAVE_ADDR    0x08005000
 #define FLASH_INIT_FLAG    0xabcd
