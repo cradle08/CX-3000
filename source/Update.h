@@ -76,7 +76,8 @@ void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8
 
 UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf);
 
-
+UINT16 Crc16_Add(UINT8 nData, UINT16 nAcc);
+UINT16 Crc16_Data(UINT8 *pData, UINT16 nLen, UINT16 nAcc);
 UINT8 MT_RESET_Software(void);
 UINT8  HW_LWIP_MainLine(void);
 

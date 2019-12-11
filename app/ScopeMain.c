@@ -47,6 +47,7 @@ void start_run(void)
 	if(g_Record_Param.nUpdate_Flag == UPDATE_RESTART) // re-write flash and than start normal
 	{
 		printf("app update len=%d\r\n", (int)g_Record_Param.nUpdataLen);
+		Erase_Specify_Sector(FLASH_APP_START_ADDR, FLASH_APP_LEN);
 		Flash_Fireware_Update(&g_Record_Param, (UINT32*)FLASH_FIREWARE_START_ADDR, (UINT32*)FLASH_APP_START_ADDR);
 		g_Record_Param.nUpdate_Flag = UPDATE_FINISHED;
 		NVIC_SetVectorTable(FLASH_BASE_ADDR, APP_VECT_TAB_OFFSET);

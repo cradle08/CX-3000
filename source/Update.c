@@ -202,7 +202,28 @@ void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8
 	}
 }
 
+UINT16 Crc16_Add(UINT8 nData, UINT16 nAcc)
+{
+  nAcc ^= nData;
+  nAcc  = (nAcc >> 8) | (nAcc << 8);
+  nAcc ^= (nAcc & 0xff00) << 4;
+  nAcc ^= (nAcc >> 8) >> 4;
+  nAcc ^= (nAcc & 0xff00) >> 5;
+  return nAcc;
+}
 
+
+UINT16 Crc16_Data(UINT8 *pData, UINT16 nLen, UINT16 nAcc)
+{
+  UINT16 i;
+
+  for(i = 0; i < nLen; ++i) {
+    nAcc = Crc16_Add(*pData, nAcc);
+    ++pData;
+  }
+  return nAcc;
+
+}
 
 
 UINT8 Update_Start_Msg(UINT8* pMsg)
