@@ -2257,6 +2257,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		}
 		// send CRP data
 		Send_Data_CRP(CMD_DATA_CALIBRATE_CRP, buffer, CRP_CALIBRATE_DATA_NUM);	
+		collect_return_hdl(COLLECT_RET_SUCESS);
 		printf("CRP Calibrate End\r\n");
 	}
 	
