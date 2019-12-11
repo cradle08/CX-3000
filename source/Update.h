@@ -30,8 +30,10 @@
 #define  COLLECT_RET_SUCESS            	0x0000 
 
 // query data flag
-#define    CMD_QUERY_UPDATE_FLAG		0x20000200	//define at update.h
-#define    CMD_STATUS_UPDATE_FLAG		0x01000200	//define at update.h
+#define    CMD_CTRL_UPDATE_FLAG 			0x00000900 	//define at update.h
+#define    CMD_STATUS_SET_UPDATE_FLAG 		0x01000900 //define at update.h
+#define    CMD_QUERY_UPDATE_FLAG			0x20000200	//define at update.h
+#define    CMD_STATUS_QUARY_UPDATE_FLAG		0x01000200	//define at update.h
 
 #define UPDATE_PACKET_DATA_LEN			512
 

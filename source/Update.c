@@ -302,6 +302,7 @@ UINT8 Update_Packet_Handler(UINT8* pMsg)
 		stUpdate.nPacket_No++;
 		Msg_Return_Handle_16(e_Msg_Status ,CMD_UPDATE_DATA_REQUEST, stUpdate.nPacket_No);
 	}
+	return 0;
 }
 
 
@@ -314,6 +315,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
     UINT32 nCommand            = 0;
     UINT16 nParaLen            = 0, nNo = 0, nLen = 0, nCrc;
 	UINT8 nReturn			   = 0;
+	UINT8 nStatus			   = 0;
     //
     enum eFlag  bSendBack      = e_False;
     //
@@ -367,7 +369,24 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			case CMD_QUERY_UPDATE_FLAG:
 			{
 				printf("update flag=%d\r\n",  g_Record_Param.nUpdate_Flag);
-				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_UPDATE_FLAG, g_Record_Param.nUpdate_Flag);
+				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_QUARY_UPDATE_FLAG, g_Record_Param.nUpdate_Flag);
+			}
+			break;
+			case CMD_CTRL_UPDATE_FLAG:
+			{
+				
+				printf("set updata flag value=%d\r\n",  pchCmdBuf[8]);
+				g_Record_Param.nUpdate_Flag = pchCmdBuf[8];
+				nStatus = Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+				if(nStatus == e_Feedback_Fail)
+				{
+					Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_SET_UPDATE_FLAG, e_Feedback_Fail);
+					printf("set updata flag value=%d error\r\n",  pchCmdBuf[8]);
+				}else{
+					Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_SET_UPDATE_FLAG, e_Feedback_Success);
+					printf("set updata flag value=%d, successe\r\n",  pchCmdBuf[8]);
+				}
+			
 			}
 			break;
 			default:break;

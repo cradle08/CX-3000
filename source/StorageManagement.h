@@ -58,7 +58,7 @@
 #define ADDR_FLASH_SECTOR_11    ((u32)0x080E0000) 	//扇区11起始地址,128 Kbytes  
 
 #define	UPDATE_FINISHED	 			0x11
-#define UPDATE_WAITING				0x33
+#define UPDATE_WAITING 				0x33
 #define	UPDATE_RESTART 	 			0x55
 #define	UPDATE_NONE 	 			0xFF
 
