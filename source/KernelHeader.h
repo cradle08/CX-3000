@@ -10,9 +10,9 @@
 // kernel code
 #include "Protocol.h"
 #include "SamplingPort.h"
-#include "InterfaceScope.h"       
-#include "ProcessScope.h"
-#include "SystemScope.h"
+//#include "InterfaceScope.h"       
+//#include "ProcessScope.h"
+//#include "SystemScope.h"
 //
 #include "StorageManagement.h"
 

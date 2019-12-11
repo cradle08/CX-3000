@@ -45,7 +45,7 @@
             <InvalidFlash>1</InvalidFlash>
           </TargetStatus>
           <OutputDirectory>..\obj\</OutputDirectory>
-          <OutputName>CX-3000_SLA_V001</OutputName>
+          <OutputName>CX-Boot-V0001</OutputName>
           <CreateExecutable>1</CreateExecutable>
           <CreateLib>0</CreateLib>
           <CreateHexFile>1</CreateHexFile>
@@ -76,7 +76,7 @@
           <AfterMake>
             <RunUserProg1>1</RunUserProg1>
             <RunUserProg2>0</RunUserProg2>
-            <UserProg1Name>"D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-3000_SLA_V001.bin" "..\obj\CX-3000_SLA_V001.axf"</UserProg1Name>
+            <UserProg1Name>"D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-Boot-V0001.bin" "..\obj\CX-Boot-V0001.axf"</UserProg1Name>
             <UserProg2Name></UserProg2Name>
             <UserProg1Dos16Mode>0</UserProg1Dos16Mode>
             <UserProg2Dos16Mode>0</UserProg2Dos16Mode>
@@ -312,7 +312,7 @@
               <OCR_RVCT5>
                 <Type>1</Type>
                 <StartAddress>0x8008000</StartAddress>
-                <Size>0x3ffff</Size>
+                <Size>0x1ffff</Size>
               </OCR_RVCT5>
               <OCR_RVCT6>
                 <Type>0</Type>
@@ -426,34 +426,19 @@
           <GroupName>Source</GroupName>
           <Files>
             <File>
-              <FileName>SystemScope.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\source\SystemScope.c</FilePath>
-            </File>
-            <File>
-              <FileName>ProcessScope.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\source\ProcessScope.c</FilePath>
-            </File>
-            <File>
               <FileName>Protocol.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\source\Protocol.c</FilePath>
             </File>
             <File>
-              <FileName>InterfaceScope.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\source\InterfaceScope.c</FilePath>
-            </File>
-            <File>
-              <FileName>SamplingPort.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\source\SamplingPort.c</FilePath>
-            </File>
-            <File>
               <FileName>StorageManagement.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\source\StorageManagement.c</FilePath>
+            </File>
+            <File>
+              <FileName>Update.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\source\Update.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -651,24 +636,9 @@
           <GroupName>Config</GroupName>
           <Files>
             <File>
-              <FileName>Fpga.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\Fpga.c</FilePath>
-            </File>
-            <File>
               <FileName>Scope_It.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\config\Scope_It.c</FilePath>
-            </File>
-            <File>
-              <FileName>Scope_Move.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\Scope_Move.c</FilePath>
-            </File>
-            <File>
-              <FileName>BufferCircle.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\BufferCircle.c</FilePath>
             </File>
             <File>
               <FileName>NetBufferCircle.c</FileName>
@@ -676,34 +646,9 @@
               <FilePath>..\..\config\NetBufferCircle.c</FilePath>
             </File>
             <File>
-              <FileName>SampleBufferCircle.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\SampleBufferCircle.c</FilePath>
-            </File>
-            <File>
-              <FileName>InterruptBufferCircle.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\InterruptBufferCircle.c</FilePath>
-            </File>
-            <File>
-              <FileName>SpiFlash.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\SpiFlash.c</FilePath>
-            </File>
-            <File>
               <FileName>driver.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\config\driver.c</FilePath>
-            </File>
-            <File>
-              <FileName>f4sys.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\f4sys.c</FilePath>
-            </File>
-            <File>
-              <FileName>AD7799.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\config\AD7799.c</FilePath>
             </File>
           </Files>
         </Group>

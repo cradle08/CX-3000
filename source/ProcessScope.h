@@ -1,4 +1,4 @@
-// ProcessScope.h
+
 
 #ifndef    __PROCESS_SCOPE_H__
 #define    __PROCESS_SCOPE_H__
@@ -8,26 +8,6 @@
 
 extern const UINT8 softver_edtion[];
 
-typedef struct{
-	UINT8 nSFlag;
-	UINT16 nPos;
-	UINT32 nID;
-	UINT32 nSendID;
-}ADC_Status_InitTypeDef;
-
-// ADC1
-#define ADC1_BUFFER_LEN		512
-#define ADC1_BUFFER_LEN_HALF	 (ADC1_BUFFER_LEN/2)
-extern IO_ ADC_Status_InitTypeDef ADC1_Status;
-extern  UINT16 g_ADC1_Buffer[ADC1_BUFFER_LEN_HALF];
-
-// ADC2
-#define ADC2_BUFFER_LEN		512
-#define ADC2_BUFFER_LEN_HALF	 (ADC2_BUFFER_LEN/2)
-extern IO_ ADC_Status_InitTypeDef ADC2_Status;
-extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
-
-// ADC3
 
 
 
@@ -242,7 +222,7 @@ void Cmd_Wave_Exec(UINT8 nFlag);
 UINT8 HW_Enable_Data_Channel(eTestMode eMode);
 UINT8 HW_Disable_Data_Channel(eTestMode eMode);
 UINT8 HW_Clear_Data_Channel(eTestMode eMode);
-UINT8 Data_Circle_Handle(IO_ eTestMode eMode);
+//UINT8 Data_Circle_Handle(IO_ eTestMode eMode);
 
 void Reset_ADC_InitDataType(void);
 //yaolan_end
@@ -399,15 +379,15 @@ void Append_Debug_Info(INT8 *pInfo, INT8 *pTemp, UINT16 *pInfoLen);
 //-----------------------------------------------------------------------------------------
 
 // yaolan_start
-_EXT_ IO_ UINT8 g_Test_Mode;
-_EXT_ IO_ UINT8 g_Micro_Switch;
+//_EXT_ IO_ UINT8 g_Test_Mode;
+
 
 //enum {
 //	TEST_MODE_HGB	= 0,
 //	TEST_MODE_CRP	= 1,
 //	TEST_MODE_END	= 2,
 //};
-void Micro_Switch_Check(void);
+//void Micro_Switch_Check(void);
 UINT8 LED_Mode_Set(UINT8 nIndex);
 UINT8 HGB_Test_Exec(eTestMode eMode);
 UINT8 CRP_Test_Exec(eTestMode eMode);
@@ -419,7 +399,7 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag);
 
 eTestMode GetTestMode(UINT32 nCmd);
 _EXT_ UINT8 MSG_Handling(UINT8* pchCmdBuf, UINT8* pchFbkBuf);
-_EXT_ UINT8 MSG_Handling_MsgHandle(UINT8* pchCmdBuf, UINT8* pchFbkBuf);
+//_EXT_ UINT8 MSG_Handling_MsgHandle(UINT8* pchCmdBuf, UINT8* pchFbkBuf);
 
 /* 采集报告处理 */
 void collect_return_hdl(UINT16 stat);

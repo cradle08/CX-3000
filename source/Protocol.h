@@ -87,13 +87,13 @@ _EXT_ UINT32 PL_UnionFourBytes(UINT8 chByteHH, UINT8 chByteHL, UINT8 chByteLH, U
 
 //-----------------------------------------------------------------------------------------
 // function declaration: for the uart port 
-_EXT_ UINT8  PL_COM_TriggerSend(void);
-_EXT_ UINT8  PL_COM_SendChar(UINT8 ch);
-_EXT_ UINT8  PL_COM_SendNChar(UINT8* pStr, UINT16 nNum);
-_EXT_ UINT8  PL_COM_SendString(UINT8* pStr);
-_EXT_ UINT8  PL_COM_SendValue(UINT32 nValue);
-//
-_EXT_ void   PL_COM_IsrHandling(void);  // interrupt of com
+//_EXT_ UINT8  PL_COM_TriggerSend(void);
+//_EXT_ UINT8  PL_COM_SendChar(UINT8 ch);
+//_EXT_ UINT8  PL_COM_SendNChar(UINT8* pStr, UINT16 nNum);
+//_EXT_ UINT8  PL_COM_SendString(UINT8* pStr);
+//_EXT_ UINT8  PL_COM_SendValue(UINT32 nValue);
+////
+//_EXT_ void   PL_COM_IsrHandling(void);  // interrupt of com
 
 //-----------------------------------------------------------------------------------------
 // function declaration: for the net port 

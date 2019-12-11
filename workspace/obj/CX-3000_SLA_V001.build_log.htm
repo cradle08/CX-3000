@@ -3,170 +3,977 @@
 <pre>
 <h1>礦ision Build Log</h1>
 <h2>Project:</h2>
-F:\CX-3000\CX-3000\workspace\prj\CX-3000.uvproj
+F:\CX-3000\CX-Boot\workspace\prj\CX-3000.uvproj
 Project File Date:  11/12/2019
 
 <h2>Output:</h2>
 Build target 'Scope'
 linking...
-Program Size: Code=135424 RO-data=4664 RW-data=956 ZI-data=85804  
+Program Size: Code=73542 RO-data=778 RW-data=280 ZI-data=78032  
 FromELF: creating hex file...
-After Build - User command #1: "D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-3000_SLA_V001.bin" "..\obj\CX-3000_SLA_V001.axf"
-"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 0 Warning(s).
+After Build - User command #1: "D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-Boot-V0001.bin" "..\obj\CX-Boot-V0001.axf"
+"..\obj\CX-Boot-V0001.axf" - 0 Error(s), 0 Warning(s).
 </pre>
 </body>
 </html>
- was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(875): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(887): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(900): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(913): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(925): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(1127): warning:  #550-D: variable "Status" was set but never used
-        UINT8 Status;
-..\..\config\driver.c(1128): warning:  #550-D: variable "Tempertaure_data" was set but never used
-        INT32 Pressure_data,Tempertaure_data;
-..\..\config\driver.c(1208): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
-      EXTI_InitTypeDef EXTI_InitStructure;
-..\..\config\driver.c(1691): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
-  }
-..\..\config\driver.c(1738): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
-  }
-..\..\config\driver.c(2107): warning:  #177-D: variable "nReal" was declared but never referenced
-        UINT16 nTempADC , nDACSet, nReal;
-..\..\config\driver.c(2660): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
-      USART_InitTypeDef USART_InitStructure;    
-..\..\config\driver.c: 15 warnings, 0 errors
-linking...
-Program Size: Code=135424 RO-data=4664 RW-data=956 ZI-data=85804  
-FromELF: creating hex file...
-After Build - User command #1: "D:\Program Files (x86)\Keil_v4\ARM\ARMCC\bin\fromelf.exe" --bin -o "..\obj\CX-3000_SLA_V001.bin" "..\obj\CX-3000_SLA_V001.axf"
-"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 15 Warning(s).
-Load "..\\obj\\CX-3000_SLA_V001.axf" 
-Erase Done.
-Programming Done.
-Verify OK.
-Application running ...
+ges.
+"..\obj\CX-Boot-V0001.axf" - 2 Error(s), 0 Warning(s).
+Target not created
+mplicitly
+      BUF_Recv_Init();
+..\..\source\Protocol.c: 2 warnings, 0 errors
+compiling StorageManagement.c...
+compiling Update.c...
+..\..\source\Update.c(214): warning:  #550-D: variable "nParaLen" was set but never used
+      UINT16 nParaLen            = 0;
+..\..\source\Update.c(217): warning:  #550-D: variable "bSendBack" was set but never used
+      enum eFlag  bSendBack      = e_False;
+..\..\source\Update.c: 2 warnings, 0 errors
+compiling Scope_It.c...
+compiling NetBufferCircle.c...
+..\..\config\NetBufferCircle.c(15): error:  #70: incomplete type is not allowed
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\NetBufferCircle.c(19): error:  #70: incomplete type is not allowed
+  _STA_ IO_ struct tBufferCircle XRAM_ m_recv_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\NetBufferCircle.c: 0 warnings, 2 errors
 compiling driver.c...
-..\..\config\driver.c(239): warning:  #940-D: missing return statement at end of non-void function "_sys_exit"
+..\..\config\driver.c(285): warning:  #940-D: missing return statement at end of non-void function "_sys_exit"
   } 
-..\..\config\driver.c(259): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+..\..\config\driver.c(305): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
         NVIC_InitTypeDef NVIC_InitStructure;
-..\..\config\driver.c(845): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(875): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(887): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(900): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(913): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(925): warning:  #177-D: variable "i" was declared but never referenced
-        UINT16 nVal = 0, i;
-..\..\config\driver.c(1127): warning:  #550-D: variable "Status" was set but never used
-        UINT8 Status;
-..\..\config\driver.c(1128): warning:  #550-D: variable "Tempertaure_data" was set but never used
-        INT32 Pressure_data,Tempertaure_data;
-..\..\config\driver.c(1208): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+..\..\config\driver.c(2683): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+      USART_InitTypeDef USART_InitStructure;    
+..\..\config\driver.c: 3 warnings, 0 errors
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
+"..\obj\CX-Boot-V0001.axf" - 2 Error(s), 8 Warning(s).
+Target not created
+REGISTER_CLK_AF_SRC,  D_REGISTER_SPI_AF); 
+..\..\config\driver.c(2635): error:  #20: identifier "D_REGISTER_SPI_AF" is undefined
+          GPIO_PinAFConfig(D_REGISTER_CLK_PORT,  D_REGISTER_CLK_AF_SRC,  D_REGISTER_SPI_AF); 
+..\..\config\driver.c(2636): error:  #20: identifier "D_REGISTER_MOSI_AF_SRC" is undefined
+          GPIO_PinAFConfig(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_AF_SRC, D_REGISTER_SPI_AF);
+..\..\config\driver.c(2637): error:  #20: identifier "D_REGISTER_CS_AF_SRC" is undefined
+          GPIO_PinAFConfig(D_REGISTER_CS_PORT,   D_REGISTER_CS_AF_SRC,   D_REGISTER_SPI_AF); 
+..\..\config\driver.c(2651): error:  #20: identifier "D_REGISTER_SPI" is undefined
+          SPI_Init(D_REGISTER_SPI, &SPI_InitStructure);  //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
+..\..\config\driver.c(2666): error:  #20: identifier "D_REGISTER_SPI" is undefined
+      while (SPI_I2S_GetFlagStatus(D_REGISTER_SPI, SPI_I2S_FLAG_TXE) == RESET){}//等待发送区空  
+..\..\config\driver.c(2667): error:  #20: identifier "D_REGISTER_SPI" is undefined
+        SPI_I2S_SendData(D_REGISTER_SPI, nCmd);     
+..\..\config\driver.c(2683): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+      USART_InitTypeDef USART_InitStructure;    
+..\..\config\driver.c: 3 warnings, 17 errors
+"..\obj\CX-Boot-V0001.axf" - 17 Error(s), 3 Warning(s).
+Target not created
+ined
+          GPIO_Init(D_REGISTER_CS_PORT, &GPIO_InitStructure);
+..\..\config\driver.c(2635): error:  #20: identifier "D_REGISTER_CLK_AF_SRC" is undefined
+          GPIO_PinAFConfig(D_REGISTER_CLK_PORT,  D_REGISTER_CLK_AF_SRC,  D_REGISTER_SPI_AF); 
+..\..\config\driver.c(2635): error:  #20: identifier "D_REGISTER_SPI_AF" is undefined
+          GPIO_PinAFConfig(D_REGISTER_CLK_PORT,  D_REGISTER_CLK_AF_SRC,  D_REGISTER_SPI_AF); 
+..\..\config\driver.c(2636): error:  #20: identifier "D_REGISTER_MOSI_AF_SRC" is undefined
+          GPIO_PinAFConfig(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_AF_SRC, D_REGISTER_SPI_AF);
+..\..\config\driver.c(2637): error:  #20: identifier "D_REGISTER_CS_AF_SRC" is undefined
+          GPIO_PinAFConfig(D_REGISTER_CS_PORT,   D_REGISTER_CS_AF_SRC,   D_REGISTER_SPI_AF); 
+..\..\config\driver.c(2651): error:  #20: identifier "D_REGISTER_SPI" is undefined
+          SPI_Init(D_REGISTER_SPI, &SPI_InitStructure);  //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
+..\..\config\driver.c(2666): error:  #20: identifier "D_REGISTER_SPI" is undefined
+      while (SPI_I2S_GetFlagStatus(D_REGISTER_SPI, SPI_I2S_FLAG_TXE) == RESET){}//等待发送区空  
+..\..\config\driver.c(2667): error:  #20: identifier "D_REGISTER_SPI" is undefined
+        SPI_I2S_SendData(D_REGISTER_SPI, nCmd);     
+..\..\config\driver.c(2683): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+      USART_InitTypeDef USART_InitStructure;    
+..\..\config\driver.c: 3 warnings, 23 errors
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
+"..\obj\CX-Boot-V0001.axf" - 23 Error(s), 6 Warning(s).
+Target not created
+, nReal;
+..\..\config\driver.c(2681): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+      USART_InitTypeDef USART_InitStructure;    
+..\..\config\driver.c: 15 warnings, 4 errors
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
+"..\obj\CX-Boot-V0001.axf" - 13 Error(s), 17 Warning(s).
+Target not created
+): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+      USART_InitTypeDef USART_InitStructure;    
+..\..\config\driver.c: 15 warnings, 4 errors
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
+"..\obj\CX-Boot-V0001.axf" - 15 Error(s), 17 Warning(s).
+Target not created
+D: variable "EXTI_InitStructure" was declared but never referenced
       EXTI_InitTypeDef EXTI_InitStructure;
-..\..\config\driver.c(1691): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
+..\..\config\driver.c(1712): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
   }
-..\..\config\driver.c(1738): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
+..\..\config\driver.c(1759): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
   }
-..\..\config\driver.c(2107): warning:  #177-D: variable "nReal" was declared but never referenced
+..\..\config\driver.c(2128): warning:  #177-D: variable "nReal" was declared but never referenced
         UINT16 nTempADC , nDACSet, nReal;
-..\..\config\driver.c(2660): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+..\..\config\driver.c(2681): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
       USART_InitTypeDef USART_InitStructure;    
 ..\..\config\driver.c: 15 warnings, 0 errors
-"..\..\config\driver.c" - 0 Error(s), 15 Warning(s).
-mbol OUT_CLK multiply defined (by storagemanagement.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by fpga.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by scope_it.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by scope_move.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by buffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by netbuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by samplebuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by interruptbuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by driver.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by ad7799.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by ethernetif.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by netconf.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by udp_echoserver.o and scopemain.o).
-Not enough information to list image symbols.
-Not enough information to list the image map.
-Finished: 2 information, 0 warning and 54 error messages.
-"..\obj\CX-3000_SLA_V001.axf" - 54 Error(s), 0 Warning(s).
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
+"..\obj\CX-Boot-V0001.axf" - 25 Error(s), 17 Warning(s).
 Target not created
-copemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by systemscope.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by processscope.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by protocol.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by interfacescope.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by samplingport.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by storagemanagement.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by fpga.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by scope_it.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by scope_move.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by buffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by netbuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by samplebuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by interruptbuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by driver.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by ad7799.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by ethernetif.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by netconf.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by udp_echoserver.o and scopemain.o).
-Not enough information to list image symbols.
-Not enough information to list the image map.
-Finished: 2 information, 0 warning and 57 error messages.
-"..\obj\CX-3000_SLA_V001.axf" - 57 Error(s), 15 Warning(s).
+ource\StorageManagement.c: 1 warning, 9 errors
+compiling Update.c...
+..\..\source\SamplingPort.h(39): error:  #130: expected a "{"
+  enum eSampleRecvState                   
+..\..\source\SamplingPort.h(41): error:  #20: identifier "E_SP_RECV_STATE_IDLE" is undefined
+      E_SP_RECV_STATE_IDLE      = 0,   // idle                          
+..\..\source\SamplingPort.h(42): error:  #20: identifier "E_SP_RECV_STATE_HEAD" is undefined
+      E_SP_RECV_STATE_HEAD      = 1,   // head 
+..\..\source\SamplingPort.h(43): error:  #20: identifier "E_SP_RECV_STATE_DATA1" is undefined
+      E_SP_RECV_STATE_DATA1     = 2,   // data1
+..\..\source\SamplingPort.h(44): error:  #20: identifier "E_SP_RECV_STATE_DATA2" is undefined
+      E_SP_RECV_STATE_DATA2     = 3,   // data2
+..\..\source\SamplingPort.h(45): error:  #20: identifier "E_SP_RECV_STATE_TAIL" is undefined
+      E_SP_RECV_STATE_TAIL      = 4,   // tail
+..\..\source\SamplingPort.h(46): error:  #29: expected an expression
+  };
+..\..\source\SamplingPort.h(46): error:  #65: expected a ";"
+  };
+..\..\source\SamplingPort.h(46): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  };
+..\..\source\SamplingPort.h(54): error:  #70: incomplete type is not allowed
+     IO_ enum eSampleRecvState     eRecvState;      // state of receiving
+..\..\source\Update.c(209): error:  #247: function "MSG_Handling" has already been defined
+  UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
+..\..\source\Update.c(213): warning:  #550-D: variable "nParaLen" was set but never used
+      UINT16 nParaLen            = 0;
+..\..\source\Update.c(216): warning:  #550-D: variable "bSendBack" was set but never used
+      enum eFlag  bSendBack      = e_False;
+..\..\source\Update.c: 3 warnings, 10 errors
+compiling Fpga.c...
+..\..\config\Fpga.c(25): error:  #130: expected a "{"
+  void  FPGA_Init(void)
+..\..\config\Fpga.c(141): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  }
+..\..\config\Fpga.c: 1 warning, 1 error
+compiling Scope_It.c...
+..\..\source\SamplingPort.h(39): error:  #130: expected a "{"
+  enum eSampleRecvState                   
+..\..\source\SamplingPort.h(41): error:  #20: identifier "E_SP_RECV_STATE_IDLE" is undefined
+      E_SP_RECV_STATE_IDLE      = 0,   // idle                          
+..\..\source\SamplingPort.h(42): error:  #20: identifier "E_SP_RECV_STATE_HEAD" is undefined
+      E_SP_RECV_STATE_HEAD      = 1,   // head 
+..\..\source\SamplingPort.h(43): error:  #20: identifier "E_SP_RECV_STATE_DATA1" is undefined
+      E_SP_RECV_STATE_DATA1     = 2,   // data1
+..\..\source\SamplingPort.h(44): error:  #20: identifier "E_SP_RECV_STATE_DATA2" is undefined
+      E_SP_RECV_STATE_DATA2     = 3,   // data2
+..\..\source\SamplingPort.h(45): error:  #20: identifier "E_SP_RECV_STATE_TAIL" is undefined
+      E_SP_RECV_STATE_TAIL      = 4,   // tail
+..\..\source\SamplingPort.h(46): error:  #29: expected an expression
+  };
+..\..\source\SamplingPort.h(46): error:  #65: expected a ";"
+  };
+..\..\source\SamplingPort.h(46): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  };
+..\..\source\SamplingPort.h(54): error:  #70: incomplete type is not allowed
+     IO_ enum eSampleRecvState     eRecvState;      // state of receiving
+..\..\config\Scope_It.c: 1 warning, 9 errors
+compiling Scope_Move.c...
+..\..\config\Scope_Move.c(14): error:  #130: expected a "{"
+  IO_ struct tMvMotorStatus XRAM_ g_atMotorStatus[MV_MOTOR_NUM]; // status
+..\..\config\Scope_Move.c(19): warning:  #12-D: parsing restarts here after previous syntax error
+  {
+..\..\config\Scope_Move.c(20): warning:  #174-D: expression has no effect
+       DIR_POS_MT_X,
+..\..\config\Scope_Move.c(20): warning:  #174-D: expression has no effect
+       DIR_POS_MT_X,
+..\..\config\Scope_Move.c(22): error:  #65: expected a ";"
+  };
+..\..\config\Scope_Move.c(22): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  };
+..\..\config\Scope_Move.c(184): error:  #20: identifier "m_acnDirPos" is undefined
+          nDirMap = m_acnDirPos[eMotor];
+..\..\config\Scope_Move.c: 4 warnings, 3 errors
+compiling BufferCircle.c...
+..\..\config\BufferCircle.c(15): error:  #130: expected a "{"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\BufferCircle.c(15): warning:  #174-D: expression has no effect
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\BufferCircle.c(15): warning:  #174-D: expression has no effect
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\BufferCircle.c(15): error:  #65: expected a ";"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\BufferCircle.c(15): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\BufferCircle.c(34): error:  #20: identifier "m_send_tBufStatus" is undefined
+      m_send_tBufStatus.nGet  = 0;
+..\..\config\BufferCircle.c(55): error:  #20: identifier "m_send_tBufStatus" is undefined
+        if(m_send_tBufStatus.nPut == m_send_tBufStatus.nGet)  
+..\..\config\BufferCircle.c(61): error:  #20: identifier "m_send_tBufStatus" is undefined
+      m_send_achBufferCircle[m_send_tBufStatus.nPut] = ch;
+..\..\config\BufferCircle.c(89): error:  #20: identifier "m_send_tBufStatus" is undefined
+        if( ( m_send_tBufStatus.nPut == (m_send_tBufStatus.nGet+1) ) ||  
+..\..\config\BufferCircle.c(96): error:  #20: identifier "m_send_tBufStatus" is undefined
+      m_send_tBufStatus.nGet += 1; // inc 1
+..\..\config\BufferCircle.c(132): error:  #20: identifier "m_send_tBufStatus" is undefined
+          m_send_achBufferCircle[m_send_tBufStatus.nPut] = *(pchBuf + nCount);
+..\..\config\BufferCircle.c(170): error:  #20: identifier "m_send_tBufStatus" is undefined
+                m_send_tBufStatus.nGet += 1; // inc 1
+..\..\config\BufferCircle.c(230): error:  #20: identifier "m_send_tBufStatus" is undefined
+      if(m_send_tBufStatus.nPut == m_send_tBufStatus.nGet)                   
+..\..\config\BufferCircle.c: 3 warnings, 10 errors
+compiling NetBufferCircle.c...
+..\..\config\NetBufferCircle.c(15): error:  #130: expected a "{"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\NetBufferCircle.c(15): warning:  #174-D: expression has no effect
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\NetBufferCircle.c(15): warning:  #174-D: expression has no effect
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\NetBufferCircle.c(15): error:  #65: expected a ";"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\NetBufferCircle.c(15): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\NetBufferCircle.c(34): error:  #20: identifier "m_send_tBufStatus" is undefined
+      m_send_tBufStatus.nGet  = 0;
+..\..\config\NetBufferCircle.c(55): error:  #20: identifier "m_send_tBufStatus" is undefined
+        if(m_send_tBufStatus.nPut == m_send_tBufStatus.nGet)  
+..\..\config\NetBufferCircle.c(61): error:  #20: identifier "m_send_tBufStatus" is undefined
+      m_send_achBufferCircle[m_send_tBufStatus.nPut] = ch;
+..\..\config\NetBufferCircle.c(89): error:  #20: identifier "m_send_tBufStatus" is undefined
+        if( ( m_send_tBufStatus.nPut == (m_send_tBufStatus.nGet+1) ) ||  
+..\..\config\NetBufferCircle.c(96): error:  #20: identifier "m_send_tBufStatus" is undefined
+      m_send_tBufStatus.nGet += 1; // inc 1
+..\..\config\NetBufferCircle.c(132): error:  #20: identifier "m_send_tBufStatus" is undefined
+          m_send_achBufferCircle[m_send_tBufStatus.nPut] = *(pchBuf + nCount);
+..\..\config\NetBufferCircle.c(170): error:  #20: identifier "m_send_tBufStatus" is undefined
+                m_send_tBufStatus.nGet += 1; // inc 1
+..\..\config\NetBufferCircle.c(230): error:  #20: identifier "m_send_tBufStatus" is undefined
+      if(m_send_tBufStatus.nPut == m_send_tBufStatus.nGet)                   
+..\..\config\NetBufferCircle.c: 3 warnings, 10 errors
+compiling SampleBufferCircle.c...
+..\..\config\SampleBufferCircle.c(15): error:  #130: expected a "{"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\SampleBufferCircle.c(15): warning:  #174-D: expression has no effect
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\SampleBufferCircle.c(15): warning:  #174-D: expression has no effect
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\SampleBufferCircle.c(15): error:  #65: expected a ";"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\SampleBufferCircle.c(15): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_send_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\SampleBufferCircle.c(34): error:  #20: identifier "m_send_tBufStatus" is undefined
+      m_send_tBufStatus.nGet  = 0;
+..\..\config\SampleBufferCircle.c(55): error:  #20: identifier "m_send_tBufStatus" is undefined
+        if(m_send_tBufStatus.nPut == m_send_tBufStatus.nGet)  
+..\..\config\SampleBufferCircle.c(61): error:  #20: identifier "m_send_tBufStatus" is undefined
+      m_send_achBufferCircle[m_send_tBufStatus.nPut] = ch;
+..\..\config\SampleBufferCircle.c(89): error:  #20: identifier "m_send_tBufStatus" is undefined
+        if( ( m_send_tBufStatus.nPut == (m_send_tBufStatus.nGet+1) ) ||  
+..\..\config\SampleBufferCircle.c(96): error:  #20: identifier "m_send_tBufStatus" is undefined
+      m_send_tBufStatus.nGet += 1; // inc 1
+..\..\config\SampleBufferCircle.c(132): error:  #20: identifier "m_send_tBufStatus" is undefined
+          m_send_achBufferCircle[m_send_tBufStatus.nPut] = *(pchBuf + nCount);
+..\..\config\SampleBufferCircle.c(170): error:  #20: identifier "m_send_tBufStatus" is undefined
+                m_send_tBufStatus.nGet += 1; // inc 1
+..\..\config\SampleBufferCircle.c(230): error:  #20: identifier "m_send_tBufStatus" is undefined
+      if(m_send_tBufStatus.nPut == m_send_tBufStatus.nGet)                   
+..\..\config\SampleBufferCircle.c: 3 warnings, 10 errors
+compiling InterruptBufferCircle.c...
+..\..\config\InterruptBufferCircle.c(15): error:  #130: expected a "{"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_int_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\InterruptBufferCircle.c(15): warning:  #174-D: expression has no effect
+  _STA_ IO_ struct tBufferCircle XRAM_ m_int_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\InterruptBufferCircle.c(15): warning:  #174-D: expression has no effect
+  _STA_ IO_ struct tBufferCircle XRAM_ m_int_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\InterruptBufferCircle.c(15): error:  #65: expected a ";"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_int_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\InterruptBufferCircle.c(15): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  _STA_ IO_ struct tBufferCircle XRAM_ m_int_tBufStatus = {0, 1}; // , e_False}; // attention: initialized value
+..\..\config\InterruptBufferCircle.c(30): error:  #20: identifier "m_int_tBufStatus" is undefined
+      m_int_tBufStatus.nGet  = 0;
+..\..\config\InterruptBufferCircle.c(51): error:  #20: identifier "m_int_tBufStatus" is undefined
+        if(m_int_tBufStatus.nPut == m_int_tBufStatus.nGet)  
+..\..\config\InterruptBufferCircle.c(57): error:  #20: identifier "m_int_tBufStatus" is undefined
+      m_int_achBufferCircle[m_int_tBufStatus.nPut] = ch;
+..\..\config\InterruptBufferCircle.c(85): error:  #20: identifier "m_int_tBufStatus" is undefined
+        if( ( m_int_tBufStatus.nPut == (m_int_tBufStatus.nGet+1) ) ||  
+..\..\config\InterruptBufferCircle.c(92): error:  #20: identifier "m_int_tBufStatus" is undefined
+      m_int_tBufStatus.nGet += 1; // inc 1
+..\..\config\InterruptBufferCircle.c(128): error:  #20: identifier "m_int_tBufStatus" is undefined
+          m_int_achBufferCircle[m_int_tBufStatus.nPut] = *(pchBuf + nCount);
+..\..\config\InterruptBufferCircle.c(167): error:  #20: identifier "m_int_tBufStatus" is undefined
+                m_int_tBufStatus.nGet += 1; // inc 1
+..\..\config\InterruptBufferCircle.c(227): error:  #20: identifier "m_int_tBufStatus" is undefined
+      if(m_int_tBufStatus.nPut == m_int_tBufStatus.nGet)                   
+..\..\config\InterruptBufferCircle.c: 3 warnings, 10 errors
+compiling driver.c...
+..\..\config\driver.c(11): error:  #130: expected a "{"
+  IO_ ADC_Status_InitTypeDef ADC1_Status = {0};
+..\..\config\driver.c(11): warning:  #174-D: expression has no effect
+  IO_ ADC_Status_InitTypeDef ADC1_Status = {0};
+..\..\config\driver.c(11): error:  #65: expected a ";"
+  IO_ ADC_Status_InitTypeDef ADC1_Status = {0};
+..\..\config\driver.c(11): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  IO_ ADC_Status_InitTypeDef ADC1_Status = {0};
+..\..\config\driver.c(251): warning:  #940-D: missing return statement at end of non-void function "_sys_exit"
+  } 
+..\..\config\driver.c(271): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+        NVIC_InitTypeDef NVIC_InitStructure;
+..\..\config\driver.c(866): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(896): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(908): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(921): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(934): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(946): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1148): warning:  #550-D: variable "Status" was set but never used
+        UINT8 Status;
+..\..\config\driver.c(1149): warning:  #550-D: variable "Tempertaure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(1229): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(1712): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
+  }
+..\..\config\driver.c(1759): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
+  }
+..\..\config\driver.c(2128): warning:  #177-D: variable "nReal" was declared but never referenced
+        UINT16 nTempADC , nDACSet, nReal;
+..\..\config\driver.c(2681): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+      USART_InitTypeDef USART_InitStructure;    
+..\..\config\driver.c: 17 warnings, 2 errors
+compiling AD7799.c...
+..\..\config\AD7799.c(7): error:  #130: expected a "{"
+  void ADC24Bit_SPI_Init(void)
+..\..\config\AD7799.c(69): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  }
+..\..\config\AD7799.c(511): warning:  #940-D: missing return statement at end of non-void function "AD7799_Get_ADC_Value"
+  }
+..\..\config\AD7799.c(508): warning:  #550-D: variable "nADC" was set but never used
+        UINT32  nADC;
+..\..\config\AD7799.c: 3 warnings, 1 error
+compiling ethernetif.c...
+..\..\lwip_app\netconf.h(47): error:  #130: expected a "{"
+  void LwIP_Init(void);
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(77): warning:  #12-D: parsing restarts here after previous syntax error
+  {
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(82): error:  #20: identifier "netif" is undefined
+    netif->hwaddr_len = ETHARP_HWADDR_LEN;
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(103): error:  #20: identifier "DMATxDscrTab" is undefined
+    ETH_DMATxDescChainInit(DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(103): error:  #20: identifier "Tx_Buff" is undefined
+    ETH_DMATxDescChainInit(DMATxDscrTab, &Tx_Buff[0][0], ETH_TXBUFNB);
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(105): error:  #20: identifier "DMARxDscrTab" is undefined
+    ETH_DMARxDescChainInit(DMARxDscrTab, &Rx_Buff[0][0], ETH_RXBUFNB);
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(105): error:  #20: identifier "Rx_Buff" is undefined
+    ETH_DMARxDescChainInit(DMARxDscrTab, &Rx_Buff[0][0], ETH_RXBUFNB);
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(120): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  }
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(142): error:  #20: identifier "DMATxDescToSet" is undefined
+    u8 *buffer =  (u8 *)(DMATxDescToSet->Buffer1Addr);
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(281): error:  #20: identifier "DMA_RX_FRAME_infos" is undefined
+    for (i=0; i<DMA_RX_FRAME_infos->Seg_Count; i++)
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(288): error:  #20: identifier "DMA_RX_FRAME_infos" is undefined
+    DMA_RX_FRAME_infos->Seg_Count =0;
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c(363): warning:  #223-D: function "low_level_init" declared implicitly
+    low_level_init(netif);
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c: 3 warnings, 9 errors
+compiling netconf.c...
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(54): error:  #130: expected a "{"
+  typedef struct {
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(214): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  }ETH_InitTypeDef;
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(58): warning:  #177-D: variable "ETH_AutoNegotiation" was declared but never referenced
+    uint32_t             ETH_AutoNegotiation;           /*!< Selects or not the AutoNegotiation mode for the external PHY
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(63): warning:  #177-D: variable "ETH_Watchdog" was declared but never referenced
+    uint32_t             ETH_Watchdog;                  /*!< Selects or not the Watchdog timer
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(68): warning:  #177-D: variable "ETH_Jabber" was declared but never referenced
+    uint32_t             ETH_Jabber;                    /*!< Selects or not Jabber timer
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(73): warning:  #177-D: variable "ETH_InterFrameGap" was declared but never referenced
+    uint32_t             ETH_InterFrameGap;             /*!< Selects the minimum IFG between frames during transmission
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(76): warning:  #177-D: variable "ETH_CarrierSense" was declared but never referenced
+    uint32_t             ETH_CarrierSense;              /*!< Selects or not the Carrier Sense
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(79): warning:  #177-D: variable "ETH_Speed" was declared but never referenced
+    uint32_t             ETH_Speed;                     /*!< Sets the Ethernet speed: 10/100 Mbps
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(82): warning:  #177-D: variable "ETH_ReceiveOwn" was declared but never referenced
+    uint32_t             ETH_ReceiveOwn;                /*!< Selects or not the ReceiveOwn
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(87): warning:  #177-D: variable "ETH_LoopbackMode" was declared but never referenced
+    uint32_t             ETH_LoopbackMode;              /*!< Selects or not the internal MAC MII Loopback mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(90): warning:  #177-D: variable "ETH_Mode" was declared but never referenced
+    uint32_t             ETH_Mode;                      /*!< Selects the MAC duplex mode: Half-Duplex or Full-Duplex mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(93): warning:  #177-D: variable "ETH_ChecksumOffload" was declared but never referenced
+    uint32_t             ETH_ChecksumOffload;           /*!< Selects or not the IPv4 checksum checking for received frame payloads' TCP/UDP/ICMP headers.
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(96): warning:  #177-D: variable "ETH_RetryTransmission" was declared but never referenced
+    uint32_t             ETH_RetryTransmission;         /*!< Selects or not the MAC attempt retries transmission, based on the settings of BL,
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(100): warning:  #177-D: variable "ETH_AutomaticPadCRCStrip" was declared but never referenced
+    uint32_t             ETH_AutomaticPadCRCStrip;      /*!< Selects or not the Automatic MAC Pad/CRC Stripping
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(103): warning:  #177-D: variable "ETH_BackOffLimit" was declared but never referenced
+    uint32_t             ETH_BackOffLimit;              /*!< Selects the BackOff limit value
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(106): warning:  #177-D: variable "ETH_DeferralCheck" was declared but never referenced
+    uint32_t             ETH_DeferralCheck;             /*!< Selects or not the deferral check function (Half-Duplex mode)
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(109): warning:  #177-D: variable "ETH_ReceiveAll" was declared but never referenced
+    uint32_t             ETH_ReceiveAll;                /*!< Selects or not all frames reception by the MAC (No filtering)
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(112): warning:  #177-D: variable "ETH_SourceAddrFilter" was declared but never referenced
+    uint32_t             ETH_SourceAddrFilter;          /*!< Selects the Source Address Filter mode                                                           
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(115): warning:  #177-D: variable "ETH_PassControlFrames" was declared but never referenced
+    uint32_t             ETH_PassControlFrames;         /*!< Sets the forwarding mode of the control frames (including unicast and multicast PAUSE frames)                                                          
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(118): warning:  #177-D: variable "ETH_BroadcastFramesReception" was declared but never referenced
+    uint32_t             ETH_BroadcastFramesReception;  /*!< Selects or not the reception of Broadcast Frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(121): warning:  #177-D: variable "ETH_DestinationAddrFilter" was declared but never referenced
+    uint32_t             ETH_DestinationAddrFilter;     /*!< Sets the destination filter mode for both unicast and multicast frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(124): warning:  #177-D: variable "ETH_PromiscuousMode" was declared but never referenced
+    uint32_t             ETH_PromiscuousMode;           /*!< Selects or not the Promiscuous Mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(127): warning:  #177-D: variable "ETH_MulticastFramesFilter" was declared but never referenced
+    uint32_t             ETH_MulticastFramesFilter;     /*!< Selects the Multicast Frames filter mode: None/HashTableFilter/PerfectFilter/PerfectHashTableFilter
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(130): warning:  #177-D: variable "ETH_UnicastFramesFilter" was declared but never referenced
+    uint32_t             ETH_UnicastFramesFilter;       /*!< Selects the Unicast Frames filter mode: HashTableFilter/PerfectFilter/PerfectHashTableFilter
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(133): warning:  #177-D: variable "ETH_HashTableHigh" was declared but never referenced
+    uint32_t             ETH_HashTableHigh;             /*!< This field holds the higher 32 bits of Hash table.  */    
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(135): warning:  #177-D: variable "ETH_HashTableLow" was declared but never referenced
+    uint32_t             ETH_HashTableLow;              /*!< This field holds the lower 32 bits of Hash table.  */    
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(137): warning:  #177-D: variable "ETH_PauseTime" was declared but never referenced
+    uint32_t             ETH_PauseTime;                 /*!< This field holds the value to be used in the Pause Time field in the
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(140): warning:  #177-D: variable "ETH_ZeroQuantaPause" was declared but never referenced
+    uint32_t             ETH_ZeroQuantaPause;           /*!< Selects or not the automatic generation of Zero-Quanta Pause Control frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(143): warning:  #177-D: variable "ETH_PauseLowThreshold" was declared but never referenced
+    uint32_t             ETH_PauseLowThreshold;         /*!< This field configures the threshold of the PAUSE to be checked for
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(147): warning:  #177-D: variable "ETH_UnicastPauseFrameDetect" was declared but never referenced
+    uint32_t             ETH_UnicastPauseFrameDetect;   /*!< Selects or not the MAC detection of the Pause frames (with MAC Address0
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(151): warning:  #177-D: variable "ETH_ReceiveFlowControl" was declared but never referenced
+    uint32_t             ETH_ReceiveFlowControl;        /*!< Enables or disables the MAC to decode the received Pause frame and
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(155): warning:  #177-D: variable "ETH_TransmitFlowControl" was declared but never referenced
+    uint32_t             ETH_TransmitFlowControl;       /*!< Enables or disables the MAC to transmit Pause frames (Full-Duplex mode)
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(159): warning:  #177-D: variable "ETH_VLANTagComparison" was declared but never referenced
+    uint32_t             ETH_VLANTagComparison;         /*!< Selects the 12-bit VLAN identifier or the complete 16-bit VLAN tag for
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(163): warning:  #177-D: variable "ETH_VLANTagIdentifier" was declared but never referenced
+    uint32_t             ETH_VLANTagIdentifier;         /*!< Holds the VLAN tag identifier for receive frames */
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(169): warning:  #177-D: variable "ETH_DropTCPIPChecksumErrorFrame" was declared but never referenced
+    uint32_t             ETH_DropTCPIPChecksumErrorFrame; /*!< Selects or not the Dropping of TCP/IP Checksum Error Frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(172): warning:  #177-D: variable "ETH_ReceiveStoreForward" was declared but never referenced
+    uint32_t             ETH_ReceiveStoreForward;         /*!< Enables or disables the Receive store and forward mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(175): warning:  #177-D: variable "ETH_FlushReceivedFrame" was declared but never referenced
+    uint32_t             ETH_FlushReceivedFrame;          /*!< Enables or disables the flushing of received frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(178): warning:  #177-D: variable "ETH_TransmitStoreForward" was declared but never referenced
+    uint32_t             ETH_TransmitStoreForward;        /*!< Enables or disables Transmit store and forward mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(181): warning:  #177-D: variable "ETH_TransmitThresholdControl" was declared but never referenced
+    uint32_t             ETH_TransmitThresholdControl;    /*!< Selects or not the Transmit Threshold Control
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(184): warning:  #177-D: variable "ETH_ForwardErrorFrames" was declared but never referenced
+    uint32_t             ETH_ForwardErrorFrames;          /*!< Selects or not the forward to the DMA of erroneous frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(187): warning:  #177-D: variable "ETH_ForwardUndersizedGoodFrames" was declared but never referenced
+    uint32_t             ETH_ForwardUndersizedGoodFrames; /*!< Enables or disables the Rx FIFO to forward Undersized frames (frames with no Error
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(191): warning:  #177-D: variable "ETH_ReceiveThresholdControl" was declared but never referenced
+    uint32_t             ETH_ReceiveThresholdControl;     /*!< Selects the threshold level of the Receive FIFO
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(194): warning:  #177-D: variable "ETH_SecondFrameOperate" was declared but never referenced
+    uint32_t             ETH_SecondFrameOperate;          /*!< Selects or not the Operate on second frame mode, which allows the DMA to process a second
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(198): warning:  #177-D: variable "ETH_AddressAlignedBeats" was declared but never referenced
+    uint32_t             ETH_AddressAlignedBeats;         /*!< Enables or disables the Address Aligned Beats
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(201): warning:  #177-D: variable "ETH_FixedBurst" was declared but never referenced
+    uint32_t             ETH_FixedBurst;                  /*!< Enables or disables the AHB Master interface fixed burst transfers
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(204): warning:  #177-D: variable "ETH_RxDMABurstLength" was declared but never referenced
+    uint32_t             ETH_RxDMABurstLength;            /*!< Indicates the maximum number of beats to be transferred in one Rx DMA transaction
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(207): warning:  #177-D: variable "ETH_TxDMABurstLength" was declared but never referenced
+    uint32_t             ETH_TxDMABurstLength;            /*!< Indicates the maximum number of beats to be transferred in one Tx DMA transaction
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(210): warning:  #177-D: variable "ETH_DescriptorSkipLength" was declared but never referenced
+    uint32_t             ETH_DescriptorSkipLength;        /*!< Specifies the number of word to skip between two unchained descriptors (Ring mode) */                                                             
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(212): warning:  #177-D: variable "ETH_DMAArbitration" was declared but never referenced
+    uint32_t             ETH_DMAArbitration;              /*!< Selects the DMA Tx/Rx arbitration
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(214): error:  #77-D: this declaration has no storage class or type specifier
+  }ETH_InitTypeDef;
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(1764): error:  #757: variable "ETH_InitTypeDef" is not a type name
+  uint32_t ETH_Init(ETH_InitTypeDef* ETH_InitStruct, uint16_t PHYAddress);
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(1765): error:  #757: variable "ETH_InitTypeDef" is not a type name
+  void ETH_StructInit(ETH_InitTypeDef* ETH_InitStruct);
+..\..\lwip_app\netconf.c: 48 warnings, 4 errors
+compiling stm32f4x7_eth_bsp.c...
+..\..\lwip_app\netconf.h(47): error:  #130: expected a "{"
+  void LwIP_Init(void);
+..\..\lwip-1.4.1\src\include\ipv4\lwip/ip.h(89): warning:  #12-D: parsing restarts here after previous syntax error
+  struct ip_pcb {
+..\..\lwip-1.4.1\src\include\ipv4\lwip/ip.h(92): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  };
+..\..\lwip-1.4.1\src\include\ipv4\lwip/ip.h(91): warning:  #177-D: variable "local_ip" was declared but never referenced
+    IP_PCB;
+..\..\lwip-1.4.1\src\include\ipv4\lwip/ip.h(91): warning:  #177-D: variable "remote_ip" was declared but never referenced
+    IP_PCB;
+..\..\lwip-1.4.1\src\include\ipv4\lwip/ip.h(91): warning:  #177-D: variable "so_options" was declared but never referenced
+    IP_PCB;
+..\..\lwip-1.4.1\src\include\ipv4\lwip/ip.h(91): warning:  #177-D: variable "tos" was declared but never referenced
+    IP_PCB;
+..\..\lwip-1.4.1\src\include\ipv4\lwip/ip.h(91): warning:  #177-D: variable "ttl" was declared but never referenced
+    IP_PCB;
+..\..\lwip_app\stm32f4x7_eth_bsp.c: 7 warnings, 1 error
+compiling udp_echoserver.c...
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(54): error:  #130: expected a "{"
+  typedef struct {
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(214): warning:  #940-D: missing return statement at end of non-void function "MSG_Handling"
+  }ETH_InitTypeDef;
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(58): warning:  #177-D: variable "ETH_AutoNegotiation" was declared but never referenced
+    uint32_t             ETH_AutoNegotiation;           /*!< Selects or not the AutoNegotiation mode for the external PHY
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(63): warning:  #177-D: variable "ETH_Watchdog" was declared but never referenced
+    uint32_t             ETH_Watchdog;                  /*!< Selects or not the Watchdog timer
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(68): warning:  #177-D: variable "ETH_Jabber" was declared but never referenced
+    uint32_t             ETH_Jabber;                    /*!< Selects or not Jabber timer
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(73): warning:  #177-D: variable "ETH_InterFrameGap" was declared but never referenced
+    uint32_t             ETH_InterFrameGap;             /*!< Selects the minimum IFG between frames during transmission
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(76): warning:  #177-D: variable "ETH_CarrierSense" was declared but never referenced
+    uint32_t             ETH_CarrierSense;              /*!< Selects or not the Carrier Sense
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(79): warning:  #177-D: variable "ETH_Speed" was declared but never referenced
+    uint32_t             ETH_Speed;                     /*!< Sets the Ethernet speed: 10/100 Mbps
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(82): warning:  #177-D: variable "ETH_ReceiveOwn" was declared but never referenced
+    uint32_t             ETH_ReceiveOwn;                /*!< Selects or not the ReceiveOwn
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(87): warning:  #177-D: variable "ETH_LoopbackMode" was declared but never referenced
+    uint32_t             ETH_LoopbackMode;              /*!< Selects or not the internal MAC MII Loopback mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(90): warning:  #177-D: variable "ETH_Mode" was declared but never referenced
+    uint32_t             ETH_Mode;                      /*!< Selects the MAC duplex mode: Half-Duplex or Full-Duplex mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(93): warning:  #177-D: variable "ETH_ChecksumOffload" was declared but never referenced
+    uint32_t             ETH_ChecksumOffload;           /*!< Selects or not the IPv4 checksum checking for received frame payloads' TCP/UDP/ICMP headers.
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(96): warning:  #177-D: variable "ETH_RetryTransmission" was declared but never referenced
+    uint32_t             ETH_RetryTransmission;         /*!< Selects or not the MAC attempt retries transmission, based on the settings of BL,
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(100): warning:  #177-D: variable "ETH_AutomaticPadCRCStrip" was declared but never referenced
+    uint32_t             ETH_AutomaticPadCRCStrip;      /*!< Selects or not the Automatic MAC Pad/CRC Stripping
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(103): warning:  #177-D: variable "ETH_BackOffLimit" was declared but never referenced
+    uint32_t             ETH_BackOffLimit;              /*!< Selects the BackOff limit value
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(106): warning:  #177-D: variable "ETH_DeferralCheck" was declared but never referenced
+    uint32_t             ETH_DeferralCheck;             /*!< Selects or not the deferral check function (Half-Duplex mode)
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(109): warning:  #177-D: variable "ETH_ReceiveAll" was declared but never referenced
+    uint32_t             ETH_ReceiveAll;                /*!< Selects or not all frames reception by the MAC (No filtering)
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(112): warning:  #177-D: variable "ETH_SourceAddrFilter" was declared but never referenced
+    uint32_t             ETH_SourceAddrFilter;          /*!< Selects the Source Address Filter mode                                                           
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(115): warning:  #177-D: variable "ETH_PassControlFrames" was declared but never referenced
+    uint32_t             ETH_PassControlFrames;         /*!< Sets the forwarding mode of the control frames (including unicast and multicast PAUSE frames)                                                          
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(118): warning:  #177-D: variable "ETH_BroadcastFramesReception" was declared but never referenced
+    uint32_t             ETH_BroadcastFramesReception;  /*!< Selects or not the reception of Broadcast Frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(121): warning:  #177-D: variable "ETH_DestinationAddrFilter" was declared but never referenced
+    uint32_t             ETH_DestinationAddrFilter;     /*!< Sets the destination filter mode for both unicast and multicast frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(124): warning:  #177-D: variable "ETH_PromiscuousMode" was declared but never referenced
+    uint32_t             ETH_PromiscuousMode;           /*!< Selects or not the Promiscuous Mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(127): warning:  #177-D: variable "ETH_MulticastFramesFilter" was declared but never referenced
+    uint32_t             ETH_MulticastFramesFilter;     /*!< Selects the Multicast Frames filter mode: None/HashTableFilter/PerfectFilter/PerfectHashTableFilter
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(130): warning:  #177-D: variable "ETH_UnicastFramesFilter" was declared but never referenced
+    uint32_t             ETH_UnicastFramesFilter;       /*!< Selects the Unicast Frames filter mode: HashTableFilter/PerfectFilter/PerfectHashTableFilter
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(133): warning:  #177-D: variable "ETH_HashTableHigh" was declared but never referenced
+    uint32_t             ETH_HashTableHigh;             /*!< This field holds the higher 32 bits of Hash table.  */    
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(135): warning:  #177-D: variable "ETH_HashTableLow" was declared but never referenced
+    uint32_t             ETH_HashTableLow;              /*!< This field holds the lower 32 bits of Hash table.  */    
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(137): warning:  #177-D: variable "ETH_PauseTime" was declared but never referenced
+    uint32_t             ETH_PauseTime;                 /*!< This field holds the value to be used in the Pause Time field in the
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(140): warning:  #177-D: variable "ETH_ZeroQuantaPause" was declared but never referenced
+    uint32_t             ETH_ZeroQuantaPause;           /*!< Selects or not the automatic generation of Zero-Quanta Pause Control frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(143): warning:  #177-D: variable "ETH_PauseLowThreshold" was declared but never referenced
+    uint32_t             ETH_PauseLowThreshold;         /*!< This field configures the threshold of the PAUSE to be checked for
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(147): warning:  #177-D: variable "ETH_UnicastPauseFrameDetect" was declared but never referenced
+    uint32_t             ETH_UnicastPauseFrameDetect;   /*!< Selects or not the MAC detection of the Pause frames (with MAC Address0
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(151): warning:  #177-D: variable "ETH_ReceiveFlowControl" was declared but never referenced
+    uint32_t             ETH_ReceiveFlowControl;        /*!< Enables or disables the MAC to decode the received Pause frame and
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(155): warning:  #177-D: variable "ETH_TransmitFlowControl" was declared but never referenced
+    uint32_t             ETH_TransmitFlowControl;       /*!< Enables or disables the MAC to transmit Pause frames (Full-Duplex mode)
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(159): warning:  #177-D: variable "ETH_VLANTagComparison" was declared but never referenced
+    uint32_t             ETH_VLANTagComparison;         /*!< Selects the 12-bit VLAN identifier or the complete 16-bit VLAN tag for
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(163): warning:  #177-D: variable "ETH_VLANTagIdentifier" was declared but never referenced
+    uint32_t             ETH_VLANTagIdentifier;         /*!< Holds the VLAN tag identifier for receive frames */
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(169): warning:  #177-D: variable "ETH_DropTCPIPChecksumErrorFrame" was declared but never referenced
+    uint32_t             ETH_DropTCPIPChecksumErrorFrame; /*!< Selects or not the Dropping of TCP/IP Checksum Error Frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(172): warning:  #177-D: variable "ETH_ReceiveStoreForward" was declared but never referenced
+    uint32_t             ETH_ReceiveStoreForward;         /*!< Enables or disables the Receive store and forward mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(175): warning:  #177-D: variable "ETH_FlushReceivedFrame" was declared but never referenced
+    uint32_t             ETH_FlushReceivedFrame;          /*!< Enables or disables the flushing of received frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(178): warning:  #177-D: variable "ETH_TransmitStoreForward" was declared but never referenced
+    uint32_t             ETH_TransmitStoreForward;        /*!< Enables or disables Transmit store and forward mode
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(181): warning:  #177-D: variable "ETH_TransmitThresholdControl" was declared but never referenced
+    uint32_t             ETH_TransmitThresholdControl;    /*!< Selects or not the Transmit Threshold Control
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(184): warning:  #177-D: variable "ETH_ForwardErrorFrames" was declared but never referenced
+    uint32_t             ETH_ForwardErrorFrames;          /*!< Selects or not the forward to the DMA of erroneous frames
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(187): warning:  #177-D: variable "ETH_ForwardUndersizedGoodFrames" was declared but never referenced
+    uint32_t             ETH_ForwardUndersizedGoodFrames; /*!< Enables or disables the Rx FIFO to forward Undersized frames (frames with no Error
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(191): warning:  #177-D: variable "ETH_ReceiveThresholdControl" was declared but never referenced
+    uint32_t             ETH_ReceiveThresholdControl;     /*!< Selects the threshold level of the Receive FIFO
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(194): warning:  #177-D: variable "ETH_SecondFrameOperate" was declared but never referenced
+    uint32_t             ETH_SecondFrameOperate;          /*!< Selects or not the Operate on second frame mode, which allows the DMA to process a second
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(198): warning:  #177-D: variable "ETH_AddressAlignedBeats" was declared but never referenced
+    uint32_t             ETH_AddressAlignedBeats;         /*!< Enables or disables the Address Aligned Beats
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(201): warning:  #177-D: variable "ETH_FixedBurst" was declared but never referenced
+    uint32_t             ETH_FixedBurst;                  /*!< Enables or disables the AHB Master interface fixed burst transfers
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(204): warning:  #177-D: variable "ETH_RxDMABurstLength" was declared but never referenced
+    uint32_t             ETH_RxDMABurstLength;            /*!< Indicates the maximum number of beats to be transferred in one Rx DMA transaction
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(207): warning:  #177-D: variable "ETH_TxDMABurstLength" was declared but never referenced
+    uint32_t             ETH_TxDMABurstLength;            /*!< Indicates the maximum number of beats to be transferred in one Tx DMA transaction
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(210): warning:  #177-D: variable "ETH_DescriptorSkipLength" was declared but never referenced
+    uint32_t             ETH_DescriptorSkipLength;        /*!< Specifies the number of word to skip between two unchained descriptors (Ring mode) */                                                             
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(212): warning:  #177-D: variable "ETH_DMAArbitration" was declared but never referenced
+    uint32_t             ETH_DMAArbitration;              /*!< Selects the DMA Tx/Rx arbitration
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(214): error:  #77-D: this declaration has no storage class or type specifier
+  }ETH_InitTypeDef;
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(1764): error:  #757: variable "ETH_InitTypeDef" is not a type name
+  uint32_t ETH_Init(ETH_InitTypeDef* ETH_InitStruct, uint16_t PHYAddress);
+..\..\HwLib\ETH_Driver\inc\stm32f4x7_eth.h(1765): error:  #757: variable "ETH_InitTypeDef" is not a type name
+  void ETH_StructInit(ETH_InitTypeDef* ETH_InitStruct);
+..\..\lwip_app\udp_echoserver.c: 48 warnings, 4 errors
+"..\obj\CX-3000_SLA_V001.axf" - 129 Error(s), 153 Warning(s).
 Target not created
-e_move.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by buffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by netbuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by samplebuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by interruptbuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by driver.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by ad7799.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by ethernetif.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by netconf.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by udp_echoserver.o and scopemain.o).
-Not enough information to list image symbols.
-Not enough information to list the image map.
-Finished: 2 information, 0 warning and 57 error messages.
-"..\obj\CX-3000_SLA_V001.axf" - 57 Error(s), 21 Warning(s).
-Target not created
-d scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by processscope.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by protocol.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by interfacescope.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by samplingport.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by storagemanagement.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by fpga.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by scope_it.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by scope_move.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by buffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by netbuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by samplebuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by interruptbuffercircle.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by driver.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by ad7799.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by ethernetif.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by netconf.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by stm32f4x7_eth_bsp.o and scopemain.o).
-..\obj\CX-3000_SLA_V001.axf: Error: L6200E: Symbol OUT_CLK multiply defined (by udp_echoserver.o and scopemain.o).
-Not enough information to list image symbols.
-Not enough information to list the image map.
-Finished: 2 information, 0 warning and 57 error messages.
-"..\obj\CX-3000_SLA_V001.axf" - 57 Error(s), 23 Warning(s).
+\..\config\Scope_Move.h(78): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir);
+..\..\config\Scope_Move.h(80): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Stop(enum eMvMotor eMotor);
+..\..\config\Scope_Move.h(82): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Wait(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag);
+..\..\config\Scope_Move.h(84): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_GetStepsExecuted(enum eMvMotor eMotor, UINT32* pnSteps);
+..\..\config\Scope_Move.h(86): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ enum eFlag  MV_IsFinished(enum eMvMotor eMotor);
+..\..\source\Update.h(7): error:  #169: expected a declaration
+  /#include "KernelHeader.h"
+..\..\source\Update.h(7): error:  #10: "#" not expected here
+  /#include "KernelHeader.h"
+..\..\source\Update.h(27): warning:  #12-D: parsing restarts here after previous syntax error
+  _EXT_ IO_ UINT32 g_Udp_Count, g_Frame_Count, g_Send_Fail;
+..\..\source\Update.h(37): error:  #101: "e_Msg_Ctrol" has already been declared in the current scope
+        e_Msg_Ctrol  = 0,
+..\..\source\Update.h(38): error:  #101: "e_Msg_Status" has already been declared in the current scope
+        e_Msg_Status = 1,
+..\..\source\Update.h(39): error:  #101: "e_Msg_Query" has already been declared in the current scope
+        e_Msg_Query  = 2,
+..\..\source\Update.h(40): error:  #101: "e_Msg_Data" has already been declared in the current scope
+        e_Msg_Data   = 3,
+..\..\source\Update.h(41): error:  #101: "e_Msg_End" has already been declared in the current scope
+        e_Msg_End    = 4
+..\..\source\Update.h(42): error:  #256: invalid redeclaration of type name "EN_MSG_TYPE" (declared at line 320 of "..\..\source\ProcessScope.h")
+  }EN_MSG_TYPE;
+..\..\source\Update.h(47): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_0(EN_MSG_TYPE, UINT32)" (declared at line 407 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd);
+..\..\source\Update.h(48): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_8(EN_MSG_TYPE, UINT32, INT8)" (declared at line 408 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult);
+..\..\source\Update.h(49): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_16(EN_MSG_TYPE, UINT32, INT16)" (declared at line 409 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_16(EN_MSG_TYPE eType, UINT32 nCmd, INT16 nResult);
+..\..\source\Update.h(50): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_32(EN_MSG_TYPE, UINT32, INT32)" (declared at line 410 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_32(EN_MSG_TYPE eType, UINT32 nCmd, INT32 nResult);
+..\..\source\Update.h(51): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_String(EN_MSG_TYPE, UINT32, UINT8 *, UINT8)" (declared at line 411 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8 nLen);
+..\..\config\driver.c(251): warning:  #940-D: missing return statement at end of non-void function "_sys_exit"
+  } 
+..\..\config\driver.c(271): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+        NVIC_InitTypeDef NVIC_InitStructure;
+..\..\config\driver.c(866): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(896): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(908): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(921): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(934): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(946): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1148): warning:  #550-D: variable "Status" was set but never used
+        UINT8 Status;
+..\..\config\driver.c(1149): warning:  #550-D: variable "Tempertaure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(1229): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(1712): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Anti_ClockWise"
+  }
+..\..\config\driver.c(1759): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_ClockWise"
+  }
+..\..\config\driver.c(2128): warning:  #177-D: variable "nReal" was declared but never referenced
+        UINT16 nTempADC , nDACSet, nReal;
+..\..\config\driver.c(2681): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+      USART_InitTypeDef USART_InitStructure;    
+..\..\config\driver.c: 24 warnings, 18 errors
+compiling AD7799.c...
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\source\SamplingPort.h(46): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\source\SamplingPort.h(54): error:  #70: incomplete type is not allowed
+     IO_ enum eSampleRecvState     eRecvState;      // state of receiving
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\config\Scope_Move.h(38): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\config\Scope_Move.h(72): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_InitPara(enum eMvMotor eMotor, 
+..\..\config\Scope_Move.h(78): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir);
+..\..\config\Scope_Move.h(80): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Stop(enum eMvMotor eMotor);
+..\..\config\Scope_Move.h(82): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Wait(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag);
+..\..\config\Scope_Move.h(84): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_GetStepsExecuted(enum eMvMotor eMotor, UINT32* pnSteps);
+..\..\config\Scope_Move.h(86): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ enum eFlag  MV_IsFinished(enum eMvMotor eMotor);
+..\..\source\Update.h(7): error:  #169: expected a declaration
+  /#include "KernelHeader.h"
+..\..\source\Update.h(7): error:  #10: "#" not expected here
+  /#include "KernelHeader.h"
+..\..\source\Update.h(27): warning:  #12-D: parsing restarts here after previous syntax error
+  _EXT_ IO_ UINT32 g_Udp_Count, g_Frame_Count, g_Send_Fail;
+..\..\source\Update.h(37): error:  #101: "e_Msg_Ctrol" has already been declared in the current scope
+        e_Msg_Ctrol  = 0,
+..\..\source\Update.h(38): error:  #101: "e_Msg_Status" has already been declared in the current scope
+        e_Msg_Status = 1,
+..\..\source\Update.h(39): error:  #101: "e_Msg_Query" has already been declared in the current scope
+        e_Msg_Query  = 2,
+..\..\source\Update.h(40): error:  #101: "e_Msg_Data" has already been declared in the current scope
+        e_Msg_Data   = 3,
+..\..\source\Update.h(41): error:  #101: "e_Msg_End" has already been declared in the current scope
+        e_Msg_End    = 4
+..\..\source\Update.h(42): error:  #256: invalid redeclaration of type name "EN_MSG_TYPE" (declared at line 320 of "..\..\source\ProcessScope.h")
+  }EN_MSG_TYPE;
+..\..\source\Update.h(47): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_0(EN_MSG_TYPE, UINT32)" (declared at line 407 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd);
+..\..\source\Update.h(48): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_8(EN_MSG_TYPE, UINT32, INT8)" (declared at line 408 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult);
+..\..\source\Update.h(49): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_16(EN_MSG_TYPE, UINT32, INT16)" (declared at line 409 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_16(EN_MSG_TYPE eType, UINT32 nCmd, INT16 nResult);
+..\..\source\Update.h(50): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_32(EN_MSG_TYPE, UINT32, INT32)" (declared at line 410 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_32(EN_MSG_TYPE eType, UINT32 nCmd, INT32 nResult);
+..\..\source\Update.h(51): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_String(EN_MSG_TYPE, UINT32, UINT8 *, UINT8)" (declared at line 411 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8 nLen);
+..\..\config\AD7799.c(511): warning:  #940-D: missing return statement at end of non-void function "AD7799_Get_ADC_Value"
+  }
+..\..\config\AD7799.c(508): warning:  #550-D: variable "nADC" was set but never used
+        UINT32  nADC;
+..\..\config\AD7799.c: 11 warnings, 18 errors
+compiling ethernetif.c...
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\source\SamplingPort.h(46): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\source\SamplingPort.h(54): error:  #70: incomplete type is not allowed
+     IO_ enum eSampleRecvState     eRecvState;      // state of receiving
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\config\Scope_Move.h(38): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\config\Scope_Move.h(72): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_InitPara(enum eMvMotor eMotor, 
+..\..\config\Scope_Move.h(78): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir);
+..\..\config\Scope_Move.h(80): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Stop(enum eMvMotor eMotor);
+..\..\config\Scope_Move.h(82): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Wait(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag);
+..\..\config\Scope_Move.h(84): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_GetStepsExecuted(enum eMvMotor eMotor, UINT32* pnSteps);
+..\..\config\Scope_Move.h(86): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ enum eFlag  MV_IsFinished(enum eMvMotor eMotor);
+..\..\source\Update.h(7): error:  #169: expected a declaration
+  /#include "KernelHeader.h"
+..\..\source\Update.h(7): error:  #10: "#" not expected here
+  /#include "KernelHeader.h"
+..\..\source\Update.h(27): warning:  #12-D: parsing restarts here after previous syntax error
+  _EXT_ IO_ UINT32 g_Udp_Count, g_Frame_Count, g_Send_Fail;
+..\..\source\Update.h(37): error:  #101: "e_Msg_Ctrol" has already been declared in the current scope
+        e_Msg_Ctrol  = 0,
+..\..\source\Update.h(38): error:  #101: "e_Msg_Status" has already been declared in the current scope
+        e_Msg_Status = 1,
+..\..\source\Update.h(39): error:  #101: "e_Msg_Query" has already been declared in the current scope
+        e_Msg_Query  = 2,
+..\..\source\Update.h(40): error:  #101: "e_Msg_Data" has already been declared in the current scope
+        e_Msg_Data   = 3,
+..\..\source\Update.h(41): error:  #101: "e_Msg_End" has already been declared in the current scope
+        e_Msg_End    = 4
+..\..\source\Update.h(42): error:  #256: invalid redeclaration of type name "EN_MSG_TYPE" (declared at line 320 of "..\..\source\ProcessScope.h")
+  }EN_MSG_TYPE;
+..\..\source\Update.h(47): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_0(EN_MSG_TYPE, UINT32)" (declared at line 407 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd);
+..\..\source\Update.h(48): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_8(EN_MSG_TYPE, UINT32, INT8)" (declared at line 408 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult);
+..\..\source\Update.h(49): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_16(EN_MSG_TYPE, UINT32, INT16)" (declared at line 409 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_16(EN_MSG_TYPE eType, UINT32 nCmd, INT16 nResult);
+..\..\source\Update.h(50): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_32(EN_MSG_TYPE, UINT32, INT32)" (declared at line 410 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_32(EN_MSG_TYPE eType, UINT32 nCmd, INT32 nResult);
+..\..\source\Update.h(51): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_String(EN_MSG_TYPE, UINT32, UINT8 *, UINT8)" (declared at line 411 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8 nLen);
+..\..\lwip-1.4.1\port\STM32F4x7\Standalone\ethernetif.c: 9 warnings, 18 errors
+compiling netconf.c...
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\source\SamplingPort.h(46): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\source\SamplingPort.h(54): error:  #70: incomplete type is not allowed
+     IO_ enum eSampleRecvState     eRecvState;      // state of receiving
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\config\Scope_Move.h(38): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\config\Scope_Move.h(72): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_InitPara(enum eMvMotor eMotor, 
+..\..\config\Scope_Move.h(78): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir);
+..\..\config\Scope_Move.h(80): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Stop(enum eMvMotor eMotor);
+..\..\config\Scope_Move.h(82): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Wait(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag);
+..\..\config\Scope_Move.h(84): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_GetStepsExecuted(enum eMvMotor eMotor, UINT32* pnSteps);
+..\..\config\Scope_Move.h(86): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ enum eFlag  MV_IsFinished(enum eMvMotor eMotor);
+..\..\source\Update.h(7): error:  #169: expected a declaration
+  /#include "KernelHeader.h"
+..\..\source\Update.h(7): error:  #10: "#" not expected here
+  /#include "KernelHeader.h"
+..\..\source\Update.h(27): warning:  #12-D: parsing restarts here after previous syntax error
+  _EXT_ IO_ UINT32 g_Udp_Count, g_Frame_Count, g_Send_Fail;
+..\..\source\Update.h(37): error:  #101: "e_Msg_Ctrol" has already been declared in the current scope
+        e_Msg_Ctrol  = 0,
+..\..\source\Update.h(38): error:  #101: "e_Msg_Status" has already been declared in the current scope
+        e_Msg_Status = 1,
+..\..\source\Update.h(39): error:  #101: "e_Msg_Query" has already been declared in the current scope
+        e_Msg_Query  = 2,
+..\..\source\Update.h(40): error:  #101: "e_Msg_Data" has already been declared in the current scope
+        e_Msg_Data   = 3,
+..\..\source\Update.h(41): error:  #101: "e_Msg_End" has already been declared in the current scope
+        e_Msg_End    = 4
+..\..\source\Update.h(42): error:  #256: invalid redeclaration of type name "EN_MSG_TYPE" (declared at line 320 of "..\..\source\ProcessScope.h")
+  }EN_MSG_TYPE;
+..\..\source\Update.h(47): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_0(EN_MSG_TYPE, UINT32)" (declared at line 407 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd);
+..\..\source\Update.h(48): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_8(EN_MSG_TYPE, UINT32, INT8)" (declared at line 408 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult);
+..\..\source\Update.h(49): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_16(EN_MSG_TYPE, UINT32, INT16)" (declared at line 409 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_16(EN_MSG_TYPE eType, UINT32 nCmd, INT16 nResult);
+..\..\source\Update.h(50): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_32(EN_MSG_TYPE, UINT32, INT32)" (declared at line 410 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_32(EN_MSG_TYPE eType, UINT32 nCmd, INT32 nResult);
+..\..\source\Update.h(51): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_String(EN_MSG_TYPE, UINT32, UINT8 *, UINT8)" (declared at line 411 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8 nLen);
+..\..\lwip_app\netconf.c: 9 warnings, 18 errors
+compiling stm32f4x7_eth_bsp.c...
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\source\SamplingPort.h(46): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\source\SamplingPort.h(54): error:  #70: incomplete type is not allowed
+     IO_ enum eSampleRecvState     eRecvState;      // state of receiving
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\config\Scope_Move.h(38): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\config\Scope_Move.h(72): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_InitPara(enum eMvMotor eMotor, 
+..\..\config\Scope_Move.h(78): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir);
+..\..\config\Scope_Move.h(80): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Stop(enum eMvMotor eMotor);
+..\..\config\Scope_Move.h(82): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Wait(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag);
+..\..\config\Scope_Move.h(84): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_GetStepsExecuted(enum eMvMotor eMotor, UINT32* pnSteps);
+..\..\config\Scope_Move.h(86): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ enum eFlag  MV_IsFinished(enum eMvMotor eMotor);
+..\..\source\Update.h(7): error:  #169: expected a declaration
+  /#include "KernelHeader.h"
+..\..\source\Update.h(7): error:  #10: "#" not expected here
+  /#include "KernelHeader.h"
+..\..\source\Update.h(27): warning:  #12-D: parsing restarts here after previous syntax error
+  _EXT_ IO_ UINT32 g_Udp_Count, g_Frame_Count, g_Send_Fail;
+..\..\source\Update.h(37): error:  #101: "e_Msg_Ctrol" has already been declared in the current scope
+        e_Msg_Ctrol  = 0,
+..\..\source\Update.h(38): error:  #101: "e_Msg_Status" has already been declared in the current scope
+        e_Msg_Status = 1,
+..\..\source\Update.h(39): error:  #101: "e_Msg_Query" has already been declared in the current scope
+        e_Msg_Query  = 2,
+..\..\source\Update.h(40): error:  #101: "e_Msg_Data" has already been declared in the current scope
+        e_Msg_Data   = 3,
+..\..\source\Update.h(41): error:  #101: "e_Msg_End" has already been declared in the current scope
+        e_Msg_End    = 4
+..\..\source\Update.h(42): error:  #256: invalid redeclaration of type name "EN_MSG_TYPE" (declared at line 320 of "..\..\source\ProcessScope.h")
+  }EN_MSG_TYPE;
+..\..\source\Update.h(47): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_0(EN_MSG_TYPE, UINT32)" (declared at line 407 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd);
+..\..\source\Update.h(48): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_8(EN_MSG_TYPE, UINT32, INT8)" (declared at line 408 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult);
+..\..\source\Update.h(49): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_16(EN_MSG_TYPE, UINT32, INT16)" (declared at line 409 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_16(EN_MSG_TYPE eType, UINT32 nCmd, INT16 nResult);
+..\..\source\Update.h(50): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_32(EN_MSG_TYPE, UINT32, INT32)" (declared at line 410 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_32(EN_MSG_TYPE eType, UINT32 nCmd, INT32 nResult);
+..\..\source\Update.h(51): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_String(EN_MSG_TYPE, UINT32, UINT8 *, UINT8)" (declared at line 411 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8 nLen);
+..\..\lwip_app\stm32f4x7_eth_bsp.c: 9 warnings, 18 errors
+compiling udp_echoserver.c...
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\source\SamplingPort.h(46): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\source\SamplingPort.h(54): error:  #70: incomplete type is not allowed
+     IO_ enum eSampleRecvState     eRecvState;      // state of receiving
+..\..\source\ProcessScope.h(1): error:  #77-D: this declaration has no storage class or type specifier
+   ProcessScope.h
+..\..\source\ProcessScope.h(1): error:  #65: expected a ";"
+   ProcessScope.h
+..\..\config\Scope_Move.h(38): warning:  #12-D: parsing restarts here after previous syntax error
+  };
+..\..\config\Scope_Move.h(72): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_InitPara(enum eMvMotor eMotor, 
+..\..\config\Scope_Move.h(78): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir);
+..\..\config\Scope_Move.h(80): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Stop(enum eMvMotor eMotor);
+..\..\config\Scope_Move.h(82): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_Wait(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag);
+..\..\config\Scope_Move.h(84): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ UINT8  MV_GetStepsExecuted(enum eMvMotor eMotor, UINT32* pnSteps);
+..\..\config\Scope_Move.h(86): warning:  #231-D: declaration is not visible outside of function
+  _EXT_ enum eFlag  MV_IsFinished(enum eMvMotor eMotor);
+..\..\source\Update.h(7): error:  #169: expected a declaration
+  /#include "KernelHeader.h"
+..\..\source\Update.h(7): error:  #10: "#" not expected here
+  /#include "KernelHeader.h"
+..\..\source\Update.h(27): warning:  #12-D: parsing restarts here after previous syntax error
+  _EXT_ IO_ UINT32 g_Udp_Count, g_Frame_Count, g_Send_Fail;
+..\..\source\Update.h(37): error:  #101: "e_Msg_Ctrol" has already been declared in the current scope
+        e_Msg_Ctrol  = 0,
+..\..\source\Update.h(38): error:  #101: "e_Msg_Status" has already been declared in the current scope
+        e_Msg_Status = 1,
+..\..\source\Update.h(39): error:  #101: "e_Msg_Query" has already been declared in the current scope
+        e_Msg_Query  = 2,
+..\..\source\Update.h(40): error:  #101: "e_Msg_Data" has already been declared in the current scope
+        e_Msg_Data   = 3,
+..\..\source\Update.h(41): error:  #101: "e_Msg_End" has already been declared in the current scope
+        e_Msg_End    = 4
+..\..\source\Update.h(42): error:  #256: invalid redeclaration of type name "EN_MSG_TYPE" (declared at line 320 of "..\..\source\ProcessScope.h")
+  }EN_MSG_TYPE;
+..\..\source\Update.h(47): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_0(EN_MSG_TYPE, UINT32)" (declared at line 407 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd);
+..\..\source\Update.h(48): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_8(EN_MSG_TYPE, UINT32, INT8)" (declared at line 408 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult);
+..\..\source\Update.h(49): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_16(EN_MSG_TYPE, UINT32, INT16)" (declared at line 409 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_16(EN_MSG_TYPE eType, UINT32 nCmd, INT16 nResult);
+..\..\source\Update.h(50): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_32(EN_MSG_TYPE, UINT32, INT32)" (declared at line 410 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_32(EN_MSG_TYPE eType, UINT32 nCmd, INT32 nResult);
+..\..\source\Update.h(51): error:  #147-D: declaration is incompatible with "void Msg_Return_Handle_String(EN_MSG_TYPE, UINT32, UINT8 *, UINT8)" (declared at line 411 of "..\..\source\ProcessScope.h")
+  void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8 nLen);
+..\..\lwip_app\udp_echoserver.c: 9 warnings, 18 errors
+"..\obj\CX-3000_SLA_V001.axf" - 348 Error(s), 154 Warning(s).
 Target not created

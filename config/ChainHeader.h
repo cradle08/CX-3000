@@ -9,28 +9,30 @@
 
 #include "driver.h"
 
-#include "Fpga.h"
+//#include "Fpga.h"
 //
 #include "Protocol.h"
-#include "InterfaceScope.h"
+//#include "InterfaceScope.h"
 
 //#include "Scope_Eval.h"
 #include "Scope_It.h"
-#include "Scope_Move.h"
+//#include "Scope_Move.h"
 //
 
 #include "LwipHeader.h"
 
-#include "BufferCircle.h"
+//#include "BufferCircle.h"
 #include "NetBufferCircle.h"
-#include "SampleBufferCircle.h"
-#include "InterruptBufferCircle.h"
+//#include "SampleBufferCircle.h"
+//#include "InterruptBufferCircle.h"
 //
 //#include "SpiFlash.h"
 
 #include "f4sys.h"
 #include "KernelHeader.h"
-#include "AD7799.h"
+//#include "AD7799.h"
+#include "driver.h"
+#include "Update.h"
 
 
 #endif

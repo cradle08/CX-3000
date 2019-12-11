@@ -134,12 +134,7 @@ UINT8 SYS_GetBuildTime(void)
 }
 #endif
 
-void Iint_SysParam(void)
-{
-	memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
-	g_CRP_Data.eEnable = e_False;
 
-}
 
 	
 UINT8 SYS_InitSystem(void)

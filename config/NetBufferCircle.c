@@ -6,6 +6,21 @@
 
 #include "ChainHeader.h"
 
+// status of the buffer-circle
+struct tBufferCircle				  
+{
+    UINT16 	              nGet;       // counter, the offset address to get a char
+    UINT16                nPut;       // counter, the offset address to put a char
+	// enum eFlag           eBusy;       // whether the buffer-circle is busy
+
+    // attention: 1. the buffer-circle is showing following.
+    //               1). empty:  nPut = nGet + 1,
+    //               2). full:   nPut = nGet,
+    //               3). part:   nPut > nGet + 1  or  nPut < nGet.
+    //            2. the order to handle ".nGet" and ".nPut".
+    //               1). first to put a char in the buffer, then ".nPut" increase 1,
+    //               2). first ".nGet" increase 1, then to get a char from the buffer.
+};
 
 
 //-----------------------------------------------------------------------------------------

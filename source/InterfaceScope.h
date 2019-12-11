@@ -135,7 +135,7 @@ UINT8 HW_WBC_GetData(UINT16* pnData, UINT16* pnLen, UINT16* pnStatus);
 UINT8 HW_RBC_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
 UINT8 HW_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
 UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
-UINT8 Data_Circle_Handle(eTestMode eMode);
+//UINT8 Data_Circle_Handle(eTestMode eMode);
 UINT8 Poll_SendDMA_ADC1_Data(UINT32 nCmd);
 UINT8 Poll_SendDMA_ADC2_Data(UINT32 nCmd);
 
@@ -229,7 +229,7 @@ void Clear_FPGA_FIFO_Data(void);
 _EXT_ UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc, EN_FPGA_DATA_FLAG eFlag);
 _EXT_ UINT8  HW_LWIP_MainLine(void);
 //
-_EXT_ UINT8  HW_LWIP_Working_Recv_Handle(UINT32 nTickList, UINT32 nTickAdc);
+//_EXT_ UINT8  HW_LWIP_Working_Recv_Handle(UINT32 nTickList, UINT32 nTickAdc);
 
 _EXT_ UINT8  Send_Packet_Test(void);
 

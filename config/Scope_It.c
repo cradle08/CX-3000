@@ -57,50 +57,7 @@ void IRQ_SysTimer(void)
 		
         //----------------------------------------------
         // 1. protocol timeout process
-    	if( 0 == (s_count % 5))   // 20ms
-        {
-			// sampling port timeout
-    	    //SPG_IsrTime();
-			// timer get CRP data per 100ms
-			//if(g_CRP_Data.eEnable == e_True)
-			if(g_CRP_Data.eEnable == 1)
-			{					
-				if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 0)
-				{
-					g_CRP_Data.crpBuffer[g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
-					printf("ADC=%08d,5V=%6.2f,total=%04d,index=%04d\r\n", \
-						(int)g_CRP_Data.crpBuffer[g_CRP_Data.nIndex], (float)(g_CRP_Data.crpBuffer[g_CRP_Data.nIndex])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_4BYTE - 1)
-					{
-						g_CRP_Data.eSend  = e_True;
-						//printf("send true\r\n");
-						g_CRP_Data.nIndex = 0;
-						g_CRP_Data.nTotal++;
-					}
-				}else if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 1){
-					g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
-					printf("ADC=%08d,5V=%6.2f,total=%04d,index=%04d\r\n", \
-						(int)g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex], (float)(g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
-					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_4BYTE - 1)
-					{
-						g_CRP_Data.eSend  = e_True;
-						//printf("send true\r\n");
-						g_CRP_Data.nIndex = 0;
-						g_CRP_Data.nTotal++;
-					}
-				}
-				if(g_CRP_Data.eSend  == e_False)
-				{
-					g_CRP_Data.nIndex++;
-					g_CRP_Data.nTotal++;
-				}
-				if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
-					g_CRP_Data.nTotal = INVAIL_VALUE;
-					g_CRP_Data.nIndex = 0;
-					g_CRP_Data.eEnable = 0;
-				}
-			}
-        }	
+
         
         //----------------------------------------------
         // 2. display
@@ -143,41 +100,41 @@ void IRQ_SysTimer(void)
     return;
 }
 
-#if !USE_STM32F407_ONLY
-void IRQ_MotorStatus(void)
-{
-    IO_ UINT32 IRAM_  nStatus = 0;  
-    IO_ UINT32 IRAM_  nAddr   = 0; 
-    IO_ UINT16 IRAM_  anBuffer[2]; 
-	//
-	IO_ UINT8  IRAM_  achBuf[40];
-	IO_ UINT16 IRAM_  nLen = 0;
-	IO_ UINT8  IRAM_  chCtrl = 0;
-	
-#if INTERRUPT_OUTPUT
-	printf("fpga interrupt\r\n");
-#endif
+//#if !USE_STM32F407_ONLY
+//void IRQ_MotorStatus(void)
+//{
+//    IO_ UINT32 IRAM_  nStatus = 0;  
+//    IO_ UINT32 IRAM_  nAddr   = 0; 
+//    IO_ UINT16 IRAM_  anBuffer[2]; 
+//	//
+//	IO_ UINT8  IRAM_  achBuf[40];
+//	IO_ UINT16 IRAM_  nLen = 0;
+//	IO_ UINT8  IRAM_  chCtrl = 0;
+//	
+//#if INTERRUPT_OUTPUT
+//	printf("fpga interrupt\r\n");
+//#endif
 
-    // Movement finish, rising level
-    if(RESET != EXTI_GetITStatus(IN_MT_STATUS_ET_LINE))
-    {
-        // Clear the  EXTI line 10 pending bit
-        EXTI_ClearITPendingBit(IN_MT_STATUS_ET_LINE);
+//    // Movement finish, rising level
+//    if(RESET != EXTI_GetITStatus(IN_MT_STATUS_ET_LINE))
+//    {
+//        // Clear the  EXTI line 10 pending bit
+//        EXTI_ClearITPendingBit(IN_MT_STATUS_ET_LINE);
 
-		//----------------------------------------------
-		// attention: the Priority of the exti-interrupt must be set 
-		//            higher than all the timers
-		
-        // handling the feedbacking of the movement
-	    MV_IsrMoveHandling();
+//		//----------------------------------------------
+//		// attention: the Priority of the exti-interrupt must be set 
+//		//            higher than all the timers
+//		
+//        // handling the feedbacking of the movement
+//	    MV_IsrMoveHandling();
 
-		//----------------------------------------------
-		
-	}
-	// 
-	return;
-}
-#endif
+//		//----------------------------------------------
+//		
+//	}
+//	// 
+//	return;
+//}
+//#endif
 
 //--------------------------------------------------
 // handling the exti-interrupts of the OC input ?
