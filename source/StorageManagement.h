@@ -121,7 +121,7 @@ typedef struct {
 	UINT16 nTotal_Num; // in nTime and nHz, nTotal_Num(nTime*nHz) will be get
 	// update flag
 	UINT8 nUpdate_Flag;
-	
+	UINT8 strVersion[4];
 	
 } RECORD_PARAM;
 _EXT_ RECORD_PARAM g_Record_Param;

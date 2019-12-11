@@ -105,7 +105,7 @@ int main(void)
     start_run();
 
     /* test(); */
-    printf("\r\n ... Readying ...Data=%s...Time=%s...SV=%s...\r\n", __DATE__, __TIME__, softver_edtion);
+    printf("\r\n ... Readying ...Data=%s...Time=%s...SV=%s...\r\n", __DATE__, __TIME__, g_Record_Param.strVersion);
 //	Clear_FPGA_FIFO_Data();
 //	g_AirLight_Flag = e_Feedback_Fail;
 //	if(e_Feedback_Success == AirLight_Self_Check(e_SelfCheck_Call))

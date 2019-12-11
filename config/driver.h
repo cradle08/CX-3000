@@ -5,8 +5,8 @@
 
 #include "MyType.h"       // ---
 #include <stdio.h>        // for "printf" debug
-
-
+#include "KernelHeader.h"
+#include "Update.h"
 
 void Delay_US(UINT32 us);
 
@@ -20,6 +20,15 @@ typedef enum              // take attention of sequence
 	OUTPUT_NUM      = 3,
 	
 } Output_TypeDef;
+
+typedef enum{
+	e_Msg_Ctrol  = 0,
+	e_Msg_Status = 1,
+	e_Msg_Query  = 2,
+	e_Msg_Data   = 3,
+	e_Msg_End    = 4
+}EN_MSG_TYPE;
+
 
 // net rst
 #define OUT_LAN8720_RST_GPIO_PIN        GPIO_Pin_3
@@ -137,6 +146,17 @@ void COM_Init(void);
 
 void EVAL_Init(void);
 
+void collect_return_hdl(UINT16 stat);
+void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd);
+void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult);
+void Msg_Return_Handle_16(EN_MSG_TYPE eType, UINT32 nCmd, INT16 nResult);
+void Msg_Return_Handle_32(EN_MSG_TYPE eType, UINT32 nCmd, INT32 nResult);
+void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8 nLen);
+
+
+UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf);
+UINT8  HW_LWIP_MainLine(void);
+UINT8 MT_RESET_Software(void);
 
 
 //// elec switch PA11 (9-5 for micro switch)

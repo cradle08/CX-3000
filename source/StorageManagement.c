@@ -91,6 +91,10 @@ void Set_Default_Param_Machine(RECORD_PARAM *pParam)
 	pParam->nAddPress 		   = 0;      
 	// update flag
 	pParam->nUpdate_Flag	   = UPDATE_WAITING;
+	pParam->strVersion[0]      = 'V';
+	pParam->strVersion[1]      = '0';
+	pParam->strVersion[2]      = '0';
+	pParam->strVersion[3]      = '1';
 	// CRC
 	pParam->nCrc      = 1;  // this value need to compute
 }

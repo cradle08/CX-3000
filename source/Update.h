@@ -4,7 +4,7 @@
 #define    __UPDATE_H__
 
 #include  "MyType.h"
-#include "KernelHeader.h"
+#include "KernelHeader.h" 
 //---
 #define PROTOCOL_HEAD_RECV_01      0x43  // 'C'
 #define PROTOCOL_HEAD_RECV_02      0x42  // 'B'
@@ -38,23 +38,7 @@
 #define UPDATE_PACKET_DATA_LEN			512
 
 
-//UINT32 PL_UnionFourBytes(UINT8 chByteHH, UINT8 chByteHL, UINT8 chByteLH, UINT8 chByteLL);
-_EXT_ IO_ UINT32 g_Udp_Count, g_Frame_Count, g_Send_Fail;
-_EXT_ IO_ UINT8 g_AirLight_Flag;
-_EXT_ const UINT8 softver_edtion[];
 
-UINT32 Get_Udp_Count(void);
-void Reset_Udp_Count(UINT32 nVal);
-void Add_Udp_Count(void);
-
-
-typedef enum{
-	e_Msg_Ctrol  = 0,
-	e_Msg_Status = 1,
-	e_Msg_Query  = 2,
-	e_Msg_Data   = 3,
-	e_Msg_End    = 4
-}EN_MSG_TYPE;
 
 typedef struct{
 	UINT16 nPacket_Total;
@@ -69,19 +53,12 @@ typedef struct{
 }UPDATE_TypeDef;
 
 
-void collect_return_hdl(UINT16 stat);
-void Msg_Return_Handle_0(EN_MSG_TYPE eType, UINT32 nCmd);
-void Msg_Return_Handle_8(EN_MSG_TYPE eType, UINT32 nCmd, INT8 nResult);
-void Msg_Return_Handle_16(EN_MSG_TYPE eType, UINT32 nCmd, INT16 nResult);
-void Msg_Return_Handle_32(EN_MSG_TYPE eType, UINT32 nCmd, INT32 nResult);
-void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8 nLen);
 
-UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf);
 
 UINT16 Crc16_Add(UINT8 nData, UINT16 nAcc);
 UINT16 Crc16_Data(UINT8 *pData, UINT16 nLen, UINT16 nAcc);
-UINT8 MT_RESET_Software(void);
-UINT8  HW_LWIP_MainLine(void);
+UINT8 Update_Start_Msg(UINT8* pMsg);
+UINT8 Update_Packet_Handler(UINT8* pMsg);
 
 
 
