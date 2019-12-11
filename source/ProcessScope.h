@@ -75,6 +75,8 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_CTRL_DEBUG_TEST 		    0x00000809
 // debug cmd
 #define    CMD_CTRL_DEBUG_GET_PRESS 	0x00000709 // get the press value
+//#define    CMD_CTRL_UPDATE_FLAG 		0x00000900 //define at update.h
+
 
 //-----status--------------------------------------------------
 #define    CMD_STATUS_PRESSURE    		0x00000000
@@ -97,6 +99,8 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_STATUS_PART_TEST      	0x01000708
 #define    CMD_STATUS_PRESS_DATA     	0x00000100
 #define    CMD_STATUS_PRESS_ADD      	0x00000101
+//#define    CMD_STATUS_QUARY_UPDATE_FLAG		0x01000200	//define at update.h
+//#define    CMD_STATUS_SET_UPDATE_FLAG 		0x01000900 //define at update.h
 
 //----query--------------------------------------------------
 #define    CMD_QUERY_PRESSURE     		0x00000000
@@ -120,6 +124,8 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_QUERY_V_ADC_HGB  		0x20000109
 #define    CMD_QUERY_V_ADC_CRP	   		0x2000010A
 #define    CMD_QUERY_REGISTER_VALUE		0x2000010B
+//#define    CMD_QUERY_UPDATE_FLAG		0x20000200	//define at update.h
+
 
 //-----data----------------------------------------------------- 
 #define    CMD_DATA_MOTO_IN_X_ADD   	0x30000007

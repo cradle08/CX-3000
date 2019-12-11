@@ -14,6 +14,7 @@
 #include "ProcessScope.h"
 #include "SystemScope.h"
 //
+#include "Update.h"
 #include "StorageManagement.h"
 
 

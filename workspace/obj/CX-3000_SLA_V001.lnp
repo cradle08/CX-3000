@@ -8,6 +8,7 @@
 "..\obj\interfacescope.o"
 "..\obj\samplingport.o"
 "..\obj\storagemanagement.o"
+"..\obj\update.o"
 "..\obj\stm32f4x7_eth.o"
 "..\obj\misc.o"
 "..\obj\stm32f4xx_wwdg.o"

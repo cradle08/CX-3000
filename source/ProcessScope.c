@@ -445,6 +445,7 @@ eTestMode GetTestMode(UINT32 nCmd)
 UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 {
     UINT8  chType              = 0;
+	UINT8  nStatus             = 0;
 //	UINT8  nChannel            = 0;
     UINT32 nCommand            = 0;
     UINT16 nParaLen            = 0;
@@ -505,6 +506,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				nParaLen = 0;
 				Reset_Udp_Count(0);	
 				Reset_ADC_InitDataType();
+				collect_return_hdl(COLLECT_RET_SUCESS); 
 			}
 			break;
 			case CMD_CTRL_TEST_MODE_SET:
@@ -588,7 +590,6 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				WBC_48V_Self_Check();
 			}
 			break;
-			
 			case CMD_CTRL_BUILD_PRESS_CHECK:
 			{
 				Build_Press_Self_Check();
@@ -634,7 +635,43 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				Driver_Debug(*(pchCmdBuf +  8));
 			}
 			break;
-					
+			//**************************UPDATE*****************************
+			case CMD_MCU_UPDATE:
+			{
+				printf("%02X%02X%02X%02X ", pchCmdBuf[12],pchCmdBuf[13],pchCmdBuf[14],pchCmdBuf[15]);
+				printf("%02X%02X%02X%02X\r\n", pchCmdBuf[16],pchCmdBuf[17],pchCmdBuf[18],pchCmdBuf[19]);
+				
+				Update_Start_Msg(&pchCmdBuf[8]);
+			}
+			break;
+			case CMD_UPDATE_DATA_PACKET:
+			{
+				Update_Packet_Handler(&pchCmdBuf[8]);
+			}
+			break;
+			case CMD_QUERY_UPDATE_FLAG:
+			{
+				printf("update flag=%d\r\n",  g_Record_Param.nUpdate_Flag);
+				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_QUARY_UPDATE_FLAG, g_Record_Param.nUpdate_Flag);
+			}
+			break;
+			case CMD_CTRL_UPDATE_FLAG:
+			{
+				
+				printf("set updata flag value=%d\r\n",  pchCmdBuf[8]);
+				g_Record_Param.nUpdate_Flag = pchCmdBuf[8];
+				nStatus = Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+				if(nStatus == e_Feedback_Fail)
+				{
+					Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_SET_UPDATE_FLAG, e_Feedback_Fail);
+					printf("set updata flag value=%d error\r\n",  pchCmdBuf[8]);
+				}else{
+					Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_SET_UPDATE_FLAG, e_Feedback_Success);
+					printf("set updata flag value=%d, successe\r\n",  pchCmdBuf[8]);
+				}
+			
+			}
+			break;		
 
             //*******************************************************
             case CMD_CTRL_MOT_IN:
@@ -2868,7 +2905,7 @@ UINT8 MSG_TestingFunc(void)
 //	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 //	*pDILen = nDILen;
 #endif
-	collect_return_hdl(COLLECT_RET_SUCESS);  /* 采集完成 */
+	//collect_return_hdl(COLLECT_RET_SUCESS);  /* 采集完成 */
     return e_Feedback_Success;
 }
 
