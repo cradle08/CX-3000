@@ -89,10 +89,11 @@ void Set_Default_Param_Machine(RECORD_PARAM *pParam)
 	pParam->nRegister_CRP      = 128; //crp garter value
 	pParam->nXAddStep 		   = 0;   // add step for moto x go home
 	pParam->nAddPress 		   = 0;      
+	// update flag
+	pParam->nUpdate_Flag	   = UPDATE_WAITING;
 	// CRC
 	pParam->nCrc      = 1;  // this value need to compute
 }
-
 
 
 UINT8 Flash_Write_Param(RECORD_PARAM *pParam, UINT32 nLen)
@@ -222,7 +223,6 @@ UINT32 Flash_Write_Data(UINT32 pWAddr, UINT8* pData, UINT16 nLen)
 	{
 		*(pAddr++) = *(pData + i);
 	}
-	
 	return (UINT32)pAddr;
 }
 

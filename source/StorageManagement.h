@@ -57,16 +57,22 @@
 #define ADDR_FLASH_SECTOR_10    ((u32)0x080C0000) 	//扇区10起始地址,128 Kbytes  
 #define ADDR_FLASH_SECTOR_11    ((u32)0x080E0000) 	//扇区11起始地址,128 Kbytes  
 
-#define	UPDATE_FINISHED	 			0
-#define	UPDATE_RESTART 	 			1
+#define	UPDATE_FINISHED	 			0x11
+#define UPDATE_WAITING				0x33
+#define	UPDATE_RESTART 	 			0x55
 #define	UPDATE_NONE 	 			0xFF
 
 
 #define FLASH_BASE_ADDR				0x08000000
+#define FLASH_SECTOR_16K_LEN		0x4000
+#define FLASH_SECTOR_64K_LEN		0x10000
+#define FLASH_SECTOR_128K_LEN		0x20000
 
-#define FLASH_SECTOR_16K_LEN	0x4000
-#define FLASH_SECTOR_64K_LEN	0x10000
-#define FLASH_SECTOR_128K_LEN	0x20000
+
+
+
+
+typedef void (*pAppFunc)(void);
 
 #if(CX_BOOT_PLATFORM_VERSION == CX_2000_FLAG) 
 	/* boot:96k(0x08000000-0x08003fff, 0x08008000-0x0801ffff), 
@@ -84,9 +90,9 @@
 		fireware:384k(0x080A0000-0x080fffff),
 	*/
 	#define APP_VECT_TAB_OFFSET			0x00020000  
-	#define FLASH_APP_START_ADDR		0x08020000
+	#define FLASH_APP_START_ADDR		0x08020000		// app start from this addr
 	#define FLASH_APP_LEN				0x7FFFF
-	#define FLASH_FIREWARE_START_ADDR	0x080A0000
+	#define FLASH_FIREWARE_START_ADDR	0x080A0000		// update file save from this addr
 	#define FLASH_FIREWARE_LEN			0x6FFFF
 
 #endif
@@ -113,6 +119,9 @@ typedef struct {
 	UINT16 nTime; // time to get data
 	UINT16 nHZ;   // in one second how many data to get
 	UINT16 nTotal_Num; // in nTime and nHz, nTotal_Num(nTime*nHz) will be get
+	// update flag
+	UINT8 nUpdate_Flag;
+	
 	
 } RECORD_PARAM;
 _EXT_ RECORD_PARAM g_Record_Param;

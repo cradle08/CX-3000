@@ -282,6 +282,7 @@ FILE __stdout;
 int _sys_exit(int x) 
 { 
 	x = x; 
+	return 0;
 } 
 //重定义fputc函数 
 int fputc(int ch, FILE *f)
@@ -302,7 +303,7 @@ void COM_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;	
 	USART_InitTypeDef USART_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
+//	NVIC_InitTypeDef NVIC_InitStructure;
 
     // 1. enable GPIO clock 
 	RCC_AHB1PeriphClockCmd(COM1_TX_GPIO_CLK | COM1_RX_GPIO_CLK | COM1_CLK, ENABLE);
@@ -2680,7 +2681,7 @@ void COM_Init(void)
 
 void EVAL_Init(void)
 {
-    USART_InitTypeDef USART_InitStructure;	
+//    USART_InitTypeDef USART_InitStructure;	
 	RCC_ClocksTypeDef  tClockTree;
 	
 	//-------------------------------------------

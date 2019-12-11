@@ -18,15 +18,17 @@ void test(void)
 
 void start_run(void)
 {
-
+	pAppFunc AppFunc;
+	UINT32 AppAddr = 0;
+	
 	// read parameter form flash
 	memset(&g_Record_Param, 0, RECORD_PARAM_LEN);
 	if(e_Feedback_Fail == Flash_Read_Param(&g_Record_Param, sizeof(RECORD_PARAM)))
 	{
 		// maybe need to send a status msg to app
 		printf("read record param fail, reset those\r\n");
-		Set_Default_Param(&g_Record_Param);	
-		//Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+		Flash_Read_Param(&g_Record_Param, sizeof(RECORD_PARAM));
+		//Set_Default_Param(&g_Record_Param);	
 	}
 	if(g_Record_Param.nFlag != FLASH_INIT_FLAG)
 	{
@@ -38,13 +40,32 @@ void start_run(void)
 	
 	printf("Param: wbc register=%d, addstep=%d, addpress=%010d\r\n",\
 			g_Record_Param.nRegister_WBC, g_Record_Param.nXAddStep, (int)g_Record_Param.nAddPress);
-	printf("CRP Param: Time=%d, HZ=%d, Total_Num=%d\r\n",\
+//	printf("CRP Param: Time=%d, HZ=%d, Total_Num=%d\r\n",\
 			g_Record_Param.nTime, g_Record_Param.nHZ, (int)g_Record_Param.nTotal_Num);
 	
-	//Msg_Return_Handle_32(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nWBC);
-	//Msg_Return_Handle_32(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nXAddStep);
-	//Msg_Return_Handle_32(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nAddPress);
+
+	if(g_Record_Param.nUpdate_Flag == UPDATE_RESTART) // re-write flash and than start normal
+	{
+		printf("app update len=%d\r\n", (int)g_Record_Param.nUpdataLen);
+		Flash_Fireware_Update(&g_Record_Param, (UINT32*)FLASH_FIREWARE_START_ADDR, (UINT32*)FLASH_APP_START_ADDR);
+		g_Record_Param.nUpdate_Flag = UPDATE_FINISHED;
+		NVIC_SetVectorTable(FLASH_BASE_ADDR, APP_VECT_TAB_OFFSET);
+		AppAddr = *(IO_ UINT32*)(FLASH_APP_START_ADDR + 4);
+		AppFunc = (pAppFunc)AppAddr;
+		printf("app flash updated\r\n");
+		AppFunc();
+		
+	}else if(g_Record_Param.nUpdate_Flag == UPDATE_FINISHED){	// start normal
+		printf("app start\r\n");
+		NVIC_SetVectorTable(FLASH_BASE_ADDR, APP_VECT_TAB_OFFSET);
+		AppAddr = *(IO_ UINT32*)(FLASH_APP_START_ADDR + 4);
+		AppFunc = (pAppFunc)AppAddr;
+		AppFunc();
 	
+	}else{
+		// boot start
+		printf("boot start\r\n");
+	}
 
 }
 
