@@ -2005,6 +2005,7 @@ void Micro_OC_Init(void)
 	//GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
 	SYSCFG_EXTILineConfig(MICRO_OC_EXIT_PORT, MICRO_OC_EXIT_PIN);
 	
+	EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
 	EXTI_InitStructure.EXTI_Line = MICRO_OC_EXIT_LINE;
 	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
 	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // or down 
@@ -2016,8 +2017,51 @@ void Micro_OC_Init(void)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
 	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
 	NVIC_Init(&NVIC_InitStructure);
+	EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
 }
 
+
+void Micro_OC_Exit_Disable(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	RCC_AHB1PeriphClockCmd(MICRO_OC_SRC, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	// micro switch, with EXIT interupt
+	
+	GPIO_InitStructure.GPIO_Pin = MICRO_OC_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(MICRO_OC_PORT, &GPIO_InitStructure);
+	//GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
+	SYSCFG_EXTILineConfig(MICRO_OC_EXIT_PORT, MICRO_OC_EXIT_PIN);
+	
+	EXTI_ClearITPendingBit(MICRO_OC_EXIT_LINE);
+	EXTI_InitStructure.EXTI_Line = MICRO_OC_EXIT_LINE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // or down 
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+	
+	NVIC_InitStructure.NVIC_IRQChannel = MICRO_OC_EXIT_IRQ;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = DISABLE;
+	NVIC_Init(&NVIC_InitStructure);
+}
+
+UINT8 Get_Micro_OC_Status(void)
+{
+	return GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN);
+}
+	
+
+	
 // OC for fix motor, OC for out_in motor
 void OC_Init(void)
 {
@@ -2055,11 +2099,7 @@ void OC_Init(void)
 	Micro_OC_Init();
 }
 
-UINT8 Get_Micro_OC_Status(void)
-{
-	return GPIO_ReadInputDataBit(MICRO_OC_PORT, MICRO_OC_PIN);
-}
-	
+
 UINT8 Get_Turn_Reset_OC_Status(void)
 {
 	return GPIO_ReadInputDataBit(TURN_RESET_OC_GPIO_PORT, TURN_RESET_OC_GPIO_PIN);
@@ -2990,8 +3030,8 @@ void Driver_Debug(UINT8 nIndex)
 		{
 			for(i = 0; i < 10; i++)
 			{
-				printf("Turn_Reset_OC=%d, Turn_Selct=%d, OUI_OC=%d, IN_OC=%d\r\n", Get_Turn_Reset_OC_Status(), Get_Turn_Select_OC_Status(),\
-				Get_Out_OC_Status(), Get_In_OC_Status());
+				printf("Turn_Reset_OC=%d, Turn_Selct=%d, OUI_OC=%d, IN_OC=%d, MIX_OC=%d\r\n", Get_Turn_Reset_OC_Status(), Get_Turn_Select_OC_Status(),\
+				Get_Out_OC_Status(), Get_In_OC_Status(), Get_Micro_OC_Status());
 				IT_SYS_DlyMs(500);
 				IT_SYS_DlyMs(500);
 			}

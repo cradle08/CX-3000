@@ -478,6 +478,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			case CMD_CTRL_TEST_RBC_PLT:
             case CMD_CTRL_TEST_WBC: // count func
             {
+				Micro_OC_Exit_Disable();
 				eMode  = GetTestMode(nCommand);// which cmd was be exec
 				//g_Test_Mode = eMode;
 #if SIMUATION_TEST
@@ -507,6 +508,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				Reset_Udp_Count(0);	
 				Reset_ADC_InitDataType();
 				collect_return_hdl(COLLECT_RET_SUCESS); 
+				Micro_OC_Init();
 			}
 			break;
 			case CMD_CTRL_TEST_MODE_SET:

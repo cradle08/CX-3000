@@ -204,7 +204,7 @@ UINT8 Turn_Motor_Select_LED(UINT8 nIndex);
 #endif
 #define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
 void Micro_OC_Init(void);
-
+void Micro_OC_Exit_Disable(void);
 
 // PD8, check counter exist or not
 #define COUNTER_CHECK_GPIO_PORT				GPIOD
@@ -264,7 +264,7 @@ void Counter_Adjust_PWM_Init(UINT32 Arr,UINT32 Psc);
 
 
 void OC_Init(void);
-UINT8 Get_Micro_OC_Status(void);
+UINT8 Get_Micro_OC_Status(void); // 0: in, 1: out
 UINT8 Get_Turn_Select_OC_Status(void); 
 UINT8 Get_Turn_Reset_OC_Status(void); 
 UINT8 Get_Out_OC_Status(void);
