@@ -477,9 +477,9 @@ INT32 Get_Press_I2C(void);
 
 
 // led cur adjust
-#define HGB_LED_CUR_ADJUST_VALUE					8
-#define CRP_LED_CUR_ADJUST_VALUE					8
-
+#define HGB_LED_CUR_ADJUST_VALUE	8
+#define CRP_LED_CUR_ADJUST_VALUE	8
+#define HGB_LED_NUM					0
 // for oc, 0-in, 1-lift
 enum{
 	EN_CLOSE	= 0,

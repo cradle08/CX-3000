@@ -1966,20 +1966,20 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 	UINT16 nRet = 0;
 	
 	LED_All_Reset();
-	
 	Turn_Motor_Enable();	// turn motor power open
 	switch(nIndex)
 	{
 		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
-			LED_Exec(nLED, EN_OPEN); 	  		// open led
-			Turn_Motor_Select_LED(nLED); 		// led go to test positon 
+			//LED_Exec(nLED, EN_OPEN); 	  		// open led
+			LED_Exec(HGB_LED_NUM, EN_OPEN); 	  		// open led
+			//Turn_Motor_Select_LED(nLED); 		// led go to test positon 
 			LED_Cur_ADC_Check_Channel(nLED); 	// CD4051 open the channel, and then start to adjust	
 			LED_Cur_DAC_Set(LED_525_DEFUALT_CUR_VALUE);
 			LED_Cur_Switch(EN_OPEN);	//led cur open
-			//LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
+			
 			g_Test_Mode = EN_HGB_TEST;
-			printf("HGB Mode Set Finished M=%d\r\n", g_Test_Mode);
+			printf("HGB Mode Set Finished M=%d\r\n", g_Test_Mode);	
 		}
 		break;
 		case EN_CRP_TEST: // CRP need select LED and adjust LED Cur
@@ -2065,7 +2065,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 //	HW_EN_ADC_HGB(e_True);
 //	IT_SYS_DlyMs(100);
 	//
-	AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
+	AD7799_SetChannel(AD7799_CH_AIN3P_AIN3M);
 	if(eMode ==  EN_HGB_TEST)
 	{
 		// get HGB adc data
@@ -2077,11 +2077,11 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 #else				
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
-			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
-				printf(" cuvette out error\r\n");
-				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
-				return 0;
-			}
+//			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+//				printf(" cuvette out error\r\n");
+//				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+//				return 0;
+//			}
 			buffer[i] = HW_Get_ADC_HGB();     
 			printf("ADC=%d, V=%6.2f\r\n", (int)buffer[i], (float)buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);

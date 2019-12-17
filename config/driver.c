@@ -2146,7 +2146,7 @@ UINT8 Get_Counter_Check_Status(void)
 }
 
 
-// counter adjust init
+// counter adjust init, gong zhuang init
 void Counter_Adjust_Init(void)
 {
 	//EVAL_OutputInit(O_COUNTER_ADJUST);
@@ -2209,11 +2209,11 @@ void Counter_Adjust_PWM_Init(UINT32 Arr,UINT32 Psc)
 	TIM_ARRPreloadConfig(COUNTER_PWM_TIM, ENABLE);
 	TIM_Cmd(COUNTER_PWM_TIM, ENABLE);  //
 	
-	TIM_SetCompare1(COUNTER_PWM_TIM, COUNTER_PWM_LEVEL_CLOSE);
+	//TIM_SetCompare1(COUNTER_PWM_TIM, COUNTER_PWM_LEVEL_CLOSE);
 }
 
 
-void Counter_Adjust_Start(UINT32 nFreq)
+void Counter_Adjust_Set_Freq(UINT32 nFreq)
 {
 	UINT32 nArr = 0;
 	if(nFreq == COUNTER_PWM_LEVEL_CLOSE)
@@ -3158,6 +3158,8 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 9: // pump, wave
 		{
+			Counter_Adjust_Init();
+			
 			
 			//WBC_48V_Self_Check();
 			//Valve1_Self_Check();
