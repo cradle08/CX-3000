@@ -843,6 +843,17 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 				}
 				//OutIn_Motor_Disable();
 				OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
+				if(nCurTime > nTempTime + MOTO_SELF_CHECK_TIMEOUT) // cang not at out place after 10s
+				{
+					Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
+					Valve_Air_Exec(EN_CLOSE);
+					Valve_Liquid_Exec(EN_CLOSE);
+					
+					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+					OutIn_Motor_Disable();
+					return e_Feedback_Error;
+				}
 			#else
 				for(i = 0; i < 35000; i++)
 				{

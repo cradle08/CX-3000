@@ -2423,6 +2423,7 @@ void LED_Cur_Auto_Adjust(UINT16 nVal)
 
 void LED_Cur_ADC_Check_Channel(UINT16 nIndex)
 {
+	printf("4051 index = %d\r\n", nIndex);
 	switch(nIndex)
 	{
 		case EN_LED0:
@@ -3028,12 +3029,12 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 3: //oc
 		{
-			for(i = 0; i < 10; i++)
+			for(i = 0; i < 10000; i++)
 			{
 				printf("Turn_Reset_OC=%d, Turn_Selct=%d, OUI_OC=%d, IN_OC=%d, MIX_OC=%d\r\n", Get_Turn_Reset_OC_Status(), Get_Turn_Select_OC_Status(),\
 				Get_Out_OC_Status(), Get_In_OC_Status(), Get_Micro_OC_Status());
 				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
+				//IT_SYS_DlyMs(500);
 			}
 		}
 		break;

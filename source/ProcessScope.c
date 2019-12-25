@@ -1966,7 +1966,6 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 	UINT16 nRet = 0;
 	
 	LED_All_Reset();
-	Turn_Motor_Enable();	// turn motor power open
 	switch(nIndex)
 	{
 		case EN_HGB_TEST: // HGB LED adjust LED Cur

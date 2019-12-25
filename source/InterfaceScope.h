@@ -68,7 +68,7 @@
 //#define EN_VALVE_AIR 		 0  // yaolan_20190220
 //#define EN_VALVE_LIQUID     		 1
 
-#define MOTO_SELF_CHECK_TIMEOUT  6000
+#define MOTO_SELF_CHECK_TIMEOUT  10000
 
 
 //-----------------------------------------------------------------------------------------
