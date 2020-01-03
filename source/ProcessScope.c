@@ -473,7 +473,8 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
     {
         switch (nCommand)
         {
-			case CMD_CTRL_TEST_RBC:
+			//---------------------TEST CMD------------------------
+			case CMD_CTRL_TEST_RBC: 
 			case CMD_CTRL_TEST_PLT:
 			case CMD_CTRL_TEST_RBC_PLT:
             case CMD_CTRL_TEST_WBC: // count func
@@ -550,7 +551,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			{
 				LED_Test_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
 			}
-			break;					
+			break;			
             case CMD_CTRL_VALVE: //
             {
 				//Valve_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
@@ -819,7 +820,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
                 nCommand  = CMD_STATUS_OC;
                 bSendBack = e_True;
                 //
-                *(pchFbkBuf + 0) = HW_LEVEL_GetOC(0); //
+                *(pchFbkBuf + 0) = HW_LEVEL_GetOC(0); // in oc
                 *(pchFbkBuf + 1) = HW_LEVEL_GetOC(1); // out oc
                 *(pchFbkBuf + 2) = HW_LEVEL_GetOC(2); // 
                 *(pchFbkBuf + 3) = HW_LEVEL_GetOC(3);
@@ -930,6 +931,21 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			
 			}	
 			break;	
+			case CMD_QUERY_LIGHT_PATH_V:
+			{
+				nParam1 = *(pchCmdBuf + 8);
+				
+                nCommand  = CMD_DATA_LIGHT_PATH_V;
+                bSendBack = e_True;
+                //
+                nWord = Get_Light_Path_V((UINT8)nParam1);
+                *(pchFbkBuf + 0) = (UINT8)((nWord >> 24) & 0xff);
+                *(pchFbkBuf + 1) = (UINT8)((nWord >> 16) & 0xff);
+                *(pchFbkBuf + 2) = (UINT8)((nWord >>  8) & 0xff);
+                *(pchFbkBuf + 3) = (UINT8)((nWord >>  0) & 0xff);
+                nParaLen         = 4;
+			}
+			break;		
 			
 			
 			
@@ -1970,13 +1986,19 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 	{
 		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
-			//LED_Exec(nLED, EN_OPEN); 	  		// open led
-			LED_Exec(HGB_LED_NUM, EN_OPEN); 	  		// open led
-			//Turn_Motor_Select_LED(nLED); 		// led go to test positon 
-			LED_Cur_ADC_Check_Channel(nLED); 	// CD4051 open the channel, and then start to adjust	
-			LED_Cur_DAC_Set(LED_525_DEFUALT_CUR_VALUE);
-			LED_Cur_Switch(EN_OPEN);	//led cur open
+//			//LED_Exec(nLED, EN_OPEN); 	  		// open led
+//			LED_Exec(HGB_LED_NUM, EN_OPEN); 	  		// open led
+//			//Turn_Motor_Select_LED(nLED); 		// led go to test positon 
+//			LED_Cur_ADC_Check_Channel(nLED); 	// CD4051 open the channel, and then start to adjust	
+//			LED_Cur_DAC_Set(LED_525_DEFUALT_CUR_VALUE);
+//			LED_Cur_Switch(EN_OPEN);	//led cur open
 			
+			//LED_Exec(nLED, EN_OPEN); 	  		// open led
+			LED_Exec(0, EN_OPEN); 	  		// open led
+			//Turn_Motor_Select_LED(nLED); 		// led go to test positon 
+			LED_Cur_ADC_Check_Channel(0); 	// CD4051 open the channel, and then start to adjust	
+			LED_Cur_DAC_Set(1480);
+			LED_Cur_Switch(EN_OPEN);	//led cur open
 			g_Test_Mode = EN_HGB_TEST;
 			printf("HGB Mode Set Finished M=%d\r\n", g_Test_Mode);	
 		}
@@ -2009,6 +2031,7 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 		break;	
 	}
 //	Turn_Motor_Power(EN_CLOSE);
+	Turn_Motor_Disable();
 	Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_TEST_MODE_SET, nRet);
 	return 0;
 }

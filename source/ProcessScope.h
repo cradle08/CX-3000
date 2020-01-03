@@ -125,7 +125,7 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_QUERY_V_ADC_CRP	   		0x2000010A
 #define    CMD_QUERY_REGISTER_VALUE		0x2000010B
 //#define    CMD_QUERY_UPDATE_FLAG		0x20000200	//define at update.h
-
+#define    CMD_QUERY_LIGHT_PATH_V		0x20000300	
 
 //-----data----------------------------------------------------- 
 #define    CMD_DATA_MOTO_IN_X_ADD   	0x30000007
@@ -136,6 +136,7 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_DATA_WAVE         		0x00000002
 #define    CMD_DATA_AIRLIGHT_RESULT		0x30000102
 
+#define    CMD_DATA_LIGHT_PATH_V		0x30000300	
 #define    CMD_DATA_TEST_WBC   			0x30000501
 #define    CMD_DATA_TEST_RBC   			0x30000502
 #define    CMD_DATA_TEST_PLT   			0x30000503
@@ -475,6 +476,7 @@ UINT8 AirLight_Self_Check(CALL_STYLE_E eCall);
 UINT8 Get_WBC_V_Status(UINT32 nV);
 void Return_Press_Value(void);
 INT32 Get_Press_Value(UINT8 nNum);
+UINT32 Get_Light_Path_V(UINT8 nChannel);
 
 _EXT_ UINT8 MSG_Testing(void);
 //

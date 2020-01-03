@@ -22,7 +22,11 @@
 
 //yaolan_end
 
-
+enum{
+	EN_LIGHT_SCATTER 		= 0, //san she
+	EN_LIGHT_TRANSMISSION   = 1, // tou she
+	EN_OUTIN_HGB			= 2, // out in HGB
+};
 
 
 #define  OC_HOME_CHANNEL          0          /* 进仓到位光耦通道号 */

@@ -1924,6 +1924,36 @@ INT32 Get_Press_Value(UINT8 nNum)
 }
 
 
+UINT32 Get_Light_Path_V(UINT8 nChannel)
+{
+	UINT8 i = 0;
+	UINT32 nADC, nVal = 0;
+	
+	if(nChannel == EN_LIGHT_SCATTER)
+	{
+		AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
+		nADC = AD7799_Get_Out_Data();
+		nADC = AD7799_Get_Out_Data();
+		nVal = AD7799_Get_ADC_Value(nADC);
+		printf("AD7799 AIN1 ADC=%d\r\n", (int)nVal);
+	
+	}else if(nChannel == EN_LIGHT_SCATTER){
+		AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
+		nADC = AD7799_Get_Out_Data();
+		nADC = AD7799_Get_Out_Data();
+		nVal = AD7799_Get_ADC_Value(nADC);
+		printf("AD7799 AIN2 ADC=%d\r\n", (int)nVal);
+		
+	}else if(nChannel == EN_LIGHT_SCATTER){
+		AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);	
+		nADC = AD7799_Get_Out_Data();
+		nADC = AD7799_Get_Out_Data();
+		nVal = AD7799_Get_ADC_Value(nADC);
+		printf("AD7799 AIN3 ADC=%d\r\n", (int)nVal);
+	}	
+}
+
+
 // yaolan_
 INT32 HW_Get_Press(UINT8 Index)
 {
