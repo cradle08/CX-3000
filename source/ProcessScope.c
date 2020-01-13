@@ -947,10 +947,6 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			}
 			break;		
 			
-			
-			
-			
-			
 			//****************************************************
             case CMD_QUERY_MOT_STAT:    /* ²éÑ¯µç»ú×´Ì¬ */
 			{
@@ -1979,13 +1975,14 @@ void Micro_Switch_Check(void)
 
 UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 {
-	UINT16 nRet = 0;
+	UINT32 nRet = 0;
 	
 	LED_All_Reset();
 	switch(nIndex)
 	{
 		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
+			nRet = (EN_HGB_TEST << 24) | nRet;
 //			//LED_Exec(nLED, EN_OPEN); 	  		// open led
 //			LED_Exec(HGB_LED_NUM, EN_OPEN); 	  		// open led
 //			//Turn_Motor_Select_LED(nLED); 		// led go to test positon 
@@ -2005,6 +2002,7 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 		break;
 		case EN_CRP_TEST: // CRP need select LED and adjust LED Cur
 		{
+			nRet = (EN_CRP_TEST << 24) | nRet;
 			LED_Exec(nLED, EN_OPEN); 	 	 		 // open led
 			Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
 			LED_Cur_ADC_Check_Channel(nLED);		 // CD4051 open the channel, and then start to adjust
@@ -2030,9 +2028,11 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 		}
 		break;	
 	}
-//	Turn_Motor_Power(EN_CLOSE);
+	nRet = (nLED << 16) | nRet;
+	nRet = (0 << 8) | nRet;
+	//Turn_Motor_Power(EN_CLOSE);
 	Turn_Motor_Disable();
-	Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_TEST_MODE_SET, nRet);
+	Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_TEST_MODE_SET, nRet);
 	return 0;
 }
 
@@ -2063,7 +2063,7 @@ UINT8 LED_Test_Exec(UINT8 Index, UINT8 nFlag)
 UINT8 HGB_Test_Exec(eTestMode eMode)
 {
 	UINT16 i;
-    UINT32 buffer[HGB_CALIBRATE_DATA_NUM] = {0};
+    UINT32 buffer[HGB_CALIBRATE_DATA_NUM] = {0}, nSum = 0;
 	
 	// check postion 
 //	if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
@@ -2122,9 +2122,11 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 			buffer[i] = HW_Get_ADC_HGB();
+			nSum += buffer[i];
 			printf("HGB ADC=%d, 5V=%6.2f\r\n", (int)buffer[i], (float)buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
 		}
+		printf("AVG HGB ADC=%08d, 5V=%6.2f\r\n", (int)nSum/10, (float)((nSum/10)*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24));
 		// send HGB data
 		Send_Data_HGB(CMD_DATA_CALIBRATE_HGB, buffer, HGB_CALIBRATE_DATA_NUM);
 	}
@@ -2144,7 +2146,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 {
 	UINT16 i;
 	UINT32 buffer[CRP_CALIBRATE_DATA_NUM] = {0};
-	UINT32 nCurTicks, nTempTicks;
+	UINT32 nCurTicks, nTempTicks, nSum = 0;
 //	printf("CRP_Test_Exec Start\r\n");
 	// check postion 
 //    if (E_AXIS_POS_HOME != HW_LEVEL_GetOC(OC_AXIS_POS_INDEX))
@@ -2276,9 +2278,11 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 				return 0;
 			}
 			buffer[i] = HW_Get_ADC_CRP();
+			nSum += buffer[i];
 			printf("CRP ADC=%08d, 5V=%6.2f\r\n", (int)buffer[i], (float)(buffer[i])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
 		}
+		printf("AVG CRP ADC=%08d, 5V=%6.2f\r\n", (int)nSum/10, (float)((nSum/10)*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24));
 		// send CRP data
 		Send_Data_CRP(CMD_DATA_CALIBRATE_CRP, buffer, CRP_CALIBRATE_DATA_NUM);	
 		collect_return_hdl(COLLECT_RET_SUCESS);
