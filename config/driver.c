@@ -591,13 +591,12 @@ UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
 	nVal /= nCount;
 #endif
 	return nVal;
-	
 }
 
 //
 UINT16 Get_Press_ADC(void)
 {
-	UINT16 nVal = 0, i;
+	UINT16 nVal = 0;
 	
 #if ADC3_INIT_WITH_DMA
 	nVal = g_ADC3_Value[EN_ADC_PRESS];
@@ -625,9 +624,15 @@ UINT16 Get_XK_ADC(void)
 	return nVal;
 }
 
+
+UINT16 Get_XK_V(void)
+{
+	return Get_XK_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+}
+
 UINT16 Get_12V_N_ADC(void)
 {
-	UINT16 nVal = 0, i;
+	UINT16 nVal = 0;
 	
 #if ADC3_INIT_WITH_DMA
 	nVal = g_ADC3_Value[EN_ADC_12V_N];
@@ -639,7 +644,7 @@ UINT16 Get_12V_N_ADC(void)
 
 UINT16 Get_12V_P_ADC(void)
 {
-	UINT16 nVal = 0, i;
+	UINT16 nVal = 0;
 	
 #if ADC3_INIT_WITH_DMA
 	nVal = g_ADC3_Value[EN_ADC_12V_P];
@@ -652,7 +657,7 @@ UINT16 Get_12V_P_ADC(void)
 //
 UINT16 Get_56V_Cur_ADC(void)
 {
-	UINT16 nVal = 0, i;
+	UINT16 nVal = 0;
 	
 #if ADC3_INIT_WITH_DMA
 	//nVal = g_ADC3_Value[EN_ADC_56V_CUR];
@@ -662,10 +667,15 @@ UINT16 Get_56V_Cur_ADC(void)
 	return nVal;
 }
 
+UINT16 Get_56V_Cur_V(void)
+{
+	return Get_56V_Cur_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+}
+
 //
 UINT16 Get_LED_Cur_ADC(void)
 {
-	UINT16 nVal = 0, i;
+	UINT16 nVal = 0;
 	
 #if ADC3_INIT_WITH_DMA
 	//nVal = g_ADC3_Value[EN_ADC_LED_CUR];
@@ -677,7 +687,7 @@ UINT16 Get_LED_Cur_ADC(void)
 
 UINT16 Get_Temp_ADC(void)
 {
-	UINT16 nVal = 0, i;
+	UINT16 nVal = 0;
 	
 #if ADC3_INIT_WITH_DMA
 	//nVal = g_ADC3_Value[EN_ADC_LED_CUR];
@@ -1086,8 +1096,8 @@ void ELEC_EXIT_FUNC(void)
 void Elec_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
-    EXTI_InitTypeDef EXTI_InitStructure;
 #if ELEC_USE_EXIT_MODE
+	EXTI_InitTypeDef EXTI_InitStructure;
     NVIC_InitTypeDef NVIC_InitStructure;
 #endif
     // 1. enable the input pin Clock 
@@ -1142,6 +1152,11 @@ UINT16 Get_Elec_ADC(void)
 #endif
 	return nVal;
 
+}
+
+UINT16 Get_Elec_V(void)
+{
+	return Get_Elec_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
 }
 
 // beep
@@ -1498,6 +1513,7 @@ UINT8 Turn_Motor_Goto_Postion(UINT8 nDir, UINT32 nSteps)
 {
 	Turn_Motor_Dir(nDir);
 	Turn_Motor_Run(nSteps);
+	return 0;
 }
 
 void Turn_Motor_Reset()
@@ -1608,6 +1624,7 @@ UINT8 Turn_Motor_Select_LED(UINT8 nIndex)
 		break;
 		default:break;
 	}
+	return 0;
 }
 
 
@@ -2125,7 +2142,7 @@ void Counter_Check_Init(void)
 {
 	//EVAL_InputInit(I_COUNTER_CHECK);
 	GPIO_InitTypeDef GPIO_InitStructure;
-    NVIC_InitTypeDef NVIC_InitStructure;
+//    NVIC_InitTypeDef NVIC_InitStructure;
   
     // 1. enable the input pin Clock 
     RCC_AHB1PeriphClockCmd(COUNTER_CHECK_GPIO_SRC, ENABLE);

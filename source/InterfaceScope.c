@@ -62,14 +62,16 @@ _STA_ IO_ UINT16 XRAM_ s_anBufNet[1500];
 _STA_ IO_ UINT16 XRAM_ s_nDataLen = 0;
 _STA_ IO_ UINT16 XRAM_ s_nStatus  = 0;
 
-#ifdef  TEST_DEVICE_B4    /* 设备B4专用参数 */
+
+/*
+#ifdef  TEST_DEVICE_B4    // 设备B4专用参数 
 _STA_ UINT32 s_nK = 1543600;
 _STA_ UINT32 s_nB = 1131880000;
-#else                    /* 通用参数 */
+#else                    // 通用参数 
 _STA_ UINT32 s_nK = 173280;
 _STA_ UINT32 s_nB = 97380000;
 #endif
-
+*/
 //-----------------------------------------------------------------------------------------
 
 // init
@@ -261,7 +263,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 #if USE_STM32F407_ONLY
 	UINT8 MT_X_Home(CALL_STYLE_E eCall) //UINT8 OutIn_Motor_Home(eModeType eMode)
 	{
-		UINT32 nCurTime = 0, nTempTime = 0, nDlyTime = 0, i;
+		UINT32 nCurTime = 0, nTempTime = 0, nDlyTime = 0;
 		
 		// start status msg
 		if(eCall == e_NormalCheck_Call)
@@ -495,7 +497,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 #if USE_STM32F407_ONLY
 	UINT8 MT_X_Home_only(void)
 	{
-		UINT32 nCurTime, nTempTime, i = 0;
+		UINT32 nCurTime, nTempTime;
 		//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
 		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);	
 		// not detect the single of home at the begining, moving long diatance
@@ -1476,7 +1478,6 @@ UINT8  HW_Valve_On(UINT8 chIndex)
 
 //------------------------------
 // DC motor control
-/* 有效频率范围15K - 25KHz */
 #if USE_STM32F407_ONLY
 	UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
 	{	
@@ -1695,7 +1696,7 @@ UINT16 HW_ADC_SpiGetADC(UINT8 chIndex)
     return (anBuffer[0] & 0x0FFF);  // the lower 12-bit
 }
 
-// * 10000
+/*
 INT32 HW_ADC_SpiGetPress(void)
 {
     //
@@ -1703,7 +1704,7 @@ INT32 HW_ADC_SpiGetPress(void)
     INT32 nValue = 0;
     double fValue = 0;
 
-    nAd = HW_ADC_SpiGetADC(INDEX_PRESS);  // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup), 3=press, */ 
+    nAd = HW_ADC_SpiGetADC(INDEX_PRESS);  // // adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup), 3=press,
     //
 
     fValue = nAd * ((double)s_nK);
@@ -1720,7 +1721,7 @@ INT32 HW_ADC_SpiGetPress(void)
 				(int)g_Record_Param.nAddPress, (int)fValue, (int)nValue);
     return nValue;
 }
-
+*/
 
 // yaolan_
 UINT8  HW_LED_On(UINT8 Index)
@@ -1895,7 +1896,6 @@ UINT16 Get_XK_V_Value(void)
 	return nRet;
 }
 
-//yaolao_
 UINT8 Get_WBC_V_Status(UINT32 nV)
 {
 	UINT8 i, num = 0;
@@ -1909,6 +1909,41 @@ UINT8 Get_WBC_V_Status(UINT32 nV)
 	}
 	if(num >= 3) return EN_WBC_V_LOW;
 	else return EN_WBC_V_HIGH;
+}
+
+
+UINT8 Get_DRegister_Value(UINT8 nChannel)
+{
+	UINT8 nVal = 0;
+	switch(nChannel)
+	{
+		case EN_DREGISTER_WBC:
+		{
+			nVal = 0;
+		}
+		break;
+		case EN_DREGISTER_PLT_RBC:
+		{
+			nVal = 0;
+		}
+		break;
+		case EN_DREGISTER_TOUSHE:
+		{
+			nVal = 0;
+		}
+		break;
+		case EN_DREGISTER_SANSHE:
+		{
+			nVal = 0;
+		}
+		break;
+		case EN_DREGISTER_OUTIN_HGB:
+		{
+			nVal = 0;
+		}
+		break;	
+	}
+	return nVal;
 }
 
 INT32 Get_Press_Value(UINT8 nNum)
@@ -1926,7 +1961,7 @@ INT32 Get_Press_Value(UINT8 nNum)
 
 UINT32 Get_Light_Path_V(UINT8 nChannel)
 {
-	UINT8 i = 0;
+//	UINT8 i = 0;
 	UINT32 nADC, nVal = 0;
 	
 	if(nChannel == EN_LIGHT_SCATTER)
@@ -1951,6 +1986,7 @@ UINT32 Get_Light_Path_V(UINT8 nChannel)
 		nVal = AD7799_Get_ADC_Value(nADC);
 		printf("AD7799 AIN3 ADC=%d\r\n", (int)nVal);
 	}	
+	return 0;
 }
 
 
@@ -1967,6 +2003,7 @@ INT32 HW_Get_Press(UINT8 Index)
 	return nVal;
 }
 
+/*
 // form fpga
 INT32 HW_Get_Press_ADC(UINT8 Index)
 {
@@ -1985,9 +2022,8 @@ INT32 HW_Get_Press_ADC(UINT8 Index)
     fValue -= (double)s_nB;
     nValue = (UINT32)fValue;
     return nValue;
-
 }
-
+*/
 
 // yaolan_
 void HW_EN_ADC_HGB(enum eFlag flag)
@@ -2124,7 +2160,7 @@ UINT8 Send_Data_CRP(UINT32 nCmd, IO_ UINT32* pData, UINT16 nLen)
 
 //---------------------------------------------------------------------------------------
 
-//
+/*
 UINT32 HW_ADC_PressPara(UINT32 nK, UINT32 nB)
 {
     s_nK = nK;
@@ -2132,7 +2168,7 @@ UINT32 HW_ADC_PressPara(UINT32 nK, UINT32 nB)
     //
     return e_Feedback_Success;
 }
-
+*/
 //------------------------------
 // get the level of the OC and the electrode
 /* 预留的悬空位返回状态1表示光耦未被遮挡 */
@@ -2405,6 +2441,7 @@ UINT8  HW_EN_WBC(enum eFlag bOn)
     //
     return e_Feedback_Success;
 }
+
 
 //
 void  HW_Start_WBC(void)

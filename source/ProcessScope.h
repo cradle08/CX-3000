@@ -33,34 +33,31 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 
 
 //----- control --------------------------------------
-#define    CMD_CTRL_VALVE         0x00000000
-#define    CMD_CTRL_PUMP          0x00000001
-#define    CMD_CTRL_LED           0x00000002
-
-#define    CMD_CTRL_MOT_IN        0x00000100
-#define    CMD_CTRL_MOT_OUT       0x00000101
-#define    CMD_CTRL_MOT_LOCK      0x00000102
-#define    CMD_CTRL_MOT_RELEASE   0x00000103
-#define    CMD_CTRL_MOT_IN_ONLY   0x00000104
-#define    CMD_CTRL_MOT_OUT_ONLY  0x00000105
-#define    CMD_CTRL_MOT_X_IN_ADD  0x00000106 
-#define    CMD_CTRL_REGISTER      0x00000200
-//#define    CMD_CTRL_WBC_SWITCH    0x00000300
-#define    CMD_CTRL_WBC_ENABLE    0x00000300
-#define    CMD_CTRL_WBC_PARA      0x00000400
-#define    CMD_CTRL_DEBUG_WBC     0x00000500
-#define    CMD_CTRL_TEST_WBC      0x00000501
-#define    CMD_CTRL_TEST_RBC      0x00000502
-#define    CMD_CTRL_TEST_PLT      0x00000503
-#define    CMD_CTRL_TEST_RBC_PLT  0x00000504  // test cmd
-#define    CMD_CTRL_TEST_HGB  	  0x00000505
-#define    CMD_CTRL_TEST_CRP      0x00000506
-#define    CMD_CTRL_CALIBRATE_HGB      0x00000507
-#define    CMD_CTRL_CALIBTATE_CRP      0x00000508
-
-#define    CMD_CTRL_PRESS_CONFIG  		0x00000600 
+#define    CMD_CTRL_VALVE         		0x00000000
+#define    CMD_CTRL_PUMP 				0x00000001
+#define    CMD_CTRL_MOT_IN        		0x00000100
+#define    CMD_CTRL_MOT_OUT       		0x00000101
+#define    CMD_CTRL_MOT_LOCK      		0x00000102
+#define    CMD_CTRL_MOT_RELEASE   		0x00000103
+#define    CMD_CTRL_MOT_IN_ONLY   		0x00000104
+#define    CMD_CTRL_MOT_OUT_ONLY  		0x00000105
+#define    CMD_CTRL_MOT_X_IN_ADD  		0x00000106 
+#define    CMD_CTRL_REGISTER      		0x00000200
+//#define    CMD_CTRL_WBC_SWITCH    	0x00000300
+//#define    CMD_CTRL_WBC_ENABLE    	0x00000300
+//#define    CMD_CTRL_WBC_PARA      	0x00000400
+//#define    CMD_CTRL_DEBUG_WBC     	0x00000500
+#define    CMD_CTRL_TEST_WBC      		0x00000501
+#define    CMD_CTRL_TEST_RBC      		0x00000502
+#define    CMD_CTRL_TEST_PLT      		0x00000503
+#define    CMD_CTRL_TEST_RBC_PLT  		0x00000504  // test cmd
+#define    CMD_CTRL_TEST_HGB  	  	    0x00000505
+#define    CMD_CTRL_TEST_CRP      	    0x00000506
+#define    CMD_CTRL_CALIBRATE_HGB       0x00000507
+#define    CMD_CTRL_CALIBTATE_CRP       0x00000508
+//#define    CMD_CTRL_PRESS_CONFIG  	0x00000600 
 #define    CMD_CTRL_PRESS_ADD     		0x00000601 
-#define    CMD_CTRL_CRP_PARAM_SET     	0x00000602
+#define    CMD_CTRL_SET_PUMP_SPEED      0x00000602
 #define    CMD_CTRL_TEST_MODE_SET     	0x00000603
 #define    CMD_CTRL_MOT_OUT_CHECK 		0x00000700 
 #define    CMD_CTRL_MOT_IN_CHECK  		0x00000701 // yaolan_20190220
@@ -71,16 +68,47 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_CTRL_VALVE1_CHECK   		0x00000706 
 #define    CMD_CTRL_VALVE2_CHECK   		0x00000707 
 #define    CMD_CTRL_PART_TEST   		0x00000708
-#define    CMD_CTRL_NET_TEST   		    0x00000808
+//#define    CMD_CTRL_NET_TEST   		0x00000808
 #define    CMD_CTRL_DEBUG_TEST 		    0x00000809
+#define    CMD_CTRL_LED				    0x00000901
+#define    CMD_CTRL_MOTOR_SEL_LED       0x00000902
 // debug cmd
-#define    CMD_CTRL_DEBUG_GET_PRESS 	0x00000709 // get the press value
+//#define    CMD_CTRL_DEBUG_GET_PRESS 	0x00000709 // get the press value
 //#define    CMD_CTRL_UPDATE_FLAG 		0x00000900 //define at update.h
+
+
+//----query--------------------------------------------------
+#define    CMD_QUERY_PRESSURE     		0x00000000 		
+#define    CMD_QUERY_OC           		0x00000002
+#define    CMD_QUERY_EDTION       		0x00000003
+//#define    CMD_QUERY_MOT_STAT     		0x00000004
+#define    CMD_QUERY_PUMP_SPEED   		0x00000006
+#define    CMD_QUERY_MOTO_IN_X_ADD  	0x00000007
+//#define    CMD_QUERY_WBC_VALUE      	0x00000008
+//#define    CMD_QUERY_PRESS_DATA   	0x00000100
+#define    CMD_QUERY_PRESS_ADD   		0x00000101
+//#define    CMD_QUERY_AIRLIGHT_RESULT  0x20000102
+//#define    CMD_QUERY_DREGISTER_VALUE  0x2000010B
+
+#define    CMD_QUERY_TMEPERATURE	   	0x20000103 
+#define    CMD_QUERY_CUR_V_XK   		0x20000106
+//#define    CMD_QUERY_CUR_V_DL   		0x20000107
+#define    CMD_QUERY_CUR_V_56V   		0x20000108
+
+//#define    CMD_QUERY_CUR_V_HGB		0x20000104
+//#define    CMD_QUERY_CUR_V_CRP   		0x20000105
+#define    CMD_QUERY_ELECTRODE   		20000107//0x00000001
+//#define    CMD_QUERY_V_ADC_HGB  		0x20000109
+//#define    CMD_QUERY_V_ADC_CRP	    0x2000010A
+#define    CMD_QUERY_REGISTER_VALUE		0x2000010B
+//#define    CMD_QUERY_UPDATE_FLAG		0x20000200	//define at update.h
+#define    CMD_QUERY_MICRO_SWITCH		0x20000301
+#define    CMD_QUERY_LIGHT_PATH_V		0x20000302
+#define    CMD_QUERY_BIO_MODE			0x20000303
 
 
 //-----status--------------------------------------------------
 #define    CMD_STATUS_PRESSURE    		0x00000000
-#define    CMD_STATUS_ELECTRODE   		0x00000001
 #define    CMD_STATUS_OC          		0x00000002
 #define    CMD_STATUS_EDTION      		0x00000003
 #define    CMD_STATUS_MOT         		0x00000004
@@ -93,39 +121,29 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_STATUS_WBC_48V        	0x01000002
 #define    CMD_STATUS_BUILD_PRESS    	0x01000003
 #define    CMD_STATUS_AIRLIGHT_PRESS 	0x01000004
-#define    CMD_STATUS_CRP_PARAM_SET     0x01000602
+#define    CMD_STATUS_PRESS_DATA     	0x00000100
+#define    CMD_STATUS_PRESS_ADD      	0x00000101
+#define    CMD_STATUS_TMEPERATURE	   	0x01000103 
+#define    CMD_STATUS_CUR_V_XK   		0x01000106
+#define    CMD_STATUS_ELECTRODE   		01000107//0x00000001
+#define    CMD_STATUS_CUR_V_56V   		0x01000108
+#define    CMD_STATUS_MICRO_SWITCH		0x01000301
+#define    CMD_STATUS_LIGHT_PATH_V		0x01000302
+#define    CMD_STATUS_BIO_MODE			0x01000303
+
+#define    CMD_STATUS_REGISTER_VALUE	0x0100010B
+//#define    CMD_STATUS_CRP_PARAM_SET   0x01000602
 #define    CMD_STATUS_TEST_MODE_SET     0x01000603
 #define    CMD_STATUS_CRP_TEST_START    0x01000701
 #define    CMD_STATUS_PART_TEST      	0x01000708
-#define    CMD_STATUS_PRESS_DATA     	0x00000100
-#define    CMD_STATUS_PRESS_ADD      	0x00000101
+#define    CMD_STATUS_LED           	0x01000901
+#define    CMD_STATUS_MOTOR_SEL_LED     0x01000902
+
 //#define    CMD_STATUS_QUARY_UPDATE_FLAG		0x01000200	//define at update.h
 //#define    CMD_STATUS_SET_UPDATE_FLAG 		0x01000900 //define at update.h
 
-//----query--------------------------------------------------
-#define    CMD_QUERY_PRESSURE     		0x00000000
-#define    CMD_QUERY_ELECTRODE    		0x00000001
-#define    CMD_QUERY_OC           		0x00000002
-#define    CMD_QUERY_EDTION       		0x00000003
-#define    CMD_QUERY_MOT_STAT     		0x00000004
-#define    CMD_QUERY_PUMP_SPEED   		0x00000006
-#define    CMD_QUERY_MOTO_IN_X_ADD  	0x00000007
-#define    CMD_QUERY_WBC_VALUE      	0x00000008
-#define    CMD_QUERY_PRESS_DATA   		0x00000100
-#define    CMD_QUERY_PRESS_ADD   		0x00000101
-#define    CMD_QUERY_AIRLIGHT_RESULT   	0x20000102
 
-#define    CMD_QUERY_TMEPERATURE	   	0x20000103 
-#define    CMD_QUERY_CUR_V_HGB		   	0x20000104
-#define    CMD_QUERY_CUR_V_CRP   		0x20000105
-#define    CMD_QUERY_CUR_V_XK   		0x20000106
-#define    CMD_QUERY_CUR_V_DL   		0x20000107
-#define    CMD_QUERY_CUR_V_48V   		0x20000108
-#define    CMD_QUERY_V_ADC_HGB  		0x20000109
-#define    CMD_QUERY_V_ADC_CRP	   		0x2000010A
-#define    CMD_QUERY_REGISTER_VALUE		0x2000010B
-//#define    CMD_QUERY_UPDATE_FLAG		0x20000200	//define at update.h
-#define    CMD_QUERY_LIGHT_PATH_V		0x20000300	
+
 
 //-----data----------------------------------------------------- 
 #define    CMD_DATA_MOTO_IN_X_ADD   	0x30000007
@@ -240,7 +258,7 @@ extern IO_ struct CRP_DataType g_CRP_Data;
 
 
 // 
-UINT8 Set_CRP_Param(UINT16 nTime, UINT16 nHZ);
+//UINT8 Set_CRP_Param(UINT16 nTime, UINT16 nHZ);
 UINT8 Set_Press_Add(UINT16 nAdd);
 UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal);
 void Cmd_Wave_Exec(UINT8 nFlag);
@@ -325,8 +343,7 @@ void Reset_ADC_InitDataType(void);
 #define COUNT_WBC_XK_CHECK_V   	   	   1800//1500    //1.5v xiao kong 
 #define COUNT_WBC_TOUCH_CHECK_V   	   2000    //1.8v
 #define COUNT_WBC_START_V   		   2500   //2300 //2.3v
-#define PRESS_PRECISION_FACTOR         (0xF4240)  //1000000
-
+#define PRESS_PRECISION_FACTOR         (0x3E8)  //1000
 #define PART_TEST_CHECK_DELAY			200 //ms
 #define MIXING_OVER_TIME				2000
 

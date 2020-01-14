@@ -38,6 +38,7 @@ void Delay_US(UINT32 us);
 // elec
 #define ELEC_USE_EXIT_MODE		0
 UINT16 Get_Elec_ADC(void);
+UINT16 Get_Elec_V(void);
 void Reset_Elec_Status(void);
 void Set_Elec_Status(void);
 UINT8 Get_Elec_Status(void);
@@ -537,9 +538,11 @@ void ADC3_Init(void);
 UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount);
 UINT16 Get_Press_ADC(void);
 UINT16 Get_XK_ADC(void);
+UINT16 Get_XK_V(void);
 UINT16 Get_12V_N_ADC(void);
 UINT16 Get_12V_P_ADC(void);
 UINT16 Get_56V_Cur_ADC(void);
+UINT16 Get_56V_Cur_V(void);
 //UINT16 Get_LED_Cur_ADC(void);
 UINT16 Get_Temp_ADC(void);	 
 UINT32  HW_Get_ADC_HGB(void);

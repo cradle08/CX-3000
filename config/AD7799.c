@@ -508,6 +508,7 @@ UINT32 AD7799_Get_ADC_Value(UINT32 nData)
 	UINT32  nADC;
 	//nData = AD7799_GetRegisterValue(AD7799_REG_DATA,3);
 	nADC = 2*(nData - 0x7FFFFF)/AD7799_GAIN_VALUE;
+	return nADC;
 }
 
 

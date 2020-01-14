@@ -33,6 +33,8 @@ enum{
 #define  OC_OUT_CHANNEL           1          /* 出仓到位光耦通道号 */
 #define  OC_SAMPLE_RELEA_CHANNEL  2          /* 样本芯片释放光耦通道号 */
 #define  OC_SAMPLE_HOLD_CHANNEL   3          /* 样本芯片释放光耦通道号(暂时未实现) */
+
+
 #define  INDEX_PRESS              3          /* 气压检测ADC通道 ,at FPGA is 4*/
 #define  INDEX_ADC_48V            1          /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup), 3=press, */ 
 //------------------------------
@@ -108,6 +110,15 @@ typedef enum{
 	EN_DROP_FPGA_DATA  = 3
 }EN_FPGA_DATA_FLAG;
 
+
+enum{
+	EN_DREGISTER_WBC		= 0,
+	EN_DREGISTER_PLT_RBC	= 1,
+	EN_DREGISTER_TOUSHE		= 2,
+	EN_DREGISTER_SANSHE		= 3,
+	EN_DREGISTER_OUTIN_HGB	= 4,
+};
+UINT8 Get_DRegister_Value(UINT8 nChannel);
 
 //-----------------------------------------------------------------------------------------
 // yaolan_start

@@ -454,8 +454,9 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 	eTestMode 	eMode		   = EN_MODE_END;
     //
     UINT16 nShort = 0, nAdd = 0, nParam1 = 0, nParam2 = 0;
-	UINT32 nWord    = 0;
-    UINT32 nWord_p  = 0;
+	UINT32 nWord   = 0;
+    INT32  nWord2  = 0;
+	UINT8  nVal    = 0;
     //
     chType   = *(pchCmdBuf + 3);
     nCommand = PL_UnionFourBytes(*(pchCmdBuf + 4),
@@ -512,12 +513,6 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				Micro_OC_Init();
 			}
 			break;
-			case CMD_CTRL_TEST_MODE_SET:
-			{
-				printf("Test Mode = %d\r\n", *(pchCmdBuf + 8));
-				LED_Mode_Set(*(pchCmdBuf + 8),  *(pchCmdBuf + 9));
-			}
-			break;
 			case CMD_CTRL_TEST_HGB:
 			{
 				HGB_Test_Exec(EN_HGB_TEST);
@@ -540,18 +535,56 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				CRP_Test_Exec(EN_CRP_CALIBRATE);
 			}
 			break;
-			case CMD_CTRL_CRP_PARAM_SET:
+			//---------------------SET CMD------------------------
+			case CMD_CTRL_TEST_MODE_SET:
+			{
+				printf("Test Mode = %d\r\n", *(pchCmdBuf + 8));
+				LED_Mode_Set(*(pchCmdBuf + 8),  *(pchCmdBuf + 9));
+			}
+			break;
+			case CMD_CTRL_PRESS_ADD: // 
+			{
+				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8),
+						  *(pchCmdBuf + 9));
+				Set_Press_Add(nParam1);
+			}
+			break;
+			case CMD_CTRL_MOT_X_IN_ADD:
+			{
+				// 
+				nShort = PL_UnionTwoBytes(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				g_Record_Param.nXAddStep = nShort;
+				g_Record_Param.nFlag = FLASH_INIT_FLAG;
+				printf("Set Moto X Add Step%d\r\n", g_Record_Param.nXAddStep);
+				Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_MOTO_X_IN_ADD, e_Feedback_Success);
+			}
+			break;
+			case CMD_CTRL_REGISTER: 
+            {
+				Set_Register_Param(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+            }
+			break;
+			case CMD_CTRL_SET_PUMP_SPEED:
+            {
+                nWord = PL_UnionFourBytes(*(pchCmdBuf +  8),
+                                          *(pchCmdBuf +  9),
+                                          *(pchCmdBuf + 10),
+                                          *(pchCmdBuf + 11));
+                //
+                HW_PUMP_Pulse(nWord, e_Dir_Pos);
+                //
+            }
+			break;
+/*			case CMD_CTRL_CRP_PARAM_SET:
 			{
 				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
 				nParam2 = PL_UnionTwoBytes_2(*(pchCmdBuf + 10), *(pchCmdBuf + 11));
 				Set_CRP_Param(nParam1, nParam2);
 			}
 			break;
-			case CMD_CTRL_LED:
-			{
-				LED_Test_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
-			}
-			break;			
+*/
+			//---------------------Ctrol CMD------------------------			
             case CMD_CTRL_VALVE: //
             {
 				//Valve_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
@@ -565,29 +598,68 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				}
             }
 			break;
-            case CMD_CTRL_PUMP:
-            {
-                nWord = PL_UnionFourBytes(*(pchCmdBuf +  8),
-                                          *(pchCmdBuf +  9),
-                                          *(pchCmdBuf + 10),
-                                          *(pchCmdBuf + 11));
-                //
-                HW_PUMP_Pulse(nWord, e_Dir_Pos);
-                //
-            }
-			break;
-			case CMD_CTRL_PRESS_ADD: // 
+			case CMD_CTRL_PUMP:
 			{
-				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8),
-						  *(pchCmdBuf + 9));
-				Set_Press_Add(nParam1);
+				nVal = *(pchCmdBuf + 8);
+				if(nVal == 0) // close
+				{
+					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
+				}else if(nVal == 1){ //open
+					HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
+				}
 			}
 			break;
-			case CMD_CTRL_REGISTER: 
+			case CMD_CTRL_MOT_IN:
             {
-				Set_Register_Param(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+                MT_X_Home(e_NormalCheck_Call); // go home
             }
 			break;
+            //
+            case CMD_CTRL_MOT_OUT:
+            {
+                MT_X_MoveToPosRel(e_NormalCheck_Call); // out
+                //
+            }
+			break;
+            case CMD_CTRL_MOT_RELEASE:  /* 释放芯片 */
+			{
+               // MT_Y_Home(e_NormalCheck_Call);
+			}
+            break;
+            case CMD_CTRL_MOT_LOCK:     /* 锁定芯片 */
+			{
+             //   MT_Y_MoveToPosRel(e_NormalCheck_Call);
+			}
+            break;
+            case CMD_CTRL_MOT_IN_ONLY:  /* 单独驱动大电机进仓 */
+			{
+                MT_X_Home_only();
+			}
+            break;
+            case CMD_CTRL_MOT_OUT_ONLY: /* 单独驱动大电机出仓 */
+			{
+                MT_X_MoveToPosRel_only();
+			}
+			break;
+			case CMD_CTRL_LED:
+			{
+				nShort = 0;
+				LED_Test_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				nShort = (*(pchCmdBuf + 8)) << 8;
+				nShort |= 0xFF00; 
+				Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_LED, nShort);
+			}
+			break;
+			case CMD_CTRL_MOTOR_SEL_LED:
+			{
+				nShort = 0;
+				Turn_Motor_Select_LED(*(pchCmdBuf + 8));
+				nShort = (*(pchCmdBuf + 8)) << 8;
+				nShort |= 0xFF00; 
+				Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_MOTOR_SEL_LED, nShort);
+			}
+			break;
+			//---------------------Self Check CMD----------------------------
 			case CMD_CTRL_WBC_48V_CHECK:
 			{		
 				WBC_48V_Self_Check();
@@ -618,9 +690,14 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				Valve2_Self_Check();
 			}
 			break;
-			case CMD_CTRL_DEBUG_GET_PRESS:
+			case CMD_CTRL_MOT_OUT_CHECK:
 			{
-				Return_Press_Value();
+				MT_X_OUT_Self_Check(e_SelfCheck_Call);
+			}
+			break;
+			case CMD_CTRL_MOT_IN_CHECK:
+			{
+				MT_X_IN_Self_Check(e_SelfCheck_Call);
 			}
 			break;
 			case CMD_CTRL_PART_TEST: // aging test
@@ -631,14 +708,14 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 						  *(pchCmdBuf + 12));
 				Part_Test_Exec(*(pchCmdBuf + 8), nWord);			
 			}
-			break;
+			break;			
 			case CMD_CTRL_DEBUG_TEST:
 			{
 				printf("index: %d\r\n", *(pchCmdBuf +  8));
 				Driver_Debug(*(pchCmdBuf +  8));
 			}
-			break;
-			//**************************UPDATE*****************************
+			break;			
+			//---------------------Update CMD------------------------
 			case CMD_MCU_UPDATE:
 			{
 				printf("%02X%02X%02X%02X ", pchCmdBuf[12],pchCmdBuf[13],pchCmdBuf[14],pchCmdBuf[15]);
@@ -674,111 +751,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				}
 			
 			}
-			break;		
-
-            //*******************************************************
-            case CMD_CTRL_MOT_IN:
-            {
-                MT_X_Home(e_NormalCheck_Call); // go home
-                //
-            }
-			break;
-            //
-            case CMD_CTRL_MOT_OUT:
-            {
-                MT_X_MoveToPosRel(e_NormalCheck_Call); // out
-                //
-            }
-			break;
-            case CMD_CTRL_MOT_RELEASE:  /* 释放芯片 */
-			{
-               // MT_Y_Home(e_NormalCheck_Call);
-			}
-            break;
-            case CMD_CTRL_MOT_LOCK:     /* 锁定芯片 */
-			{
-             //   MT_Y_MoveToPosRel(e_NormalCheck_Call);
-			}
-            break;
-            case CMD_CTRL_MOT_IN_ONLY:  /* 单独驱动大电机进仓 */
-			{
-                MT_X_Home_only();
-			}
-            break;
-            case CMD_CTRL_MOT_OUT_ONLY: /* 单独驱动大电机出仓 */
-			{
-                MT_X_MoveToPosRel_only();
-			}
-            break;
-			case CMD_CTRL_MOT_X_IN_ADD:
-			{
-				// 
-				nShort = PL_UnionTwoBytes(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
-				g_Record_Param.nXAddStep = nShort;
-				g_Record_Param.nFlag = FLASH_INIT_FLAG;
-				printf("Set Moto X Add Step%d\r\n", g_Record_Param.nXAddStep);
-				Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
-				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_MOTO_X_IN_ADD, e_Feedback_Success);
-			}
-			break;
-            case CMD_CTRL_WBC_ENABLE: //case CMD_CTRL_WBC_SWITCH:
-            {
-                HW_EN_WBC((enum eFlag) * (pchCmdBuf + 8));
-            }
-			break;
-            //
-            case CMD_CTRL_WBC_PARA:
-            {
-                ;
-            }
-			break;
-            case CMD_CTRL_DEBUG_WBC:
-            {
-                nCommand  = CMD_CTRL_DEBUG_WBC;
-                bSendBack = e_True;
-                //
-                MSG_Testing();
-                //
-                nParaLen         = 0;
-                //
-            }
-			break;
-            case CMD_CTRL_PRESS_CONFIG:
-            {
-                //
-                nWord = PL_UnionFourBytes(*(pchCmdBuf +  8),
-                                          *(pchCmdBuf +  9),
-                                          *(pchCmdBuf + 10),
-                                          *(pchCmdBuf + 11));
-                nWord_p = PL_UnionFourBytes(*(pchCmdBuf + 12),
-                                            *(pchCmdBuf + 13),
-                                            *(pchCmdBuf + 14),
-                                            *(pchCmdBuf + 15));
-                //
-                HW_ADC_PressPara(nWord, nWord_p);
-                //
-                nParaLen         = 0;
-            }
-			break;
-			case CMD_CTRL_MOT_OUT_CHECK:
-			{
-				MT_X_OUT_Self_Check(e_SelfCheck_Call);
-			}
-			break;
-			case CMD_CTRL_MOT_IN_CHECK:
-			{
-				MT_X_IN_Self_Check(e_SelfCheck_Call);
-			}
-			break;
-			case CMD_CTRL_NET_TEST:
-			{
-				nShort = PL_UnionTwoBytes(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
-				nWord  = PL_UnionFourBytes(*(pchCmdBuf + 10),*(pchCmdBuf + 11),\
-											*(pchCmdBuf + 12),*(pchCmdBuf + 13));
-				printf("Send Packet Test: time=%d, num=%d\r\n", nShort, (int)nWord);
-				Send_Packets_Test(nShort, nWord);
-			}
-			break;
+			break;					
             default:
             {
                 break;
@@ -787,35 +760,100 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
         } // end control cmd
     }
 
-    //  query cmd
+    //---------------------Status Query CMD------------------------
     if (PROTOCOL_HEAD_RECV_RD == chType)
     {
         switch (nCommand)
         {
-            //
             case CMD_QUERY_PRESSURE:
             {
                 nCommand  = CMD_STATUS_PRESSURE;
                 bSendBack = e_True;
                 //
-                nShort = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
-                *(pchFbkBuf + 0) = (UINT8)((nShort >> 8) & 0xff);
-                *(pchFbkBuf + 1) = (UINT8)((nShort >> 0) & 0xff);
-                nParaLen         = 2;
+                nWord2 = Get_Press_Value(GET_PRESS_NUM_FIVE);
+                *(pchFbkBuf + 0) = (UINT8)((nWord2 >> 24) & 0xff);
+                *(pchFbkBuf + 1) = (UINT8)((nWord2 >> 16) & 0xff);
+				*(pchFbkBuf + 2) = (UINT8)((nWord2 >> 8) & 0xff);
+				*(pchFbkBuf + 3) = (UINT8)((nWord2 >> 0) & 0xff);
+                nParaLen         = 4;
             }
 			break;
-            case CMD_QUERY_ELECTRODE:
-            {
-                nCommand  = CMD_STATUS_ELECTRODE;
+			case CMD_QUERY_PUMP_SPEED:
+			{
+                bSendBack = e_True;
+                nCommand  = CMD_STATUS_PUMP_SPEED;
+
+                nShort = 15000; // todo...
+                *(pchFbkBuf + 0) = (nShort >> 8);
+                *(pchFbkBuf + 1) = (nShort & 0xff);
+                nParaLen = 2;
+			}
+            break;
+			case CMD_QUERY_MOTO_IN_X_ADD: // moto x go home add
+			{
+				printf("Query Moto X Add Step=%d\r\n", (int)g_Record_Param.nXAddStep);
+				Msg_Return_Handle_16(e_Msg_Data, CMD_DATA_MOTO_IN_X_ADD, g_Record_Param.nXAddStep);
+			}
+			break;	
+			case CMD_QUERY_REGISTER_VALUE: // get wbc value
+			{
+				bSendBack = e_True;
+                nCommand  = CMD_STATUS_REGISTER_VALUE;
+				nVal = Get_DRegister_Value(*(pchCmdBuf + 8)); // todo...
+				 *(pchFbkBuf + 0) = *(pchCmdBuf + 8);
+				 *(pchFbkBuf + 1) = nVal;
+				printf("channel = %d, Dregister = %d\r\n", *(pchCmdBuf + 8), nVal);		
+			}
+			break;
+			case CMD_QUERY_PRESS_ADD: // get press add
+			{
+				nAdd = (int)g_Record_Param.nAddPress/PRESS_PRECISION_FACTOR;
+				printf("Query Add Press=%d\r\n", (int)nAdd);
+				Msg_Return_Handle_16(e_Msg_Data, CMD_DATA_PRESS_ADD, nAdd);				
+			}
+			break;	
+			case CMD_QUERY_TMEPERATURE:
+			{
+				// todo...
+			}
+			break;	
+			case CMD_QUERY_CUR_V_XK:
+			{
+				nShort = Get_XK_V();
+				printf("Get XK V=%d\r\n", (int)nShort);
+				Msg_Return_Handle_16(e_Msg_Data, CMD_STATUS_CUR_V_XK, nShort);	
+			}	
+			break;
+			case CMD_QUERY_CUR_V_56V:
+			{
+				nShort = Get_56V_Cur_V();
+				printf("Query Add Press=%d\r\n", (int)nAdd);
+				Msg_Return_Handle_16(e_Msg_Data, CMD_STATUS_CUR_V_56V, nShort);	
+			}	
+			break;
+			case CMD_QUERY_LIGHT_PATH_V:
+			{
+				nParam1 = *(pchCmdBuf + 8);
+				
+                nCommand  = CMD_STATUS_LIGHT_PATH_V;
                 bSendBack = e_True;
                 //
-                *(pchFbkBuf + 0) = HW_LEVEL_GetElectrode(0);
-                *(pchFbkBuf + 1) = HW_LEVEL_GetElectrode(1);
-                *(pchFbkBuf + 2) = HW_LEVEL_GetElectrode(2);
-                nParaLen         = 3;
-            }
+                nWord = Get_Light_Path_V((UINT8)nParam1);
+                *(pchFbkBuf + 0) = (UINT8)((nWord >> 24) & 0xff);
+                *(pchFbkBuf + 1) = (UINT8)((nWord >> 16) & 0xff);
+                *(pchFbkBuf + 2) = (UINT8)((nWord >>  8) & 0xff);
+                *(pchFbkBuf + 3) = (UINT8)((nWord >>  0) & 0xff);
+                nParaLen         = 4;
+			}
 			break;
-            case CMD_QUERY_OC:
+			case CMD_QUERY_MICRO_SWITCH:
+			{ 
+				nVal = Get_Micro_OC_Status(); // 0: in, 1: out
+				printf("micro switch status = %d\r\n", (int)nVal);
+				Msg_Return_Handle_8(e_Msg_Data, CMD_STATUS_MICRO_SWITCH, nVal);	
+			}
+			break;
+			case CMD_QUERY_OC: // todo...
             {
                 nCommand  = CMD_STATUS_OC;
                 bSendBack = e_True;
@@ -824,8 +862,29 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
                 *(pchFbkBuf + 1) = HW_LEVEL_GetOC(1); // out oc
                 *(pchFbkBuf + 2) = HW_LEVEL_GetOC(2); // 
                 *(pchFbkBuf + 3) = HW_LEVEL_GetOC(3);
-                nParaLen         = 4;
+				*(pchFbkBuf + 4) = 0;
+				*(pchFbkBuf + 5) = 0;
+                nParaLen         = 6;
             }
+			break;
+            case CMD_QUERY_ELECTRODE:
+            {
+                nCommand  = CMD_STATUS_ELECTRODE;
+                bSendBack = e_True;
+                nShort = Get_Elec_V();
+				
+                *(pchFbkBuf + 0) = Get_Elec_Status();
+                *(pchFbkBuf + 1) = (nShort >> 8);
+                *(pchFbkBuf + 2) = nShort | 0xFF;
+                nParaLen         = 3;
+            }
+			break;
+			case CMD_QUERY_BIO_MODE:
+			{
+				nVal = g_Test_Mode; // 0: HGB, 1: CRP
+				printf("bio mode = %d\r\n", (int)nVal);
+				Msg_Return_Handle_8(e_Msg_Data, CMD_STATUS_BIO_MODE, nVal);	
+			}
 			break;
             case CMD_QUERY_EDTION:
             {
@@ -839,121 +898,13 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
                 nParaLen         = (2 + 32);           
             }
 			break;
-		    case CMD_QUERY_PUMP_SPEED:  /* 查询泵转速 */
-			{
-                bSendBack = e_True;
-                nCommand  = CMD_STATUS_PUMP_SPEED;
-
-                nShort = HW_PUMP_GetFeedbackPulse();
-                *(pchFbkBuf + 0) = (nShort >> 8);
-                *(pchFbkBuf + 1) = (nShort & 0xff);
-                nParaLen = 2;
-			}
-            break;
-			case CMD_QUERY_WBC_VALUE: // get wbc value
-			{
-				printf("Query WBC register Value=%d\r\n", (int)g_Record_Param.nRegister_WBC);
-				Msg_Return_Handle_8(e_Msg_Data, CMD_DATA_WBC_VALUE, g_Record_Param.nRegister_WBC);
-			}
-			break;
-			case CMD_QUERY_PRESS_ADD: // get press add
-			{
-				nAdd = (int)g_Record_Param.nAddPress/PRESS_PRECISION_FACTOR;
-				printf("Query Add Press=%d\r\n", (int)nAdd);
-				Msg_Return_Handle_16(e_Msg_Data, CMD_DATA_PRESS_ADD, nAdd);				
-			}
-			break;			
-            case CMD_QUERY_PRESS_DATA:
-            {
-				// to do, need to modify
-                nCommand  = CMD_STATUS_PRESS_DATA;
-                bSendBack = e_True;
-                //
-                nWord = Get_Press_Value(GET_PRESS_NUM_FIVE);
-//				nWord += g_Record_Param.nAddPress;
-                *(pchFbkBuf + 0) = (UINT8)((nWord >> 24) & 0xff);
-                *(pchFbkBuf + 1) = (UINT8)((nWord >> 16) & 0xff);
-                *(pchFbkBuf + 2) = (UINT8)((nWord >>  8) & 0xff);
-                *(pchFbkBuf + 3) = (UINT8)((nWord >>  0) & 0xff);
-
-                nWord /= 100000;  /* 精度0.01 */
-                *(pchFbkBuf + 4) = (((nWord / 1000 % 10) << 4) | (nWord / 100 % 10));
-                *(pchFbkBuf + 5) = (((nWord / 10 % 10) << 4) | (nWord % 10));
-                nParaLen         = 6;
-                //
-            }
-			break;
-			case CMD_QUERY_AIRLIGHT_RESULT:
-			{
-                nCommand  		 = CMD_DATA_AIRLIGHT_RESULT;
-                bSendBack 		 = e_True;
-                *(pchFbkBuf + 0) = g_AirLight_Flag;
-                nParaLen         = 1;
-			}
-			break;
-			case CMD_QUERY_TMEPERATURE:
-			{
-			
-			}	
-			break;
-			case CMD_QUERY_CUR_V_HGB:
-			{
-			
-			}	
-			break;
-			case CMD_QUERY_CUR_V_CRP:
-			{
-			
-			}	
-			break;
-			case CMD_QUERY_CUR_V_XK:
-			{
-			
-			}	
-			break;
-			case CMD_QUERY_CUR_V_DL:
-			{
-			
-			}	
-			break;
-			case CMD_QUERY_CUR_V_48V:
-			{
-			
-			}	
-			break;
-			case CMD_QUERY_V_ADC_HGB:
-			{
-			
-			}	
-			break;
-			case CMD_QUERY_V_ADC_CRP:
-			{
-			
-			}	
-			break;	
-			case CMD_QUERY_LIGHT_PATH_V:
-			{
-				nParam1 = *(pchCmdBuf + 8);
-				
-                nCommand  = CMD_DATA_LIGHT_PATH_V;
-                bSendBack = e_True;
-                //
-                nWord = Get_Light_Path_V((UINT8)nParam1);
-                *(pchFbkBuf + 0) = (UINT8)((nWord >> 24) & 0xff);
-                *(pchFbkBuf + 1) = (UINT8)((nWord >> 16) & 0xff);
-                *(pchFbkBuf + 2) = (UINT8)((nWord >>  8) & 0xff);
-                *(pchFbkBuf + 3) = (UINT8)((nWord >>  0) & 0xff);
-                nParaLen         = 4;
-			}
-			break;		
-			
-			//****************************************************
-            case CMD_QUERY_MOT_STAT:    /* 查询电机状态 */
+			/*
+            case CMD_QUERY_MOT_STAT:    // 
 			{
                 bSendBack = e_True;
                 nCommand  = CMD_STATUS_MOT;
 
-                if (0 == *(pchCmdBuf +  8))  /* 进出仓电机 */
+                if (0 == *(pchCmdBuf +  8))  // 进出仓电机 
                 {
                     *(pchFbkBuf + 0) = 0;
                     *(pchFbkBuf + 1) = MT_X_get_posi();
@@ -966,13 +917,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
                 nParaLen = 2;
 			}
             break;
-
-			case CMD_QUERY_MOTO_IN_X_ADD: // moto x go home add
-			{
-				printf("Query Moto X Add Step=%d\r\n", (int)g_Record_Param.nXAddStep);
-				Msg_Return_Handle_16(e_Msg_Data, CMD_DATA_MOTO_IN_X_ADD, g_Record_Param.nXAddStep);
-			}
-			break;
+			*/
             default:
             {
                 break;
@@ -1002,7 +947,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 
 } // end of "MSG_Handling()"
 
-
+/*
 UINT8 MSG_Testing(void)
 {
     IO_ UINT32 nCurTicks = 0;
@@ -1196,6 +1141,7 @@ UINT8 MSG_Testing(void)
     return e_Feedback_Success;
 #endif
 }
+*/
 
 #ifdef  DEBUG_INFO_UP_LOAD
 void Append_Debug_Info(INT8 *pInfo, INT8 *pTemp, UINT16 *pInfoLen)
@@ -3161,6 +3107,7 @@ UINT8 AirLight_Self_Check(CALL_STYLE_E eCall)
 	return e_Feedback_Success;
 }
 
+/*
 ////////////////// for debug 
 void Return_Press_Value(void)
 {
@@ -3179,7 +3126,7 @@ void Return_Press_Value(void)
 	Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_PRESSURE, nCurPress);
 	printf("Return_Press_Value ticks=%09d, press=%010d, addpress=%010d\r\n", (int)(nCurTicks - nLstTicks), (int)nCurPress, (int)g_Record_Param.nAddPress);
 }
-
+*/
 
 _EXT_ UINT8 Negative_Pressure_Self_Check(void)
 {
@@ -3303,7 +3250,7 @@ _EXT_ UINT8 Pump_Self_Check(void)
 	return e_Feedback_Success;
 }
 
-
+/*
 UINT8 Set_CRP_Param(UINT16 nTime, UINT16 nHZ)
 {
 	UINT8 nRet;
@@ -3322,6 +3269,7 @@ UINT8 Set_CRP_Param(UINT16 nTime, UINT16 nHZ)
 	}
 	return nRet;
 }
+*/
 
 UINT8 Set_Press_Add(UINT16 nAdd)
 {
