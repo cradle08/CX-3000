@@ -323,11 +323,11 @@ void moto_work_stat(UINT8 mot_num, MOTO_WORK_STAT_E stat)
     dat[n++] = stat;
 
     tim = IT_ADC_GetTicks();
-    PL_NET_SendResult(PROTOCOL_HEAD_SEND_STATUS, CMD_STATUS_MOT_WORK, dat, n);  /* 44 53 57 53 - 00 10 00 00 */
+    PL_NET_SendResult(PROTOCOL_HEAD_SEND_STATUS, CMD_STATUS_MOT, dat, n);  /* 44 53 57 53 - 00 10 00 00 */
     while (((UINT16)(IT_ADC_GetTicks() - tim)) < 10); /* 延时10毫秒后再发送结果 */
-    PL_NET_SendResult(PROTOCOL_HEAD_SEND_STATUS, CMD_STATUS_MOT_WORK, dat, n);  /* 重发一次数据包 */
+    PL_NET_SendResult(PROTOCOL_HEAD_SEND_STATUS, CMD_STATUS_MOT, dat, n);  /* 重发一次数据包 */
     while (((UINT16)(IT_ADC_GetTicks() - tim)) < 20); /* 延时10毫秒后再发送结果 */
-    PL_NET_SendResult(PROTOCOL_HEAD_SEND_STATUS, CMD_STATUS_MOT_WORK, dat, n);  /* 重发一次数据包 */
+    PL_NET_SendResult(PROTOCOL_HEAD_SEND_STATUS, CMD_STATUS_MOT, dat, n);  /* 重发一次数据包 */
 }
 
 void moto_work_stat_2(UINT8 mot_num, MOTO_WORK_STAT_E stat, BUILD_PRESS_E stat2)
@@ -453,10 +453,12 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
     enum eFlag  bSendBack      = e_False;
 	eTestMode 	eMode		   = EN_MODE_END;
     //
-    UINT16 nShort = 0, nAdd = 0, nParam1 = 0, nParam2 = 0;
+	INT16  nShort2 = 0;
+    UINT16 nShort  = 0, nAdd = 0, nParam1 = 0, nParam2 = 0;
 	UINT32 nWord   = 0;
     INT32  nWord2  = 0;
 	UINT8  nVal    = 0;
+	
     //
     chType   = *(pchCmdBuf + 3);
     nCommand = PL_UnionFourBytes(*(pchCmdBuf + 4),
@@ -607,9 +609,18 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			case CMD_CTRL_LED:
 			{
 				nShort = 0;
-				LED_Test_Exec(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				printf("LED=%d, Opt=%d\r\n", *(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				LED_All_Reset();
+				if(*(pchCmdBuf + 9) == EN_OPEN)
+				{
+					LED_Exec(*(pchCmdBuf + 8), EN_OPEN); 	 	 		 // open led
+					//Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
+					LED_Cur_ADC_Check_Channel(*(pchCmdBuf + 8));		 // CD4051 open the channel, and then start to adjust
+					LED_Cur_DAC_Set(LED_840_DEFUALT_CUR_VALUE);
+					LED_Cur_Switch(EN_OPEN);	//led cur open				
+				}
 				nShort = (*(pchCmdBuf + 8)) << 8;
-				nShort |= 0xFF00; 
+				nShort |= 0x00; 
 				Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_LED, nShort);
 			}
 			break;
@@ -618,7 +629,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				nShort = 0;
 				Turn_Motor_Select_LED(*(pchCmdBuf + 8));
 				nShort = (*(pchCmdBuf + 8)) << 8;
-				nShort |= 0xFF00; 
+				nShort |= 0x00; 
 				Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_MOTOR_SEL_LED, nShort);
 			}
 			break;
@@ -671,7 +682,17 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 						  *(pchCmdBuf + 12));
 				Part_Test_Exec(*(pchCmdBuf + 8), nWord);			
 			}
-			break;			
+			break;	
+			case CMD_CTRL_MIXING_MOTOR_CHECK:
+			{
+				Mixing_Motor_Go_On(MIXING_OVER_TIME);
+			}
+			break;
+			case CMD_CTRL_TURN_MOTOR_CHECK:
+			{
+				Turn_Motor_Goto_Postion(e_Dir_Pos, 10000);
+			}
+			break;
 			case CMD_CTRL_DEBUG_TEST:
 			{
 				printf("index: %d\r\n", *(pchCmdBuf +  8));
@@ -784,7 +805,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
                 bSendBack = e_True;
                 nCommand  = CMD_STATUS_PUMP_SPEED;
 
-                nShort = 15000; // todo...
+                nShort = 12500; // todo...
                 *(pchFbkBuf + 0) = (nShort >> 8);
                 *(pchFbkBuf + 1) = (nShort & 0xff);
                 nParaLen = 2;
@@ -808,9 +829,9 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_QUERY_PRESS_ADD: // get press add
 			{
-				nAdd = (int)g_Record_Param.nAddPress/PRESS_PRECISION_FACTOR;
-				printf("Query Add Press=%d\r\n", (int)nAdd);
-				Msg_Return_Handle_16(e_Msg_Data, CMD_DATA_PRESS_ADD, nAdd);				
+				nShort2 = (int)g_Record_Param.nAddPress/PRESS_PRECISION_FACTOR;
+				printf("add press=%d, %d\r\n", (int)g_Record_Param.nAddPress, nShort2);
+				Msg_Return_Handle_16(e_Msg_Data, CMD_STATUS_PRESS_ADD, nShort2);				
 			}
 			break;	
 			case CMD_QUERY_TMEPERATURE:
@@ -1917,8 +1938,6 @@ void Micro_Switch_Check(void)
 	}
 }
 
-#define LED_525_DEFUALT_CUR_VALUE  2480   // HGB
-#define LED_840_DEFUALT_CUR_VALUE  2480   // CRP
 
 UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 {

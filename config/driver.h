@@ -13,6 +13,8 @@
 //#else
 //	#define ADC3_CHECK_NUM			6
 //#endif
+#define LED_525_DEFUALT_CUR_VALUE  2480   // HGB
+#define LED_840_DEFUALT_CUR_VALUE  2480   // CRP
 
 #define ADC2_CHECK_NUM			2
 #define ADC3_INIT_WITH_DMA		0
@@ -89,6 +91,7 @@ void Mixing_Motor_Init(void);
 void Mixing_Motor_Run(void);
 void Mixing_Motor_Stop(void);
 void Mixing_Motor_Ctr(UINT8 nOpt);
+void Mixing_Motor_Go_On(UINT32 nTime);
 
 //switch 1_PF11, 2_PH6
 #define VALVE_AIR_PORT						GPIOF

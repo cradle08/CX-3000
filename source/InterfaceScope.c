@@ -501,25 +501,31 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 		//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
 		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);	
 		// not detect the single of home at the begining, moving long diatance
-		nCurTime = IT_SYS_GetTicks();
-		nTempTime = nCurTime;
-		OutIn_Motor_Enable();
-		OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST);
-		while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
+		
+		// check outin motor in
+		printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL));
+		if(EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // not at in position
 		{
-			if (EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
+			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL));
+			OutIn_Motor_Enable();
+			//OutIn_Motor_In(); // in
+			nCurTime = IT_SYS_GetTicks();
+			nTempTime = nCurTime;
+			OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST); // in
+			while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 			{
 				if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
 				{
-					IT_SYS_DlyMs(2);
-					if(EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) break;
+					IT_SYS_DlyMs(1);
+					if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))	break;
 				}
+				nCurTime = IT_SYS_GetTicks();					
 			}
-		}
+		}			
 		OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
 		if(nCurTime > nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 		{
-			collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+			//collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 			//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
 			moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
 		}
@@ -1118,29 +1124,39 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 	UINT8 MT_X_MoveToPosRel_only(void)
 	{
 		UINT32 nCurTime, nTempTime;
-		
 		nCurTime = IT_SYS_GetTicks();
 		nTempTime = nCurTime;
-		OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_BEST);
-		while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
+		
+		//moto_work_stat(0, MOTO_WORK_STAT_RUN);
+		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+		printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_OUT_CHANNEL));
+		if(EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // not at out position
 		{
-			if (EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
+			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_OUT_CHANNEL));
+			OutIn_Motor_Enable();
+			//OutIn_Motor_Out(); // out
+			nCurTime = IT_SYS_GetTicks();
+			nTempTime = nCurTime;
+			OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_BEST); // out
+			while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 			{
-				if(EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
+				if(EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
 				{
-					IT_SYS_DlyMs(2);
-					if(EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL))	break;
+					IT_SYS_DlyMs(1);
+					if(EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))	break;
 				}
 				nCurTime = IT_SYS_GetTicks();	
 			}
+			OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE); // out
 		}
 		if(nCurTime > nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 		{
-			collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+			//collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 			//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
 			moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
 			return e_Feedback_Error;
 		}else{
+			//moto_work_stat(0, MOTO_WORK_STAT_OK); 
 			moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
 			return e_Feedback_Success;
 		}

@@ -1321,6 +1321,20 @@ void Mixing_Motor_Ctr(UINT8 nOpt)
 	}
 }
 
+void Mixing_Motor_Go_On(UINT32 nTime)
+{
+	UINT32 nStartTicks = 0, nTempTicks = 0;
+	
+	nStartTicks = IT_SYS_GetTicks();
+	Mixing_Motor_Run();
+	while(nTempTicks < nStartTicks + MIXING_OVER_TIME)
+	{
+		IT_SYS_DlyMs(10);
+		nTempTicks = IT_SYS_GetTicks();
+	}
+	Mixing_Motor_Stop();	
+}
+
 // valve
 void Valve_Init(void)
 {
