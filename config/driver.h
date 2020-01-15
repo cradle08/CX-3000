@@ -88,7 +88,7 @@ void Pump_Exec(UINT8 nDir, UINT16 nFreq);
 void Mixing_Motor_Init(void);
 void Mixing_Motor_Run(void);
 void Mixing_Motor_Stop(void);
-
+void Mixing_Motor_Ctr(UINT8 nOpt);
 
 //switch 1_PF11, 2_PH6
 #define VALVE_AIR_PORT						GPIOF

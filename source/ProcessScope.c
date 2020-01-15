@@ -535,55 +535,6 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				CRP_Test_Exec(EN_CRP_CALIBRATE);
 			}
 			break;
-			//---------------------SET CMD------------------------
-			case CMD_CTRL_TEST_MODE_SET:
-			{
-				printf("Test Mode = %d\r\n", *(pchCmdBuf + 8));
-				LED_Mode_Set(*(pchCmdBuf + 8),  *(pchCmdBuf + 9));
-			}
-			break;
-			case CMD_CTRL_PRESS_ADD: // 
-			{
-				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8),
-						  *(pchCmdBuf + 9));
-				Set_Press_Add(nParam1);
-			}
-			break;
-			case CMD_CTRL_MOT_X_IN_ADD:
-			{
-				// 
-				nShort = PL_UnionTwoBytes(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
-				g_Record_Param.nXAddStep = nShort;
-				g_Record_Param.nFlag = FLASH_INIT_FLAG;
-				printf("Set Moto X Add Step%d\r\n", g_Record_Param.nXAddStep);
-				Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
-				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_MOTO_X_IN_ADD, e_Feedback_Success);
-			}
-			break;
-			case CMD_CTRL_REGISTER: 
-            {
-				Set_Register_Param(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
-            }
-			break;
-			case CMD_CTRL_SET_PUMP_SPEED:
-            {
-                nWord = PL_UnionFourBytes(*(pchCmdBuf +  8),
-                                          *(pchCmdBuf +  9),
-                                          *(pchCmdBuf + 10),
-                                          *(pchCmdBuf + 11));
-                //
-                HW_PUMP_Pulse(nWord, e_Dir_Pos);
-                //
-            }
-			break;
-/*			case CMD_CTRL_CRP_PARAM_SET:
-			{
-				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
-				nParam2 = PL_UnionTwoBytes_2(*(pchCmdBuf + 10), *(pchCmdBuf + 11));
-				Set_CRP_Param(nParam1, nParam2);
-			}
-			break;
-*/
 			//---------------------Ctrol CMD------------------------			
             case CMD_CTRL_VALVE: //
             {
@@ -600,13 +551,14 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_PUMP:
 			{
-				nVal = *(pchCmdBuf + 8);
-				if(nVal == 0) // close
-				{
-					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
-				}else if(nVal == 1){ //open
-					HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
-				}
+				
+				nWord = PL_UnionFourBytes(*(pchCmdBuf +  8),
+                                          *(pchCmdBuf +  9),
+                                          *(pchCmdBuf + 10),
+                                          *(pchCmdBuf + 11));
+                //
+                HW_PUMP_Pulse(nWord, e_Dir_Pos);
+				
 			}
 			break;
 			case CMD_CTRL_MOT_IN:
@@ -639,6 +591,17 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
             case CMD_CTRL_MOT_OUT_ONLY: /* 单独驱动大电机出仓 */
 			{
                 MT_X_MoveToPosRel_only();
+			}
+			break;
+			case CMD_CTRL_TURN_MOTOR_RESET:
+			{
+				Turn_Motor_Reset();
+				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_TURN_MOTOR_RESET, 0);	
+			}
+			break;
+			case CMD_CTRL_MIXING_MOTOR:
+			{
+				Mixing_Motor_Ctr(*(pchCmdBuf + 8));
 			}
 			break;
 			case CMD_CTRL_LED:
@@ -715,6 +678,44 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				Driver_Debug(*(pchCmdBuf +  8));
 			}
 			break;			
+			//---------------------SET CMD------------------------
+			case CMD_CTRL_TEST_MODE_SET:
+			{
+				printf("Test Mode = %d\r\n", *(pchCmdBuf + 8));
+				LED_Mode_Set(*(pchCmdBuf + 8),  *(pchCmdBuf + 9));
+			}
+			break;
+			case CMD_CTRL_PRESS_ADD: // 
+			{
+				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8),
+						  *(pchCmdBuf + 9));
+				Set_Press_Add(nParam1);
+			}
+			break;
+			case CMD_CTRL_MOT_X_IN_ADD:
+			{
+				// 
+				nShort = PL_UnionTwoBytes(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				g_Record_Param.nXAddStep = nShort;
+				g_Record_Param.nFlag = FLASH_INIT_FLAG;
+				printf("Set Moto X Add Step%d\r\n", g_Record_Param.nXAddStep);
+				Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
+				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_MOTO_X_IN_ADD, e_Feedback_Success);
+			}
+			break;
+			case CMD_CTRL_REGISTER: 
+            {
+				Set_Register_Param(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+            }
+			break;
+/*			case CMD_CTRL_CRP_PARAM_SET:
+			{
+				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8), *(pchCmdBuf + 9));
+				nParam2 = PL_UnionTwoBytes_2(*(pchCmdBuf + 10), *(pchCmdBuf + 11));
+				Set_CRP_Param(nParam1, nParam2);
+			}
+			break;
+*/
 			//---------------------Update CMD------------------------
 			case CMD_MCU_UPDATE:
 			{

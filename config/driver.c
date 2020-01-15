@@ -1312,6 +1312,15 @@ void Mixing_Motor_Stop(void)
 	GPIO_ResetBits(MIXING_DIR_PORT, MIXING_DIR_PIN);
 }
 
+void Mixing_Motor_Ctr(UINT8 nOpt)
+{
+	if(nOpt == EN_CLOSE){
+		Mixing_Motor_Stop();
+	}else if(nOpt == EN_OPEN){
+		Mixing_Motor_Run();
+	}
+}
+
 // valve
 void Valve_Init(void)
 {
