@@ -9,9 +9,8 @@
 IO_ UINT8 g_Elec_Status = 0;
 //IO_ UINT16 g_ADC2_Value[ADC2_CHECK_NUM] = {0};
 IO_ UINT16 g_ADC3_Value[EN_ADC_END] = {0};
-
-const unsigned int g_Turn_Motor_Table[4]={0xC000,0x6000,0x3000,0x9000};
 IO_ UINT8 g_Turn_Position = EN_POSITION_LED_RESET;
+const unsigned int g_Turn_Motor_Table[4]={0xC000,0x6000,0x3000,0x9000};
 
 //IO_ static UINT32  fac_us=0;							//usÑÓÊ±±¶³ËÊý			   
 //IO_ static UINT32  fac_ms=0;	
@@ -751,7 +750,8 @@ UINT32  Get_CRP_Value(void)
 
 	
 
-
+#if OUNIN_MOTOR_USE_PWM
+/*
 void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc)
 {
 	// TIM3_CH3
@@ -870,6 +870,155 @@ void OutIn_Motor_In(void) // in
 	//EVAL_OutputSet(O_OUTIN_MOTOR_DIR);
 	GPIO_SetBits(OUTIN_MOTOR_DIR_PORT, OUTIN_MOTOR_DIR_PIN);
 }
+*/
+#endif
+
+
+
+void OutIn_Motor_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	RCC_AHB1PeriphClockCmd(OUTIN_MOTOR_SRC_1|OUTIN_MOTOR_SRC_2|OUTIN_MOTOR_SRC_3|OUTIN_MOTOR_SRC_4|OUTIN_MOTOR_POWER_SRC, ENABLE);
+	// OUTIN pin 1
+	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_PIN_1; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
+	GPIO_Init(OUTIN_MOTOR_PORT_1, &GPIO_InitStructure);
+	GPIO_ResetBits(OUTIN_MOTOR_PORT_1, OUTIN_MOTOR_PIN_1);
+	// OUTIN pin 2
+	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_PIN_2; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;
+	GPIO_Init(OUTIN_MOTOR_PORT_2, &GPIO_InitStructure);
+	GPIO_ResetBits(OUTIN_MOTOR_PORT_2, OUTIN_MOTOR_PIN_2);
+	// OUTIN pin 3
+	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_PIN_3; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
+	GPIO_Init(OUTIN_MOTOR_PORT_3, &GPIO_InitStructure);
+	GPIO_ResetBits(OUTIN_MOTOR_PORT_3, OUTIN_MOTOR_PIN_3);
+	// OUTIN pin 4
+	GPIO_InitStructure.GPIO_Pin = OUTIN_MOTOR_PIN_4; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;//GPIO_PuPd_UP;//GPIO_PuPd_NOPULL;;
+	GPIO_Init(OUTIN_MOTOR_PORT_4, &GPIO_InitStructure);
+	GPIO_ResetBits(OUTIN_MOTOR_PORT_4, OUTIN_MOTOR_PIN_4);
+
+}
+
+void OutIn_Motor_Break(void)//
+{
+  	OUTIN_MOTOR_PORT->ODR|=0xF000;	//
+}
+
+void OutIn_Motor_Free(void)//
+{
+  	OUTIN_MOTOR_PORT->ODR&=(~0xF000); //
+}
+
+UINT8 OutIn_Motor_In(UINT32 nStep)
+{
+	UINT32 nTemp = 0, nOutStatus, nTurnStep, DelayTime;
+	
+	DelayTime = OUTIN_MOTOR_MAX_DELAY;
+	//nTemp = nStep + LED_SELETCT_STEP_DIFF; // -
+	while(nTemp > 0)
+	{
+		//if(g_Turn_Position == EN_POSITION_LED_RESET) // if at reset position,
+		//{
+			//if(nTemp <= 2*LED_SELETCT_STEP_DIFF)
+			//{
+				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+				{
+					g_Turn_Position = EN_POSITION_LED_UNSURE; /////////////
+					printf("Anti Stop Steps = %d \r\n", (int)nTemp);
+					return e_Feedback_Success;
+				}
+			//}			
+		//}else{
+			//if(nTemp < (nStep - 10))
+			//{
+			//	if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+			//	{
+			//		g_Turn_Position = EN_POSITION_LED_UNSURE; /////////////
+			//		printf("Anti Stop Steps = %d \r\n", (int)nTemp);
+			//		return e_Feedback_Success;
+			//	}
+			//}
+		//}
+		nOutStatus = OUTIN_MOTOR_PORT->IDR;
+		nOutStatus &= 0x0FFF;
+		nTurnStep = (nTemp & 0x03);
+		
+		OUTIN_MOTOR_PORT->ODR = nOutStatus|g_Turn_Motor_Table[nTurnStep];
+		
+		if(DelayTime > OUTIN_MOTOR_MIN_DELAY) DelayTime -= 10;
+		if(DelayTime/1000 >= 1)
+		{
+			IT_SYS_DlyMs(DelayTime/1000);
+			Delay_US(DelayTime%1000);
+		}else{
+			Delay_US(DelayTime);
+		}
+		nTemp--;
+	}
+}
+
+
+UINT8 OutIn_Motor_Out(UINT32 nStep)
+{
+	UINT32 nTemp = 0, nOutStatus, nTurnStep, DelayTime;
+	
+	DelayTime = OUTIN_MOTOR_MAX_DELAY;
+	while(nTemp < nStep)
+	{
+		//if(g_Turn_Position == EN_POSITION_LED_RESET)// if at reset position,
+		//{
+		//	if((nTemp >= nStep - LED_SELETCT_STEP_DIFF) && (nTemp <= nStep + LED_SELETCT_STEP_DIFF))
+		//	{
+				if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+				{
+					g_Turn_Position = EN_POSITION_LED_UNSURE; 
+					printf("Stop Steps = %d \r\n", (int)nTemp);
+					return e_Feedback_Success;
+				}
+			//}
+		//}else{
+			//if(nTemp > 10){
+			//	if(EN_CLOSE == Get_Turn_Select_OC_Status()) 
+			//	{
+			//		g_Turn_Position = EN_POSITION_LED_UNSURE; 
+			//		printf("Stop Steps = %d \r\n", (int)nTemp);
+			//		return e_Feedback_Success;
+			//	}
+			//}
+		//}
+		nOutStatus = OUTIN_MOTOR_PORT->IDR;
+		nOutStatus &= 0x0FFF;
+		nTurnStep = (nTemp & 0x03);
+		
+		OUTIN_MOTOR_PORT->ODR = nOutStatus|g_Turn_Motor_Table[nTurnStep];
+		
+		if(DelayTime > OUTIN_MOTOR_MIN_DELAY) DelayTime -= 10;
+		if(DelayTime/1000 >= 1)
+		{
+			IT_SYS_DlyMs(DelayTime/1000);
+			Delay_US(DelayTime%1000);
+		}else{
+			Delay_US(DelayTime);
+		}
+		nTemp++;
+	}
+}
+
 
 
 
@@ -2135,6 +2284,20 @@ void OC_Init(void)
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
 	GPIO_Init(IN_OC_GPIO_PORT, &GPIO_InitStructure);
 	GPIO_ResetBits(IN_OC_GPIO_PORT, IN_OC_GPIO_PIN);
+	// fix oc for out
+	GPIO_InitStructure.GPIO_Pin = FIX_OUT_OC_GPIO_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(OUT_OC_GPIO_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(FIX_OUT_OC_GPIO_PORT, FIX_OUT_OC_GPIO_PIN);
+	// fix oc for in
+	GPIO_InitStructure.GPIO_Pin = FIX_IN_OC_GPIO_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(IN_OC_GPIO_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(FIX_IN_OC_GPIO_PORT, FIX_IN_OC_GPIO_PIN);
 	// micro oc
 	Micro_OC_Init();
 }
@@ -2158,6 +2321,16 @@ UINT8 Get_Out_OC_Status(void)
 UINT8 Get_In_OC_Status(void)
 {
 	return GPIO_ReadInputDataBit(IN_OC_GPIO_PORT, IN_OC_GPIO_PIN);
+}
+
+UINT8 Get_Fix_Out_OC_Status(void)
+{
+	return GPIO_ReadInputDataBit(FIX_OUT_OC_GPIO_PORT, FIX_OUT_OC_GPIO_PIN);
+}
+
+UINT8 Get_Fix_In_OC_Status(void)
+{
+	return GPIO_ReadInputDataBit(FIX_IN_OC_GPIO_PORT, FIX_IN_OC_GPIO_PIN);
 }
 
 
@@ -2234,7 +2407,7 @@ void Counter_Adjust_PWM_Init(UINT32 Arr,UINT32 Psc)
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
-	TIM_OC3Init(OUTIN_MOTOR_PWM_TIM, &TIM_OCInitStructure);  
+	TIM_OC3Init(COUNTER_PWM_TIM, &TIM_OCInitStructure);  
 
 
 //	TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;//??????     ?,?????????TIM_OCPolarity ?????,?1?????

@@ -2143,6 +2143,20 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 	if(eMode ==  EN_CRP_TEST)
 	{
 		printf("CRP_Test_Exec Start\r\n");
+		Mixing_Motor_Run();
+		while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 2s
+			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
+			{
+				Mixing_Motor_Stop();
+				printf(" cuvette out error\r\n");
+				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+				return 0;
+			}
+			IT_SYS_DlyMs(10);
+			nCurTicks = IT_SYS_GetTicks();
+		}
+		Mixing_Motor_Stop();
+		IT_SYS_DlyMs(500);
 #if SIMUATION_TEST
 		memset((void*)&g_CRP_Data, 0, sizeof(g_CRP_Data));
 		g_CRP_Data.eEnable = e_False;

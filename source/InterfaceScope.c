@@ -263,7 +263,8 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 #if USE_STM32F407_ONLY
 	UINT8 MT_X_Home(CALL_STYLE_E eCall) //UINT8 OutIn_Motor_Home(eModeType eMode)
 	{
-		UINT32 nCurTime = 0, nTempTime = 0, nDlyTime = 0;
+		UINT32 nCurTime = 0, nTempTime = 0;
+		UINT16 i = 0, nDelayTime = 0, nOutStatus = 0, nSteps = 0, nTurnStep = 0;;
 		
 		// start status msg
 		if(eCall == e_NormalCheck_Call)
@@ -275,11 +276,11 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 		if(EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // not at in position
 		{
 			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL));
-			OutIn_Motor_Enable();
-			//OutIn_Motor_In(); // in
-			nCurTime = IT_SYS_GetTicks();
-			nTempTime = nCurTime;
-			#if OUTIN_MOTOR_USE_PWM
+			#if OUTIN_MOTOR_USE_PWM  
+				OutIn_Motor_Enable();
+				//OutIn_Motor_In(); // in
+				nCurTime = IT_SYS_GetTicks();
+				nTempTime = nCurTime;
 				OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST); // in
 				while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 				{
@@ -298,7 +299,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 					//printf("In time out,ST=%d, ET=%d\r\n", (int)nTempTime, (int)nCurTime);
 					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-					OutIn_Motor_Disable();
+//					OutIn_Motor_Disable();
 					return e_Feedback_Error;
 				}
 				// add step
@@ -317,39 +318,60 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 				OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
 				printf("add step over sTime=%d, eTime=%d, npress=%010d\r\n", (int)nTempTime, (int)nCurTime, (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 			#else
-				for(i = 0; i < 35000; i++)
+				nDelayTime = OUTIN_MOTOR_MAX_DELAY;
+				nSteps = 30000;
+				while(nSteps > 0)
 				{
 					if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
 					{
 						IT_SYS_DlyMs(2);
 						if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) break;
-					}
-					OutIn_Motor_Run(OUTIN_MOTOR_PULSE_UP_TIME, OUTIN_MOTOR_PULSE_DOWN_TIME);
-					nCurTime = IT_SYS_GetTicks();
-					if(nCurTime >= nTempTime + OUTIN_MOTOR_HOME_TIME)
+					}					
+					nOutStatus = OUTIN_MOTOR_PORT->IDR;
+					nOutStatus &= 0x0FFF;
+					nTurnStep = (nSteps & 0x03);
+					OUTIN_MOTOR_PORT->ODR = nOutStatus | g_Turn_Motor_Table[nTurnStep];
+					
+					if(nDelayTime > OUTIN_MOTOR_MIN_DELAY) nDelayTime -= 10;
+					if(nDelayTime/1000 >= 1)
 					{
-						printf("In time out,ST=%d, ET=%d\r\n", (int)nTempTime, (int)nCurTime);
-						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-						moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-						OutIn_Motor_Disable();
-						return e_Feedback_Error;
-					}			
+						IT_SYS_DlyMs(nDelayTime/1000);
+						Delay_US(nDelayTime%1000);
+					}else{
+						Delay_US(nDelayTime);
+					}
+					nSteps--;
 				}
-				printf("step over i=%d, npress=%010d\r\n", (int)i, (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
-				// add step
-				if(g_Record_Param.nXAddStep > 0)
+				if(nSteps <= 0)
 				{
-					for(i = 0; i < g_Record_Param.nXAddStep; i++)
-					{
-						OutIn_Motor_Run(OUTIN_MOTOR_PULSE_UP_TIME, OUTIN_MOTOR_PULSE_DOWN_TIME);
-					}
+					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+					return e_Feedback_Fail;
 				}
-				printf("add step over i=%d, npress=%010d\r\n", (int)i, (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+				// add step
+//				for(i = 0; i < g_Record_Param.nXAddStep; i++)
+//				{
+//					nOutStatus = OUTIN_MOTOR_PORT->IDR;
+//					nOutStatus &= 0x0FFF;
+//					nTurnStep = (nSteps & 0x03);
+//					
+//					OUTIN_MOTOR_PORT->ODR = nOutStatus|g_Turn_Motor_Table[nTurnStep];
+//					
+//					if(nDelayTime > OUTIN_MOTOR_MIN_DELAY) nDelayTime -= 10;
+//					if(nDelayTime/1000 >= 1)
+//					{
+//						IT_SYS_DlyMs(nDelayTime/1000);
+//						Delay_US(nDelayTime%1000);
+//					}else{
+//						Delay_US(nDelayTime);
+//					}
+//				}
+				
+				printf("steps=%d, add steps=%d, press=%010d\r\n", (3000 - nSteps), (int)g_Record_Param.nXAddStep, (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 			#endif
 		}else{
 			//
 		}
-		OutIn_Motor_Disable();
+		//OutIn_Motor_Disable();
 		// end status msg
 		if(eCall == e_NormalCheck_Call)
 		{
@@ -507,11 +529,11 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 		if(EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // not at in position
 		{
 			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL));
-			OutIn_Motor_Enable();
+//			OutIn_Motor_Enable();
 			//OutIn_Motor_In(); // in
 			nCurTime = IT_SYS_GetTicks();
 			nTempTime = nCurTime;
-			OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST); // in
+//			OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST); // in
 			while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 			{
 				if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
@@ -522,7 +544,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 				nCurTime = IT_SYS_GetTicks();					
 			}
 		}			
-		OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
+//		OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
 		if(nCurTime > nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 		{
 			//collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
@@ -797,7 +819,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 		UINT32 nCurTime, nTempTime;
 		INT32 nPress = 0;
 		
-		UINT32 StartTicks = 0, EndTicks = 0;
+		UINT32 StartTicks = 0, EndTicks = 0, i = 0;
 	//	UINT8 i = 0;
 		IO_ UINT8 flag = 0;
 		
@@ -821,7 +843,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 		if(EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // not at out position
 		{
 			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_OUT_CHANNEL));
-			OutIn_Motor_Enable();
+//			OutIn_Motor_Enable();
 			//OutIn_Motor_Out(); // out
 			nCurTime = IT_SYS_GetTicks();
 			nTempTime = nCurTime;
@@ -859,7 +881,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 					
 					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-					OutIn_Motor_Disable();
+//					OutIn_Motor_Disable();
 					return e_Feedback_Error;
 				}
 			#else
@@ -886,7 +908,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 							//printf("2 X out-check press at first: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
 						}
 					}
-					OutIn_Motor_Run(OUTIN_MOTOR_PULSE_UP_TIME, OUTIN_MOTOR_PULSE_DOWN_TIME);
+//					OutIn_Motor_Run(OUTIN_MOTOR_PULSE_UP_TIME, OUTIN_MOTOR_PULSE_DOWN_TIME);
 					nCurTime = IT_SYS_GetTicks();
 					if(nCurTime >= nTempTime + OUTIN_MOTOR_HOME_TIME)
 					{
@@ -902,7 +924,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 			//
 		}
 		//OutIn_Motor_Disable();
-		OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
+//		OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
 		// check press again
 		if(eCall == e_NormalCheck_Call)
 		{
@@ -954,7 +976,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 		printf("6 X out-check press: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
 
 		Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);
-		OutIn_Motor_Disable();
+//		OutIn_Motor_Disable();
 //		#ifdef  MOTO_DOBULE_ENABLE
 //			MT_Y_Home(eCall);
 //		#endif	
@@ -1133,6 +1155,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 		if(EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // not at out position
 		{
 			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_OUT_CHANNEL));
+			#if OUTIN_MOTOR_USE_PWN
 			OutIn_Motor_Enable();
 			//OutIn_Motor_Out(); // out
 			nCurTime = IT_SYS_GetTicks();
@@ -1148,6 +1171,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 				nCurTime = IT_SYS_GetTicks();	
 			}
 			OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE); // out
+			#endif
 		}
 		if(nCurTime > nTempTime + MOTO_SELF_CHECK_TIMEOUT)
 		{

@@ -21,6 +21,7 @@
 extern IO_ UINT8 g_Elec_Status;
 
 void Delay_US(UINT32 us);
+extern const unsigned int g_Turn_Motor_Table[4];
 
 // elec switch PA11 (9-5 for micro switch)
 #define ELEC_PORT							GPIOA
@@ -255,17 +256,25 @@ void Counter_Adjust_PWM_Init(UINT32 Arr,UINT32 Psc);
 #define TURN_SELECT_OC_GPIO_PIN			GPIO_Pin_6
 #define TURN_SELECT_OC_GPIO_SRC			RCC_AHB1Periph_GPIOG
 
-// OC for in (cx3000), PC13
-#define IN_OC_GPIO_PORT					GPIOC
-#define IN_OC_GPIO_PIN					GPIO_Pin_13
-#define IN_OC_GPIO_SRC					RCC_AHB1Periph_GPIOC
+// OC for in (cx3000), PG4
+#define IN_OC_GPIO_PORT					GPIOG
+#define IN_OC_GPIO_PIN					GPIO_Pin_4
+#define IN_OC_GPIO_SRC					RCC_AHB1Periph_GPIOG
 
-// OC  for Out(cx3000), PG9
+// OC  for Out(cx3000), PG5
 #define OUT_OC_GPIO_PORT				GPIOG
-#define OUT_OC_GPIO_PIN					GPIO_Pin_9
+#define OUT_OC_GPIO_PIN					GPIO_Pin_5
 #define OUT_OC_GPIO_SRC					RCC_AHB1Periph_GPIOG
 
+// fix in OC for in (cx3000), PH3
+#define FIX_IN_OC_GPIO_PORT				GPIOH
+#define FIX_IN_OC_GPIO_PIN				GPIO_Pin_3
+#define FIX_IN_OC_GPIO_SRC				RCC_AHB1Periph_GPIOH
 
+// fix out OC for Out(cx3000), PG3
+#define FIX_OUT_OC_GPIO_PORT			GPIOG
+#define FIX_OUT_OC_GPIO_PIN				GPIO_Pin_3
+#define FIX_OUT_OC_GPIO_SRC				RCC_AHB1Periph_GPIOG
 
 void OC_Init(void);
 UINT8 Get_Micro_OC_Status(void); // 0: in, 1: out
@@ -273,7 +282,8 @@ UINT8 Get_Turn_Select_OC_Status(void);
 UINT8 Get_Turn_Reset_OC_Status(void); 
 UINT8 Get_Out_OC_Status(void);
 UINT8 Get_In_OC_Status(void);
-
+UINT8 Get_Fix_Out_OC_Status(void);
+UINT8 Get_Fix_In_OC_Status(void);
 
 
 // --------- cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS 
@@ -584,44 +594,80 @@ UINT32  Get_CRP_Value(void);
 //UINT8 OutIn_Motor_Out(eModeType eMode);
 
 
+//---------OUT IN MOTOR----------------------------------
+#define OUNIN_MOTOR_USE_PWM				0
+#if OUNIN_MOTOR_USE_PWM
+	// TIM3_CH3,     Out_In_Motor, PD8_clk(TIM3_CH3), PD9_Dir, PD10_Enable
+	// PD10_Enalb
+	#define OUTIN_MOTOR_EN_PORT				GPIOD
+	#define OUTIN_MOTOR_EN_PIN				GPIO_Pin_10
+	#define OUTIN_MOTOR_EN_SRC				RCC_AHB1Periph_GPIOD
+	// PD9_Dir
+	#define OUTIN_MOTOR_DIR_PORT			GPIOD
+	#define OUTIN_MOTOR_DIR_PIN 			GPIO_Pin_9
+	#define OUTIN_MOTOR_DIR_SRC				RCC_AHB1Periph_GPIOD
+	// PC8_Clk
+	#define OUTIN_MOTOR_CLK_PORT			GPIOC
+	#define OUTIN_MOTOR_CLK_PIN				GPIO_Pin_8
+	#define OUTIN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOC
+	// TIM3_CH3
+	#define OUTIN_MOTOR_CLK_PIN_AF			GPIO_PinSource8
+	#define OUTIN_MOTOR_CLK_PORT_AF			GPIO_AF_TIM3
+	#define OUTIN_MOTOR_PWM_TIM				TIM3
+	#define OUTIN_MOTOR_PWM_TIM_SRC			RCC_APB1Periph_TIM3
+	#define OUTIN_MOTOR_PWM_TIM_ARR			800 //25000
+	#define OUTIN_MOTOR_PWM_TIM_PSC			11   //42    //84M/12=4M, 
+	#define OUTIN_MOTOR_PWM_LEVEL_CLOSE		0
+	#define OUTIN_MOTOR_PWM_LEVEL_BEST		400
+	#define OUTIN_MOTOR_PWM_LEVEL_HIGHEST	OUTIN_MOTOR_PWM_TIM_ARR
+	#define OUTIN_MOTOR_USE_PWM				1
+	#define	OUTIN_MOTOR_HOME_TIME			10000
+	// Time3_CH3  Out_In_Motor clk
+	void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc);
+	// Out_In Motor
+	void OutIn_Motor_Init(void);
+	void OutIn_Motor_Speed_Set(UINT16 nSpeed);
+	void OutIn_Motor_Run(UINT8 nDir, UINT16 nFreq); //e_Dir_Pos=in, e_Dir_Neg=out
+	void OutIn_Motor_Enable(void);
+	void OutIn_Motor_Disable(void);
+	void OutIn_Motor_Out(void); //out
+	void OutIn_Motor_In(void); // in
+#else
+	
+	#define STEP_NUMBER  0x03
+	// turn motor, PB12, PB13, PB14, PB15
+	#define OUTIN_MOTOR_PORT_1					GPIOB
+	#define OUTIN_MOTOR_PIN_1					GPIO_Pin_12
+	#define OUTIN_MOTOR_SRC_1					RCC_AHB1Periph_GPIOB
 
-// TIM3_CH3,     Out_In_Motor, PD8_clk(TIM3_CH3), PD9_Dir, PD10_Enable
-// PD10_Enalb
-#define OUTIN_MOTOR_EN_PORT				GPIOD
-#define OUTIN_MOTOR_EN_PIN				GPIO_Pin_10
-#define OUTIN_MOTOR_EN_SRC				RCC_AHB1Periph_GPIOD
-// PD9_Dir
-#define OUTIN_MOTOR_DIR_PORT			GPIOD
-#define OUTIN_MOTOR_DIR_PIN 			GPIO_Pin_9
-#define OUTIN_MOTOR_DIR_SRC				RCC_AHB1Periph_GPIOD
-// PC8_Clk
-#define OUTIN_MOTOR_CLK_PORT			GPIOC
-#define OUTIN_MOTOR_CLK_PIN				GPIO_Pin_8
-#define OUTIN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOC
-// TIM3_CH3
-#define OUTIN_MOTOR_CLK_PIN_AF			GPIO_PinSource8
-#define OUTIN_MOTOR_CLK_PORT_AF			GPIO_AF_TIM3
-#define OUTIN_MOTOR_PWM_TIM				TIM3
-#define OUTIN_MOTOR_PWM_TIM_SRC			RCC_APB1Periph_TIM3
-#define OUTIN_MOTOR_PWM_TIM_ARR			800 //25000
-#define OUTIN_MOTOR_PWM_TIM_PSC			11   //42    //84M/12=4M, 
-#define OUTIN_MOTOR_PWM_LEVEL_CLOSE		0
-#define OUTIN_MOTOR_PWM_LEVEL_BEST		400
-#define OUTIN_MOTOR_PWM_LEVEL_HIGHEST	OUTIN_MOTOR_PWM_TIM_ARR
-#define OUTIN_MOTOR_USE_PWM				1
-#define	OUTIN_MOTOR_HOME_TIME			10000
-// Time3_CH3  Out_In_Motor clk
-void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc);
-// Out_In Motor
+	#define OUTIN_MOTOR_PORT_2					GPIOB
+	#define OUTIN_MOTOR_PIN_2					GPIO_Pin_13
+	#define OUTIN_MOTOR_SRC_2					RCC_AHB1Periph_GPIOB
+
+	#define OUTIN_MOTOR_PORT_3					GPIOB
+	#define OUTIN_MOTOR_PIN_3					GPIO_Pin_14
+	#define OUTIN_MOTOR_SRC_3					RCC_AHB1Periph_GPIOB
+
+	#define OUTIN_MOTOR_PORT_4					GPIOB
+	#define OUTIN_MOTOR_PIN_4					GPIO_Pin_15
+	#define OUTIN_MOTOR_SRC_4					RCC_AHB1Periph_GPIOB
+	#define OUTIN_MOTOR_PORT						GPIOB
+
+	#define OUTIN_MOTOR_POWER_PORT				GPIOH
+	#define OUTIN_MOTOR_POWER_PIN				GPIO_Pin_9
+	#define OUTIN_MOTOR_POWER_SRC				RCC_AHB1Periph_GPIOH
+
+	#define	OUTIN_MOTOR_HOME_TIME					10000
+	// out in motor 
+	#define OUTIN_MOTOR_MAX_ANTI_CLOCKWISE_STEP		500
+	#define OUTIN_MOTOR_MAX_CLOCKWISE_STEP			500
+	#define OUTIN_MOTOR_MAX_DELAY					4000
+	#define OUTIN_MOTOR_MIN_DELAY					3000//3000
+#endif
+
 void OutIn_Motor_Init(void);
-void OutIn_Motor_Speed_Set(UINT16 nSpeed);
-void OutIn_Motor_Run(UINT8 nDir, UINT16 nFreq); //e_Dir_Pos=in, e_Dir_Neg=out
-void OutIn_Motor_Enable(void);
-void OutIn_Motor_Disable(void);
-void OutIn_Motor_Out(void); //out
-void OutIn_Motor_In(void); // in
-
-
+void OutIn_Motor_Break(void);
+void OutIn_Motor_Free(void);
 
 
 
