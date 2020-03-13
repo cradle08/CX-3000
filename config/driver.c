@@ -8,7 +8,7 @@
 
 IO_ UINT8 g_Elec_Status = 0;
 //IO_ UINT16 g_ADC2_Value[ADC2_CHECK_NUM] = {0};
-IO_ UINT16 g_ADC3_Value[EN_ADC_END] = {0};
+//IO_ UINT16 g_ADC3_Value[EN_ADC_END] = {0};
 
 const unsigned int g_Turn_Motor_Table[4]={0xC000,0x6000,0x3000,0x9000};
 IO_ UINT8 g_Turn_Position = EN_POSITION_LED_RESET;
@@ -57,6 +57,7 @@ IO_ UINT8 g_Turn_Position = EN_POSITION_LED_RESET;
 //} 
 
 
+/*
 void Delay_US(UINT32 us)
 {
     UINT32 start, now, delta, reload, us_tick;
@@ -83,7 +84,10 @@ void Delay_US(UINT32 us)
 //    } while(delta < us_tick * us);
 //}
 
+*/
 
+
+/*
 void ADC1_DMA_Config()
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -129,6 +133,7 @@ void ADC1_DMA_Config()
 	//while (DMA_GetCmdStatus(DMA2_Stream0) != DISABLE){}
 	DMA_Cmd(DMA2_Stream0, ENABLE);
 }
+
 
 #define WBC_USE_PA5    	1
 // ADC1_IN5  PA5  WBC
@@ -569,8 +574,12 @@ void ADC3_GPIO_Init(void){
 	}
 	
 #endif //ADC3_INIT_WITH_DMA
+*/
 
-
+	
+	
+/*
+	
 UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
 {
 	UINT32 nVal = 0;
@@ -594,7 +603,7 @@ UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
 }
 
 //
-UINT16 Get_Press_ADC(void)
+UINT16 HW_Press_ADC(void)
 {
 	UINT16 nVal = 0;
 	
@@ -706,7 +715,7 @@ UINT32 HW_Get_ADC_HGB(void)
 	//nVal = Get_ADC3_Channel_Value(EN_ADC_HGB, ADC_SMOOTH_NUM_30);
 	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
 #else	
-	nVal = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+	nVal = HW_Get_ADC_Perip(0); // // adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, 
 	
 #endif
 	return nVal;
@@ -721,7 +730,7 @@ UINT32  HW_Get_ADC_CRP(void)
 	//nVal = Get_ADC3_Channel_Value(EN_ADC_CRP, ADC_SMOOTH_NUM_30);
 	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
 #else	
-	nVal = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
+	nVal = HW_Get_ADC_Perip(2);  // adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, 
 #endif
 	return nVal;
 }
@@ -748,10 +757,12 @@ UINT32  Get_CRP_Value(void)
 	//printf("CRP: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
 	return nRet;
 }
+*/
+
 
 	
 
-
+/*
 void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc)
 {
 	// TIM3_CH3
@@ -871,11 +882,16 @@ void OutIn_Motor_In(void) // in
 	GPIO_SetBits(OUTIN_MOTOR_DIR_PORT, OUTIN_MOTOR_DIR_PIN);
 }
 
+*/
 
 
 
 
 
+
+
+
+/*
 
 void Press_Init(void)
 {
@@ -1048,9 +1064,11 @@ INT32 Get_Press_I2C(void)
 	
 	return Pressure_data;
 }
+*/
 
 
 
+/*
 void Reset_Elec_Status(void)
 {
 #if ELEC_USE_EXIT_MODE
@@ -1154,11 +1172,15 @@ UINT16 Get_Elec_ADC(void)
 
 }
 
+*/
+
 UINT16 Get_Elec_V(void)
 {
 	return Get_Elec_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
 }
 
+
+/*
 // beep
 void Beep_Init(void)
 {
@@ -1191,12 +1213,16 @@ void Beep(UINT8 nNo, UINT16 nDelay)
 		GPIO_ResetBits(BEEP_PORT, BEEP_PIN);
 	}
 }
+*/
 
+
+
+/*
 // pump
 void Pump_init(void)
 {
 //	GPIO_InitTypeDef  GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(PUMP_CLK_SRC|PUMP_DIR_SRC, ENABLE);
+	RCC_AHB1PeriphClockCmd(PUMP_CLK_SRC, ENABLE);
 //	// dir
 //	GPIO_InitStructure.GPIO_Pin = PUMP_DIR_PIN; 
 //	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
@@ -1213,16 +1239,16 @@ void Pump_init(void)
 }
 
 
-void Pump_PWM_Init(UINT32 Arr, UINT32 Psc)
+void HW_PUMP_Init(UINT32 Arr, UINT32 Psc)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
 	TIM_OCInitTypeDef  TIM_OCInitStructure;
-
-	RCC_APB1PeriphClockCmd(PUMP_PWM_TIM_SRC,ENABLE);  	
-	RCC_AHB1PeriphClockCmd(PUMP_CLK_SRC, ENABLE); 
-	GPIO_PinAFConfig(PUMP_CLK_PORT,PUMP_CLK_PIN_AF, PUMP_CLK_PORT_AF); 
-
+	
+	RCC_APB2PeriphClockCmd(PUMP_PWM_TIM_SRC, ENABLE);  	
+	RCC_AHB2PeriphClockCmd(PUMP_CLK_SRC, ENABLE); 
+	GPIO_PinAFConfig(PUMP_CLK_PORT, PUMP_CLK_PIN_AF, PUMP_CLK_PORT_AF); 
+	
 	GPIO_InitStructure.GPIO_Pin = PUMP_CLK_PIN;          
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;        
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
@@ -1231,10 +1257,11 @@ void Pump_PWM_Init(UINT32 Arr, UINT32 Psc)
 	GPIO_Init(PUMP_CLK_PORT, &GPIO_InitStructure);        
 	GPIO_SetBits(PUMP_CLK_PORT, PUMP_CLK_PIN);
 	
+	//168/84=2M, 2M/25000=800Hz(12.5ms)
 	TIM_DeInit(PUMP_PWM_TIM);
-	TIM_TimeBaseStructure.TIM_Prescaler=Psc;  
+	TIM_TimeBaseStructure.TIM_Prescaler=83;  
 	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; 
-	TIM_TimeBaseStructure.TIM_Period=Arr;   //自动重装载值
+	TIM_TimeBaseStructure.TIM_Period= 24999;   //自动重装载值
 	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
 	TIM_TimeBaseInit(PUMP_PWM_TIM,&TIM_TimeBaseStructure);
 
@@ -1243,34 +1270,35 @@ void Pump_PWM_Init(UINT32 Arr, UINT32 Psc)
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; //比较输出使能
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
 	//TIM_OCInitStructure.TIM_Pulse = ;
-	TIM_OC2Init(PUMP_PWM_TIM, &TIM_OCInitStructure);  
+	TIM_OC1Init(PUMP_PWM_TIM, &TIM_OCInitStructure);  
 
-	TIM_OC2PreloadConfig(PUMP_PWM_TIM, TIM_OCPreload_Enable); 
-	TIM_ARRPreloadConfig(PUMP_PWM_TIM,ENABLE);
+	TIM_OC1PreloadConfig(PUMP_PWM_TIM, TIM_OCPreload_Enable); 
+	TIM_ARRPreloadConfig(PUMP_PWM_TIM, ENABLE);
 	TIM_Cmd(PUMP_PWM_TIM, ENABLE);  //
 	
-	TIM_SetCompare2(PUMP_PWM_TIM, PUMP_PWM_LEVEL_CLOSE);
+	TIM_SetCompare1(PUMP_PWM_TIM, PUMP_PRESS_OFF);
 }
 		
-
-void Pump_AntiClockWise(void) // xi qi
+//
+UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir);
 {
-//	GPIO_SetBits(PUMP_DIR_PORT, PUMP_DIR_PIN);
+	if(nSpeed >= PUMP_RRESS_MAX_FREQ){
+		TIM_SetCompare1(PUMP_PWM_TIM, PUMP_RRESS_MAX_FREQ);
+	}else{
+		TIM_SetCompare1(PUMP_PWM_TIM, nSpeed);
+	}
 }
 
-void Pump_ClockWise(void) // zhu qi
-{
-//	GPIO_ResetBits(PUMP_DIR_PORT, PUMP_DIR_PIN);
-}
 
 void Pump_Speed_Set(UINT16 nSpeed) // 0-499
 {
 	if(nSpeed > PUMP_PWM_LEVEL_HIGHEST){
-		TIM_SetCompare2(PUMP_PWM_TIM, PUMP_PWM_LEVEL_HIGHEST);
+		TIM_SetCompare1(PUMP_PWM_TIM, PUMP_PWM_LEVEL_HIGHEST);
 	}else{
-		TIM_SetCompare2(PUMP_PWM_TIM, nSpeed);
+		TIM_SetCompare1(PUMP_PWM_TIM, nSpeed);
 	}
 }
+
 
 void Pump_Exec(UINT8 nDir, UINT16 nFreq)
 {
@@ -1286,6 +1314,8 @@ void Pump_Exec(UINT8 nDir, UINT16 nFreq)
 	//Pump_init();
 	Pump_Speed_Set(nFreq);
 }
+*/
+
 
 // mixing motor
 void Mixing_Motor_Init(void)
@@ -1335,6 +1365,7 @@ void Mixing_Motor_Go_On(UINT32 nTime)
 	Mixing_Motor_Stop();	
 }
 
+/*
 // valve
 void Valve_Init(void)
 {
@@ -1382,37 +1413,18 @@ void Valve_Liquid_Exec(UINT8 nOpt)
 
 void Valve_Exec(UINT8 nIndex, UINT8 nOpt)
 {
-	if(nIndex == EN_VALVE_LIQUID)
+	if(nIndex == INDEX_VALVE_WBC)
 	{
 		Valve_Liquid_Exec(nOpt);
-	}else if(nIndex == EN_VALVE_AIR){
+	}else if(nIndex == INDEX_VALVE_PUMP){
 		Valve_Air_Exec(nOpt);
 	}
 
 }
+*/
 
 
-
-
-// TIM5_CH3, turn motor
-// PD7_Enalb
-#define TURN_MOTOR_EN_PORT				GPIOD
-#define TURN_MOTOR_EN_PIN				GPIO_Pin_7
-#define TURN_MOTOR_EN_SRC				RCC_AHB1Periph_GPIOD
-// PD0_Dir
-#define TURN_MOTOR_DIR_PORT				GPIOD
-#define TURN_MOTOR_DIR_PIN 				GPIO_Pin_0
-#define TURN_MOTOR_DIR_SRC				RCC_AHB1Periph_GPIOD
-
-// PD14_Clk
-//#define TURN_MOTOR_CLK_PORT				GPIOD
-//#define TURN_MOTOR_CLK_PIN				GPIO_Pin_14
-//#define TURN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOD
-
-// PH12 CLK , 89_GPIO
-#define TURN_MOTOR_CLK_PORT				GPIOH
-#define TURN_MOTOR_CLK_PIN				GPIO_Pin_12
-#define TURN_MOTOR_CLK_SRC				RCC_AHB1Periph_GPIOH
+/*
 // Out_In Motor
 void Turn_Motor_Init(void)
 {
@@ -1649,7 +1661,7 @@ UINT8 Turn_Motor_Select_LED(UINT8 nIndex)
 	}
 	return 0;
 }
-
+*/
 
 
 
@@ -1998,7 +2010,7 @@ UINT8 Turn_Motor_Select_LED(UINT8 nIndex)
 //}
 
 
-
+/*
 // for micro oc exit interrupt
 //void MICRO_OC_EXIT_FUNC(void)
 void EXTI9_5_IRQHandler(void)
@@ -2159,7 +2171,7 @@ UINT8 Get_In_OC_Status(void)
 {
 	return GPIO_ReadInputDataBit(IN_OC_GPIO_PORT, IN_OC_GPIO_PIN);
 }
-
+*/
 
 void Counter_Check_Init(void)
 {
@@ -2234,7 +2246,7 @@ void Counter_Adjust_PWM_Init(UINT32 Arr,UINT32 Psc)
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
 	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
 	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;//TIM_OCPolarity_Low; 
-	TIM_OC3Init(OUTIN_MOTOR_PWM_TIM, &TIM_OCInitStructure);  
+	TIM_OC3Init(COUNTER_PWM_TIM, &TIM_OCInitStructure);  
 
 
 //	TIM_OCInitStructure.TIM_OCIdleState = TIM_OCIdleState_Reset;//??????     ?,?????????TIM_OCPolarity ?????,?1?????
@@ -2819,8 +2831,8 @@ void LED_All_Reset(void)
 //		if(nPress < PRESS_BUILD)
 //		{
 //			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
-//			HW_Valve_On(EN_VALVE_AIR);
-//			HW_Valve_Off(EN_VALVE_LIQUID);			
+//			HW_Valve_On(INDEX_VALVE_PUMP);
+//			HW_Valve_Off(INDEX_VALVE_WBC);			
 //		}
 //	}
 //	// check i
@@ -2895,7 +2907,7 @@ void LED_All_Reset(void)
 //}
 
 
-
+/*
 void DResistor_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -2969,7 +2981,7 @@ void DRegister_Write(UINT8 nIndex, UINT8 nVal)
 	Delay_US(2);
 	DREGISTER_CLK_1();
 }
-
+*/
 
 
 
@@ -3042,27 +3054,27 @@ void Driver_Debug(UINT8 nIndex)
 		case 2: // valve
 		{
 			printf("Valve start\r\n");
-			Valve_Init();
-			for(i = 0; i < 3; i++)
-			{
-				printf("Air Valve i =%d\r\n", i);
-				Valve_Air_Exec(EN_OPEN);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				Valve_Air_Exec(EN_CLOSE);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-			}
+//			Valve_Init();
+//			for(i = 0; i < 3; i++)
+//			{
+//				printf("Air Valve i =%d\r\n", i);
+//				Valve_Air_Exec(EN_OPEN);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				Valve_Air_Exec(EN_CLOSE);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//			}
 			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
 			for(i = 0; i <3; i++)
 			{
-				printf("Liquid Valve i =%d\r\n", i);
-				Valve_Liquid_Exec(EN_OPEN);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				Valve_Liquid_Exec(EN_CLOSE);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
+//				printf("Liquid Valve i =%d\r\n", i);
+//				Valve_Liquid_Exec(EN_OPEN);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				Valve_Liquid_Exec(EN_CLOSE);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
 			}
 			printf("Valve end\r\n");
 		}
@@ -3071,9 +3083,9 @@ void Driver_Debug(UINT8 nIndex)
 		{
 			for(i = 0; i < 10000; i++)
 			{
-				printf("Turn_Reset_OC=%d, Turn_Selct=%d, OUI_OC=%d, IN_OC=%d, MIX_OC=%d\r\n", Get_Turn_Reset_OC_Status(), Get_Turn_Select_OC_Status(),\
-				Get_Out_OC_Status(), Get_In_OC_Status(), Get_Micro_OC_Status());
-				IT_SYS_DlyMs(500);
+//				printf("Turn_Reset_OC=%d, Turn_Selct=%d, OUI_OC=%d, IN_OC=%d, MIX_OC=%d\r\n", Get_Turn_Reset_OC_Status(), Get_Turn_Select_OC_Status(),\
+//				Get_Out_OC_Status(), Get_In_OC_Status(), Get_Micro_OC_Status());
+//				IT_SYS_DlyMs(500);
 				//IT_SYS_DlyMs(500);
 			}
 		}
@@ -3083,7 +3095,7 @@ void Driver_Debug(UINT8 nIndex)
 			printf("I2C press start\r\n");
 			for(i = 0; i < 10; i++)
 			{
-				nPress = Get_Press_I2C();
+				//nPress = Get_Press_I2C();
 				printf("press value=%d, nPress=%d\r\n", (int)nPress, (int)(nPress/2 - 4194304));
 			}
 			printf("I2C press end\r\n");
@@ -3134,7 +3146,7 @@ void Driver_Debug(UINT8 nIndex)
 //				IT_SYS_DlyMs(200);
 //			}
 			
-			Elec_Init();
+			//Elec_Init();
 			for(i = 0; i < 10; i++)
 			{
 				printf("Eelc status =%d, e=%d\r\n", Get_Elec_Status(), hw_filter_get_electrode(INDEX_ELECTRODE));
@@ -3217,7 +3229,7 @@ void Driver_Debug(UINT8 nIndex)
 //			Valve_Liquid_Exec(EN_OPEN);
 //			IT_SYS_DlyMs(500);
 			
-			//HW_Valve_On(EN_VALVE_AIR);
+			//HW_Valve_On(INDEX_VALVE_PUMP);
 //			Valve_Air_Exec(EN_CLOSE);
 //			Valve_Liquid_Exec(EN_CLOSE);
 //			TIM_SetCompare2(PUMP_PWM_TIM, PUMP_PWM_LEVEL_CLOSE);//Pump_Exec(e_Dir_Pos, PUMP_PWM_LEVEL_CLOSE);

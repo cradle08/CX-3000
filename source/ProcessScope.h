@@ -29,7 +29,9 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 
 // ADC3
 
-
+#define  INDEX_ELECTRODE        1    /* 电极检测通道 */
+#define  INDEX_VALVE_PUMP       0    /* 泵气阀阀通道 */
+#define  INDEX_VALVE_WBC        1    /* WBC气阀通道 */
 
 
 //----- control --------------------------------------
@@ -293,8 +295,8 @@ void Reset_ADC_InitDataType(void);
 //-----------
 
 #define  INDEX_ELECTRODE        1    /* 电极检测通道 */
-//#define  EN_VALVE_AIR       0    /* 泵气阀阀通道 */
-//#define  EN_VALVE_LIQUID        1    /* WBC气阀通道 */
+//#define  INDEX_VALVE_PUMP       0    /* 泵气阀阀通道 */
+//#define  INDEX_VALVE_WBC        1    /* WBC气阀通道 */
 
 //-----------//
 #ifdef  SAMPLE_CHIP_70UM
@@ -314,9 +316,11 @@ void Reset_ADC_InitDataType(void);
 //-----------//
 #elif defined SAMPLE_CHIP_95UM
 //-----------//
+// 因为使用的是直流泵，通过调节占空比的方式来改变驱动力，调制的范围：0-25000
 #define  ELECTRODE_WASTE               1                   /* 检测池溢出即退出检测流程 */
 #define  PUMP_PRESS_OFF                0                   /* 气压泵停止工作 */
-#define  PUMP_PRESS_FREQ               12500 //21000               /* 气压泵驱动频率 */
+#define  PUMP_PRESS_FREQ               12500 //21000       /* 气压泵驱动当前占空比*/
+#define  PUMP_RRESS_MAX_FREQ		   25000			   /* 气压泵驱动最大占空比*/     // CX2000_C
 
 #ifdef   DEBUG_TEST
 //#define  PRESS_BUILD                   600000000   /* 60kPa 适合检测的气压 */

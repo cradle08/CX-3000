@@ -16,7 +16,7 @@
 //
 #include "Update.h"
 #include "StorageManagement.h"
-
+#include "Scope_Eval.h"
 
 #define USE_STM32F407_ONLY		1	// if = 0, use FPGA
 #define SIMUATION_TEST          0

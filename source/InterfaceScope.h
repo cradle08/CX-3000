@@ -71,8 +71,8 @@ enum{
 //
 #define TEMP_ERR_AUTO_TIMES      10    // before shut down 
 
-//#define EN_VALVE_AIR 		 0  // yaolan_20190220
-//#define EN_VALVE_LIQUID     		 1
+//#define INDEX_VALVE_PUMP 		 0  // yaolan_20190220
+//#define INDEX_VALVE_WBC     		 1
 
 #define MOTO_SELF_CHECK_TIMEOUT  10000
 
@@ -120,16 +120,14 @@ enum{
 };
 UINT8 Get_DRegister_Value(UINT8 nChannel);
 
-//-----------------------------------------------------------------------------------------
-// yaolan_start
-
+//------------------------------------------------------CX3000 ADD API---------------------
 // led
 UINT8  HW_LED_On(UINT8 index);
 UINT8  HW_LED_Off(UINT8 index);
 
 // perpher adc
 UINT16 HW_Get_ADC_Perip(UINT8 Index);
-INT32 HW_Get_Press(UINT8 Index);
+INT32 HW_Get_Press();
 
 // current v
 UINT16 HW_Get_ADC_V_Cur(UINT8 Index);
@@ -153,11 +151,19 @@ UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus);
 UINT8 Data_Circle_Handle(eTestMode eMode);
 UINT8 Poll_SendDMA_ADC1_Data(UINT32 nCmd);
 UINT8 Poll_SendDMA_ADC2_Data(UINT32 nCmd);
-
-// yaolan_end
-//-----------------------------------------------------------------------------------------
+//-----------------------------------------------------CX3000 ADD API----------------------
 
 
+
+//------------------------------------------------------ CX2000_C API START --------------------
+_EXT_ UINT8  HW_LEVEL_GetOC_V3(UINT8 chIndex);
+_EXT_ UINT8  HW_Valve_On_V3(UINT8 chIndex);
+_EXT_ UINT8  HW_Valve_Off_V3(UINT8 chIndex);
+_EXT_ UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir);
+_EXT_ UINT8  hw_filter_get_electrode_V3(UINT8 chIndex);
+_EXT_ UINT8  HW_ADJ_SetResistor_V3(UINT8 chIndex, UINT8 chValue);
+
+//------------------------------------------------------ CX2000_C API END-----------------------
 
 // 电机的控制接口声明
 // init
@@ -183,7 +189,6 @@ _EXT_ void  HW_FPGA_RST_H(void);
 
 _EXT_ void  HW_FPGA_RST_L(void);
 // I/Os control
-
 //
 _EXT_ UINT8  HW_Valve_On(UINT8 chIndex);
 //
@@ -199,7 +204,6 @@ _EXT_ UINT32 HW_PUMP_GetFeedbackPulse(void);
 //------------------------------
 // the digtal adjustable resistor 
 _EXT_ UINT8  HW_ADJ_SetResistor(UINT8 chIndex, UINT8 chValue);
-
 
 //------------------------------
 // the SPI ADC control

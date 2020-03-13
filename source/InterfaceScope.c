@@ -10,15 +10,6 @@
 
 #include "KernelHeader.h"
 
-/*
-0xA,0x14,0x1B,0x23,0x2D,0x32,0x39,0x41,0x46,0x4B,
-0x50,0x50,0x50,0x50,0x50,0x4D,0x50,0x50,0x50,0x57,
-0x5F,0x66,0x73,0x7F,0x87,0x91,0x9B,0xA2,0xAC,0xBE,
-0xC8,0xD7,0xE6,0xF5,0x104,0x11D,0x133,0x14C,0x16F,0x195,
-0x1BD,0x1F1,0x22B,0x264,0x2AD,0x2FD,0x357,0x3C5,0x442,0x4C6,
-0x557,0x5EB,0x66F,0x6E5,0x744,0x77D,0x791,,0x780,0x741,0x6D8,
-0x64F,0x5A2,0x4E2,0x417,0x348,0x27D,0x1BF,0x110,0x73,
-*/
 
 
 
@@ -63,7 +54,7 @@ _STA_ IO_ UINT16 XRAM_ s_nDataLen = 0;
 _STA_ IO_ UINT16 XRAM_ s_nStatus  = 0;
 
 
-/*
+
 #ifdef  TEST_DEVICE_B4    // 设备B4专用参数 
 _STA_ UINT32 s_nK = 1543600;
 _STA_ UINT32 s_nB = 1131880000;
@@ -71,7 +62,7 @@ _STA_ UINT32 s_nB = 1131880000;
 _STA_ UINT32 s_nK = 173280;
 _STA_ UINT32 s_nB = 97380000;
 #endif
-*/
+
 //-----------------------------------------------------------------------------------------
 
 // init
@@ -260,7 +251,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 	return nTime;
 }
 
-#if USE_STM32F407_ONLY
+#if 0//USE_STM32F407_ONLY
 	UINT8 MT_X_Home(CALL_STYLE_E eCall) //UINT8 OutIn_Motor_Home(eModeType eMode)
 	{
 		UINT32 nCurTime = 0, nTempTime = 0, nDlyTime = 0;
@@ -490,108 +481,65 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 	}
 #endif //USE_STM32F407_ONLY
 
+	
+//
+UINT8 MT_X_Home_only(void)
+{
+	struct tMvMotorPara  tMvoingPara;
+
+	//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
+	moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+
+	// record the motor's para
+	tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+	tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+	tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+	tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
 
 	
-
-	
-#if USE_STM32F407_ONLY
-	UINT8 MT_X_Home_only(void)
+	// not detect the single of home at the begining, moving long diatance
+	if (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
 	{
-		UINT32 nCurTime, nTempTime;
-		//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
-		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);	
-		// not detect the single of home at the begining, moving long diatance
-		
-		// check outin motor in
-		printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL));
-		if(EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // not at in position
+		// long distance
+		MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+		// OC is on the right, right step
+		MV_Move(Motor_X, 35000, e_Dir_Neg); // comes near the OC
+
+		while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // OC detection is not enable
 		{
-			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL));
-			OutIn_Motor_Enable();
-			//OutIn_Motor_In(); // in
-			nCurTime = IT_SYS_GetTicks();
-			nTempTime = nCurTime;
-			OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_BEST); // in
-			while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
+			if (e_True == MV_IsFinished(Motor_X))
 			{
-				if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
-				{
-					IT_SYS_DlyMs(1);
-					if(EN_OPEN == HW_LEVEL_GetOC(OC_HOME_CHANNEL))	break;
-				}
-				nCurTime = IT_SYS_GetTicks();					
+				MV_Stop(Motor_X);
+				collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+
+				//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
+				moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+				return e_Feedback_Error;
 			}
-		}			
-		OutIn_Motor_Run(e_Dir_Neg, OUTIN_MOTOR_PWM_LEVEL_CLOSE);
-		if(nCurTime > nTempTime + MOTO_SELF_CHECK_TIMEOUT)
-		{
-			//collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-			//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
-			moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
 		}
-		//moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
-		moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
-		return e_Feedback_Success;
+		IT_SYS_DlyMs(3);      //
+		MV_Stop(Motor_X);
 	}
-	
-#else
-	UINT8 MT_X_Home_only(void)
+	else
 	{
-		struct tMvMotorPara  tMvoingPara;
-
-		//moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
-		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
-
-		// record the motor's para
-		tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-		tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-		tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-		tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
-
-		
-		// not detect the single of home at the begining, moving long diatance
-		if (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
-		{
-			// long distance
-			MV_InitPara(Motor_X, 4000, 8000, 100, 10);
-			// OC is on the right, right step
-			MV_Move(Motor_X, 35000, e_Dir_Neg); // comes near the OC
-
-			while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // OC detection is not enable
-			{
-				if (e_True == MV_IsFinished(Motor_X))
-				{
-					MV_Stop(Motor_X);
-					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-
-					//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
-					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-					return e_Feedback_Error;
-				}
-			}
-			IT_SYS_DlyMs(3);      //
-			MV_Stop(Motor_X);
-		}
-		else
-		{
-			;
-		}
-		//
-		g_tAxisPosStatus.nAxisX = 0;
-		g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_HOME;
-		//---------------------------------------------------
-		// set to the default moving parameters
-		MV_InitPara(Motor_X,
-					tMvoingPara.nFreqMin,
-					tMvoingPara.nFreqMax,
-					tMvoingPara.nFreqInc,
-					tMvoingPara.nFreqSam);
-		//
-		//moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
-		moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
-		return e_Feedback_Success;
+		;
 	}
-#endif //UINT8 MT_X_Home_only(void)
+	//
+	g_tAxisPosStatus.nAxisX = 0;
+	g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_HOME;
+	//---------------------------------------------------
+	// set to the default moving parameters
+	MV_InitPara(Motor_X,
+				tMvoingPara.nFreqMin,
+				tMvoingPara.nFreqMax,
+				tMvoingPara.nFreqInc,
+				tMvoingPara.nFreqSam);
+	//
+	//moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
+	moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+	return e_Feedback_Success;
+}
+
 
 	
 
@@ -791,7 +739,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 
 
 
-#if USE_STM32F407_ONLY
+#if 0//USE_STM32F407_ONLY
 	UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
 	{
 		UINT32 nCurTime, nTempTime;
@@ -1119,106 +1067,63 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 	
 
 
-	
-#if USE_STM32F407_ONLY
-	UINT8 MT_X_MoveToPosRel_only(void)
+
+UINT8 MT_X_MoveToPosRel_only(void)
+{
+	struct tMvMotorPara  tMvoingPara;
+
+   // moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
+	moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+	// record the motor's para
+	tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
+	tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
+	tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
+	tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+
+	// not detect the single of home at the begining, moving long diatance
+	if (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
 	{
-		UINT32 nCurTime, nTempTime;
-		nCurTime = IT_SYS_GetTicks();
-		nTempTime = nCurTime;
-		
-		//moto_work_stat(0, MOTO_WORK_STAT_RUN);
-		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
-		printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_OUT_CHANNEL));
-		if(EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // not at out position
+		// long distance
+		MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+		// OC is on the right, right step
+		MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
+
+		while (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // OC detection is not enable
 		{
-			printf("oc out status =%d\r\n", HW_LEVEL_GetOC(OC_OUT_CHANNEL));
-			OutIn_Motor_Enable();
-			//OutIn_Motor_Out(); // out
-			nCurTime = IT_SYS_GetTicks();
-			nTempTime = nCurTime;
-			OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_BEST); // out
-			while(nCurTime <= nTempTime + MOTO_SELF_CHECK_TIMEOUT)
+			if (e_True == MV_IsFinished(Motor_X))
 			{
-				if(EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
-				{
-					IT_SYS_DlyMs(1);
-					if(EN_OPEN == HW_LEVEL_GetOC(OC_OUT_CHANNEL))	break;
-				}
-				nCurTime = IT_SYS_GetTicks();	
+				MV_Stop(Motor_X);
+				collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+
+				//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
+				moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+				return e_Feedback_Error;
 			}
-			OutIn_Motor_Run(e_Dir_Pos, OUTIN_MOTOR_PWM_LEVEL_CLOSE); // out
 		}
-		if(nCurTime > nTempTime + MOTO_SELF_CHECK_TIMEOUT)
-		{
-			//collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-			//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
-			moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-			return e_Feedback_Error;
-		}else{
-			//moto_work_stat(0, MOTO_WORK_STAT_OK); 
-			moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
-			return e_Feedback_Success;
-		}
+		IT_SYS_DlyMs(3);      //
+		MV_Stop(Motor_X);
 	}
-	
-#else
-	UINT8 MT_X_MoveToPosRel_only(void)
+	else
 	{
-		struct tMvMotorPara  tMvoingPara;
-
-	   // moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
-		moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
-		// record the motor's para
-		tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-		tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-		tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-		tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
-
-		// not detect the single of home at the begining, moving long diatance
-		if (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
-		{
-			// long distance
-			MV_InitPara(Motor_X, 4000, 8000, 100, 10);
-			// OC is on the right, right step
-			MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
-
-			while (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // OC detection is not enable
-			{
-				if (e_True == MV_IsFinished(Motor_X))
-				{
-					MV_Stop(Motor_X);
-					collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-
-					//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
-					moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-					return e_Feedback_Error;
-				}
-			}
-			IT_SYS_DlyMs(3);      //
-			MV_Stop(Motor_X);
-		}
-		else
-		{
-			;  /* 样本仓到位，不再运行 */
-		}
-		//
-		g_tAxisPosStatus.nAxisX = 0;
-		g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_CTRL;
-		//---------------------------------------------------
-		// set to the default moving parameters
-		MV_InitPara(Motor_X,
-					tMvoingPara.nFreqMin,
-					tMvoingPara.nFreqMax,
-					tMvoingPara.nFreqInc,
-					tMvoingPara.nFreqSam);
-		//
-		//moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
-		moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
-
-		return e_Feedback_Success;
+		;  /* 样本仓到位，不再运行 */
 	}
-#endif
+	//
+	g_tAxisPosStatus.nAxisX = 0;
+	g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_CTRL;
+	//---------------------------------------------------
+	// set to the default moving parameters
+	MV_InitPara(Motor_X,
+				tMvoingPara.nFreqMin,
+				tMvoingPara.nFreqMax,
+				tMvoingPara.nFreqInc,
+				tMvoingPara.nFreqSam);
+	//
+	//moto_work_stat(0, MOTO_WORK_STAT_OK);  /* 动作执行成功 */
+	moto_work_stat_2(0, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+
+	return e_Feedback_Success;
+}
+
 
 
 
@@ -1382,19 +1287,19 @@ void  HW_FPGA_RST_L(void)
 //------------------------------
 // I/Os control
 
-// outputs
-#if USE_STM32F407_ONLY
-UINT8  HW_Valve_On(UINT8 chIndex)
+
+UINT8  HW_Valve_On_V3(UINT8 chIndex)
 {
-	if(chIndex == EN_VALVE_LIQUID)
+	if(chIndex == INDEX_VALVE_PUMP) 
 	{
-		Valve_Liquid_Exec(EN_OPEN);
-	}else if(chIndex == EN_VALVE_AIR){
-		Valve_Air_Exec(EN_OPEN);
+		EVAL_OutputSet(O_Air_Walve);
+	}else if(chIndex == INDEX_VALVE_WBC){ // liquild walve
+		EVAL_OutputSet(O_Liquild_Walve);
 	}
 	return 0;
 }
-#else
+
+
 UINT8  HW_Valve_On(UINT8 chIndex)
 {
     IO_ UINT8  XRAM_ chOffset = 0;
@@ -1432,141 +1337,103 @@ UINT8  HW_Valve_On(UINT8 chIndex)
     }
     return e_Feedback_Success;
 }
-#endif
 
 
-#if USE_STM32F407_ONLY
-	UINT8  HW_Valve_Off(UINT8 chIndex)
+
+
+UINT8  HW_Valve_Off_V3(UINT8 chIndex)
+{
+	if(chIndex == INDEX_VALVE_PUMP) 
 	{
-		if(chIndex == EN_VALVE_LIQUID)
-		{
-			Valve_Liquid_Exec(EN_CLOSE);
-		}else if(chIndex == EN_VALVE_AIR){
-			Valve_Air_Exec(EN_CLOSE);
-		}
-		return 0;
-	}		
-#else
-	UINT8  HW_Valve_Off(UINT8 chIndex)
-	{
-		IO_ UINT8  XRAM_ chOffset = 0;
-		IO_ UINT32 IRAM_  nAddr 	= 0;
-		IO_ UINT16 IRAM_  anBuffer[2];
-
-		// attention: 0-on, 1-off.
-
-		// fpga
-		/* if( (chIndex >= 0) && (chIndex <= 5) )    // 0 ~ 5 */
-		if (chIndex <= 5)
-		{
-			/* if( (chIndex >= 0) && (chIndex <= 15) ) */
-			if (chIndex <= 15)
-			{
-				chOffset = chIndex - 0;
-				m_nIoValves |= ((UINT16)1 << chOffset);
-				//m_nIoValves &= ~((UINT16)1 << chOffset);
-				// address
-				nAddr = (UINT32)FPGA_WR_VALVE_01_06;
-				// value
-				anBuffer[0] = m_nIoValves;
-			}
-			// write to the fpga
-			FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-			//
-			printf("valve %d off\r\n", chIndex);
-		}
-		// main mcu
-		else if ((chIndex >= 6) && (chIndex <= 20))
-		{
-			// keep
-		}
-		// error
-		else
-		{
-			SYS_ErrorMark((UINT8)ERR_COMMAND_NO_VALID, chIndex);
-			return e_Feedback_Error;
-		}
-
-		return e_Feedback_Success;
+		EVAL_OutputClr(O_Air_Walve);
+	}else if(chIndex == INDEX_VALVE_WBC){ // liquild walve
+		EVAL_OutputClr(O_Liquild_Walve);
 	}
+	return 0;
+}		
 
-#endif //UINT8  HW_Valve_Off(UINT8 chIndex)
+	
 
 //------------------------------
 // DC motor control
-#if USE_STM32F407_ONLY
-	UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
-	{	
-		Pump_Exec(eDir, nFreq);
-		return 0;
+		
+//
+UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir)
+{
+	if(nFreq >= PUMP_RRESS_MAX_FREQ){
+		TIM_SetCompare1(PUMP_PWM_TIM, PUMP_RRESS_MAX_FREQ);
+	}else{
+		TIM_SetCompare1(PUMP_PWM_TIM, nFreq);
 	}
+}
+
 	
-#else
-	UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
+
+UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
+{
+	IO_ UINT32 IRAM_  nAddr 	= 0;
+	IO_ UINT16 IRAM_  anBuffer[2];
+	//
+	IO_ UINT32 XRAM_  nFqCnt    = 0;
+
+	//----- 1. direction -----
+	// address
+	nAddr = (UINT32)FPGA_WR_PUMP_DIR;
+	// value
+	if (e_Dir_Neg == eDir)
 	{
-		IO_ UINT32 IRAM_  nAddr 	= 0;
-		IO_ UINT16 IRAM_  anBuffer[2];
-		//
-		IO_ UINT32 XRAM_  nFqCnt    = 0;
-
-		//----- 1. direction -----
-		// address
-		nAddr = (UINT32)FPGA_WR_PUMP_DIR;
-		// value
-		if (e_Dir_Neg == eDir)
-		{
-			anBuffer[0] = 0x00000000;
-		}
-		else
-		{
-			anBuffer[0] = 0x00000001;
-		}
-		// write the fpga
-		FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-		//----- 2. frequence -----
-		// address
-		nAddr = (UINT32)FPGA_WR_PUMP_FQ_CNT;
-		// value
-		// attentio: the fpga's sysclk = 25000000Hz
-	#if 0  // 2015_04_08-11shi-changed by LHT	
-		nFqCnt = 12500000 / (nFreq + 1);      // nFreq != 0, half-freq-count, 12.5MHz/nFreq
-	#else
-		if (nFreq >= 25000)
-		{
-			nFqCnt = 25000;
-		}
-		else
-		{
-			nFqCnt = nFreq;
-		}
-	#endif
-		anBuffer[0] = (UINT16)(nFqCnt & 0xFFFF);
-		anBuffer[1] = (UINT16)((nFqCnt >> 16) & 0xFFFF);
-		// write the fpga
-		FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 2); // 2 half-word
-		//----- 3. run or stop -----
-		// address
-		nAddr = (UINT32)FPGA_WR_PUMP_RUN;
-		// value
-		if (0 == nFreq)  // stop
-		{
-			anBuffer[0] = 0x00000000;
-			//
-			printf("pump off\r\n");
-		}
-		else             // run
-		{
-			anBuffer[0] = 0x00000001;
-			//
-			printf("pump on at %0.5d ticks per ms (total 25000 ticks per ms)\r\n", (int)nFqCnt);
-		}
-		// write the fpga
-		FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-
-		return e_Feedback_Success;
+		anBuffer[0] = 0x00000000;
+	}
+	else
+	{
+		anBuffer[0] = 0x00000001;
+	}
+	// write the fpga
+	FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+	//----- 2. frequence -----
+	// address
+	nAddr = (UINT32)FPGA_WR_PUMP_FQ_CNT;
+	// value
+	// attentio: the fpga's sysclk = 25000000Hz
+#if 0  // 2015_04_08-11shi-changed by LHT	
+	nFqCnt = 12500000 / (nFreq + 1);      // nFreq != 0, half-freq-count, 12.5MHz/nFreq
+#else
+	if (nFreq >= 25000)
+	{
+		nFqCnt = 25000;
+	}
+	else
+	{
+		nFqCnt = nFreq;
 	}
 #endif
+	anBuffer[0] = (UINT16)(nFqCnt & 0xFFFF);
+	anBuffer[1] = (UINT16)((nFqCnt >> 16) & 0xFFFF);
+	// write the fpga
+	FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 2); // 2 half-word
+	//----- 3. run or stop -----
+	// address
+	nAddr = (UINT32)FPGA_WR_PUMP_RUN;
+	// value
+	if (0 == nFreq)  // stop
+	{
+		anBuffer[0] = 0x00000000;
+		//
+		printf("pump off\r\n");
+	}
+	else             // run
+	{
+		anBuffer[0] = 0x00000001;
+		//
+		printf("pump on at %0.5d ticks per ms (total 25000 ticks per ms)\r\n", (int)nFqCnt);
+	}
+	// write the fpga
+	FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
 
+	return e_Feedback_Success;
+}
+
+	
 //
 UINT32 HW_PUMP_GetFeedbackPulse(void)
 {
@@ -1584,6 +1451,42 @@ UINT32 HW_PUMP_GetFeedbackPulse(void)
 
     return nValue;
 }
+
+
+
+_EXT_ UINT8  HW_ADJ_SetResistor_V3(UINT8 chIndex, UINT8 chValue)
+{
+	UINT16 nCmd =0;
+	UINT8 i;
+	
+	DREGISTER_CLK_1();
+	Delay_US(2);
+	DREGISTER_CS_1();
+	Delay_US(5);
+	DREGISTER_CS_0();
+	Delay_US(10);
+	nCmd = (UINT16)(( chIndex & 0x03) << 8) | chValue;
+	printf("CMD =%X\r\n", nCmd);
+	for(i = 0; i < DREGISTER_DATA_LEN; i++)
+	{
+		DREGISTER_CLK_0();
+		if(0x0200 == (nCmd & 0x0200))
+		{
+			DREGISTER_MOSI_1();
+		}else{
+			DREGISTER_MOSI_0();	
+		}
+		Delay_US(10);
+		DREGISTER_CLK_1();
+		Delay_US(10);
+		nCmd <<= 1;
+	}
+	DREGISTER_CS_1();
+	Delay_US(2);
+	DREGISTER_CLK_1();
+}
+
+
 
 //------------------------------
 // the digtal adjustable resistor
@@ -1962,17 +1865,7 @@ UINT8 Get_DRegister_Value(UINT8 nChannel)
 	return nVal;
 }
 
-INT32 Get_Press_Value(UINT8 nNum)
-{
-	UINT8 i;
-	INT32 nPress = 0;
-	for(i = 0; i < nNum; i++)
-	{
-		nPress += HW_Get_Press(ADC_PRESS_INDEX);
-	}
-	nPress /= nNum;
-	return nPress;
-}
+
 
 
 UINT32 Get_Light_Path_V(UINT8 nChannel)
@@ -2006,18 +1899,7 @@ UINT32 Get_Light_Path_V(UINT8 nChannel)
 }
 
 
-// yaolan_
-INT32 HW_Get_Press(UINT8 Index)
-{
-	INT32 nVal = 0;
-#if 1
-	 nVal = Get_Press_I2C();
-	 nVal = nVal/2 - 4194304;
-#else
-	 nVal = Get_Press_ADC();
-#endif
-	return nVal;
-}
+
 
 /*
 // form fpga
@@ -2176,7 +2058,34 @@ UINT8 Send_Data_CRP(UINT32 nCmd, IO_ UINT32* pData, UINT16 nLen)
 
 //---------------------------------------------------------------------------------------
 
-/*
+
+// * 10000
+INT32 HW_ADC_SpiGetPress(void)
+{
+    //
+    UINT16 nAd    = 0;
+    INT32 nValue = 0;
+    double fValue = 0;
+
+    nAd = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
+    //
+
+    fValue = nAd * ((double)s_nK);
+    if (fValue <= (double)s_nB)
+    {
+		//return g_Record_Param.nAddPress;
+        return 0;
+    }
+
+    fValue -= (double)s_nB;
+	//nValue = (UINT32)fValue
+    nValue = (INT32)fValue + g_Record_Param.nAddPress; 
+	//printf("Get press: addP=%d,oriP=%d,P=%d",\
+				(int)g_Record_Param.nAddPress, (int)fValue, (int)nValue);
+    return nValue;
+}
+
+//
 UINT32 HW_ADC_PressPara(UINT32 nK, UINT32 nB)
 {
     s_nK = nK;
@@ -2184,92 +2093,98 @@ UINT32 HW_ADC_PressPara(UINT32 nK, UINT32 nB)
     //
     return e_Feedback_Success;
 }
-*/
+
+
 //------------------------------
 // get the level of the OC and the electrode
 /* 预留的悬空位返回状态1表示光耦未被遮挡 */
-#if USE_STM32F407_ONLY  // 1 is cover, 0 is empty
-	UINT8  HW_LEVEL_GetOC(UINT8 chIndex)
-	{
-		UINT8 nVal;
-		switch(chIndex)
-		{
-			case OC_HOME_CHANNEL:
-			{
-				nVal =  Get_In_OC_Status();
-			}
-			break;
-			case OC_OUT_CHANNEL:
-			{
-				nVal =  Get_Out_OC_Status();
-			}
-			break;
-			case OC_SAMPLE_RELEA_CHANNEL:
-			{
-			//	nVal = Get_Fix_OC_Status();
-			}
-			break;
-			default:break;
-		}
-		return nVal;
-	}
-	
-#else
-	
-	UINT8  HW_LEVEL_GetOC(UINT8 chIndex)
-	{
-		IO_ UINT32 IRAM_  nAddr 	= 0;
-		IO_ UINT16 IRAM_  anBuffer[2];
-		IO_ UINT8  IRAM_  chValue   = 1;  /* 预留的悬空位返回状态1表示光耦未被遮挡 */
 
-		//
-		nAddr = (UINT32)FPGA_RD_OC_01_03;
-		//
-		FPGA_ReadBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-		//
-		switch (chIndex)
+UINT8  HW_LEVEL_GetOC_V3(UINT8 chIndex)
+{
+	UINT8 nVal;
+	switch(chIndex)
+	{
+		case OC_HOME_CHANNEL: // Motor X IN OC
 		{
-			case 0:
-			{
-				if (0 != (anBuffer[0] & 0x0001))
-					chValue = 0x01;
-				else
-					chValue = 0x00;
-				break;
-			}
-			case 1:
-			{
-				if (0 != (anBuffer[0] & 0x0002))
-					chValue = 0x01;
-				else
-					chValue = 0x00;
-				break;
-			}
-			case 2:
-			{
-				if (0 != (anBuffer[0] & 0x0004))
-					chValue = 0x01;
-				else
-					chValue = 0x00;
-				break;
-			}
-			case 3:
-			{
-				if (0 != (anBuffer[0] & 0x0008))
-					chValue = 0x01;
-				else
-					chValue = 0x00;
-				break;
-			}
-			default:
-			{
-				break;
-			}
+			nVal =  EVAL_InputGetState(I_MotorX_IN_OC);
 		}
-
-		return chValue;
+		break;
+		case OC_OUT_CHANNEL: // Motor X OUT OC
+		{
+			nVal =  EVAL_InputGetState(I_MotorX_OUT_OC);
+		}
+		break;
+		case OC_SAMPLE_RELEA_CHANNEL: // Motor Y IN OC
+		{
+			nVal = EVAL_InputGetState(I_MotorY_IN_OC);
+		}
+		break;
+		case OC_SAMPLE_HOLD_CHANNEL: // Motor Y OUT OC
+		{
+			nVal = EVAL_InputGetState(I_MotorY_OUT_OC);
+		}
+		break;
+		default:break;
 	}
-#endif
+	return nVal;
+}
+	
+
+//
+UINT8  HW_LEVEL_GetOC(UINT8 chIndex)
+{
+	IO_ UINT32 IRAM_  nAddr 	= 0;
+	IO_ UINT16 IRAM_  anBuffer[2];
+	IO_ UINT8  IRAM_  chValue   = 1;  /* 预留的悬空位返回状态1表示光耦未被遮挡 */
+
+	//
+	nAddr = (UINT32)FPGA_RD_OC_01_03;
+	//
+	FPGA_ReadBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+	//
+	switch (chIndex)
+	{
+		case 0:
+		{
+			if (0 != (anBuffer[0] & 0x0001))
+				chValue = 0x01;
+			else
+				chValue = 0x00;
+			break;
+		}
+		case 1:
+		{
+			if (0 != (anBuffer[0] & 0x0002))
+				chValue = 0x01;
+			else
+				chValue = 0x00;
+			break;
+		}
+		case 2:
+		{
+			if (0 != (anBuffer[0] & 0x0004))
+				chValue = 0x01;
+			else
+				chValue = 0x00;
+			break;
+		}
+		case 3:
+		{
+			if (0 != (anBuffer[0] & 0x0008))
+				chValue = 0x01;
+			else
+				chValue = 0x00;
+			break;
+		}
+		default:
+		{
+			break;
+		}
+	}
+
+	return chValue;
+}
+
 
 	
 
@@ -2336,7 +2251,7 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
     for (n = 0; n < ELECTRODE_GET_FILTER_NUM; n++)
     {
 		#if USE_STM32F407_ONLY
-		if(1 == Get_Elec_Status())
+		if(1 == hw_filter_get_electrode_V3(chIndex))
 		#else
 		if (1 == HW_LEVEL_GetElectrode(chIndex))
 		#endif
@@ -2351,6 +2266,13 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
     return  0;
 }
 
+_EXT_ UINT8 hw_filter_get_electrode_V3(UINT8 chIndex)
+{
+	if(chIndex == INDEX_ELECTRODE)
+	{
+		 EVAL_InputGetState(I_ELEC);
+	}//else if
+}
 
 // the ADC of the slave CPU
 UINT16 HW_ADC_SlaveGetADC(void)
@@ -3129,7 +3051,41 @@ UINT8  MSG_SampleBoardFeedback(void)
 
 
 
+
+//------------------------------------------------------------------CX2000_C API START---------------------------
+INT32 Get_Press_Value(UINT8 nNum)
+{
+	UINT8 i;
+	INT32 nPress = 0;
+	for(i = 0; i < nNum; i++)
+	{
+		nPress += HW_Get_Press();
+	}
+	nPress /= nNum;
+	return nPress;
+}
+
+
+INT32 HW_Get_Press()
+{
+	
+	INT32 nVal = 0;
+	
+#if (1 == 1)
+	 // IIC Interface Press Sensor
+	 nVal = HW_Press_I2C();
+	 nVal = nVal/2 - 4194304;
+#elif (2 == 0)
+	 // ADC Interface Press Sensor
+	 nVal = HW_Press_ADC();
+#elif (3 == 0)
+	 // FPGA Interface 
+	 nVal = HW_ADC_SpiGetPress();
 #endif
+	 return nVal;
+}
+
+//------------------------------------------------------------------CX2000_C API END---------------------------
 
 
 
@@ -3138,3 +3094,7 @@ UINT8  MSG_SampleBoardFeedback(void)
 
 
 
+
+
+
+#endif
