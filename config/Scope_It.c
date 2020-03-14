@@ -66,7 +66,7 @@ void IRQ_SysTimer(void)
 			{					
 				if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 0)
 				{
-					g_CRP_Data.crpBuffer[g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
+					g_CRP_Data.crpBuffer[g_CRP_Data.nIndex] = HW_CRP_ADC();
 					printf("T=%d, ADC=%08d,5V=%6.2f,total=%04d,index=%04d\r\n", \
 						(int)IT_SYS_GetTicks(), (int)g_CRP_Data.crpBuffer[g_CRP_Data.nIndex], (float)(g_CRP_Data.crpBuffer[g_CRP_Data.nIndex])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_4BYTE - 1)
@@ -77,7 +77,7 @@ void IRQ_SysTimer(void)
 						g_CRP_Data.nTotal++;
 					}
 				}else if((g_CRP_Data.nTotal/(DATA_FRAME_NUM_4BYTE))%2 == 1){
-					g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex] = HW_Get_ADC_CRP();
+					g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex] = HW_CRP_ADC();
 					printf("T=%d,ADC=%08d,5V=%6.2f,total=%04d,index=%04d\r\n", \
 						(int)IT_SYS_GetTicks(),(int)g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex], (float)(g_CRP_Data.crpBuffer[DATA_FRAME_NUM_4BYTE + g_CRP_Data.nIndex])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24, g_CRP_Data.nTotal, g_CRP_Data.nIndex);
 					if(g_CRP_Data.nIndex >= DATA_FRAME_NUM_4BYTE - 1)

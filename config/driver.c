@@ -1176,7 +1176,7 @@ UINT16 Get_Elec_ADC(void)
 
 UINT16 Get_Elec_V(void)
 {
-	return Get_Elec_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+	return HW_Elec_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
 }
 
 
@@ -2446,30 +2446,30 @@ void LED_Cur_DAC_Set(UINT16 nVal)
 //
 void LED_Cur_Auto_Adjust(UINT16 nVal)
 {
-	UINT16 nTempADC;
-	UINT32 nCurTick, nTempTick;
-	
-	LED_Cur_Switch(EN_OPEN);
-	LED_Cur_DAC_Set(0);
-	
-	nCurTick = IT_SYS_GetTicks();
-	nTempTick = nCurTick;
-	nTempADC = Get_LED_Cur_ADC();
-	//nTempV = nTempADC*3300/4095;
-	while(nCurTick < nTempTick + 5000)
-	{
-		if(nTempADC - nVal > 3)
-		{
-			LED_Cur_DAC_Set(nTempADC - 3);
-		}else if(nTempADC - nVal < 3){
-			LED_Cur_DAC_Set(nTempADC + 3);
-		}else{
-			// not need to adjust
-			break;
-		}
-		nTempADC = Get_LED_Cur_ADC();
-		IT_SYS_DlyMs(5);
-	}
+//	UINT16 nTempADC;
+//	UINT32 nCurTick, nTempTick;
+//	
+//	LED_Cur_Switch(EN_OPEN);
+//	LED_Cur_DAC_Set(0);
+//	
+//	nCurTick = IT_SYS_GetTicks();
+//	nTempTick = nCurTick;
+//	nTempADC = Get_LED_Cur_ADC();
+//	//nTempV = nTempADC*3300/4095;
+//	while(nCurTick < nTempTick + 5000)
+//	{
+//		if(nTempADC - nVal > 3)
+//		{
+//			LED_Cur_DAC_Set(nTempADC - 3);
+//		}else if(nTempADC - nVal < 3){
+//			LED_Cur_DAC_Set(nTempADC + 3);
+//		}else{
+//			// not need to adjust
+//			break;
+//		}
+//		nTempADC = Get_LED_Cur_ADC();
+//		IT_SYS_DlyMs(5);
+//	}
 }
 
 
@@ -2625,6 +2625,8 @@ void LED_All_Reset(void)
 		LED_Exec(i, EN_CLOSE);
 	}
 }
+
+
 
 //// fix motor
 //void Fix_Motor_Init(void)
@@ -2999,25 +3001,25 @@ void Driver_Debug(UINT8 nIndex)
 			//g_Test_Mode = EN_HGB_TEST;
 			//Turn_Motor_Init();
 //			Turn_Motor_Power(EN_OPEN);
-			LED_Cur_Switch(EN_OPEN);
-			for(i = 0; i < EN_LED_END; i++)
-			{
-				LED_Exec(i, EN_OPEN);
-				printf("i =%d\r\n", i);
-				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-				LED_Exec(i, EN_CLOSE);
-			}
-			
-//			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
-			LED_Exec(EN_LED1, EN_OPEN); 	// open led
-			Turn_Motor_Select_LED(EN_LED1); // select led 
-			printf("HGB had select\r\n");
-		
-			LED_All_Reset();
-			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-			LED_Exec(EN_LED4, EN_OPEN);		// open led
-			Turn_Motor_Select_LED(EN_LED4); // select led 
-			printf("CRP had select\r\n");
+//			LED_Cur_Switch(EN_OPEN);
+//			for(i = 0; i < EN_LED_END; i++)
+//			{
+//				LED_Exec(i, EN_OPEN);
+//				printf("i =%d\r\n", i);
+//				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//				LED_Exec(i, EN_CLOSE);
+//			}
+//			
+////			LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
+//			LED_Exec(EN_LED1, EN_OPEN); 	// open led
+//			Turn_Motor_Select_LED(EN_LED1); // select led 
+//			printf("HGB had select\r\n");
+//		
+//			LED_All_Reset();
+//			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//			LED_Exec(EN_LED4, EN_OPEN);		// open led
+//			Turn_Motor_Select_LED(EN_LED4); // select led 
+//			printf("CRP had select\r\n");
 			
 			printf("end\r\n");
 			
@@ -3029,13 +3031,13 @@ void Driver_Debug(UINT8 nIndex)
 		case 1: // pump
 		{
 			printf("start\r\n");
-			for(i = EN_LED0; i < EN_LED6; i++)
-			{
-				Turn_Motor_Select_LED(i); // LED_Exec(i, EN_OPEN);
-				printf("LED =%d\r\n", i);
-				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-			}
+//			for(i = EN_LED0; i < EN_LED6; i++)
+//			{
+//				Turn_Motor_Select_LED(i); // LED_Exec(i, EN_OPEN);
+//				printf("LED =%d\r\n", i);
+//				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//			}
 			
 			
 //			for(i = 0; i < 25000;)
@@ -3104,13 +3106,13 @@ void Driver_Debug(UINT8 nIndex)
 		case 5: // ADCs include cur 
 		{
 			printf("ADC start\r\n");
-			ADC3_Init();
+			//ADC3_Init();
 			IT_SYS_DlyMs(100);
 			
-			val = Get_56V_Cur_ADC();
+			//val = Get_56V_Cur_ADC();
 			printf("56V, ADC=%d, V=%d\r\n", val, val*3300/4095);  
 		
-			val = Get_XK_ADC();
+			//val = Get_XK_ADC();
 			printf("XK, ADC=%d, V=%d\r\n", val, val*3300/4095); 
 			
 //			val = Get_LED_Cur_ADC();
@@ -3122,13 +3124,13 @@ void Driver_Debug(UINT8 nIndex)
 //			val = HW_Get_ADC_CRP();
 //			printf("CRP, ADC=%d, V=%d\r\n", val, val*3300/4095); 
 //						
-			val = Get_Elec_ADC();
+			//val = HW_Elec_ADC();
 			printf("ELEC, ADC=%d, V=%d\r\n", val, val*3300/4095); 
 			
-			val = Get_12V_N_ADC();
+			//val = Get_12V_N_ADC();
 			printf("12V N, ADC=%d, V=%d\r\n", val, val*3300/4095); 
 			
-			val = Get_12V_P_ADC();
+			//val = Get_12V_P_ADC();
 			printf("12V_P, ADC=%d, V=%d\r\n", val, val*3300/4095); 
 			printf("ADC end\r\n");
 			IT_SYS_DlyMs(100);
@@ -3149,7 +3151,7 @@ void Driver_Debug(UINT8 nIndex)
 			//Elec_Init();
 			for(i = 0; i < 10; i++)
 			{
-				printf("Eelc status =%d, e=%d\r\n", Get_Elec_Status(), hw_filter_get_electrode(INDEX_ELECTRODE));
+				//printf("Eelc status =%d, e=%d\r\n", Get_Elec_Status(), hw_filter_get_electrode(INDEX_ELECTRODE));
 			}
 			
 			
@@ -3164,7 +3166,7 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 7:
 		{
-			HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
+			//HW_PUMP_Pulse(PUMP_PRESS_FREQ, e_Dir_Pos);
 //			printf("start\r\n");
 //			OutIn_Motor_Enable();
 //			for(i = 0; i < 5; i++)
@@ -3193,7 +3195,7 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 8:
 		{	
-			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
+		//	HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
 			//MT_X_Home(e_NormalCheck_Call); 
 //			
 //			nCurTime = IT_SYS_GetTicks();
@@ -3253,35 +3255,35 @@ void Driver_Debug(UINT8 nIndex)
 			LED_Cur_DAC_Init();
 			for(i = 0; i < 4095;)
 			{
-				//v = 3300*i/4095;
-				printf("i = %d, v = %d, V = %d\r\n", i, i*3300/4095, DAC_GetDataOutputValue(DAC_Channel_1));
-				DAC_SetChannel1Data(DAC_Align_12b_R, i);//LED_Cur_Adjust_Set(i);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				i += 100;
+//				//v = 3300*i/4095;
+//				printf("i = %d, v = %d, V = %d\r\n", i, i*3300/4095, DAC_GetDataOutputValue(DAC_Channel_1));
+//				DAC_SetChannel1Data(DAC_Align_12b_R, i);//LED_Cur_Adjust_Set(i);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				i += 100;
 			}
 		}
 		break;
 		case 11:  // B  fix motor
 		{
 			printf("B start\r\n");
-			LED_Cur_DAC_Set(0);
-			nADC = Get_LED_Cur_ADC();
-			printf("LED Cur ADC =%d\r\n", (int)nADC);
-			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-			val = 0;
-			for(i = 0; i < 4095;)
-			{
-				i += 100;
-				LED_Cur_DAC_Set(i);
-				IT_SYS_DlyMs(200);
-				printf("i=%d LED Cur ADC=%d, DAC=%d\r\n", val, (int)Get_LED_Cur_ADC(), i);
-				val++;
-				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-				//IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-			}
+//			LED_Cur_DAC_Set(0);
+//			nADC = Get_LED_Cur_ADC();
+//			printf("LED Cur ADC =%d\r\n", (int)nADC);
+//			IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//			val = 0;
+//			for(i = 0; i < 4095;)
+//			{
+//				i += 100;
+//				LED_Cur_DAC_Set(i);
+//				IT_SYS_DlyMs(200);
+//				printf("i=%d LED Cur ADC=%d, DAC=%d\r\n", val, (int)Get_LED_Cur_ADC(), i);
+//				val++;
+//				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//				//IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//			}
 			
 //			printf("start\r\n");
 //			Turn_Motor_Power(EN_OPEN);
@@ -3353,24 +3355,24 @@ void Driver_Debug(UINT8 nIndex)
 			
 			for(i = 0; i < 10; i++)
 			{
-				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
-				nADC = AD7799_Get_Out_Data();
-				printf("AD7799 CH1, data=%d, adc=%d, V=%6.2f\r\n", (int)nADC, (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
+//				AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
+//				nADC = AD7799_Get_Out_Data();
+//				printf("AD7799 CH1, data=%d, adc=%d, V=%6.2f\r\n", (int)nADC, (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
 
-				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
-				nADC = AD7799_Get_Out_Data();
-				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				
-				
-				AD7799_SetChannel(AD7799_CH_AIN3P_AIN3M);
-				nADC = AD7799_Get_Out_Data();
-				printf("AD7799 CH3, adc=%d, V=%6.2f\r\n", (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
+//				AD7799_SetChannel(AD7799_CH_AIN2P_AIN2M);
+//				nADC = AD7799_Get_Out_Data();
+//				printf("AD7799 CH2, adc=%d, V=%6.2f\r\n", (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				
+//				
+//				AD7799_SetChannel(AD7799_CH_AIN3P_AIN3M);
+//				nADC = AD7799_Get_Out_Data();
+//				printf("AD7799 CH3, adc=%d, V=%6.2f\r\n", (int)AD7799_Get_ADC_Value(nADC), AD7799_Get_Value(nADC));
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
 				
 			}
 			printf("AD7799 end\r\n");
@@ -3379,18 +3381,18 @@ void Driver_Debug(UINT8 nIndex)
 		case 13: //D
 		{
 			printf("start\r\n");
-			LED_Init();
-			printf("init\r\n");
-			LED_Cur_Switch(EN_OPEN);
-			for(i = 0; i < EN_LED_END; i++)
-			{
-				LED_Exec(i, EN_OPEN);
-				printf("i = %d\r\n", i);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				IT_SYS_DlyMs(500);
-				LED_Exec(i, EN_CLOSE);
-			}
+//			LED_Init();
+//			printf("init\r\n");
+//			LED_Cur_Switch(EN_OPEN);
+//			for(i = 0; i < EN_LED_END; i++)
+//			{
+//				LED_Exec(i, EN_OPEN);
+//				printf("i = %d\r\n", i);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				IT_SYS_DlyMs(500);
+//				LED_Exec(i, EN_CLOSE);
+//			}
 			
 //			for(i = 0; i < 30; i++)
 //			{
@@ -3434,24 +3436,24 @@ void Driver_Debug(UINT8 nIndex)
 		break;
 		case 14: // E, turn motor
 		{
-			LED_Init();
+			//LED_Init();
 			printf("init\r\n");
-			LED_Cur_Switch(EN_OPEN);
-			LED_Exec(5, EN_OPEN);
+//			LED_Cur_Switch(EN_OPEN);
+//			LED_Exec(5, EN_OPEN);
 				
 			printf("start\r\n");
-			Turn_Motor_Init();
+			//Turn_Motor_Init();
 //			Turn_Motor_Power(EN_OPEN);
 
-			Turn_Motor_Reset();
+			//Turn_Motor_Reset();
 			printf("reset finished\r\n");
 			
 			for(i = 0; i < 6; i++)
 			{
-				Turn_Motor_Select_LED(i);
-				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
-				Turn_Motor_Reset();
-				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//				Turn_Motor_Select_LED(i);
+//				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
+//				Turn_Motor_Reset();
+//				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
 			}
 			
 			
@@ -3486,12 +3488,12 @@ void Driver_Debug(UINT8 nIndex)
 		case 15: //F , mix motor
 		{
 			printf("F startd M=%d\r\n", g_Test_Mode);
-			LED_All_Reset();
-			LED_Cur_Switch(EN_OPEN);
-//			Turn_Motor_Power(EN_OPEN);
-			LED_Exec(HGB_LED_INDEX, EN_OPEN); // open led
-			Turn_Motor_Select_LED(HGB_LED_INDEX); // select led 
-			LED_Cur_ADC_Check_Channel(HGB_LED_INDEX);
+//			LED_All_Reset();
+//			LED_Cur_Switch(EN_OPEN);
+////			Turn_Motor_Power(EN_OPEN);
+//			LED_Exec(HGB_LED_INDEX, EN_OPEN); // open led
+//			Turn_Motor_Select_LED(HGB_LED_INDEX); // select led 
+//			LED_Cur_ADC_Check_Channel(HGB_LED_INDEX);
 			
 			//LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
 			g_Test_Mode = EN_HGB_TEST;

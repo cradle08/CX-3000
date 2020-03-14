@@ -862,6 +862,9 @@ UINT32 CODE_ MTx_Distance[Motor_End] =
 	1000000
 };
 
+
+TIM_TypeDef*  CODE_ MTx_Timer[Motor_End] = {TIM3, TIM4};
+
 #define MTx_VALUE_FREQ_MIN(ch)             MTx_FreqMin[ch]            
 // 2) the maximum of the motor's frequence
 #define MTx_VALUE_FREQ_MAX(ch)             MTx_FreqMax[ch]  // 32 * 8000
@@ -869,6 +872,22 @@ UINT32 CODE_ MTx_Distance[Motor_End] =
 #define MTx_VALUE_FREQ_INC(ch)             MTx_FreqInc[ch]
 // 4) the maximum  steps of the total run(rectilinear movement or circular movement)
 #define MTx_VALUE_DISTANCE_MAX(ch)         MTx_Distance[ch] 
+
+// 1) timer init
+//#define MTx_TIMER_INIT(ch)               {PF_InitMotorTimer(ch);}
+// 2) enable the interrupt 
+#define MTx_TIMER_INTERRUPT_ON(ch)         {TIM_ITConfig(MTx_Timer[ch], TIM_IT_Update, ENABLE);}
+// 3) disable the interrupt
+#define MTx_TIMER_INTERRUPT_OFF(ch)        {TIM_ITConfig(MTx_Timer[ch], TIM_IT_Update, DISABLE);}
+// 4) clean the flag of interrupt
+#define MTx_TIMER_INTERRUPT_FLAG_CLEAR(ch) {TIM_ClearITPendingBit(MTx_Timer[ch] , TIM_FLAG_Update);}
+// 5) counting is on 
+#define MTx_TIMER_COUNT_ON(ch)             {TIM_Cmd(MTx_Timer[ch], ENABLE);} 
+// 6) counting is off
+#define MTx_TIMER_COUNT_OFF(ch)            {TIM_Cmd(MTx_Timer[ch], DISABLE);}
+// 7) change the reloaded value and don't effect the counter's value
+#define MTx_TIMER_LOAD(ch, VALUE)          {TIM_SetAutoreload(MTx_Timer[ch], (VALUE));} // {TIM_SetCounter(MTx_Timer[ch], (VALUE));}  
+
 
 
 
@@ -1519,7 +1538,7 @@ enum eFlag  MV_IsFinished(enum eMvMotor eMotor)
 // not need at CX2000_C API
 UINT8  MV_IsrMoveHandling_V3(void)
 {
-	
+	return 0;
 }
 
 // handle the status of the motors

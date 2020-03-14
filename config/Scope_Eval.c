@@ -8,7 +8,8 @@
 
 
 
-
+IO_ UINT8 g_Test_Mode = 0xFF;
+IO_ UINT8 g_Micro_Switch = 0xFF;
 IO_ UINT16 g_ADC3_Value[EN_ADC_END] = {0};
 //-----------------------------------------------------------------------------------------
 // the const group
@@ -100,131 +101,84 @@ UINT32 CODE_ OUT_CLK[O_OUTPUT_NUM]=
 
 
 
-
 // ----------------------------------------------------------in put---------------------------------------
 // Input def  --- commom input and exti interrupt
 GPIO_TypeDef* CODE_ IN_PORT[I_INPUT_NUM]= 
 {
-    //
-//    IN_HOME_1_GPIO_PORT,
-//	IN_HOME_2_GPIO_PORT,
-//	IN_HOME_3_GPIO_PORT,
-//	IN_HOME_4_GPIO_PORT,
-//	IN_HOME_5_GPIO_PORT,
-//	IN_HOME_6_GPIO_PORT,
-	//
 	IN_MT_STATUS_GPIO_PORT,
 	IN_MotorX_IN_OC_GPIO_PORT,
 	IN_MotorX_OUT_OC_GPIO_PORT,
 	IN_MotorY_IN_OC_GPIO_PORT,
 	IN_MotorY_OUT_OC_GPIO_PORT,
-	IN_ELEC_GPIO_PORT
+	IN_ELEC_GPIO_PORT,
+	IN_MICRO_OC_GPIO_PORT
 };
 UINT16 CODE_ IN_PIN[I_INPUT_NUM]=
 {
-    //
-//    IN_HOME_1_GPIO_PIN,
-//	IN_HOME_2_GPIO_PIN,
-//	IN_HOME_3_GPIO_PIN,
-//	IN_HOME_4_GPIO_PIN,
-//	IN_HOME_5_GPIO_PIN,
-//	IN_HOME_6_GPIO_PIN,
-	//
 	IN_MT_STATUS_GPIO_PIN,
 	IN_MotorX_IN_OC_GPIO_PIN,
 	IN_MotorX_OUT_OC_GPIO_PIN,
 	IN_MotorY_IN_OC_GPIO_PIN,
 	IN_MotorY_OUT_OC_GPIO_PIN,
-	IN_ELEC_GPIO_PIN
+	IN_ELEC_GPIO_PIN,
+	IN_MICRO_OC_GPIO_PIN
 };	
 UINT32 CODE_ IN_CLK[I_INPUT_NUM]=
 {
-    //
-//    IN_HOME_1_GPIO_CLK,
-//	IN_HOME_2_GPIO_CLK,
-//	IN_HOME_3_GPIO_CLK,
-//	IN_HOME_4_GPIO_CLK,
-//	IN_HOME_5_GPIO_CLK,
-//	IN_HOME_6_GPIO_CLK,
-	//
 	IN_MT_STATUS_GPIO_CLK,
 	IN_MotorX_IN_OC_GPIO_CLK,
 	IN_MotorX_OUT_OC_GPIO_CLK,
 	IN_MotorY_IN_OC_GPIO_CLK,
 	IN_MotorY_OUT_OC_GPIO_CLK,
-	IN_ELEC_GPIO_CLK
+	IN_ELEC_GPIO_CLK,
+	IN_MICRO_OC_GPIO_CLK
 };
 UINT16 CODE_ IN_ET_LINE[I_INPUT_NUM]=
 {
-    //
-//    IN_HOME_1_ET_LINE,
-//	IN_HOME_2_ET_LINE,
-//	IN_HOME_3_ET_LINE,
-//	IN_HOME_4_ET_LINE,
-//	IN_HOME_5_ET_LINE,
-//	IN_HOME_6_ET_LINE,
 	//
 	IN_MT_STATUS_ET_LINE,
 	IN_MotorX_IN_OC_ET_LINE,
 	IN_MotorX_OUT_OC_ET_LINE,
 	IN_MotorY_IN_OC_ET_LINE,
 	IN_MotorY_OUT_OC_ET_LINE,
-	IN_ELEC_ET_LINE
+	IN_ELEC_ET_LINE,
+	IN_MICRO_OC_ET_LINE
 	
 };
 UINT16 CODE_ IN_ET_PORT[I_INPUT_NUM]=
 {
-    //
-//    IN_HOME_1_ET_PORT,
-//	IN_HOME_2_ET_PORT,
-//	IN_HOME_3_ET_PORT,
-//	IN_HOME_4_ET_PORT,
-//	IN_HOME_5_ET_PORT,
-//	IN_HOME_6_ET_PORT,
-	//
 	IN_MT_STATUS_ET_PORT,
 	IN_MotorX_IN_OC_ET_PORT,
 	IN_MotorX_OUT_OC_ET_PORT,
 	IN_MotorY_IN_OC_ET_PORT,
 	IN_MotorY_OUT_OC_ET_PORT,
-	IN_ELEC_ET_IRQn
+	IN_ELEC_ET_IRQn,
+	IN_MICRO_OC_ET_PORT
 };
 UINT16 CODE_ IN_ET_PIN[I_INPUT_NUM]=
 {
-    //
-//    IN_HOME_1_ET_PIN,
-//	IN_HOME_2_ET_PIN,
-//	IN_HOME_3_ET_PIN,
-//	IN_HOME_4_ET_PIN,
-//	IN_HOME_5_ET_PIN,
-//	IN_HOME_6_ET_PIN,
-	//
 	IN_MT_STATUS_ET_PIN,
 	IN_MotorX_IN_OC_ET_PIN,
 	IN_MotorX_OUT_OC_ET_PIN,
 	IN_MotorY_IN_OC_ET_PIN,
 	IN_MotorY_OUT_OC_ET_PIN,
-	IN_ELEC_ET_PIN
+	IN_ELEC_ET_PIN,
+	IN_MICRO_OC_ET_PIN
 };
 UINT16 CODE_ IN_ET_IRQn[I_INPUT_NUM]=
 {
-    //
-//    IN_HOME_1_ET_IRQn,
-//	IN_HOME_2_ET_IRQn,
-//	IN_HOME_3_ET_IRQn,
-//	IN_HOME_4_ET_IRQn,
-//	IN_HOME_5_ET_IRQn,
-//	IN_HOME_6_ET_IRQn,
-	//
 	IN_MT_STATUS_ET_IRQn,
 	IN_MotorX_IN_OC_ET_IRQn,
 	IN_MotorX_OUT_OC_ET_IRQn,
 	IN_MotorY_IN_OC_ET_IRQn,
 	IN_MotorY_OUT_OC_ET_IRQn,
-	IN_ELEC_ET_IRQn
+	IN_ELEC_ET_IRQn,
+	IN_MICRO_OC_ET_IRQn
 };
 
-//-----------------------------------------------------------------------------------------
+
+
+
 // define "USE_FULL_ASSERT" in the project options setting
 void assert_failed(uint8_t* file, uint32_t line)
 { 
@@ -243,7 +197,7 @@ void assert_failed(uint8_t* file, uint32_t line)
 
 }
 
-//-----------------------------------------------------------------------------------------
+
 // macro defined for "printf" debugging
 PUTCHAR_PROTOTYPE
 {
@@ -252,11 +206,9 @@ PUTCHAR_PROTOTYPE
 #if 0
 	
 #else
-
 	PL_COM_SendChar(ch);   // will be recovered
 
 #endif
-
 	return ch;
 }
 
@@ -285,7 +237,6 @@ PUTCHAR_PROTOTYPE
 //}
 
 
-//-----------------------------------------------------------------------------------------
 // com control
 void EVAL_ComInit(Com_TypeDef eCom, USART_InitTypeDef* USART_InitStruct)
 {
@@ -328,7 +279,7 @@ void EVAL_ComInit(Com_TypeDef eCom, USART_InitTypeDef* USART_InitStruct)
     NVIC_Init(&NVIC_InitStructure);	
 }
 
-//-----------------------------------------------------------------------------------------
+
 // GPIO output contorl 
 void EVAL_OutputInit(Output_TypeDef eOut)
 {
@@ -363,7 +314,7 @@ void EVAL_OutputToggle(Output_TypeDef eOut)
     OUT_PORT[eOut]->ODR ^= OUT_PIN[eOut];
 }
 
-//-----------------------------------------------------------------------------------------
+
 // GPIO input contorl 
 void EVAL_InputInit(Input_TypeDef eIn, InModel_Typedef eModel)
 {
@@ -457,6 +408,92 @@ void HW_Press_Init(void)
 #else
 	//ADC
 #endif
+}
+
+
+
+
+// Micro OC
+void HW_Micro_OC_Init(void)
+{
+	EVAL_InputInit(I_MICRO_OC, IN_MODEL_EXTI);
+}
+
+UINT8 Get_Micro_OC_Status(void)
+{
+	return EVAL_InputGetState(I_MICRO_OC);
+}
+
+
+
+void IRQ_Micro_OC()
+{
+	g_Micro_Switch = EN_OPEN;
+	if(RESET != EXTI_GetITStatus(IN_MICRO_OC_ET_LINE))
+    {      
+		// read micro oc status
+		Delay_US(500);Delay_US(500);
+		if(Get_Micro_OC_Status() == EN_OPEN)
+		{
+			EXTI_ClearITPendingBit(IN_MICRO_OC_ET_LINE);
+			return;
+		}			
+		Beep(1, 300);
+	    EXTI_ClearITPendingBit(IN_MICRO_OC_ET_LINE);
+		if(Get_Micro_OC_Status() == EN_CLOSE)
+		{
+			g_Micro_Switch = EN_CLOSE;
+		}
+		printf("Mirco Switch IRQ, S=%d\r\n", g_Micro_Switch);
+		EXTI_ClearITPendingBit(IN_MICRO_OC_ET_LINE);
+	}
+}
+
+void HW_Micro_OC_IRQ_Disable(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	EXTI_InitTypeDef EXTI_InitStructure;
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
+	// micro switch, with EXIT interupt
+	
+	GPIO_InitStructure.GPIO_Pin = IN_MICRO_OC_GPIO_PIN; 
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(IN_MICRO_OC_GPIO_PORT, &GPIO_InitStructure);
+	//GPIO_ResetBits(MICRO_OC_PORT, MICRO_OC_PIN);
+	SYSCFG_EXTILineConfig(IN_MICRO_OC_ET_PORT, IN_MICRO_OC_GPIO_PIN);
+	
+	EXTI_ClearITPendingBit(IN_MICRO_OC_ET_LINE);
+	EXTI_InitStructure.EXTI_Line = IN_MICRO_OC_ET_LINE;
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; // or down 
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+	EXTI_Init(&EXTI_InitStructure);
+	
+	NVIC_InitStructure.NVIC_IRQChannel = IN_MICRO_OC_ET_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x02;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x01;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = DISABLE;
+	NVIC_Init(&NVIC_InitStructure);
+}
+
+// CRP 
+void Micro_Switch_Check(void)
+{
+	if(EN_CRP_TEST == g_Test_Mode)
+	{
+		if(g_Micro_Switch == EN_CLOSE) // had checked cuvette put in
+		{
+			CRP_Test_Exec(EN_CRP_CALIBRATE);
+			g_Micro_Switch = EN_OPEN;
+		}
+	}
 }
 
 
@@ -626,6 +663,7 @@ INT32 HW_Press_I2C(void)
 	Pressure_data = (DLHR_DATA[1]<<16)|(DLHR_DATA[2]<<8)|DLHR_DATA[3];
 	Tempertaure_data = (DLHR_DATA[4]<<16)|(DLHR_DATA[5]<<8)|DLHR_DATA[6];
 	
+	Pressure_data = Pressure_data/2 - 4194304;
 	return Pressure_data;
 }
 
@@ -999,7 +1037,7 @@ void MTx_IoMinitor(enum eMvMotor eMotor)
 }	
 
 
-void HW_PUMP_Init(void)
+void HW_Pump_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
 	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -1351,51 +1389,29 @@ void ADC3_GPIO_Init(void){
 				CUR12N_ADC_SRC|CUR12P_ADC_SRC|PRESS_ADC_SRC, ENABLE);
 	#else
 		RCC_AHB1PeriphClockCmd(TEMP_ADC_SRC|CUR_56V_ADC_SRC|XK_ADC_SRC| \
-				CUR12N_ADC_SRC|CUR12P_ADC_SRC|LED_CUR_ADC_SRC|ELEC_ADC_SRC|SIG1_ADC_SRC|SIG2_ADC_SRC, ENABLE);
+				CUR12N_ADC_SRC|CUR12P_ADC_SRC|LED_CUR_ADC_SRC|ELEC_ADC_SRC|Light1_ADC_SRC, ENABLE);
 	#endif
-	// PF6_ADC3_IN4, LED_CUR
-	GPIO_InitStructure.GPIO_Pin		= LED_CUR_ADC_PIN;  
-	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
-	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(LED_CUR_ADC_PORT, &GPIO_InitStructure);
-	// PC3_ADC3_IN13, XK
+		// PC3_ADC3_IN13, XK
 	GPIO_InitStructure.GPIO_Pin		= XK_ADC_PIN;		
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(XK_ADC_PORT, &GPIO_InitStructure);
+	
 	// PF9_ADC3_IN7, 56V_CUR
 	GPIO_InitStructure.GPIO_Pin		= CUR_56V_ADC_PIN;	
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(CUR_56V_ADC_PORT, &GPIO_InitStructure);
-	// PC0_ADC123_IN10, Temperature
-	GPIO_InitStructure.GPIO_Pin		= TEMP_ADC_PIN;		
-	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
-	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(TEMP_ADC_PORT, &GPIO_InitStructure);
+	GPIO_Init(CUR_56V_ADC_PORT, &GPIO_InitStructure);	
+	
 	//elec ADC3_IN6 PF8
 	GPIO_InitStructure.GPIO_Pin		= ELEC_ADC_PIN;		
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(ELEC_ADC_PORT, &GPIO_InitStructure);
-	// SIG1 ==> PF7_ADC3_IN5 ,CRP
-	GPIO_InitStructure.GPIO_Pin		= SIG1_ADC_PIN;		
-	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
-	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(SIG1_ADC_PORT, &GPIO_InitStructure);
-	// SIG2 ==> PA0_ADC3_IN0 ,HGB
-	GPIO_InitStructure.GPIO_Pin		= SIG2_ADC_PIN;		
-	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
-	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
-	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(SIG2_ADC_PORT, &GPIO_InitStructure);
-	
+	GPIO_Init(ELEC_ADC_PORT, &GPIO_InitStructure);	
+		
 	//  PA3_ADC3_IN3 ,12V_N
 	GPIO_InitStructure.GPIO_Pin		= CUR12N_ADC_PIN;		
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
@@ -1403,21 +1419,59 @@ void ADC3_GPIO_Init(void){
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(CUR12N_ADC_PORT, &GPIO_InitStructure);
 	
-	//  PF10_ADC3_IN8 ,12V_N
+	//  PF10_ADC3_IN8 ,12V_P
 	GPIO_InitStructure.GPIO_Pin		= CUR12P_ADC_PIN;		
 	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
-	GPIO_Init(CUR12P_ADC_PORT, &GPIO_InitStructure);
-	
-	#if PRESS_SENSOR_ADC_TYPE
+	GPIO_Init(CUR12P_ADC_PORT, &GPIO_InitStructure);	
+		
+	//#if PRESS_SENSOR_ADC_TYPE
 		GPIO_InitStructure.GPIO_Pin		= PRESS_ADC_PIN; // PC2_ADC123_IN12 , Press
 		GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
 		GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 		GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 		GPIO_Init(PRESS_ADC_PORT, &GPIO_InitStructure);
-	#endif	
+	//#endif		
+	
+	
+	// PF6_ADC3_IN4, LED_CUR
+	GPIO_InitStructure.GPIO_Pin		= LED_CUR_ADC_PIN;  
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(LED_CUR_ADC_PORT, &GPIO_InitStructure);
+
+
+	// PC0_ADC123_IN10, Temperature
+	GPIO_InitStructure.GPIO_Pin		= TEMP_ADC_PIN;		
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(TEMP_ADC_PORT, &GPIO_InitStructure);
+
+//	// SIG1 ==> PF7_ADC3_IN5 ,CRP
+//	GPIO_InitStructure.GPIO_Pin		= SIG1_ADC_PIN;		
+//	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+//	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+//	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+//	GPIO_Init(SIG1_ADC_PORT, &GPIO_InitStructure);
+	// SIG2 ==> PA0_ADC3_IN0 ,HGB
+//	GPIO_InitStructure.GPIO_Pin		= SIG2_ADC_PIN;		
+//	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+//	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+//	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+//	GPIO_Init(SIG2_ADC_PORT, &GPIO_InitStructure);
+
+	// Light1, PA0, back up, HGB and CRP
+	GPIO_InitStructure.GPIO_Pin		= Light1_ADC_PIN;		
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(Light1_ADC_PORT, &GPIO_InitStructure);
+
 }
+
 
 #if ADC3_INIT_WITH_DMA
 	void ADC3_DMA_Config(void)
@@ -1433,7 +1487,7 @@ void ADC3_GPIO_Init(void){
 		DMA_InitStructure.DMA_PeripheralBaseAddr 	= (uint32_t)&ADC3->DR,
 		DMA_InitStructure.DMA_Memory0BaseAddr 		= (uint32_t)g_ADC3_Value;
 		DMA_InitStructure.DMA_DIR					= DMA_DIR_PeripheralToMemory;
-		DMA_InitStructure.DMA_BufferSize			= ADC3_CHECK_NUM;
+		DMA_InitStructure.DMA_BufferSize			= EN_ADC_END;//ADC3_CHECK_NUM;
 		DMA_InitStructure.DMA_PeripheralInc			= DMA_PeripheralInc_Disable;
 		DMA_InitStructure.DMA_MemoryInc 			= DMA_MemoryInc_Enable;
 		DMA_InitStructure.DMA_PeripheralDataSize	= DMA_PeripheralDataSize_HalfWord;
@@ -1475,6 +1529,7 @@ void ADC3_GPIO_Init(void){
 		RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOF, ENABLE);
 		RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC3, ENABLE);
 		
+		// IO Init
 		ADC3_GPIO_Init();
 		
 		RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3, ENABLE);
@@ -1496,19 +1551,19 @@ void ADC3_GPIO_Init(void){
 		ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;//ADC_DataAlign_Left;//ADC_DataAlign_Right;
 		ADC_Init(ADC3, &ADC_InitStructure);	
 		//ADC_Cmd(ADC3, ENABLE);
-		
+		// ADC3 MDA Init
 		ADC3_DMA_Config();
 		//ADC_DMACmd(ADC3, ENABLE);		// 
 		
-		ADC_RegularChannelConfig(ADC3, LED_CUR_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles);  // LED cur
+		ADC_RegularChannelConfig(ADC3, XK_ADC_CHANNEL, 		1, ADC_SampleTime_3Cycles);  // XK
 		ADC_RegularChannelConfig(ADC3, CUR_56V_ADC_CHANNEL, 2, ADC_SampleTime_3Cycles);  // 56v cur
-		ADC_RegularChannelConfig(ADC3, TEMP_ADC_CHANNEL, 3, ADC_SampleTime_3Cycles);     // temperature
-		ADC_RegularChannelConfig(ADC3, XK_ADC_CHANNEL, 4, ADC_SampleTime_3Cycles); 		 // XK
-		ADC_RegularChannelConfig(ADC3, SIG1_ADC_CHANNEL, 5, ADC_SampleTime_3Cycles);  	 // CRP
-		ADC_RegularChannelConfig(ADC3, SIG2_ADC_CHANNEL, 6, ADC_SampleTime_3Cycles);  	 // HGB
-		#if PRESS_SENSOR_ADC_TYPE
-			ADC_RegularChannelConfig(ADC3, PRESS_ADC_CHANNEL, 7, ADC_SampleTime_3Cycles);	 // press
-		#endif
+		ADC_RegularChannelConfig(ADC3, ELEC_ADC_CHANNEL, 	3, ADC_SampleTime_3Cycles);  // ELEC
+		ADC_RegularChannelConfig(ADC3, CUR12N_ADC_CHANNEL,  4, ADC_SampleTime_3Cycles);  // 12N
+		ADC_RegularChannelConfig(ADC3, CUR12P_ADC_CHANNEL,  5, ADC_SampleTime_3Cycles);  // 12P
+		ADC_RegularChannelConfig(ADC3, PRESS_ADC_CHANNEL,   6, ADC_SampleTime_3Cycles);  // Press
+		ADC_RegularChannelConfig(ADC3, LED_CUR_ADC_CHANNEL, 7, ADC_SampleTime_3Cycles);  // LED cur
+		ADC_RegularChannelConfig(ADC3, TEMP_ADC_CHANNEL,    8, ADC_SampleTime_3Cycles);  // temperature
+		ADC_RegularChannelConfig(ADC3, Light1_ADC_CHANNEL,  9, ADC_SampleTime_3Cycles);  // CRP and HGB
 
 		ADC_DMARequestAfterLastTransferCmd(ADC3, ENABLE); 
 		ADC_DMACmd(ADC3, ENABLE);
@@ -1575,15 +1630,25 @@ void ADC3_GPIO_Init(void){
 
 
 
-UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
+UINT16 HW_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
 {
 	UINT32 nVal = 0;
 	UINT8 i;
 	
+	if(nIndex >= EN_ADC_END)
+	{
+		printf("HW_ADC3_Channel_Value: Wrong Index:%d\r\n", nIndex);
+		return 0;
+	}
+	
 #if ADC3_INIT_WITH_DMA
-	nVal = g_ADC3_Value[nIndex];
+	for(i = 0; i < nCount; i++)
+	{
+		nVal += g_ADC3_Value[nIndex];;;
+	}
+	nVal /= nCount;
 #else
-	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
+	ADC_ClearFlag(ADC3, ADC_FLAG_EOC);
 	ADC_Cmd(ADC3,ENABLE);
 	for(i = 0; i < nCount; i++)
 	{
@@ -1597,119 +1662,129 @@ UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
 	return nVal;
 }
 
+
+//
+UINT16 HW_XK_ADC(void)
+{
+	UINT16 nVal = 0;
+	nVal = HW_ADC3_Channel_Value(EN_ADC_XK, ADC_SMOOTH_NUM_5);
+	return nVal;
+}
+
+//
+UINT16 HW_XK_V(void)
+{
+	return HW_XK_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+}
+
+//
+UINT16 HW_56V_Cur_ADC(void)
+{
+	UINT16 nVal = 0;
+	nVal = HW_ADC3_Channel_Value(EN_ADC_CUR_56V, ADC_SMOOTH_NUM_5);
+	return nVal;
+}
+
+UINT16 HW_56V_Cur_V(void)
+{
+	return HW_56V_Cur_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+}
+
+//
+UINT16 HW_Elec_ADC(void)
+{
+	UINT16 nVal = 0;
+	nVal = HW_ADC3_Channel_Value(EN_ADC_ELEC, ADC_SMOOTH_NUM_5);
+	return nVal;
+}
+
+UINT16 HW_Elec_V(void)
+{
+	return HW_Elec_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+}
+
+UINT16 HW_CUR12N_ADC(void)
+{	
+	UINT16 nVal = 0;
+	nVal = HW_ADC3_Channel_Value(EN_ADC_CUR12N, ADC_SMOOTH_NUM_5);
+	return nVal;
+}
+
+UINT16 HW_CUR12N_V(void)
+{
+	return HW_CUR12N_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+}
+
+UINT16 HW_CUR12P_ADC(void)
+{	
+	UINT16 nVal = 0;
+	nVal = HW_ADC3_Channel_Value(EN_ADC_CUR12P, ADC_SMOOTH_NUM_5);
+	return nVal;
+}
+
+UINT16 HW_CUR12P_V(void)
+{
+	return HW_CUR12P_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+}
+
 //
 UINT16 HW_Press_ADC(void)
 {
 	UINT16 nVal = 0;
-	
-#if ADC3_INIT_WITH_DMA
-	nVal = g_ADC3_Value[EN_ADC_PRESS];
-#else
-	#if PRESS_SENSOR_ADC_TYPE
-		nVal = Get_ADC3_Channel_Value(EN_ADC_PRESS, ADC_SMOOTH_NUM_5);
-	#else
-		// IIC API ...
-		
-	#endif
-#endif
+	nVal = HW_ADC3_Channel_Value(EN_ADC_PRESS, ADC_SMOOTH_NUM_5);
 	return nVal;
+}
+
+
+
+//
+UINT16 HW_LED_Cur_ADC(void)
+{
+	UINT16 nVal = 0;
+	nVal = HW_ADC3_Channel_Value(EN_ADC_LED_CUR, ADC_SMOOTH_NUM_5);
+	return nVal;
+}
+
+UINT16 HW_LED_Cur_V(void)
+{
+	return HW_LED_Cur_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
 }
 
 //
-UINT16 Get_XK_ADC(void)
+UINT16 HW_Temp_ADC(void)
 {
 	UINT16 nVal = 0;
-	
-#if ADC3_INIT_WITH_DMA
-	nVal = g_ADC3_Value[EN_ADC_XK];
-#else
-	nVal = Get_ADC3_Channel_Value(EN_ADC_XK, ADC_SMOOTH_NUM_5);
-#endif
+	nVal = HW_ADC3_Channel_Value(EN_ADC_TEMP, ADC_SMOOTH_NUM_5);
 	return nVal;
 }
 
-
-UINT16 Get_XK_V(void)
+UINT16 HW_Temp_V(void)
 {
-	return Get_XK_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
-}
-
-UINT16 Get_12V_N_ADC(void)
-{
-	UINT16 nVal = 0;
-	
-#if ADC3_INIT_WITH_DMA
-	nVal = g_ADC3_Value[EN_ADC_12V_N];
-#else
-	nVal = Get_ADC3_Channel_Value(EN_ADC_12V_N, ADC_SMOOTH_NUM_5);
-#endif
-	return nVal;
-}
-
-UINT16 Get_12V_P_ADC(void)
-{
-	UINT16 nVal = 0;
-	
-#if ADC3_INIT_WITH_DMA
-	nVal = g_ADC3_Value[EN_ADC_12V_P];
-#else
-	nVal = Get_ADC3_Channel_Value(EN_ADC_12V_P, ADC_SMOOTH_NUM_5);
-#endif
-	return nVal;
+	return HW_Temp_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
 }
 
 //
-UINT16 Get_56V_Cur_ADC(void)
+UINT16 HW_Light1_ADC(void)
 {
 	UINT16 nVal = 0;
-	
-#if ADC3_INIT_WITH_DMA
-	//nVal = g_ADC3_Value[EN_ADC_56V_CUR];
-#else
-	nVal = Get_ADC3_Channel_Value(EN_ADC_56V_CUR, ADC_SMOOTH_NUM_5);
-#endif
+	nVal = HW_ADC3_Channel_Value(EN_ADC_Light1, ADC_SMOOTH_NUM_5);
 	return nVal;
 }
 
-UINT16 Get_56V_Cur_V(void)
+UINT16 HW_Light1_V(void)
 {
-	return Get_56V_Cur_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+	return HW_Light1_V()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
 }
+
 
 //
-UINT16 Get_LED_Cur_ADC(void)
-{
-	UINT16 nVal = 0;
-	
-#if ADC3_INIT_WITH_DMA
-	//nVal = g_ADC3_Value[EN_ADC_LED_CUR];
-#else
-	nVal = Get_ADC3_Channel_Value(EN_ADC_LED_CUR, ADC_SMOOTH_NUM_5);
-#endif
-	return nVal;
-}
-
-UINT16 Get_Temp_ADC(void)
-{
-	UINT16 nVal = 0;
-	
-#if ADC3_INIT_WITH_DMA
-	//nVal = g_ADC3_Value[EN_ADC_LED_CUR];
-#else
-	nVal = Get_ADC3_Channel_Value(EN_ADC_TEMP, ADC_SMOOTH_NUM_5);
-#endif
-	return nVal;
-}
-
-//
-UINT32 HW_Get_ADC_HGB(void)
+UINT32 HW_HGB_ADC(void)
 {
 	UINT32 nVal = 0;
 	
 #if USE_STM32F407_ONLY
-	//nVal = Get_ADC3_Channel_Value(EN_ADC_HGB, ADC_SMOOTH_NUM_30);
-	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
-#else	
+	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data()); // nVal = HW_Light1_ADC();
+#else // FPGA
 	nVal = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 	
 #endif
@@ -1717,13 +1792,12 @@ UINT32 HW_Get_ADC_HGB(void)
 }
 
 //
-UINT32  HW_Get_ADC_CRP(void)
+UINT32  HW_CRP_ADC(void)
 {
 	UINT32  nVal = 0;
 	
-#if USE_STM32F407_ONLY
-	//nVal = Get_ADC3_Channel_Value(EN_ADC_CRP, ADC_SMOOTH_NUM_30);
-	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
+#if USE_STM32F407_ONLY	
+	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data()); // nVal = HW_Light1_ADC();
 #else	
 	nVal = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 #endif
@@ -1736,8 +1810,12 @@ UINT16  Get_HGB_Value(void)
 	UINT16  nRet;
 	UINT32  nVal;
 	
-	nVal = HW_Get_ADC_CRP();
-	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
+	nVal = HW_CRP_ADC();
+#if USE_STM32F407_ONLY	
+	nRet = nVal*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+#else
+	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24;
+#endif
 	printf("HGB: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
 	return nRet;
 }
@@ -1747,40 +1825,16 @@ UINT32  Get_CRP_Value(void)
 {
 	UINT32 nVal, nRet;
 	
-	nVal = HW_Get_ADC_CRP();
+	nVal = HW_CRP_ADC();
+#if USE_STM32F407_ONLY
+	nRet = nVal*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+#else
 	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24;
-	//printf("CRP: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
+#endif
+	printf("CRP: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
 	return nRet;
 }
 
-
-//
-UINT16 HW_Elec_ADC(void)
-{
-	UINT16 nVal = 0, i;
-	
-#if ADC3_INIT_WITH_DMA
-	//nVal = g_ADC3_Value[1];
-#else
-	ADC_ClearFlag(ADC3,ADC_FLAG_EOC);
-	ADC_Cmd(ADC3,ENABLE);
-	for(i = 0; i < 5; i++)
-	{
-		ADC_RegularChannelConfig(ADC3, ELEC_ADC_CHANNEL, 1, ADC_SampleTime_3Cycles ); 
-		ADC_SoftwareStartConv(ADC3);		
-		while(!ADC_GetFlagStatus(ADC3, ADC_FLAG_EOC ));
-		nVal += ADC_GetConversionValue(ADC3);	
-	}
-	nVal /= 5;
-#endif
-	return nVal;
-
-}
-
-UINT16 HW_Elec_V(void)
-{
-	return HW_Elec_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
-}
 
 
 
@@ -1901,18 +1955,19 @@ void EVAL_Init(void)
 	ADC3_Init();//APP_ADC_Init(EN_ADC3);
 	
 	PF_InitTimer2();
-	Elec_Init();
-	Beep_Init();
-	HW_Pump_init();
+	HW_ELEC_Init();
+	HW_Beep_Init();
+	HW_Pump_Init();
 	HW_Valve_Init();
-	HW_OC_Init();
-	Press_Init();
-	Turn_Motor_Init();
+	HW_LEVEL_OC_Init();
+	HW_Press_Init();
+	//Turn_Motor_Init();
 	Mixing_Motor_Init();
 	LED_Init();
 	LED_Cur_DAC_Init();
 	ADC24Bit_Init();
-	DResistor_Init();
+	HW_ADJ_Resistor_Init();
+	HW_Micro_OC_Init();
 	//OutIn_Motor_Init();
 	
 	Counter_Check_Init();
@@ -1920,11 +1975,11 @@ void EVAL_Init(void)
 	
 #endif
 	Beep(1, 400);
+	
+	
+	
+	
 }
-
-
-
-
 
 
 

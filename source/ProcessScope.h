@@ -271,11 +271,8 @@ UINT8 Set_Press_Add(UINT16 nAdd);
 UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal);
 void Cmd_Wave_Exec(UINT8 nFlag);
 
-// data channel
-UINT8 HW_Enable_Data_Channel(eTestMode eMode);
-UINT8 HW_Disable_Data_Channel(eTestMode eMode);
-UINT8 HW_Clear_Data_Channel(eTestMode eMode);
-UINT8 Data_Circle_Handle(IO_ eTestMode eMode);
+
+
 void Eable_ADC(EN_TypeADC eType);
 void Disable_ADC(EN_TypeADC eType);
 void Reset_ADC_InitDataType(void);
@@ -438,16 +435,14 @@ void Append_Debug_Info(INT8 *pInfo, INT8 *pTemp, UINT16 *pInfoLen);
 //	_STA_ IO_ UINT16 XRAM_ s_nDILen = 0;
 //-----------------------------------------------------------------------------------------
 
-// yaolan_start
-_EXT_ IO_ UINT8 g_Test_Mode;
-_EXT_ IO_ UINT8 g_Micro_Switch;
+
 
 //enum {
 //	TEST_MODE_HGB	= 0,
 //	TEST_MODE_CRP	= 1,
 //	TEST_MODE_END	= 2,
 //};
-void Micro_Switch_Check(void);
+
 UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED);
 UINT8 HGB_Test_Exec(eTestMode eMode);
 UINT8 CRP_Test_Exec(eTestMode eMode);
@@ -489,7 +484,6 @@ void Moto_Work_Time(MOTO_WORK_DIR eDir, UINT16 nStatus);
 _EXT_ UINT8 MT_X_IN_Self_Check(CALL_STYLE_E eCall);
 _EXT_ UINT8 MT_X_OUT_Self_Check(CALL_STYLE_E eCall);
 _EXT_ UINT8 MT_Y_Home_Self_Check(void);
-_EXT_ UINT16 Get_XK_V_Value(void);
 _EXT_ UINT32 WBC_48V_Self_Check(void);
 UINT8 MT_Y_MoveToPosRel_Self_Check(void); 
 _EXT_ UINT8 Negative_Pressure_Self_Check(void);

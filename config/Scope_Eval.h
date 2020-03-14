@@ -48,8 +48,8 @@ typedef enum
 } Com_TypeDef;   
 
 
-
-
+_EXT_ IO_ UINT8 g_Test_Mode;
+_EXT_ IO_ UINT8 g_Micro_Switch;
 
 //-----------------------------------------------------------------------------------------
 //
@@ -217,7 +217,8 @@ typedef enum
 	I_MotorY_IN_OC	= 3,
 	I_MotorY_OUT_OC	= 4,
 	I_ELEC			= 5,
-	I_INPUT_NUM	    = 6
+	I_MICRO_OC		= 6,
+	I_INPUT_NUM	    = 7
 } Input_TypeDef;  
 
 //
@@ -275,7 +276,7 @@ typedef enum
 #define IN_MotorY_OUT_OC_ET_PORT            EXTI_PortSourceGPIOG
 #define IN_MotorY_OUT_OC_ET_PIN             EXTI_PinSource5
 #define IN_MotorY_OUT_OC_ET_IRQn            EXTI9_5_IRQn
-// 5. Elec 
+// 5. PA11 Elec 
 #define IN_ELEC_GPIO_PIN           			GPIO_Pin_11          
 #define IN_ELEC_GPIO_PORT          			GPIOA
 #define IN_ELEC_GPIO_CLK           			RCC_AHB1Periph_GPIOA
@@ -283,7 +284,14 @@ typedef enum
 #define IN_ELEC_ET_PORT            			EXTI_PortSourceGPIOA
 #define IN_ELEC_ET_PIN             			EXTI_PinSource11
 #define IN_ELEC_ET_IRQn            			EXTI15_10_IRQn
-
+// 6. PD1 Micro OC 
+#define IN_MICRO_OC_GPIO_PIN           			GPIO_Pin_1          
+#define IN_MICRO_OC_GPIO_PORT          			GPIOD
+#define IN_MICRO_OC_GPIO_CLK           			RCC_AHB1Periph_GPIOD
+#define IN_MICRO_OC_ET_LINE            			EXTI_Line1
+#define IN_MICRO_OC_ET_PORT            			EXTI_PortSourceGPIOD
+#define IN_MICRO_OC_ET_PIN             			EXTI_PinSource1
+#define IN_MICRO_OC_ET_IRQn            			EXTI1_IRQn
 
 // adc1 and2 use dma, adc3 not
 typedef enum{
@@ -299,41 +307,38 @@ typedef enum{
 #define ADC_SMOOTH_NUM_20	20
 #define ADC_SMOOTH_NUM_30	30
 
-enum{
-	EN_ADC_PRESS	= 0,
-	EN_ADC_XK		= 1,
-	EN_ADC_12V_N	= 2,
-	EN_ADC_12V_P	= 3,
-	EN_ADC_56V_CUR	= 4,
-	EN_ADC_ELEC		= 5,
-	EN_ADC_LED_CUR	= 6,
-	EN_ADC_HGB		= 7,
-	EN_ADC_CRP		= 8,
-	EN_ADC_TEMP		= 9,
-	EN_ADC_END		= 10,
-};
 
-extern IO_ UINT16 g_ADC3_Value[EN_ADC_END];
-
-// XK ADC, PC3_ADC3_IN13	
+//0. XK ADC, PC3_ADC3_IN13	
 #define XK_ADC_PORT							GPIOC
 #define XK_ADC_PIN							GPIO_Pin_3
 #define XK_ADC_SRC							RCC_AHB1Periph_GPIOC
 #define XK_ADC_CHANNEL						ADC_Channel_13
 
-//  PF9_ADC3_IN7, 56V_CUR
+//1.  PF9_ADC3_IN7, 56V_CUR
 #define CUR_56V_ADC_PORT					GPIOF
 #define CUR_56V_ADC_PIN						GPIO_Pin_9
 #define CUR_56V_ADC_SRC						RCC_AHB1Periph_GPIOF
 #define CUR_56V_ADC_CHANNEL					ADC_Channel_7
 
-// PC0_ADC123_IN10, Temperature
-#define TEMP_ADC_PORT						GPIOC
-#define TEMP_ADC_PIN						GPIO_Pin_0
-#define TEMP_ADC_SRC						RCC_AHB1Periph_GPIOC
-#define TEMP_ADC_CHANNEL					ADC_Channel_10
+//2. elec ADC3_IN6 PF8
+#define ELEC_ADC_PORT							GPIOF
+#define ELEC_ADC_PIN							GPIO_Pin_8
+#define ELEC_ADC_SRC							RCC_AHB1Periph_GPIOF
+#define ELEC_ADC_CHANNEL						ADC_Channel_6
 
-// PC2_ADC123_IN12 , Press
+//3. 12V N
+#define CUR12N_ADC_PORT						GPIOA
+#define CUR12N_ADC_PIN						GPIO_Pin_3
+#define CUR12N_ADC_SRC						RCC_AHB1Periph_GPIOA
+#define CUR12N_ADC_CHANNEL					ADC_Channel_3
+
+//4. 12V P
+#define CUR12P_ADC_PORT						GPIOF
+#define CUR12P_ADC_PIN						GPIO_Pin_10
+#define CUR12P_ADC_SRC						RCC_AHB1Periph_GPIOF
+#define CUR12P_ADC_CHANNEL					ADC_Channel_8
+
+//5. PC2_ADC123_IN12 , Press
 //#if PRESS_SENSOR_ADC_TYPE
 	#define PRESS_ADC_PORT					GPIOC
 	#define PRESS_ADC_PIN					GPIO_Pin_2
@@ -341,69 +346,99 @@ extern IO_ UINT16 g_ADC3_Value[EN_ADC_END];
 	#define PRESS_ADC_CHANNEL				ADC_Channel_12
 //#endif
 
-// Optical path Signal acquisiton ADC,   SIG1 ==> PF7_ADC3_IN5 ,CRP
-#define SIG1_ADC_PORT						GPIOF
-#define SIG1_ADC_PIN						GPIO_Pin_7
-#define SIG1_ADC_SRC						RCC_AHB1Periph_GPIOF
-#define SIG1_ADC_CHANNEL					ADC_Channel_5
-
-// Optical path Signal acquisiton ADC,   SIG2 ==> PA0_ADC3_IN0 ,HGB
-#define SIG2_ADC_PORT						GPIOA
-#define SIG2_ADC_PIN						GPIO_Pin_0
-#define SIG2_ADC_SRC						RCC_AHB1Periph_GPIOA
-#define SIG2_ADC_CHANNEL					ADC_Channel_0
-
-// 12V N
-#define CUR12N_ADC_PORT						GPIOA
-#define CUR12N_ADC_PIN						GPIO_Pin_3
-#define CUR12N_ADC_SRC						RCC_AHB1Periph_GPIOA
-#define CUR12N_ADC_CHANNEL					ADC_Channel_3
-// 12V P
-#define CUR12P_ADC_PORT						GPIOF
-#define CUR12P_ADC_PIN						GPIO_Pin_10
-#define CUR12P_ADC_SRC						RCC_AHB1Periph_GPIOF
-#define CUR12P_ADC_CHANNEL					ADC_Channel_10
-
-// LED Cur ADC, PF6_ADC3_CH4
+//6. LED Cur ADC, PF6_ADC3_CH4
 #define LED_CUR_ADC_PORT					GPIOF
 #define LED_CUR_ADC_PIN						GPIO_Pin_6
 #define LED_CUR_ADC_SRC						RCC_AHB1Periph_GPIOF
 #define LED_CUR_ADC_CHANNEL					ADC_Channel_4
-// elec ADC3_IN6 PF8
-#define ELEC_ADC_PORT							GPIOF
-#define ELEC_ADC_PIN							GPIO_Pin_8
-#define ELEC_ADC_SRC							RCC_AHB1Periph_GPIOF
-#define ELEC_ADC_CHANNEL						ADC_Channel_6
 
-static IO_ UINT8 g_ADC3_IN[EN_ADC_END] = \
-	{PRESS_ADC_CHANNEL,   XK_ADC_CHANNEL,	   CUR12N_ADC_CHANNEL, \
-	 CUR12P_ADC_CHANNEL,  CUR_56V_ADC_CHANNEL, ELEC_ADC_CHANNEL, \
-	 LED_CUR_ADC_CHANNEL, SIG2_ADC_CHANNEL,    SIG1_ADC_CHANNEL, \
-	 TEMP_ADC_CHANNEL};
+//7. PC0_ADC123_IN10, Temperature
+#define TEMP_ADC_PORT						GPIOC
+#define TEMP_ADC_PIN						GPIO_Pin_0
+#define TEMP_ADC_SRC						RCC_AHB1Periph_GPIOC
+#define TEMP_ADC_CHANNEL					ADC_Channel_10
+
+//8. Optical path Signal acquisiton ADC,   SIG2 ==> PA0_ADC3_IN0 ,HGB and CRP 
+#define Light1_ADC_PORT						GPIOA
+#define Light1_ADC_PIN						GPIO_Pin_0
+#define Light1_ADC_SRC						RCC_AHB1Periph_GPIOA
+#define Light1_ADC_CHANNEL					ADC_Channel_0
+
+////9. Optical path Signal acquisiton ADC,   SIG1 ==> PF7_ADC3_IN5 ,CRP
+//#define Light2_ADC_PORT						GPIOF
+//#define Light2_ADC_PIN						GPIO_Pin_7
+//#define Light2_ADC_SRC						RCC_AHB1Periph_GPIOF
+//#define Light2_ADC_CHANNEL					ADC_Channel_5
 
 
+enum{
+	EN_ADC_XK		= 0,
+	EN_ADC_CUR_56V	= 1,
+	EN_ADC_ELEC		= 2,
+	EN_ADC_CUR12N	= 3,
+	EN_ADC_CUR12P	= 4,
+	EN_ADC_PRESS	= 5,
+	EN_ADC_LED_CUR	= 6,
+	EN_ADC_TEMP		= 7,
+	EN_ADC_Light1	= 8, 
+	EN_ADC_END		= 9,
+};
+extern IO_ UINT16 g_ADC3_Value[EN_ADC_END];
 
+//
+static IO_ UINT8 g_ADC3_IN[EN_ADC_END] = 
+{
+		XK_ADC_CHANNEL,
+		CUR_56V_ADC_CHANNEL,
+		ELEC_ADC_CHANNEL,
+		CUR12N_ADC_CHANNEL,
+		CUR12P_ADC_CHANNEL,
+		PRESS_ADC_CHANNEL,
+		LED_CUR_ADC_CHANNEL,
+		TEMP_ADC_CHANNEL,
+		Light1_ADC_CHANNEL		
+};
+
+// WBC
 void ADC1_Init(void);
+// RBC,PLT
 void ADC2_Init(void);
+// Others, g_ADC3_Value
 void ADC3_Init(void);
 	 
-
-//UINT16 Get_Press(void);
-UINT16 Get_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount);
-UINT16 HW_Press_ADC(void);
-UINT16 Get_XK_ADC(void);
-UINT16 Get_XK_V(void);
-UINT16 Get_12V_N_ADC(void);
-UINT16 Get_12V_P_ADC(void);
-UINT16 Get_56V_Cur_ADC(void);
-UINT16 Get_56V_Cur_V(void);
-//UINT16 Get_LED_Cur_ADC(void);
-UINT16 Get_Temp_ADC(void);	 
-UINT32  HW_Get_ADC_HGB(void);
-UINT32  HW_Get_ADC_CRP(void);
-	 
+UINT16 HW_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount);
+//
+UINT16 HW_XK_ADC(void);
+UINT16 HW_XK_V(void);
+//
+UINT16 HW_56V_Cur_ADC(void);
+UINT16 HW_56V_Cur_V(void);
+//
 UINT16 HW_Elec_ADC(void);
 UINT16 HW_Elec_V(void);
+
+UINT16 HW_CUR12N_ADC(void);
+UINT16 HW_CUR12N_V(void);
+
+UINT16 HW_CUR12P_ADC(void);
+UINT16 HW_CUR12P_V(void);
+//
+UINT16 HW_Press_ADC(void);
+//
+UINT16 HW_LED_Cur_ADC(void);
+UINT16 HW_LED_Cur_V(void);
+//
+UINT16 HW_Temp_ADC(void);
+UINT16 HW_Temp_V(void);
+//
+UINT16 HW_Light1_ADC(void);
+UINT16 HW_Light1_V(void);
+//
+UINT32 HW_HGB_ADC(void);
+UINT32  HW_CRP_ADC(void);
+//
+UINT16  Get_HGB_Value(void);
+UINT32  Get_CRP_Value(void);
 
 
 
@@ -471,7 +506,7 @@ void HW_Press_Init(void);
 //#define PUMP_PWM_LEVEL_CLOSE				0
 //#define PUMP_PWM_LEVEL_BEST				10000
 //#define PUMP_PWM_LEVEL_HIGHEST			25000
-void HW_PUMP_Init(void);
+void HW_Pump_Init(void);
 
 
 // --------- cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS 
@@ -530,23 +565,8 @@ UINT8 PF_InitTimer4(void); // Motor Y
 #define IRQ_MotorX          TIM3_IRQHandler
 #define IRQ_MotorY          TIM4_IRQHandler
 
-// function declaration, using the timer's interrupt
-TIM_TypeDef*  CODE_ MTx_Timer[Motor_End] = {TIM3, TIM4};
-// 3.timer control
-// 1) timer init
-//#define MTx_TIMER_INIT(ch)               {PF_InitMotorTimer(ch);}
-// 2) enable the interrupt 
-#define MTx_TIMER_INTERRUPT_ON(ch)         {TIM_ITConfig(MTx_Timer[ch], TIM_IT_Update, ENABLE);}
-// 3) disable the interrupt
-#define MTx_TIMER_INTERRUPT_OFF(ch)        {TIM_ITConfig(MTx_Timer[ch], TIM_IT_Update, DISABLE);}
-// 4) clean the flag of interrupt
-#define MTx_TIMER_INTERRUPT_FLAG_CLEAR(ch) {TIM_ClearITPendingBit(MTx_Timer[ch] , TIM_FLAG_Update);}
-// 5) counting is on 
-#define MTx_TIMER_COUNT_ON(ch)             {TIM_Cmd(MTx_Timer[ch], ENABLE);} 
-// 6) counting is off
-#define MTx_TIMER_COUNT_OFF(ch)            {TIM_Cmd(MTx_Timer[ch], DISABLE);}
-// 7) change the reloaded value and don't effect the counter's value
-#define MTx_TIMER_LOAD(ch, VALUE)          {TIM_SetAutoreload(MTx_Timer[ch], (VALUE));} // {TIM_SetCounter(MTx_Timer[ch], (VALUE));}  
+
+
 
 // timer3,4 irq handler
 void MTx_IoMinitor(enum eMvMotor eMotor);
@@ -562,7 +582,9 @@ void Motor_Clk_Reset(enum eMvMotor eMotor);
 
 
 void PF_InitMotor(enum eMvMotor eMotor);
+// OC
 void HW_LEVEL_OC_Init(void);
+// Valve
 void HW_Valve_Init(void);
 UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir);
 void HW_ELEC_Init(void);
@@ -570,9 +592,11 @@ void HW_ELEC_Init(void);
 void HW_Beep_Init(void);
 void Beep(UINT8 nNum, UINT32 nTime);
 
-
-
-
+#define IRQ_Micro_OC  EXTI1_IRQHandler
+void HW_Micro_OC_Init(void);
+void HW_Micro_OC_IRQ_Disable(void);
+UINT8 Get_Micro_OC_Status(void);
+void Micro_Switch_Check(void);
 
 
 

@@ -94,9 +94,9 @@ _EXT_ IO_ struct tMvMotorPara   XRAM_ g_atMotorPara[MV_MOTOR_NUM];   // parament
 
 
 //-------------------------------------------------------------- CX2000_C API START --------------------
+// function declaration, using the timer's interrupt
 
 void MTx_PWM_ISR(enum eMvMotor eMotor);
-
 
 
 _EXT_ UINT8  MV_InitPara_V3(enum eMvMotor eMotor, 

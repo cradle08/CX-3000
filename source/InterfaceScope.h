@@ -127,13 +127,13 @@ UINT8  HW_LED_Off(UINT8 index);
 
 // perpher adc
 UINT16 HW_Get_ADC_Perip(UINT8 Index);
-INT32 HW_Get_Press();
+
 
 // current v
 UINT16 HW_Get_ADC_V_Cur(UINT8 Index);
 UINT16 Get_V_HGB_LED(void);
 UINT32 Get_V_CRP_LED(void);
-UINT16 Get_XK_V_Value(void);
+UINT32 Get_WBC_V_Value(void);
 UINT16 Get_48_V_Value(void);
 
 // enable HGB CRP adc channel
@@ -155,6 +155,27 @@ UINT8 Poll_SendDMA_ADC2_Data(UINT32 nCmd);
 
 
 
+
+//------------------------------------------------------ CX2000_B API START --------------------
+_EXT_ UINT8  HW_LEVEL_GetOC_V2(UINT8 chIndex);  //todo
+_EXT_ UINT8  HW_Valve_On_V2(UINT8 chIndex);
+_EXT_ UINT8  HW_Valve_Off_V2(UINT8 chIndex);
+_EXT_ UINT8  HW_PUMP_Pulse_V2(UINT32 nFreq, enum eDirection eDir);
+_EXT_ UINT8  hw_filter_get_electrode_V2(UINT8 chIndex);
+_EXT_ UINT8  HW_ADJ_SetResistor_V2(UINT8 chIndex, UINT8 chValue); //todo
+INT32 HW_Press_Value_V2(void);
+UINT32 Get_WBC_V_Value_V2(void);
+_EXT_ UINT8  HW_LWIP_Working_V2(UINT32 nTickList, UINT32 nTickAdc, EN_FPGA_DATA_FLAG eFlag);
+// enable the WBC
+_EXT_ UINT8  HW_EN_WBC(enum eFlag bOn);
+_EXT_ void  HW_Start_WBC(void);
+_EXT_ void  HW_End_WBC(void);
+
+
+//------------------------------------------------------ CX2000_B API END-----------------------
+//
+//
+//
 //------------------------------------------------------ CX2000_C API START --------------------
 _EXT_ UINT8  HW_LEVEL_GetOC_V3(UINT8 chIndex);
 _EXT_ UINT8  HW_Valve_On_V3(UINT8 chIndex);
@@ -162,8 +183,23 @@ _EXT_ UINT8  HW_Valve_Off_V3(UINT8 chIndex);
 _EXT_ UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir);
 _EXT_ UINT8  hw_filter_get_electrode_V3(UINT8 chIndex);
 _EXT_ UINT8  HW_ADJ_SetResistor_V3(UINT8 chIndex, UINT8 chValue);
+INT32 HW_Press_Value(void);
+UINT32 Get_WBC_V_Value_V3(void);
+UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag, IO_ eTestMode eMode);
+void Clear_FPGA_FIFO_Data(void); // function like: HW_LWIP_Working_V2
 
+
+UINT8 HW_Start_BC(eTestMode eMode);
+
+
+// data channel
+UINT8 HW_Enable_Data_Channel(eTestMode eMode);
+UINT8 HW_Disable_Data_Channel(eTestMode eMode);
+UINT8 HW_Clear_Data_Channel(eTestMode eMode);
+UINT8 Data_Circle_Handle(IO_ eTestMode eMode);
 //------------------------------------------------------ CX2000_C API END-----------------------
+
+
 
 // 电机的控制接口声明
 // init
@@ -232,10 +268,7 @@ _EXT_ UINT8  HW_SW_AdcWBC(enum eFlag bSw);
 _EXT_ UINT8  HW_SW_AdcRBC(enum eFlag bSw);
 
 //------------------------------
-// enable the WBC
-_EXT_ UINT8  HW_EN_WBC(enum eFlag bOn);
-_EXT_ void  HW_Start_WBC(void);
-_EXT_ void  HW_End_WBC(void);
+
 
 
 void Send_Last_FIFO_Data(void);
@@ -243,10 +276,10 @@ void Send_Last_FIFO_Data(void);
 // get the data from the data buffer 
 _EXT_ UINT8  HW_DATA_GetData(UINT16* pnData, UINT16* pnLen, UINT16* pnStatus);
 _EXT_ UINT8 HW_DATA_ClearData(UINT16 * pnData, UINT16 * pnLen, UINT16 * pnStatus);
-void Clear_FPGA_FIFO_Data(void);
+
 //------------------------------
 // 
-_EXT_ UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc, EN_FPGA_DATA_FLAG eFlag);
+
 _EXT_ UINT8  HW_LWIP_MainLine(void);
 //
 _EXT_ UINT8  HW_LWIP_Working_Recv_Handle(UINT32 nTickList, UINT32 nTickAdc);

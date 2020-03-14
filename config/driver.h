@@ -8,7 +8,7 @@
 #include "processScope.h"
 #include "stm32f4xx_tim.h"
 
-#define PRESS_SENSOR_ADC_TYPE		0
+//#define PRESS_SENSOR_ADC_TYPE		1
 //#if PRESS_SENSOR_ADC_TYPE
 //	#define ADC3_CHECK_NUM			7
 //#else
@@ -214,7 +214,7 @@ UINT8 Turn_Motor_Select_LED(UINT8 nIndex);
 //void Turn_Motor_Select_LED(UINT8 nIndex);
 //void Turn_Motor_Power(UINT8 nOpt);
 
-
+/*
 // OC for micro switch(cx3000), PD6
 #define MICRO_OC_PORT					GPIOD
 #define MICRO_OC_PIN					GPIO_Pin_6
@@ -228,6 +228,7 @@ UINT8 Turn_Motor_Select_LED(UINT8 nIndex);
 #define MICRO_OC_EXIT_IRQ				EXTI9_5_IRQn
 void Micro_OC_Init(void);
 void Micro_OC_Exit_Disable(void);
+*/
 
 // PD8, check counter exist or not
 #define COUNTER_CHECK_GPIO_PORT				GPIOD

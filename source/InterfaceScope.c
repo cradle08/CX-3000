@@ -1287,6 +1287,10 @@ void  HW_FPGA_RST_L(void)
 //------------------------------
 // I/Os control
 
+UINT8  HW_Valve_On(UINT8 chIndex)
+{
+	HW_Valve_On_V3(chIndex);
+}
 
 UINT8  HW_Valve_On_V3(UINT8 chIndex)
 {
@@ -1300,48 +1304,15 @@ UINT8  HW_Valve_On_V3(UINT8 chIndex)
 }
 
 
-UINT8  HW_Valve_On(UINT8 chIndex)
+
+
+UINT8  HW_Valve_Off(UINT8 chIndex)
 {
-    IO_ UINT8  XRAM_ chOffset = 0;
-    IO_ UINT32 IRAM_  nAddr     = 0;
-    IO_ UINT16 IRAM_  anBuffer[2];
-
-    // attention: 0-on, 1-off.
-
-    // fpga
-    /* if( (chIndex >= 0) && (chIndex <= 5) )    // 0 ~ 5 */
-    if (chIndex <= 5)   /* 0 ~ 5 */
-    {
-        chOffset = chIndex - 0;
-        //m_nIoValves |= ((UINT16)1 << chOffset);
-        m_nIoValves &= ~((UINT16)1 << chOffset);
-        // address
-        nAddr = (UINT32)FPGA_WR_VALVE_01_06;
-        // value
-        anBuffer[0] = m_nIoValves;
-        // write to the fpga
-        FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-        //
-        printf("valve %d on\r\n", chIndex);
-    }
-    // main mcu
-    else if ((chIndex >= 6) && (chIndex <= 20))
-    {
-        // keep
-    }
-    // error
-    else
-    {
-        SYS_ErrorMark((UINT8)ERR_COMMAND_NO_VALID, chIndex);
-        return e_Feedback_Error;
-    }
-    return e_Feedback_Success;
+	HW_Valve_Off_V3(chIndex);
 }
 
-
-
-
-UINT8  HW_Valve_Off_V3(UINT8 chIndex)
+//
+UINT8 HW_Valve_Off_V3(UINT8 chIndex)
 {
 	if(chIndex == INDEX_VALVE_PUMP) 
 	{
@@ -1352,11 +1323,13 @@ UINT8  HW_Valve_Off_V3(UINT8 chIndex)
 	return 0;
 }		
 
-	
 
 //------------------------------
 // DC motor control
-		
+UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
+{
+	HW_PUMP_Pulse_V3(nFreq, eDir);
+}
 //
 UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir)
 {
@@ -1365,73 +1338,11 @@ UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir)
 	}else{
 		TIM_SetCompare1(PUMP_PWM_TIM, nFreq);
 	}
+	return 0;
 }
 
-	
 
-UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
-{
-	IO_ UINT32 IRAM_  nAddr 	= 0;
-	IO_ UINT16 IRAM_  anBuffer[2];
-	//
-	IO_ UINT32 XRAM_  nFqCnt    = 0;
 
-	//----- 1. direction -----
-	// address
-	nAddr = (UINT32)FPGA_WR_PUMP_DIR;
-	// value
-	if (e_Dir_Neg == eDir)
-	{
-		anBuffer[0] = 0x00000000;
-	}
-	else
-	{
-		anBuffer[0] = 0x00000001;
-	}
-	// write the fpga
-	FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-	//----- 2. frequence -----
-	// address
-	nAddr = (UINT32)FPGA_WR_PUMP_FQ_CNT;
-	// value
-	// attentio: the fpga's sysclk = 25000000Hz
-#if 0  // 2015_04_08-11shi-changed by LHT	
-	nFqCnt = 12500000 / (nFreq + 1);      // nFreq != 0, half-freq-count, 12.5MHz/nFreq
-#else
-	if (nFreq >= 25000)
-	{
-		nFqCnt = 25000;
-	}
-	else
-	{
-		nFqCnt = nFreq;
-	}
-#endif
-	anBuffer[0] = (UINT16)(nFqCnt & 0xFFFF);
-	anBuffer[1] = (UINT16)((nFqCnt >> 16) & 0xFFFF);
-	// write the fpga
-	FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 2); // 2 half-word
-	//----- 3. run or stop -----
-	// address
-	nAddr = (UINT32)FPGA_WR_PUMP_RUN;
-	// value
-	if (0 == nFreq)  // stop
-	{
-		anBuffer[0] = 0x00000000;
-		//
-		printf("pump off\r\n");
-	}
-	else             // run
-	{
-		anBuffer[0] = 0x00000001;
-		//
-		printf("pump on at %0.5d ticks per ms (total 25000 ticks per ms)\r\n", (int)nFqCnt);
-	}
-	// write the fpga
-	FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
-
-	return e_Feedback_Success;
-}
 
 	
 //
@@ -1484,6 +1395,8 @@ _EXT_ UINT8  HW_ADJ_SetResistor_V3(UINT8 chIndex, UINT8 chValue)
 	DREGISTER_CS_1();
 	Delay_US(2);
 	DREGISTER_CLK_1();
+	
+	return chValue;
 }
 
 
@@ -1800,20 +1713,14 @@ UINT32 Get_V_CRP_LED(void)
 	return nRet;
 }
 
-//yaolan_
-UINT16 Get_XK_V_Value(void)
+
+UINT32 Get_WBC_V_Value(void)
 {
-	UINT16 nVal, nRet;
-#if USE_STM32F407_ONLY
-	nVal = Get_XK_ADC();
-	nRet = nVal*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
-#else
-	nVal = HW_Get_ADC_Perip(ADC_V_XK_INDEX);
-	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_12;
-//	printf("XK_V: ADC=%d, V=%d\r\n", (int)nVal, (int)nRet);
-#endif
-	return nRet;
+	UINT32 Get_WBC_V_Value_V3();
 }
+
+
+
 
 UINT8 Get_WBC_V_Status(UINT32 nV)
 {
@@ -1821,7 +1728,7 @@ UINT8 Get_WBC_V_Status(UINT32 nV)
 	UINT16 nWBC;
 	for(i = 0; i < 5; i++)
 	{
-		nWBC = Get_XK_V_Value();
+		nWBC = Get_WBC_V_Value();
 		if(nWBC <= nV) num++;
 //		printf("wbc_v = %d\r\n", nWBC);
 //		IT_SYS_DlyMs(1);
@@ -2095,42 +2002,13 @@ UINT32 HW_ADC_PressPara(UINT32 nK, UINT32 nB)
 }
 
 
-//------------------------------
-// get the level of the OC and the electrode
-/* Ô¤ÁôµÄÐü¿ÕÎ»·µ»Ø×´Ì¬1±íÊ¾¹âñîÎ´±»ÕÚµ² */
 
-UINT8  HW_LEVEL_GetOC_V3(UINT8 chIndex)
-{
-	UINT8 nVal;
-	switch(chIndex)
-	{
-		case OC_HOME_CHANNEL: // Motor X IN OC
-		{
-			nVal =  EVAL_InputGetState(I_MotorX_IN_OC);
-		}
-		break;
-		case OC_OUT_CHANNEL: // Motor X OUT OC
-		{
-			nVal =  EVAL_InputGetState(I_MotorX_OUT_OC);
-		}
-		break;
-		case OC_SAMPLE_RELEA_CHANNEL: // Motor Y IN OC
-		{
-			nVal = EVAL_InputGetState(I_MotorY_IN_OC);
-		}
-		break;
-		case OC_SAMPLE_HOLD_CHANNEL: // Motor Y OUT OC
-		{
-			nVal = EVAL_InputGetState(I_MotorY_OUT_OC);
-		}
-		break;
-		default:break;
-	}
-	return nVal;
-}
+
 	
 
-//
+
+// get the level of the OC and the electrode
+// Ô¤ÁôµÄÐü¿ÕÎ»·µ»Ø×´Ì¬1±íÊ¾¹âñîÎ´±»ÕÚµ² 
 UINT8  HW_LEVEL_GetOC(UINT8 chIndex)
 {
 	IO_ UINT32 IRAM_  nAddr 	= 0;
@@ -2247,6 +2125,12 @@ UINT8  HW_LEVEL_GetElectrode(UINT8 chIndex)
 #define  ELECTRODE_GET_FILTER_NUM  5
 UINT8 hw_filter_get_electrode(UINT8 chIndex)
 {
+	hw_filter_get_electrode_V3(chIndex);
+}
+
+
+UINT8 hw_filter_get_electrode_V2(UINT8 chIndex)
+{
     IO_ UINT8 n, cnt = 0;
     for (n = 0; n < ELECTRODE_GET_FILTER_NUM; n++)
     {
@@ -2268,11 +2152,15 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
 
 _EXT_ UINT8 hw_filter_get_electrode_V3(UINT8 chIndex)
 {
+	UINT8 nVal = 0xFF;
 	if(chIndex == INDEX_ELECTRODE)
 	{
-		 EVAL_InputGetState(I_ELEC);
-	}//else if
+		nVal = EVAL_InputGetState(I_ELEC);
+	}// else if
+	
+	return nVal;
 }
+
 
 // the ADC of the slave CPU
 UINT16 HW_ADC_SlaveGetADC(void)
@@ -2378,6 +2266,141 @@ UINT8  HW_EN_WBC(enum eFlag bOn)
     FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
     //
     return e_Feedback_Success;
+}
+
+
+// 
+UINT8 HW_Disable_Data_Channel(eTestMode eMode)
+{
+
+#if 1  // #if USE_STM32F407_ONLY
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+			Disable_ADC(EN_ADC1);
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+			Disable_ADC(EN_ADC2);
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+			Disable_ADC(EN_ADC2);
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+			Disable_ADC(EN_ADC2);
+		}
+		break;
+		default:break;
+	}
+#else
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+			HW_End_WBC();
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+			HW_End_WBC();
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+			HW_End_WBC();
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+			HW_End_WBC();
+		}
+		break;
+		default:break;
+	}
+#endif
+	return 0;
+}
+
+UINT8 HW_Clear_Data_Channel(eTestMode eMode)
+{
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+		
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+		
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+		
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+		
+		}
+		break;
+		default:break;
+	}
+	
+	return 0;
+}
+
+UINT8 HW_Start_BC(eTestMode eMode)
+{
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+			printf("---WBC MODE---\r\n");
+			Eable_ADC(EN_ADC1);
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+			printf("---RBC MODE---\r\n");
+			Eable_ADC(EN_ADC2);
+//			Disable_ADC(EN_ADC2);
+//			Eable_ADC(EN_ADC2);
+			
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+			printf("---PLT MODE---\r\n");
+			Eable_ADC(EN_ADC2);
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+			printf("---RBC PLT MODE---\r\n");
+			Eable_ADC(EN_ADC2);
+		}
+		break;
+		default:break;
+	}
+
+	return 0;
+}
+
+
+void HW_Enable_Data_Channel(eTestMode eMode)
+{
+	//CX2000_C,CX3000
+	HW_Start_BC(eMode);
+	//CX2000_B
+	//HW_Start_WBC();
 }
 
 
@@ -2810,6 +2833,96 @@ UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 }
 
 
+UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag, IO_ eTestMode eMode)
+{
+
+	Data_Circle_Handle(eMode);
+}
+
+UINT8  HW_LWIP_Working_V2(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag)
+{
+    IO_ UINT8 chReturn;
+	IO_ UINT16 nTemp;
+    //=====================================================
+    // 1. lwip handing
+    // 1) period task
+    // ---check if any packet received
+//    if (ETH_CheckFrameReceived())
+//    {
+//        // for debug, the "arp frame"
+//        // printf("-");
+//        // process received ethernet packet
+//        LwIP_Pkt_Handle();
+//        // udp_echoserver_senddata("abcd", 4);
+//			  //--------------------------------------------
+//        // 2) message handling
+//        PL_NET_CheckingFrame((UINT8 *)g_NET_achCmdRvBuf);
+//        if (E_PL_BUF_ENABLE == PL_NET_IsRecvCommandValid())
+//        {
+//            MSG_Handling((UINT8 *)g_NET_achCmdRvBuf, (UINT8 *)g_achFbkSdBuf);
+//            //
+//            PL_NET_ResetRecvComand();
+//        }
+//    }
+    // ---handle periodic timers for LwIP
+    LwIP_Periodic_Handle(IT_SYS_GetTicks());
+
+    //=====================================================
+#if 1
+    // 2. data feedback
+    s_anBufNet[0] = 0x5344;
+    s_anBufNet[1] = 0x4457;
+	s_anBufNet[2] = 0x00;
+	s_anBufNet[3] = 0x00;
+	
+    chReturn = HW_DATA_GetData(((UINT16 *)(s_anBufNet + 4)), (UINT16 *)&s_nDataLen, (UINT16 *)&s_nStatus);
+    // s_anBufNet[3] = s_nStatus;
+  
+    if (e_Feedback_Success == chReturn)
+    {
+		g_Frame_Count++;
+		if(eFlag == EN_SEND_FPGA_DATA){
+			
+			g_Udp_Count++;
+			s_anBufNet[2] = (UINT16)(((g_Udp_Count&0xFF000000) >> 24) | ((g_Udp_Count&0x00FF0000) >> 8));
+			s_anBufNet[3] = (UINT16)(((g_Udp_Count&0x000000FF) << 8) | ((g_Udp_Count&0x0000FF00)>>8));
+			chReturn = udp_echoserver_senddata(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
+			if (e_Feedback_Fail == chReturn)
+			{
+				g_Send_Fail++;
+				IT_SYS_DlyMs(1);
+			}
+		}
+//		else if(eFlag == EN_DROP_FPGA_DATA){// else do not send to app
+			
+//		}
+        //----------------------------------------------------------
+        // debug..., printf the get data via serial , 20190315
+//      PL_COM_SendNChar(((UINT8 *)(s_anBufNet + 0)), ((s_nDataLen + 4) * 2));
+    }else{
+		g_Frame_Count++;
+	}
+		
+#endif
+
+#if 0
+    //-----------------------------------------------------
+    // for testing:
+    // take attention: the array "s_achBufNet" must be put
+    //				   out of the function "main", or it will
+    //				   case error.
+    chReturn = udp_echoserver_senddata((UINT8 *)g_achFbkSdBuf, 1200);
+    if (e_Feedback_Fail == chReturn)
+    {
+        IT_SYS_DlyMs(1);
+    }
+#endif
+
+    return e_Feedback_Success;
+}
+
+
+//UINT8  HW_LWIP_Working_V3(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag, IO_ eTestMode eMode)
 UINT8 Data_Circle_Handle(IO_ eTestMode eMode)
 {
 	IO_ UINT8 nRet = 0xFF;
@@ -2996,7 +3109,7 @@ UINT8  HW_LWIP_MainLine(void)
 
 
 #if 0
-    //-----------------------------------------------------
+    
     // for testing:
     // take attention: the array "s_achBufNet" must be put
     //				   out of the function "main", or it will
@@ -3011,7 +3124,7 @@ UINT8  HW_LWIP_MainLine(void)
 }
 
 
-//-----------------------------------------------------------------------------------------
+
 // reset by software
 UINT8 MT_RESET_Software(void)
 {
@@ -3023,7 +3136,7 @@ UINT8 MT_RESET_Software(void)
     return e_Feedback_Success;
 }
 
-//-----------------------------------------------------------------------------------------
+
 //
 UINT8  MSG_SampleBoardFeedback(void)
 {
@@ -3046,10 +3159,174 @@ UINT8  MSG_SampleBoardFeedback(void)
 }
 
 
+//------------------------------------------------------------------CX2000_B API START---------------------------
+
+
+UINT8  HW_Valve_On_V2(UINT8 chIndex)
+{
+    IO_ UINT8  XRAM_ chOffset = 0;
+    IO_ UINT32 IRAM_  nAddr     = 0;
+    IO_ UINT16 IRAM_  anBuffer[2];
+
+    // attention: 0-on, 1-off.
+
+    // fpga
+    /* if( (chIndex >= 0) && (chIndex <= 5) )    // 0 ~ 5 */
+    if (chIndex <= 5)   /* 0 ~ 5 */
+    {
+        chOffset = chIndex - 0;
+        //m_nIoValves |= ((UINT16)1 << chOffset);
+        m_nIoValves &= ~((UINT16)1 << chOffset);
+        // address
+        nAddr = (UINT32)FPGA_WR_VALVE_01_06;
+        // value
+        anBuffer[0] = m_nIoValves;
+        // write to the fpga
+        FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+        //
+        printf("valve %d on\r\n", chIndex);
+    }
+    // main mcu
+    else if ((chIndex >= 6) && (chIndex <= 20))
+    {
+        // keep
+    }
+    // error
+    else
+    {
+        SYS_ErrorMark((UINT8)ERR_COMMAND_NO_VALID, chIndex);
+        return e_Feedback_Error;
+    }
+    return e_Feedback_Success;
+}
+
+//
+UINT8  HW_Valve_Off_V2(UINT8 chIndex)
+{
+    IO_ UINT8  XRAM_ chOffset = 0;
+    IO_ UINT32 IRAM_  nAddr 	= 0;
+    IO_ UINT16 IRAM_  anBuffer[2];
+
+    // attention: 0-on, 1-off.
+
+    // fpga
+    /* if( (chIndex >= 0) && (chIndex <= 5) )    // 0 ~ 5 */
+    if (chIndex <= 5)
+    {
+        /* if( (chIndex >= 0) && (chIndex <= 15) ) */
+        if (chIndex <= 15)
+        {
+            chOffset = chIndex - 0;
+            m_nIoValves |= ((UINT16)1 << chOffset);
+            //m_nIoValves &= ~((UINT16)1 << chOffset);
+            // address
+            nAddr = (UINT32)FPGA_WR_VALVE_01_06;
+            // value
+            anBuffer[0] = m_nIoValves;
+        }
+        // write to the fpga
+        FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+        //
+        printf("valve %d off\r\n", chIndex);
+    }
+    // main mcu
+    else if ((chIndex >= 6) && (chIndex <= 20))
+    {
+        // keep
+    }
+    // error
+    else
+    {
+        SYS_ErrorMark((UINT8)ERR_COMMAND_NO_VALID, chIndex);
+        return e_Feedback_Error;
+    }
+
+    return e_Feedback_Success;
+}
+
+//
+UINT8  HW_PUMP_Pulse_V2(UINT32 nFreq, enum eDirection eDir)
+{
+	IO_ UINT32 IRAM_  nAddr 	= 0;
+	IO_ UINT16 IRAM_  anBuffer[2];
+	//
+	IO_ UINT32 XRAM_  nFqCnt    = 0;
+
+	//----- 1. direction -----
+	// address
+	nAddr = (UINT32)FPGA_WR_PUMP_DIR;
+	// value
+	if (e_Dir_Neg == eDir)
+	{
+		anBuffer[0] = 0x00000000;
+	}
+	else
+	{
+		anBuffer[0] = 0x00000001;
+	}
+	// write the fpga
+	FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+	//----- 2. frequence -----
+	// address
+	nAddr = (UINT32)FPGA_WR_PUMP_FQ_CNT;
+	// value
+	// attentio: the fpga's sysclk = 25000000Hz
+#if 0  // 2015_04_08-11shi-changed by LHT	
+	nFqCnt = 12500000 / (nFreq + 1);      // nFreq != 0, half-freq-count, 12.5MHz/nFreq
+#else
+	if (nFreq >= 25000)
+	{
+		nFqCnt = 25000;
+	}
+	else
+	{
+		nFqCnt = nFreq;
+	}
+#endif
+	anBuffer[0] = (UINT16)(nFqCnt & 0xFFFF);
+	anBuffer[1] = (UINT16)((nFqCnt >> 16) & 0xFFFF);
+	// write the fpga
+	FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 2); // 2 half-word
+	//----- 3. run or stop -----
+	// address
+	nAddr = (UINT32)FPGA_WR_PUMP_RUN;
+	// value
+	if (0 == nFreq)  // stop
+	{
+		anBuffer[0] = 0x00000000;
+		//
+		printf("pump off\r\n");
+	}
+	else             // run
+	{
+		anBuffer[0] = 0x00000001;
+		//
+		printf("pump on at %0.5d ticks per ms (total 25000 ticks per ms)\r\n", (int)nFqCnt);
+	}
+	// write the fpga
+	FPGA_WriteBuffer((UINT16 *)anBuffer, nAddr, 1); // 1 half-word
+
+	return e_Feedback_Success;
+}
+
+
+UINT32 Get_WBC_V_Value_V2(void)
+{
+	UINT16 nWord;
+	UINT32 nValue;
+
+	nWord = HW_ADC_SpiGetADC(INDEX_ADC_48V);
+	nValue = nWord*10000/4096;
+//	printf("WBC_V: adc=%d, wbc_v=%d\r\n", nWord, (int)nValue);
+	return nValue;
+}
 
 
 
 
+
+
+//------------------------------------------------------------------CX2000_B API START---------------------------
 
 
 //------------------------------------------------------------------CX2000_C API START---------------------------
@@ -3059,14 +3336,14 @@ INT32 Get_Press_Value(UINT8 nNum)
 	INT32 nPress = 0;
 	for(i = 0; i < nNum; i++)
 	{
-		nPress += HW_Get_Press();
+		nPress += HW_Press_Value();
 	}
 	nPress /= nNum;
 	return nPress;
 }
 
 
-INT32 HW_Get_Press()
+INT32 HW_Press_Value(void)
 {
 	
 	INT32 nVal = 0;
@@ -3074,7 +3351,6 @@ INT32 HW_Get_Press()
 #if (1 == 1)
 	 // IIC Interface Press Sensor
 	 nVal = HW_Press_I2C();
-	 nVal = nVal/2 - 4194304;
 #elif (2 == 0)
 	 // ADC Interface Press Sensor
 	 nVal = HW_Press_ADC();
@@ -3085,16 +3361,48 @@ INT32 HW_Get_Press()
 	 return nVal;
 }
 
+// get the level of the OC and the electrode
+// Ô¤ÁôµÄÐü¿ÕÎ»·µ»Ø×´Ì¬1±íÊ¾¹âñîÎ´±»ÕÚµ² 
+UINT8  HW_LEVEL_GetOC_V3(UINT8 chIndex)
+{
+	UINT8 nVal;
+	switch(chIndex)
+	{
+		case OC_HOME_CHANNEL: // Motor X IN OC
+		{
+			nVal =  EVAL_InputGetState(I_MotorX_IN_OC);
+		}
+		break;
+		case OC_OUT_CHANNEL: // Motor X OUT OC
+		{
+			nVal =  EVAL_InputGetState(I_MotorX_OUT_OC);
+		}
+		break;
+		case OC_SAMPLE_RELEA_CHANNEL: // Motor Y IN OC
+		{
+			nVal = EVAL_InputGetState(I_MotorY_IN_OC);
+		}
+		break;
+		case OC_SAMPLE_HOLD_CHANNEL: // Motor Y OUT OC
+		{
+			nVal = EVAL_InputGetState(I_MotorY_OUT_OC);
+		}
+		break;
+		default:break;
+	}
+	return nVal;
+}
+
+UINT32 Get_WBC_V_Value_V3(void)
+{
+	UINT16 nVal;
+
+	nVal = HW_XK_V();
+	return nVal;
+}
+
+
+
 //------------------------------------------------------------------CX2000_C API END---------------------------
-
-
-
-
-
-
-
-
-
-
 
 #endif

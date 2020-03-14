@@ -23,8 +23,7 @@ const UINT8 softver_edtion[] = "0.0.1";
 IO_ struct CRP_DataType g_CRP_Data;
 
 //
-IO_ UINT8 g_Test_Mode = 0xFF;
-IO_ UINT8 g_Micro_Switch = 0xFF;
+
 
 #ifdef DEBUG_INFO_UP_LOAD
 //	_STA_ IO_ UINT16 XRAM_ pDInfo[DEBUG_INFO_UP_LEN];
@@ -482,7 +481,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			case CMD_CTRL_TEST_RBC_PLT:
             case CMD_CTRL_TEST_WBC: // count func
             {
-				Micro_OC_Exit_Disable();
+				HW_Micro_OC_IRQ_Disable();
 				eMode  = GetTestMode(nCommand);// which cmd was be exec
 				//g_Test_Mode = eMode;
 #if SIMUATION_TEST
@@ -512,7 +511,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				Reset_Udp_Count(0);	
 				Reset_ADC_InitDataType();
 				collect_return_hdl(COLLECT_RET_SUCESS); 
-				Micro_OC_Init();
+				HW_Micro_OC_Init();
 			}
 			break;
 			case CMD_CTRL_TEST_HGB:
@@ -597,7 +596,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_TURN_MOTOR_RESET:
 			{
-				Turn_Motor_Reset();
+				//Turn_Motor_Reset();
 				Msg_Return_Handle_8(e_Msg_Status, CMD_STATUS_TURN_MOTOR_RESET, 0);	
 			}
 			break;
@@ -627,7 +626,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			case CMD_CTRL_MOTOR_SEL_LED:
 			{
 				nShort = 0;
-				Turn_Motor_Select_LED(*(pchCmdBuf + 8));
+				//Turn_Motor_Select_LED(*(pchCmdBuf + 8));
 				nShort = (*(pchCmdBuf + 8)) << 8;
 				nShort |= 0x00; 
 				Msg_Return_Handle_16(e_Msg_Status, CMD_STATUS_MOTOR_SEL_LED, nShort);
@@ -690,7 +689,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;
 			case CMD_CTRL_TURN_MOTOR_CHECK:
 			{
-				Turn_Motor_Goto_Postion(e_Dir_Pos, 10000);
+				//Turn_Motor_Goto_Postion(e_Dir_Pos, 10000);
 			}
 			break;
 			case CMD_CTRL_DEBUG_TEST:
@@ -841,14 +840,14 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			break;	
 			case CMD_QUERY_CUR_V_XK:
 			{
-				nShort = Get_XK_V();
+				nShort = HW_XK_V();
 				printf("Get XK V=%d\r\n", (int)nShort);
 				Msg_Return_Handle_16(e_Msg_Data, CMD_STATUS_CUR_V_XK, nShort);	
 			}	
 			break;
 			case CMD_QUERY_CUR_V_56V:
 			{
-				nShort = Get_56V_Cur_V();
+				nShort = HW_56V_Cur_V();
 				printf("Query Add Press=%d\r\n", (int)nAdd);
 				Msg_Return_Handle_16(e_Msg_Data, CMD_STATUS_CUR_V_56V, nShort);	
 			}	
@@ -893,9 +892,9 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
             {
                 nCommand  = CMD_STATUS_ELECTRODE;
                 bSendBack = e_True;
-                nShort = Get_Elec_V();
+                nShort = HW_Elec_V();
 				
-                *(pchFbkBuf + 0) = Get_Elec_Status();
+                *(pchFbkBuf + 0) = hw_filter_get_electrode_V3(INDEX_ELECTRODE);
                 *(pchFbkBuf + 1) = (nShort >> 8);
                 *(pchFbkBuf + 2) = nShort | 0xFF;
                 nParaLen         = 3;
@@ -1925,18 +1924,7 @@ void Send_Packets_Test(UINT16 Time, UINT32 Num)
 		}
 }
 
-// CRP 
-void Micro_Switch_Check(void)
-{
-	if(EN_CRP_TEST == g_Test_Mode)
-	{
-		if(g_Micro_Switch == EN_CLOSE) // had checked cuvette put in
-		{
-			CRP_Test_Exec(EN_CRP_CALIBRATE);
-			g_Micro_Switch = EN_OPEN;
-		}
-	}
-}
+
 
 
 UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
@@ -1970,7 +1958,7 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 		{
 			nRet = (EN_CRP_TEST << 24) | nRet;
 			LED_Exec(nLED, EN_OPEN); 	 	 		 // open led
-			Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
+			//Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
 			LED_Cur_ADC_Check_Channel(nLED);		 // CD4051 open the channel, and then start to adjust
 			LED_Cur_DAC_Set(LED_840_DEFUALT_CUR_VALUE);
 			LED_Cur_Switch(EN_OPEN);	//led cur open
@@ -1983,7 +1971,7 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 		default:
 		{
 			LED_Exec(nLED, EN_OPEN); 	 	 		 // open led
-			Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
+			//Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
 			LED_Cur_ADC_Check_Channel(nLED);		 // CD4051 open the channel, and then start to adjust
 			LED_Cur_DAC_Set(LED_840_DEFUALT_CUR_VALUE);
 			LED_Cur_Switch(EN_OPEN);	//led cur open
@@ -1997,7 +1985,7 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 	nRet = (nLED << 16) | nRet;
 	nRet = (0 << 8) | nRet;
 	//Turn_Motor_Power(EN_CLOSE);
-	Turn_Motor_Disable();
+	//Turn_Motor_Disable();
 	Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_TEST_MODE_SET, nRet);
 	return 0;
 }
@@ -2070,7 +2058,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 //				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
 //				return 0;
 //			}
-			buffer[i] = HW_Get_ADC_HGB();     
+			buffer[i] = HW_HGB_ADC();     
 			printf("ADC=%d, V=%6.2f\r\n", (int)buffer[i], (float)buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
 		}
@@ -2087,7 +2075,7 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		printf("HGB Calibrate\r\n");
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
-			buffer[i] = HW_Get_ADC_HGB();
+			buffer[i] = HW_HGB_ADC();
 			nSum += buffer[i];
 			printf("HGB ADC=%d, 5V=%6.2f\r\n", (int)buffer[i], (float)buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
@@ -2243,7 +2231,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
 				return 0;
 			}
-			buffer[i] = HW_Get_ADC_CRP();
+			buffer[i] = HW_CRP_ADC();
 			nSum += buffer[i];
 			printf("CRP ADC=%08d, 5V=%6.2f\r\n", (int)buffer[i], (float)(buffer[i])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
@@ -2542,10 +2530,10 @@ UINT8 MSG_TestingFunc(void)
 	nTempTicks = nCurTicks;  
 	nPreTicks = 0;
 	printf("Count Status(before %d.%dS): ticks=%05d, preTicks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
-					(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+					(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
 	sprintf((char*)sTempInfo, "Count Status(before %d.%dS): ticks=%05d, preTicks=%05d,press=%010d, udp=%d, wbc_v=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
-					(int)IT_LIST_GetTicks(),(int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+					(int)IT_LIST_GetTicks(),(int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
@@ -2570,7 +2558,7 @@ UINT8 MSG_TestingFunc(void)
 		if((nCurTicks - nTempTicks1) >= 500) // 1ms per time
 		{
 			nTempTicks1 = nCurTicks;
-			wbc_v = Get_XK_V_Value();
+			wbc_v = Get_WBC_V_Value();
 			printf("%d,", (int)wbc_v);
 #ifdef DEBUG_INFO_UP_LOAD
 			if((nTempTicks1 + 200) > nTempTicks + nPreTimeOutTicks){
@@ -2624,10 +2612,10 @@ UINT8 MSG_TestingFunc(void)
 //			if(EN_WBC_V_LOW == Get_WBC_V_Status(COUNT_WBC_XK_CHECK_V)){ // wbc_v lower than COUNT_WBC_XK_CHECK_V(1.5v)
 //				flag = 1;
 //				printf("\r\nCount Error: (0-1.5s)xiao_kong error, ticks=%08d, preticks=%08d, press=%010d, udp=%d, preticks=%d, wbc_v=%d\r\n", \
-//						(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
+//						(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_WBC_V_Value());
 //#ifdef DEBUG_INFO_UP_LOAD
 //				sprintf((char*)sTempInfo, "\r\nCount Error: (0-1.5s)xiao_kong error: ticks=%08d, preticks=%08d, press=%010d, udp=%d, preticks=%d,wbc_v=%d\r\n", \
-//							(int)IT_LIST_GetTicks(), (int)nPreTicks,(int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
+//							(int)IT_LIST_GetTicks(), (int)nPreTicks,(int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_WBC_V_Value());
 //				Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 //				memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 //				*pDILen = nDILen;
@@ -2638,10 +2626,10 @@ UINT8 MSG_TestingFunc(void)
 //		}
     }
 	printf("\r\nCount Status(after %d.%dS): ticks=%05d, preTicks=%05d, press=%010d, udp=%d, preticks=%d, wbc_v=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
-						(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
+						(int)IT_LIST_GetTicks(), (int)nPreTicks, (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_WBC_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
 	sprintf((char*)sTempInfo, "\r\nCount Status(after %d.%dS): ticks=%05d, preTicks=%05d,press=%010d, udp=%d, preticks=%d,wbc_v=%d\r\n", (int)nPreTimeOutTicks/1000, (int)nPreTimeOutTicks%1000/100,\
-							(int)IT_LIST_GetTicks(), (int)nPreTicks,(int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_XK_V_Value());
+							(int)IT_LIST_GetTicks(), (int)nPreTicks,(int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)nPreTicks, (int)Get_WBC_V_Value());
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
@@ -2652,11 +2640,11 @@ UINT8 MSG_TestingFunc(void)
 	{
 		printf("Count Error: WBC Elec Touch Error, ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
 		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
-		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 #ifdef DEBUG_INFO_UP_LOAD	
 		sprintf((char*)sTempInfo, "Count Error: WBC Elec Touch Error, wbc_v error, ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
 		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count, \
-		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		*pDILen = nDILen;
 #endif
@@ -2669,11 +2657,11 @@ UINT8 MSG_TestingFunc(void)
 //	{
 //		printf("Count Error: WBC V Error, ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
 //		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
-//		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+//		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 //#ifdef DEBUG_INFO_UP_LOAD	
 //		sprintf((char*)sTempInfo, "Count Error: WBC V Error, ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%09d\r\n",\
 //		(int)IT_LIST_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
-//		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+//		(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 //		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 //		*pDILen = nDILen;
 //#endif
@@ -2687,10 +2675,10 @@ UINT8 MSG_TestingFunc(void)
     nCurTicks = IT_SYS_GetTicks();
     nTempTicks = nCurTicks;
 	printf("Count Status(before 3S): ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
-				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
 	sprintf((char*)sTempInfo, "Count Status((before 3S)): ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
-				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
@@ -2706,10 +2694,10 @@ UINT8 MSG_TestingFunc(void)
         if (ELECTRODE_WASTE == nTemp)  /* 流程正常结束 */
 		{
 			printf("Count Error: the ELECTRODE=%d tigger(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", nTemp,\
-							(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+							(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
 			sprintf((char*)sTempInfo, "Count Error: the ELECTRODE=%d tigger(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", nTemp,\
-								(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+								(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
@@ -2722,10 +2710,10 @@ UINT8 MSG_TestingFunc(void)
 		if(nPress <= COUNT_MIN_PRESS)
 		{
 			printf("Count Error: the press error(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
-							(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+							(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
 			sprintf((char*)sTempInfo, "Count Error: the press error(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
-								(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+								(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
@@ -2736,10 +2724,10 @@ UINT8 MSG_TestingFunc(void)
 		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }
 	printf("Count Status(after 3S): ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
-				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+				(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 #ifdef DEBUG_INFO_UP_LOAD
 	sprintf((char*)sTempInfo, "Count Status(after 3S): ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
-							(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+							(int)IT_LIST_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)Get_WBC_V_Value());
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
@@ -2757,10 +2745,10 @@ UINT8 MSG_TestingFunc(void)
 	IT_LIST_SetTicks(nPreTicks);
 	g_Frame_Count = 0;
 	printf("Count Status(before count): ticks=%05d, adc_ticks=%05d, press=%010d, udp=%d, q=%d, f=%d, wbc_v=%d, maxt=%d\r\nWBC_V: ", \
-		(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)Get_XK_V_Value(), (int)nTestTimeOutTicks);
+		(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)Get_WBC_V_Value(), (int)nTestTimeOutTicks);
 #ifdef DEBUG_INFO_UP_LOAD
 		sprintf((char*)sTempInfo, "Count Status(before count): ticks=%05d, adc_ticks=%05d, press=%010d, udp=%d, q=%d, f=%d, wbc_v=%d, maxt=%d\r\nWBC_V: ", \
-		(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)Get_XK_V_Value(),(int)nTestTimeOutTicks);
+		(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail, (int)Get_WBC_V_Value(),(int)nTestTimeOutTicks);
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
@@ -2788,7 +2776,7 @@ UINT8 MSG_TestingFunc(void)
 		//------get wbc data every 500ms------
 //		if((nCurTicks - nTempTicks1) >= 1000) // 1ms per time
 //		{
-//			wbc_v = Get_XK_V_Value();
+//			wbc_v = Get_WBC_V_Value();
 //			printf("%d,", (int)wbc_v);
 //#ifdef DEBUG_INFO_UP_LOAD
 //			sprintf((char*)sTempInfo,"%d,", (int)wbc_v);
@@ -2806,11 +2794,11 @@ UINT8 MSG_TestingFunc(void)
 			//Send_Last_FIFO_Data();
 			printf("\r\nCount Status: Success, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
-				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+				 nTemp,(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 #ifdef DEBUG_INFO_UP_LOAD
 	    	sprintf((char*)sTempInfo, "\r\nCount Status: Success, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
-				nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+				nTemp,(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 			*pDILen = nDILen;
@@ -2826,11 +2814,11 @@ UINT8 MSG_TestingFunc(void)
 //			Send_Last_FIFO_Data();	
 //			printf("\r\nCount Error: press error, ticks=%05d, adc_ticks=%05%, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 //				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
-//				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)nPress);
+//				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_WBC_V_Value(), (int)nPress);
 //#ifdef DEBUG_INFO_UP_LOAD		
 //			sprintf((char*)sTempInfo, "\r\nCount Error: press error, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 //				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
-//				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)nPress);
+//				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_WBC_V_Value(), (int)nPress);
 //			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 //			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 //			*pDILen = nDILen;
@@ -2855,11 +2843,11 @@ UINT8 MSG_TestingFunc(void)
 	//nTemp = hw_filter_get_electrode(INDEX_ELECTRODE);
 	printf("Count Status(after count): ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)nTempTicks1, (int)nTempTicks, (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+				 nTemp,(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 #ifdef DEBUG_INFO_UP_LOAD
 	sprintf((char*)sTempInfo, "Count status(after count): ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 				(int)nTempTicks1, (int)nTempTicks, (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-				 nTemp,(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
+				 nTemp,(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE));
 	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 	memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 	*pDILen = nDILen;
@@ -2872,11 +2860,11 @@ UINT8 MSG_TestingFunc(void)
         nCurTicks = IT_SYS_GetTicks();
 		printf("Count Error: timeout, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d,maxt=%d\r\n",\
 					(int)nTempTicks1, (int)nTempTicks, (int)Get_Udp_Count(), (int)g_Frame_Count, (int)g_Send_Fail,\
-					(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)nTestTimeOutTicks);
+					(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)nTestTimeOutTicks);
 #ifdef DEBUG_INFO_UP_LOAD
 		sprintf((char*)sTempInfo, "Count Error: timeout, ticks=%05d, adc_ticks=%05d, udp=%d, q=%d, f=%d, elec=%d, wbc_v=%d, press=%010d, maxt=%d\r\n",\
 								(int)nTempTicks1, (int)nTempTicks, (int)Get_Udp_Count(),(int)g_Frame_Count, (int)g_Send_Fail,\
-								hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_XK_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)nTestTimeOutTicks);
+								hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_WBC_V_Value(), (int)Get_Press_Value(GET_PRESS_NUM_FIVE), (int)nTestTimeOutTicks);
 		Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 		memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
 		*pDILen = nDILen;
@@ -3183,28 +3171,11 @@ _EXT_ UINT8 Negative_Pressure_Self_Check(void)
 }
 
 
-_EXT_ UINT32 Get_WBC_V_Value(void)
-{
-	UINT16 nWord;
-	UINT32 nValue;
-	#if USE_STM32F407_ONLY
-		nWord = Get_XK_ADC();	
-		nValue = nWord*3300/4096;
-	#else
-		nWord = HW_ADC_SpiGetADC(INDEX_ADC_48V);
-		nValue = nWord*10000/4096;
-	#endif
-	
-//	printf("WBC_V: adc=%d, wbc_v=%d\r\n", nWord, (int)nValue);
-	return nValue;
-}
-
-
 _EXT_ UINT32 WBC_48V_Self_Check(void)
 {
 	UINT32 nVCheck, nVIn;
 	// adc
-	nVCheck = Get_XK_V_Value(); //Get_WBC_V_Value();// Get_XK_V_Value();
+	nVCheck = Get_WBC_V_Value(); //Get_WBC_V_Value();// Get_WBC_V_Value();
 	nVIn = nVCheck*21;
 	
 //	Msg_Return_Handle_32(e_Msg_Status, CMD_STATUS_WBC_48V, nWord);
@@ -3403,71 +3374,6 @@ void Eable_ADC(EN_TypeADC eType)
 	}
 }
 
-// yaolan_
-UINT8 HW_Enable_Data_Channel(eTestMode eMode)
-{
-#if 1 //#if USE_STM32F407_ONLY
-	
-	switch(eMode)
-	{
-		case EN_WBC_TEST:
-		{
-			printf("---WBC MODE---\r\n");
-			Eable_ADC(EN_ADC1);
-		}
-		break;
-		case EN_RBC_TEST:
-		{
-			printf("---RBC MODE---\r\n");
-			Eable_ADC(EN_ADC2);
-//			Disable_ADC(EN_ADC2);
-//			Eable_ADC(EN_ADC2);
-			
-		}
-		break;
-		case EN_PLT_TEST:
-		{
-			printf("---PLT MODE---\r\n");
-			Eable_ADC(EN_ADC2);
-		}
-		break;
-		case EN_RBC_PLT_TEST:
-		{
-			printf("---RBC PLT MODE---\r\n");
-			Eable_ADC(EN_ADC2);
-		}
-		break;
-		default:break;
-	}
-#else 
-	switch(eMode)
-	{
-		case EN_WBC_TEST:
-		{
-			HW_Start_WBC();			
-		}
-		break;
-		case EN_RBC_TEST:
-		{
-			HW_Start_WBC();	
-		}
-		break;
-		case EN_PLT_TEST:
-		{
-			HW_Start_WBC();	
-		}
-		break;
-		case EN_RBC_PLT_TEST:
-		{
-			HW_Start_WBC();	
-		}
-		break;
-		default:break;
-	}
-
-#endif
-	return 0;
-}
 
 void Disable_ADC(EN_TypeADC eType)
 {
@@ -3486,93 +3392,9 @@ void Disable_ADC(EN_TypeADC eType)
 	}
 }
 
-// yaolan_
-UINT8 HW_Disable_Data_Channel(eTestMode eMode)
-{
 
-#if 1  // #if USE_STM32F407_ONLY
-	switch(eMode)
-	{
-		case EN_WBC_TEST:
-		{
-			Disable_ADC(EN_ADC1);
-		}
-		break;
-		case EN_RBC_TEST:
-		{
-			Disable_ADC(EN_ADC2);
-		}
-		break;
-		case EN_PLT_TEST:
-		{
-			Disable_ADC(EN_ADC2);
-		}
-		break;
-		case EN_RBC_PLT_TEST:
-		{
-			Disable_ADC(EN_ADC2);
-		}
-		break;
-		default:break;
-	}
-#else
-	switch(eMode)
-	{
-		case EN_WBC_TEST:
-		{
-			HW_End_WBC();
-		}
-		break;
-		case EN_RBC_TEST:
-		{
-			HW_End_WBC();
-		}
-		break;
-		case EN_PLT_TEST:
-		{
-			HW_End_WBC();
-		}
-		break;
-		case EN_RBC_PLT_TEST:
-		{
-			HW_End_WBC();
-		}
-		break;
-		default:break;
-	}
-#endif
-	return 0;
-}
 
-UINT8 HW_Clear_Data_Channel(eTestMode eMode)
-{
-	switch(eMode)
-	{
-		case EN_WBC_TEST:
-		{
-		
-		}
-		break;
-		case EN_RBC_TEST:
-		{
-		
-		}
-		break;
-		case EN_PLT_TEST:
-		{
-		
-		}
-		break;
-		case EN_RBC_PLT_TEST:
-		{
-		
-		}
-		break;
-		default:break;
-	}
-	
-	return 0;
-}
+
 
 
 #endif
