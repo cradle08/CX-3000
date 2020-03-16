@@ -2142,7 +2142,7 @@ void EVAL_Init(void)
 	
 	PF_InitTimer2();
 	//
-	PF_InitMotorTimer(EN_Motor1); // timer1
+	PF_InitMotorTimer(EN_Motor3); // timer1
 	//
 	HW_ELEC_Init();
 	HW_Beep_Init();

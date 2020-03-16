@@ -280,40 +280,40 @@ typedef enum
 
 
 // 1. PG2 Motor 3 IN OC, so far, not use interrupt function at OC
-#define IN_Motor3_IN_OC_GPIO_PIN           GPIO_Pin_2          
+#define IN_Motor3_IN_OC_GPIO_PIN           GPIO_Pin_4//GPIO_Pin_2          
 #define IN_Motor3_IN_OC_GPIO_PORT          GPIOG
 #define IN_Motor3_IN_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
-#define IN_Motor3_IN_OC_ET_LINE            EXTI_Line2
+#define IN_Motor3_IN_OC_ET_LINE            EXTI_Line4
 #define IN_Motor3_IN_OC_ET_PORT            EXTI_PortSourceGPIOG
-#define IN_Motor3_IN_OC_ET_PIN             EXTI_PinSource2
-#define IN_Motor3_IN_OC_ET_IRQn            EXTI2_IRQn
+#define IN_Motor3_IN_OC_ET_PIN             EXTI_PinSource4
+#define IN_Motor3_IN_OC_ET_IRQn            EXTI4_IRQn
 
 // 2. PG3 Motor 3 OUT OC
-#define IN_Motor3_OUT_OC_GPIO_PIN           GPIO_Pin_3          
+#define IN_Motor3_OUT_OC_GPIO_PIN           GPIO_Pin_5//GPIO_Pin_3          
 #define IN_Motor3_OUT_OC_GPIO_PORT          GPIOG
 #define IN_Motor3_OUT_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
-#define IN_Motor3_OUT_OC_ET_LINE            EXTI_Line3
+#define IN_Motor3_OUT_OC_ET_LINE            EXTI_Line5
 #define IN_Motor3_OUT_OC_ET_PORT            EXTI_PortSourceGPIOG
-#define IN_Motor3_OUT_OC_ET_PIN             EXTI_PinSource3
-#define IN_Motor3_OUT_OC_ET_IRQn            EXTI3_IRQn
+#define IN_Motor3_OUT_OC_ET_PIN             EXTI_PinSource5
+#define IN_Motor3_OUT_OC_ET_IRQn            EXTI9_5_IRQn 
 
 // 3. PG4 Motor 4 IN OC
-#define IN_Motor4_IN_OC_GPIO_PIN           GPIO_Pin_4          
+#define IN_Motor4_IN_OC_GPIO_PIN           GPIO_Pin_2//GPIO_Pin_4          
 #define IN_Motor4_IN_OC_GPIO_PORT          GPIOG
 #define IN_Motor4_IN_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
-#define IN_Motor4_IN_OC_ET_LINE            EXTI_Line4
+#define IN_Motor4_IN_OC_ET_LINE            EXTI_Line2
 #define IN_Motor4_IN_OC_ET_PORT            EXTI_PortSourceGPIOG
-#define IN_Motor4_IN_OC_ET_PIN             EXTI_PinSource4
-#define IN_Motor4_IN_OC_ET_IRQn            EXTI4_IRQn
+#define IN_Motor4_IN_OC_ET_PIN             EXTI_PinSource2
+#define IN_Motor4_IN_OC_ET_IRQn            EXTI2_IRQn
 
 // 4. PG5 Motor 4 OUT OC
-#define IN_Motor4_OUT_OC_GPIO_PIN           GPIO_Pin_5          
+#define IN_Motor4_OUT_OC_GPIO_PIN           GPIO_Pin_3//GPIO_Pin_5          
 #define IN_Motor4_OUT_OC_GPIO_PORT          GPIOG
 #define IN_Motor4_OUT_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
-#define IN_Motor4_OUT_OC_ET_LINE            EXTI_Line5
+#define IN_Motor4_OUT_OC_ET_LINE            EXTI_Line3
 #define IN_Motor4_OUT_OC_ET_PORT            EXTI_PortSourceGPIOG
-#define IN_Motor4_OUT_OC_ET_PIN             EXTI_PinSource5
-#define IN_Motor4_OUT_OC_ET_IRQn            EXTI9_5_IRQn
+#define IN_Motor4_OUT_OC_ET_PIN             EXTI_PinSource3
+#define IN_Motor4_OUT_OC_ET_IRQn            EXTI3_IRQn
 // 5. PA11 Elec 
 #define IN_ELEC_GPIO_PIN           			GPIO_Pin_11          
 #define IN_ELEC_GPIO_PORT          			GPIOA

@@ -879,7 +879,7 @@ UINT32 CODE_ MTx_Distance[EN_Motor_End] =
 // Motor2 = TIM4
 // Motor3 = TIM1
 // Motor4 = TIM8
-TIM_TypeDef*  CODE_ MTx_Timer[EN_Motor_End] = {TIM3, TIM4, TIM1, TIM8};
+TIM_TypeDef*  CODE_ MTx_Timer[EN_Motor_End] = {TIM3, TIM4, TIM8, TIM1};
 
 #define MTx_VALUE_FREQ_MIN(ch)             MTx_FreqMin[ch]            
 // 2) the maximum of the motor's frequence
