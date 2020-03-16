@@ -139,7 +139,7 @@ struct tOCLevel
 struct tSystemStatus
 {
     enum eFlag eFlagSysParaLoad;                    // 
-    enum eFlag eaFlagMotorParaLoad[MV_MOTOR_NUM];   // 
+    enum eFlag eaFlagMotorParaLoad[EN_Motor_End];   // 
     
 };
 
@@ -224,7 +224,7 @@ _EXT_ struct tSystemStatus   g_tSystemStatus;       //
 _EXT_ struct tSyetemPara     g_tSystemPara;         // 
 
 // 
-_EXT_ struct tOppoInterval   g_atInterval[MV_MOTOR_NUM];  // 
+_EXT_ struct tOppoInterval   g_atInterval[EN_Motor_End];  // 
 
 // 
 _EXT_ UINT32  g_nError;            // 

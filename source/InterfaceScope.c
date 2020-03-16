@@ -70,18 +70,18 @@ UINT8 MT_ALL_Init(void)
 {
     // axis x
 #if 0
-    MV_InitPara(Motor_X, 5000, AXIS_X_SPEED_TOP, 100, 10);
+    MV_InitPara(EN_Motor1, 5000, AXIS_X_SPEED_TOP, 100, 10);
 #endif
-    MV_InitPara(Motor_X,
+    MV_InitPara(EN_Motor1,
                 4000,
                 8000,
                 50,
                 1);
     // axis y
-    MV_InitPara(Motor_Y, 4000, 8000, 100, 10);
+    MV_InitPara(EN_Motor2, 4000, 8000, 100, 10);
 
-    MV_Stop(Motor_X);
-    MV_Stop(Motor_Y);
+    MV_Stop(EN_Motor1);
+    MV_Stop(EN_Motor2);
 
     return e_Feedback_Success;
 }
@@ -128,25 +128,25 @@ enum eAxisYPos MT_Y_get_posi(void)
 //    moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
 
 //    // record the motor's para
-//    tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-//    tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-//    tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-//    tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+//    tMvoingPara.nFreqMin = g_atMotorPara[EN_Motor1].nFreqMin;
+//    tMvoingPara.nFreqMax = g_atMotorPara[EN_Motor1].nFreqMax;
+//    tMvoingPara.nFreqInc = g_atMotorPara[EN_Motor1].nFreqInc;
+//    tMvoingPara.nFreqSam = g_atMotorPara[EN_Motor1].nFreqSam;
 
 //    // not detect the single of home at the begining, moving long diatance
 //    if (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
 //    {
 //			  /* ******************** original code *********************
 //        // long distance
-//			  MV_InitPara(Motor_X, 500, 12000, 2000, 100);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+//			  MV_InitPara(EN_Motor1, 500, 12000, 2000, 100);    // ZZC_0904   : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
 //        // OC is on the right, right step
-//        MV_Move(Motor_X, 35000, e_Dir_Neg); // comes near the OC
+//        MV_Move(EN_Motor1, 35000, e_Dir_Neg); // comes near the OC
 
 //        while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // OC detection is not enable
 //        {
-//            if (e_True == MV_IsFinished(Motor_X))
+//            if (e_True == MV_IsFinished(EN_Motor1))
 //            {
-//                MV_Stop(Motor_X);
+//                MV_Stop(EN_Motor1);
 //                collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 
 //                moto_work_stat(0, MOTO_WORK_STAT_FAIL);  // 动作执行失败
@@ -154,40 +154,40 @@ enum eAxisYPos MT_Y_get_posi(void)
 //            }
 //        }
 //        IT_SYS_DlyMs(3);      //
-//        MV_Stop(Motor_X); 
+//        MV_Stop(EN_Motor1); 
 //				****************************************************** */
 //		// long distance
-//		MV_InitPara(Motor_X, 1920, 10000, 100, 10);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+//		MV_InitPara(EN_Motor1, 1920, 10000, 100, 10);    // ZZC_0904   : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
 //        // OC is on the right, right step
-//        MV_Move(Motor_X, 30000, e_Dir_Neg); // comes near the OC
+//        MV_Move(EN_Motor1, 30000, e_Dir_Neg); // comes near the OC
 
 //        /*while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // OC detection is not enable
 //        {
-//            if (e_True == MV_IsFinished(Motor_X))
+//            if (e_True == MV_IsFinished(EN_Motor1))
 //            {
-//                MV_Stop(Motor_X);
+//                MV_Stop(EN_Motor1);
 //                collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 
 //                moto_work_stat(0, MOTO_WORK_STAT_FAIL);  // 动作执行失败
 //                return e_Feedback_Error;
 //            }
 //        }*/
-//		while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(Motor_X))
+//		while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(EN_Motor1))
 //		{
-//            if (e_True == MV_IsFinished(Motor_X))
+//            if (e_True == MV_IsFinished(EN_Motor1))
 //            {
-//                MV_Stop(Motor_X);
+//                MV_Stop(EN_Motor1);
 //                break;
 //            }
 //        }
-//		MV_InitPara(Motor_X, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+//		MV_InitPara(EN_Motor1, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
 //        // OC is on the right, right step
-//        MV_Move(Motor_X, 5000, e_Dir_Neg); // comes near the OC
-//		while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(Motor_X))
+//        MV_Move(EN_Motor1, 5000, e_Dir_Neg); // comes near the OC
+//		while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(EN_Motor1))
 //		{
-//            if (e_True == MV_IsFinished(Motor_X))
+//            if (e_True == MV_IsFinished(EN_Motor1))
 //            {
-//                MV_Stop(Motor_X);
+//                MV_Stop(EN_Motor1);
 //                collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 
 //                moto_work_stat(0, MOTO_WORK_STAT_FAIL);  // 动作执行失败
@@ -195,38 +195,38 @@ enum eAxisYPos MT_Y_get_posi(void)
 //            }
 //        }
 //        //IT_SYS_DlyMs(1);      //
-//				//MV_InitPara(Motor_X, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+//				//MV_InitPara(EN_Motor1, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
 //        // OC is on the right, right step
-//        //MV_Move(Motor_X, 500, e_Dir_Neg); // comes near the OC
-//				//while (1)  //&& (0 == MV_IsFinished(Motor_X))
+//        //MV_Move(EN_Motor1, 500, e_Dir_Neg); // comes near the OC
+//				//while (1)  //&& (0 == MV_IsFinished(EN_Motor1))
 //				//{
-//        //    if (e_True == MV_IsFinished(Motor_X))
+//        //    if (e_True == MV_IsFinished(EN_Motor1))
 //        //    {
-//        //        MV_Stop(Motor_X);
+//        //        MV_Stop(EN_Motor1);
 //        //        break;
 //        //    }
 //        //}
-//        MV_Stop(Motor_X); 
+//        MV_Stop(EN_Motor1); 
 //    }
 //    else
 //    {
 //#if  0    /* 样本仓到位，不再运行 */
 //        //------------------------------------------------------------------
 //        // short distance, home detect
-//        MV_InitPara(Motor_X, 2000, 3000, 100, 1);
+//        MV_InitPara(EN_Motor1, 2000, 3000, 100, 1);
 //        //------------------------------------------
 //        // OC is on the right, left step
-//        MV_Move(Motor_X, 2000, e_Dir_Pos); // goes far away the OC
+//        MV_Move(EN_Motor1, 2000, e_Dir_Pos); // goes far away the OC
 //        while (0 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
 //        {
-//            if (e_True == MV_IsFinished(Motor_X))
+//            if (e_True == MV_IsFinished(EN_Motor1))
 //            {
-//                MV_Stop(Motor_X);
+//                MV_Stop(EN_Motor1);
 //                return e_Feedback_Error;
 //            }
 //        }
 //        IT_SYS_DlyMs(3);      //
-//        MV_Stop(Motor_X);
+//        MV_Stop(EN_Motor1);
 //#endif
 //    }
 //    //
@@ -234,7 +234,7 @@ enum eAxisYPos MT_Y_get_posi(void)
 //    g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_HOME;
 //    //---------------------------------------------------
 //    // set to the default moving parameters
-//    MV_InitPara(Motor_X,
+//    MV_InitPara(EN_Motor1,
 //                tMvoingPara.nFreqMin,
 //                tMvoingPara.nFreqMax,
 //                tMvoingPara.nFreqInc,
@@ -377,34 +377,34 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 			moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);  /* 动作开始执行 */
 		}
 		// record the motor's para
-		tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-		tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-		tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-		tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+		tMvoingPara.nFreqMin = g_atMotorPara[EN_Motor1].nFreqMin;
+		tMvoingPara.nFreqMax = g_atMotorPara[EN_Motor1].nFreqMax;
+		tMvoingPara.nFreqInc = g_atMotorPara[EN_Motor1].nFreqInc;
+		tMvoingPara.nFreqSam = g_atMotorPara[EN_Motor1].nFreqSam;
 
 		// not detect the single of home at the begining, moving long diatance
 		if (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
 		{
 			// long distance
-			MV_InitPara(Motor_X, 1920, 10000, 100, 10);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+			MV_InitPara(EN_Motor1, 1920, 10000, 100, 10);    // ZZC_0904   : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
 			// OC is on the right, right step
-			MV_Move(Motor_X, 30000, e_Dir_Neg); // comes near the OC
-			while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(Motor_X))
+			MV_Move(EN_Motor1, 30000, e_Dir_Neg); // comes near the OC
+			while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(EN_Motor1))
 			{			
-				if (e_True == MV_IsFinished(Motor_X))
+				if (e_True == MV_IsFinished(EN_Motor1))
 				{
-					MV_Stop(Motor_X);
+					MV_Stop(EN_Motor1);
 					break;
 				}
 			}
-			MV_InitPara(Motor_X, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+			MV_InitPara(EN_Motor1, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
 			// OC is on the right, right step
-			MV_Move(Motor_X, 5000, e_Dir_Neg); // comes near the OC
-			while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(Motor_X))
+			MV_Move(EN_Motor1, 5000, e_Dir_Neg); // comes near the OC
+			while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(EN_Motor1))
 			{
-				if (e_True == MV_IsFinished(Motor_X))
+				if (e_True == MV_IsFinished(EN_Motor1))
 				{
-					MV_Stop(Motor_X);
+					MV_Stop(EN_Motor1);
 					if(eCall == e_NormalCheck_Call)
 					{
 						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
@@ -414,21 +414,21 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 					return e_Feedback_Error;
 				}
 			}
-			MV_Stop(Motor_X); 
+			MV_Stop(EN_Motor1); 
 			
 	#if 1 // add step 
 	//		IT_SYS_DlyMs(1000);
 	//		IT_SYS_DlyMs(1000);
 			if(g_Record_Param.nXAddStep > 0)
 			{
-				MV_InitPara(Motor_X, 1920, 1920, 100, 10);
-				MV_Move(Motor_X, (UINT32)g_Record_Param.nXAddStep, e_Dir_Neg); // comes near the OC 
+				MV_InitPara(EN_Motor1, 1920, 1920, 100, 10);
+				MV_Move(EN_Motor1, (UINT32)g_Record_Param.nXAddStep, e_Dir_Neg); // comes near the OC 
 				while(1)
 				{
-					MV_GetStepsExecuted(Motor_X, &nStep);
+					MV_GetStepsExecuted(EN_Motor1, &nStep);
 					if(g_Record_Param.nXAddStep - nStep <= 5)
 					{
-						MV_Stop(Motor_X);
+						MV_Stop(EN_Motor1);
 						break;
 					}
 					IT_SYS_DlyMs(2);
@@ -436,7 +436,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 			}
 			printf("Moto X Add Step(%d) Finshed\r\n", (int)g_Record_Param.nXAddStep);
 	#endif
-			MV_Stop(Motor_X); 
+			MV_Stop(EN_Motor1); 
 			
 			
 		}
@@ -445,20 +445,20 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 	#if  0    /* 样本仓到位，不再运行 */
 			//------------------------------------------------------------------
 			// short distance, home detect
-			MV_InitPara(Motor_X, 2000, 3000, 100, 1);
+			MV_InitPara(EN_Motor1, 2000, 3000, 100, 1);
 			//------------------------------------------
 			// OC is on the right, left step
-			MV_Move(Motor_X, 2000, e_Dir_Pos); // goes far away the OC
+			MV_Move(EN_Motor1, 2000, e_Dir_Pos); // goes far away the OC
 			while (0 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
 			{
-				if (e_True == MV_IsFinished(Motor_X))
+				if (e_True == MV_IsFinished(EN_Motor1))
 				{
-					MV_Stop(Motor_X);
+					MV_Stop(EN_Motor1);
 					return e_Feedback_Error;
 				}
 			}
 			IT_SYS_DlyMs(3);      //
-			MV_Stop(Motor_X);
+			MV_Stop(EN_Motor1);
 	#endif
 		}
 		//
@@ -466,7 +466,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 		g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_HOME;
 		//---------------------------------------------------
 		// set to the default moving parameters
-		MV_InitPara(Motor_X,
+		MV_InitPara(EN_Motor1,
 					tMvoingPara.nFreqMin,
 					tMvoingPara.nFreqMax,
 					tMvoingPara.nFreqInc,
@@ -491,25 +491,25 @@ UINT8 MT_X_Home_only(void)
 	moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
 
 	// record the motor's para
-	tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-	tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-	tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-	tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+	tMvoingPara.nFreqMin = g_atMotorPara[EN_Motor1].nFreqMin;
+	tMvoingPara.nFreqMax = g_atMotorPara[EN_Motor1].nFreqMax;
+	tMvoingPara.nFreqInc = g_atMotorPara[EN_Motor1].nFreqInc;
+	tMvoingPara.nFreqSam = g_atMotorPara[EN_Motor1].nFreqSam;
 
 	
 	// not detect the single of home at the begining, moving long diatance
 	if (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL))
 	{
 		// long distance
-		MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+		MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
 		// OC is on the right, right step
-		MV_Move(Motor_X, 35000, e_Dir_Neg); // comes near the OC
+		MV_Move(EN_Motor1, 35000, e_Dir_Neg); // comes near the OC
 
 		while (1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) // OC detection is not enable
 		{
-			if (e_True == MV_IsFinished(Motor_X))
+			if (e_True == MV_IsFinished(EN_Motor1))
 			{
-				MV_Stop(Motor_X);
+				MV_Stop(EN_Motor1);
 				collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 
 				//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
@@ -518,7 +518,7 @@ UINT8 MT_X_Home_only(void)
 			}
 		}
 		IT_SYS_DlyMs(3);      //
-		MV_Stop(Motor_X);
+		MV_Stop(EN_Motor1);
 	}
 	else
 	{
@@ -529,7 +529,7 @@ UINT8 MT_X_Home_only(void)
 	g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_HOME;
 	//---------------------------------------------------
 	// set to the default moving parameters
-	MV_InitPara(Motor_X,
+	MV_InitPara(EN_Motor1,
 				tMvoingPara.nFreqMin,
 				tMvoingPara.nFreqMax,
 				tMvoingPara.nFreqInc,
@@ -561,7 +561,7 @@ UINT8 MT_Y_Home(CALL_STYLE_E eCall)
     //
     if (E_AXIS_Y_POS_HOME == g_tAxisPosStatus.eAxisY)
     {
-        MV_Move(Motor_Y, 2000, e_Dir_Pos);
+        MV_Move(EN_Motor2, 2000, e_Dir_Pos);
         //
         g_tAxisPosStatus.eAxisY = E_AXIS_Y_POS_CTRL;
     }
@@ -585,24 +585,24 @@ UINT8 MT_Y_Home(void)
 	moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
 
     // record the motor's para
-    tMvoingPara.nFreqMin = g_atMotorPara[Motor_Y].nFreqMin;
-    tMvoingPara.nFreqMax = g_atMotorPara[Motor_Y].nFreqMax;
-    tMvoingPara.nFreqInc = g_atMotorPara[Motor_Y].nFreqInc;
-    tMvoingPara.nFreqSam = g_atMotorPara[Motor_Y].nFreqSam;
+    tMvoingPara.nFreqMin = g_atMotorPara[EN_Motor2].nFreqMin;
+    tMvoingPara.nFreqMax = g_atMotorPara[EN_Motor2].nFreqMax;
+    tMvoingPara.nFreqInc = g_atMotorPara[EN_Motor2].nFreqInc;
+    tMvoingPara.nFreqSam = g_atMotorPara[EN_Motor2].nFreqSam;
 
     // not detect the single of home at the begining, moving long diatance
     if (1 == HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL))
     {
         // long distance
-        MV_InitPara(Motor_Y, 4000, 8000, 100, 10);
+        MV_InitPara(EN_Motor2, 4000, 8000, 100, 10);
         // OC is on the right, right step
-        MV_Move(Motor_Y, 35000, e_Dir_Pos); // comes near the OC
+        MV_Move(EN_Motor2, 35000, e_Dir_Pos); // comes near the OC
 
         while (1 == HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL)) // OC detection is not enable
         {
-            if (e_True == MV_IsFinished(Motor_Y))
+            if (e_True == MV_IsFinished(EN_Motor2))
             {
-                MV_Stop(Motor_Y);
+                MV_Stop(EN_Motor2);
                 collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 
                //moto_work_stat(1, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
@@ -611,7 +611,7 @@ UINT8 MT_Y_Home(void)
             }
         }
         IT_SYS_DlyMs(3);      //
-        MV_Stop(Motor_Y);
+        MV_Stop(EN_Motor2);
     }
     else
     {
@@ -622,7 +622,7 @@ UINT8 MT_Y_Home(void)
     g_tAxisPosStatus.eAxisY = E_AXIS_Y_POS_HOME;
     //---------------------------------------------------
     // set to the default moving parameters
-    MV_InitPara(Motor_Y,
+    MV_InitPara(EN_Motor2,
                 tMvoingPara.nFreqMin,
                 tMvoingPara.nFreqMax,
                 tMvoingPara.nFreqInc,
@@ -641,24 +641,24 @@ UINT8 MT_Y_MoveToPosRel_Self_Check(void)
 //    moto_work_stat(1, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
 
     // record the motor's para
-    tMvoingPara.nFreqMin = g_atMotorPara[Motor_Y].nFreqMin;
-    tMvoingPara.nFreqMax = g_atMotorPara[Motor_Y].nFreqMax;
-    tMvoingPara.nFreqInc = g_atMotorPara[Motor_Y].nFreqInc;
-    tMvoingPara.nFreqSam = g_atMotorPara[Motor_Y].nFreqSam;
+    tMvoingPara.nFreqMin = g_atMotorPara[EN_Motor2].nFreqMin;
+    tMvoingPara.nFreqMax = g_atMotorPara[EN_Motor2].nFreqMax;
+    tMvoingPara.nFreqInc = g_atMotorPara[EN_Motor2].nFreqInc;
+    tMvoingPara.nFreqSam = g_atMotorPara[EN_Motor2].nFreqSam;
 
     // not detect the single of home at the begining, moving long diatance
     if (1 == HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL))
     {
         // long distance
-        MV_InitPara(Motor_Y, 4000, 8000, 100, 10);
+        MV_InitPara(EN_Motor2, 4000, 8000, 100, 10);
         // OC is on the right, right step
-        MV_Move(Motor_Y, 35000, e_Dir_Neg); // comes far the OC
+        MV_Move(EN_Motor2, 35000, e_Dir_Neg); // comes far the OC
 
         while (1 == HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL)) // OC detection is not enable
         {
-            if (e_True == MV_IsFinished(Motor_Y))
+            if (e_True == MV_IsFinished(EN_Motor2))
             {
-                MV_Stop(Motor_Y);
+                MV_Stop(EN_Motor2);
  //               collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 
  //               moto_work_stat(1, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
@@ -667,24 +667,24 @@ UINT8 MT_Y_MoveToPosRel_Self_Check(void)
         }
 
         /* 增加临时运行时序 */
-        MV_Move(Motor_Y, 600, e_Dir_Neg);  /* 继续运行 */
-        while (e_False == MV_IsFinished(Motor_Y));
+        MV_Move(EN_Motor2, 600, e_Dir_Neg);  /* 继续运行 */
+        while (e_False == MV_IsFinished(EN_Motor2));
         /* 增加临时运行时序 */
 
         IT_SYS_DlyMs(3);
-        MV_Stop(Motor_Y);
+        MV_Stop(EN_Motor2);
     }
     else
     {
         /* 增加临时运行时序 */
-        MV_InitPara(Motor_Y, 4000, 8000, 100, 10);
-        MV_Move(Motor_Y, 20000, e_Dir_Pos);
+        MV_InitPara(EN_Motor2, 4000, 8000, 100, 10);
+        MV_Move(EN_Motor2, 20000, e_Dir_Pos);
 
         while (0 == HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL)) // OC detection is not enable
         {
-            if (e_True == MV_IsFinished(Motor_Y))
+            if (e_True == MV_IsFinished(EN_Motor2))
             {
-                MV_Stop(Motor_Y);
+                MV_Stop(EN_Motor2);
 
  //               collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
  //               moto_work_stat(1, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
@@ -692,11 +692,11 @@ UINT8 MT_Y_MoveToPosRel_Self_Check(void)
             }
         }
 
-        MV_Move(Motor_Y, 600, e_Dir_Neg);  /* 继续运行 */
-        while (e_False == MV_IsFinished(Motor_Y));
+        MV_Move(EN_Motor2, 600, e_Dir_Neg);  /* 继续运行 */
+        while (e_False == MV_IsFinished(EN_Motor2));
 
         IT_SYS_DlyMs(3);
-        MV_Stop(Motor_Y);
+        MV_Stop(EN_Motor2);
         /* 增加临时运行时序 */
     }
 
@@ -705,7 +705,7 @@ UINT8 MT_Y_MoveToPosRel_Self_Check(void)
     g_tAxisPosStatus.eAxisY = E_AXIS_Y_POS_HOME;
     //---------------------------------------------------
     // set to the default moving parameters
-    MV_InitPara(Motor_Y,
+    MV_InitPara(EN_Motor2,
                 tMvoingPara.nFreqMin,
                 tMvoingPara.nFreqMax,
                 tMvoingPara.nFreqInc,
@@ -726,7 +726,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
     //
     if (E_AXIS_Y_POS_HOME == g_tAxisPosStatus.eAxisY)
     {
-        MV_Move(Motor_Y, 2000, e_Dir_Pos);
+        MV_Move(EN_Motor2, 2000, e_Dir_Pos);
         //
         g_tAxisPosStatus.eAxisY = E_AXIS_Y_POS_CTRL;
     }
@@ -936,18 +936,18 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 			}
 		}
 		// record the motor's para
-		tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-		tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-		tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-		tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+		tMvoingPara.nFreqMin = g_atMotorPara[EN_Motor1].nFreqMin;
+		tMvoingPara.nFreqMax = g_atMotorPara[EN_Motor1].nFreqMax;
+		tMvoingPara.nFreqInc = g_atMotorPara[EN_Motor1].nFreqInc;
+		tMvoingPara.nFreqSam = g_atMotorPara[EN_Motor1].nFreqSam;
 		
 		// not detect the single of home at the begining, moving long diatance
 		if (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
 		{
 			// long distance
-			MV_InitPara(Motor_X, 3000, 10000, 100, 10);   // ZZC_0904 : MV_InitPara(Motor_X, 4000, 8000, 100, 10); 
+			MV_InitPara(EN_Motor1, 3000, 10000, 100, 10);   // ZZC_0904 : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10); 
 			// OC is on the right, right step
-			MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
+			MV_Move(EN_Motor1, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
 
 			while(1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // OC detection is not enable
 			{
@@ -975,9 +975,9 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 					}
 				}
 				//
-				if (e_True == MV_IsFinished(Motor_X))
+				if (e_True == MV_IsFinished(EN_Motor1))
 				{
-					MV_Stop(Motor_X);
+					MV_Stop(EN_Motor1);
 					if(eCall == e_NormalCheck_Call)
 					{
 						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
@@ -989,7 +989,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 			}
 			printf("2 X out-build press over: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
 			IT_SYS_DlyMs(3);      //
-			MV_Stop(Motor_X);
+			MV_Stop(EN_Motor1);
 		}
 		else
 		{
@@ -1039,7 +1039,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 		g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_CTRL;
 		//---------------------------------------------------
 		// set to the default moving parameters
-		MV_InitPara(Motor_X,
+		MV_InitPara(EN_Motor1,
 					tMvoingPara.nFreqMin,
 					tMvoingPara.nFreqMax,
 					tMvoingPara.nFreqInc,
@@ -1075,24 +1075,24 @@ UINT8 MT_X_MoveToPosRel_only(void)
    // moto_work_stat(0, MOTO_WORK_STAT_RUN);  /* 动作开始执行 */
 	moto_work_stat_2(0, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
 	// record the motor's para
-	tMvoingPara.nFreqMin = g_atMotorPara[Motor_X].nFreqMin;
-	tMvoingPara.nFreqMax = g_atMotorPara[Motor_X].nFreqMax;
-	tMvoingPara.nFreqInc = g_atMotorPara[Motor_X].nFreqInc;
-	tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
+	tMvoingPara.nFreqMin = g_atMotorPara[EN_Motor1].nFreqMin;
+	tMvoingPara.nFreqMax = g_atMotorPara[EN_Motor1].nFreqMax;
+	tMvoingPara.nFreqInc = g_atMotorPara[EN_Motor1].nFreqInc;
+	tMvoingPara.nFreqSam = g_atMotorPara[EN_Motor1].nFreqSam;
 
 	// not detect the single of home at the begining, moving long diatance
 	if (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
 	{
 		// long distance
-		MV_InitPara(Motor_X, 4000, 8000, 100, 10);
+		MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
 		// OC is on the right, right step
-		MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
+		MV_Move(EN_Motor1, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
 
 		while (1 == HW_LEVEL_GetOC(OC_OUT_CHANNEL)) // OC detection is not enable
 		{
-			if (e_True == MV_IsFinished(Motor_X))
+			if (e_True == MV_IsFinished(EN_Motor1))
 			{
-				MV_Stop(Motor_X);
+				MV_Stop(EN_Motor1);
 				collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
 
 				//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
@@ -1101,7 +1101,7 @@ UINT8 MT_X_MoveToPosRel_only(void)
 			}
 		}
 		IT_SYS_DlyMs(3);      //
-		MV_Stop(Motor_X);
+		MV_Stop(EN_Motor1);
 	}
 	else
 	{
@@ -1112,7 +1112,7 @@ UINT8 MT_X_MoveToPosRel_only(void)
 	g_tAxisPosStatus.eAxisX    = E_AXIS_X_POS_CTRL;
 	//---------------------------------------------------
 	// set to the default moving parameters
-	MV_InitPara(Motor_X,
+	MV_InitPara(EN_Motor1,
 				tMvoingPara.nFreqMin,
 				tMvoingPara.nFreqMax,
 				tMvoingPara.nFreqInc,
@@ -1140,10 +1140,10 @@ UINT8 MT_Y_MoveToPosRel(CALL_STYLE_E eCall)
 		moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
 	}
     // record the motor's para
-    tMvoingPara.nFreqMin = g_atMotorPara[Motor_Y].nFreqMin;
-    tMvoingPara.nFreqMax = g_atMotorPara[Motor_Y].nFreqMax;
-    tMvoingPara.nFreqInc = g_atMotorPara[Motor_Y].nFreqInc;
-    tMvoingPara.nFreqSam = g_atMotorPara[Motor_Y].nFreqSam;
+    tMvoingPara.nFreqMin = g_atMotorPara[EN_Motor2].nFreqMin;
+    tMvoingPara.nFreqMax = g_atMotorPara[EN_Motor2].nFreqMax;
+    tMvoingPara.nFreqInc = g_atMotorPara[EN_Motor2].nFreqInc;
+    tMvoingPara.nFreqSam = g_atMotorPara[EN_Motor2].nFreqSam;
 
     // not detect the single of home at the begining, moving long diatance
 //	if(1 == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) 
@@ -1151,15 +1151,15 @@ UINT8 MT_Y_MoveToPosRel(CALL_STYLE_E eCall)
 		if (1 == HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL))
 		{
 			// long distance
-			MV_InitPara(Motor_Y, 4000, 8000, 100, 10);
+			MV_InitPara(EN_Motor2, 4000, 8000, 100, 10);
 			// OC is on the right, right step
-			MV_Move(Motor_Y, 35000, e_Dir_Neg); // comes far the OC
+			MV_Move(EN_Motor2, 35000, e_Dir_Neg); // comes far the OC
 
 			while (1 == HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL)) // OC detection is not enable
 			{
-				if (e_True == MV_IsFinished(Motor_Y))
+				if (e_True == MV_IsFinished(EN_Motor2))
 				{
-					MV_Stop(Motor_Y);
+					MV_Stop(EN_Motor2);
 					if(eCall == e_NormalCheck_Call)
 					{
 						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);	
@@ -1171,24 +1171,24 @@ UINT8 MT_Y_MoveToPosRel(CALL_STYLE_E eCall)
 			}
 
 			/* 增加临时运行时序 */
-			MV_Move(Motor_Y, 600, e_Dir_Neg);  /* 继续运行 */
-			while (e_False == MV_IsFinished(Motor_Y));
+			MV_Move(EN_Motor2, 600, e_Dir_Neg);  /* 继续运行 */
+			while (e_False == MV_IsFinished(EN_Motor2));
 			/* 增加临时运行时序 */
 
 			IT_SYS_DlyMs(3);
-			MV_Stop(Motor_Y);
+			MV_Stop(EN_Motor2);
 		}
 		else
 		{
 			/* 增加临时运行时序 */
-			MV_InitPara(Motor_Y, 4000, 8000, 100, 10);
-			MV_Move(Motor_Y, 20000, e_Dir_Pos);
+			MV_InitPara(EN_Motor2, 4000, 8000, 100, 10);
+			MV_Move(EN_Motor2, 20000, e_Dir_Pos);
 
 			while (0 == HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL)) // OC detection is not enable
 			{
-				if (e_True == MV_IsFinished(Motor_Y))
+				if (e_True == MV_IsFinished(EN_Motor2))
 				{
-					MV_Stop(Motor_Y);
+					MV_Stop(EN_Motor2);
 					if(eCall == e_NormalCheck_Call)
 					{
 						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
@@ -1199,11 +1199,11 @@ UINT8 MT_Y_MoveToPosRel(CALL_STYLE_E eCall)
 				}
 			}
 
-			MV_Move(Motor_Y, 600, e_Dir_Neg);  /* 继续运行 */
-			while (e_False == MV_IsFinished(Motor_Y));
+			MV_Move(EN_Motor2, 600, e_Dir_Neg);  /* 继续运行 */
+			while (e_False == MV_IsFinished(EN_Motor2));
 
 			IT_SYS_DlyMs(3);
-			MV_Stop(Motor_Y);
+			MV_Stop(EN_Motor2);
 			/* 增加临时运行时序 */
 		}
 //	}
@@ -1213,7 +1213,7 @@ UINT8 MT_Y_MoveToPosRel(CALL_STYLE_E eCall)
     g_tAxisPosStatus.eAxisY = E_AXIS_Y_POS_HOME;
     //---------------------------------------------------
     // set to the default moving parameters
-    MV_InitPara(Motor_Y,
+    MV_InitPara(EN_Motor2,
                 tMvoingPara.nFreqMin,
                 tMvoingPara.nFreqMax,
                 tMvoingPara.nFreqInc,
@@ -1231,7 +1231,7 @@ UINT8 MT_Y_MoveToPosRel(CALL_STYLE_E eCall)
 
 UINT8 MT_Y_MoveToPosRel(void)
 {
-    // MV_InitPara(Motor_Y, 4000, 8000, 100, 10);
+    // MV_InitPara(EN_Motor2, 4000, 8000, 100, 10);
     //
 
     //moto_work_stat(1, MOTO_WORK_STAT_RUN);
@@ -1243,7 +1243,7 @@ UINT8 MT_Y_MoveToPosRel(void)
     //
     if (E_AXIS_Y_POS_HOME == g_tAxisPosStatus.eAxisY)
     {
-        MV_Move(Motor_Y, 2000, e_Dir_Neg);
+        MV_Move(EN_Motor2, 2000, e_Dir_Neg);
         //
         g_tAxisPosStatus.eAxisY = E_AXIS_Y_POS_CTRL;
     }
@@ -1289,7 +1289,10 @@ void  HW_FPGA_RST_L(void)
 
 UINT8  HW_Valve_On(UINT8 chIndex)
 {
-	HW_Valve_On_V3(chIndex);
+	// if cx2000_c,cx3000
+	return HW_Valve_On_V3(chIndex);
+	// else cx2000_b
+	//
 }
 
 UINT8  HW_Valve_On_V3(UINT8 chIndex)
@@ -1308,7 +1311,10 @@ UINT8  HW_Valve_On_V3(UINT8 chIndex)
 
 UINT8  HW_Valve_Off(UINT8 chIndex)
 {
-	HW_Valve_Off_V3(chIndex);
+	// if cx2000_c,cx3000
+	return HW_Valve_Off_V3(chIndex);
+	// else cx2000_b
+	//
 }
 
 //
@@ -1328,7 +1334,9 @@ UINT8 HW_Valve_Off_V3(UINT8 chIndex)
 // DC motor control
 UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
 {
-	HW_PUMP_Pulse_V3(nFreq, eDir);
+	// if cx2000_c,cx3000
+	return HW_PUMP_Pulse_V3(nFreq, eDir);
+	// else cx2000_b
 }
 //
 UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir)
@@ -1716,7 +1724,10 @@ UINT32 Get_V_CRP_LED(void)
 
 UINT32 Get_WBC_V_Value(void)
 {
-	UINT32 Get_WBC_V_Value_V3();
+	// if cx2000_c,cx3000
+	return Get_WBC_V_Value_V3();
+	//else cx2000_b
+	//
 }
 
 
@@ -2125,7 +2136,10 @@ UINT8  HW_LEVEL_GetElectrode(UINT8 chIndex)
 #define  ELECTRODE_GET_FILTER_NUM  5
 UINT8 hw_filter_get_electrode(UINT8 chIndex)
 {
-	hw_filter_get_electrode_V3(chIndex);
+	// cx2000_c, cx3000
+	return hw_filter_get_electrode_V3(chIndex);
+	// cx2000_b
+	//
 }
 
 
@@ -2269,64 +2283,7 @@ UINT8  HW_EN_WBC(enum eFlag bOn)
 }
 
 
-// 
-UINT8 HW_Disable_Data_Channel(eTestMode eMode)
-{
-
-#if 1  // #if USE_STM32F407_ONLY
-	switch(eMode)
-	{
-		case EN_WBC_TEST:
-		{
-			Disable_ADC(EN_ADC1);
-		}
-		break;
-		case EN_RBC_TEST:
-		{
-			Disable_ADC(EN_ADC2);
-		}
-		break;
-		case EN_PLT_TEST:
-		{
-			Disable_ADC(EN_ADC2);
-		}
-		break;
-		case EN_RBC_PLT_TEST:
-		{
-			Disable_ADC(EN_ADC2);
-		}
-		break;
-		default:break;
-	}
-#else
-	switch(eMode)
-	{
-		case EN_WBC_TEST:
-		{
-			HW_End_WBC();
-		}
-		break;
-		case EN_RBC_TEST:
-		{
-			HW_End_WBC();
-		}
-		break;
-		case EN_PLT_TEST:
-		{
-			HW_End_WBC();
-		}
-		break;
-		case EN_RBC_PLT_TEST:
-		{
-			HW_End_WBC();
-		}
-		break;
-		default:break;
-	}
-#endif
-	return 0;
-}
-
+/*
 UINT8 HW_Clear_Data_Channel(eTestMode eMode)
 {
 	switch(eMode)
@@ -2356,8 +2313,9 @@ UINT8 HW_Clear_Data_Channel(eTestMode eMode)
 	
 	return 0;
 }
+*/
 
-UINT8 HW_Start_BC(eTestMode eMode)
+void HW_Start_BC(eTestMode eMode)
 {
 	switch(eMode)
 	{
@@ -2390,17 +2348,35 @@ UINT8 HW_Start_BC(eTestMode eMode)
 		break;
 		default:break;
 	}
-
-	return 0;
 }
 
-
-void HW_Enable_Data_Channel(eTestMode eMode)
+void HW_End_BC(eTestMode eMode)
 {
-	//CX2000_C,CX3000
-	HW_Start_BC(eMode);
-	//CX2000_B
-	//HW_Start_WBC();
+	switch(eMode)
+	{
+		case EN_WBC_TEST:
+		{
+			Disable_ADC(EN_ADC1);
+		}
+		break;
+		case EN_RBC_TEST:
+		{
+			Disable_ADC(EN_ADC2);
+		}
+		break;
+		case EN_PLT_TEST:
+		{
+			Disable_ADC(EN_ADC2);
+		}
+		break;
+		case EN_RBC_PLT_TEST:
+		{
+			Disable_ADC(EN_ADC2);
+		}
+		break;
+		default:break;
+	}
+
 }
 
 
@@ -2420,6 +2396,28 @@ void  HW_End_WBC(void)
     // close the ADC channel
     HW_EN_WBC(e_False);
 }
+
+
+void HW_Enable_Data_Channel(eTestMode eMode)
+{
+	//CX2000_C,CX3000
+	HW_Start_BC(eMode);
+	//CX2000_B
+	//HW_Start_WBC();
+}
+
+
+
+// 
+void HW_Disable_Data_Channel(eTestMode eMode)
+{
+	//CX2000_C,CX3000
+	HW_End_BC(eMode);
+	//CX2000_B
+	//HW_End_WBC();
+
+}
+
 
 //
 //void Send_Last_FIFO_Data(void)
@@ -2835,8 +2833,13 @@ UINT8 HW_RBC_PLT_GetData(UINT16* pData, UINT16* pLen, UINT16* pStatus)
 
 UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag, IO_ eTestMode eMode)
 {
-
+	// cx2000
+	//HW_LWIP_Working_V2(nTickList, nTickAdc,  eFlag);
+	
+	// cx2000_c,cx3000
 	Data_Circle_Handle(eMode);
+	
+	return Data_Circle_Handle(eMode);
 }
 
 UINT8  HW_LWIP_Working_V2(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFlag)

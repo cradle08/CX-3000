@@ -23,7 +23,7 @@ struct tOCLevel        g_tOCLevel;            //
 struct tSystemStatus   g_tSystemStatus;       //
 struct tSyetemPara     g_tSystemPara;         //
 
-struct tOppoInterval   g_atInterval[MV_MOTOR_NUM];  //
+struct tOppoInterval   g_atInterval[EN_Motor_End];  //
 
 
 //
@@ -166,8 +166,8 @@ UINT8 SYS_InitSystem(void)
     g_tOCLevel.eHomeAxisM   = E_LEVEL_LOW;
 
     g_tSystemStatus.eFlagSysParaLoad             = e_False;
-    g_tSystemStatus.eaFlagMotorParaLoad[Motor_X] = e_False;
-    g_tSystemStatus.eaFlagMotorParaLoad[Motor_Y] = e_False;
+    g_tSystemStatus.eaFlagMotorParaLoad[EN_Motor1] = e_False;
+    g_tSystemStatus.eaFlagMotorParaLoad[EN_Motor2] = e_False;
     //g_tSystemStatus.eaFlagMotorParaLoad[Motor_Z] = e_False;
     //g_tSystemStatus.eaFlagMotorParaLoad[Motor_M] = e_False;
     // g_tSystemStatus.eaFlagMotorParaLoad[Motor_AT] = e_False;
@@ -241,10 +241,10 @@ UINT8 SYS_InitSystem(void)
     //g_tSystemPara.chAxisATPosMax_1  =  (UINT8)((MAX_DITANCE_MT_AT >>  8) & 0xFF);
     //g_tSystemPara.chAxisATPosMax_0  =  (UINT8)((MAX_DITANCE_MT_AT >>  0) & 0xFF);
     // }
-    g_atInterval[Motor_X].eDir     = e_Dir_Neg;
-    g_atInterval[Motor_X].nSteps   = (UINT16)INTERVAL_OPPO_X;
-    g_atInterval[Motor_Y].eDir     = e_Dir_Neg;
-    g_atInterval[Motor_Y].nSteps   = (UINT16)INTERVAL_OPPO_Y;
+    g_atInterval[EN_Motor1].eDir     = e_Dir_Neg;
+    g_atInterval[EN_Motor1].nSteps   = (UINT16)INTERVAL_OPPO_X;
+    g_atInterval[EN_Motor2].eDir     = e_Dir_Neg;
+    g_atInterval[EN_Motor2].nSteps   = (UINT16)INTERVAL_OPPO_Y;
 //	g_atInterval[Motor_Z].eDir     = e_Dir_Neg;
 //	g_atInterval[Motor_Z].nSteps   = (UINT16)INTERVAL_OPPO_Z;
 //	g_atInterval[Motor_M].eDir     = e_Dir_Neg;

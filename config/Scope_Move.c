@@ -825,45 +825,45 @@ UINT16 CODE_ m_acTimerLoad[8000] =     // frep:(50 ~ 3150) * 8
 #define MTx_FREQ_OFFSET_BITS(ch)   4 // 2 ^ 4 = 16  
 
 // parameters and status
-IO_ struct tMvMotorStatus XRAM_ g_atMotorStatus[Motor_End]; // status
-IO_ struct tMvMotorPara   XRAM_ g_atMotorPara[Motor_End];   // paramenters
+IO_ struct tMvMotorStatus XRAM_ g_atMotorStatus[EN_Motor_End]; // status
+IO_ struct tMvMotorPara   XRAM_ g_atMotorPara[EN_Motor_End];   // paramenters
 
 // direction position
-_STA_ UINT32 CODE_ m_acnDirPos[MV_MOTOR_NUM] =
+_STA_ UINT32 CODE_ m_acnDirPos[EN_Motor_End] =
 {
      DIR_POS_MT_X,
 	 DIR_POS_MT_Y
 };
 // direction negation
-_STA_ UINT32 CODE_ m_acnDirNeg[MV_MOTOR_NUM] = 
+_STA_ UINT32 CODE_ m_acnDirNeg[EN_Motor_End] = 
 {
 	 DIR_NEG_MT_X,
 	 DIR_NEG_MT_Y
 };
 
-UINT32 CODE_ MTx_FreqMin[Motor_End] =
+UINT32 CODE_ MTx_FreqMin[EN_Motor_End] =
 {
 	0,
 	0
 };
-UINT32 CODE_ MTx_FreqMax[Motor_End] =  // 32 * 8000
+UINT32 CODE_ MTx_FreqMax[EN_Motor_End] =  // 32 * 8000
 {
 	256000,
 	256000
 };
-UINT32 CODE_ MTx_FreqInc[Motor_End] =
+UINT32 CODE_ MTx_FreqInc[EN_Motor_End] =
 {
 	4000,
 	4000
 };
-UINT32 CODE_ MTx_Distance[Motor_End] =
+UINT32 CODE_ MTx_Distance[EN_Motor_End] =
 {
 	1000000,
 	1000000
 };
 
 
-TIM_TypeDef*  CODE_ MTx_Timer[Motor_End] = {TIM3, TIM4};
+TIM_TypeDef*  CODE_ MTx_Timer[EN_Motor_End] = {TIM3, TIM4};
 
 #define MTx_VALUE_FREQ_MIN(ch)             MTx_FreqMin[ch]            
 // 2) the maximum of the motor's frequence
@@ -901,7 +901,7 @@ UINT8  MV_InitPara_V3(enum eMvMotor eMotor,
 {
 	
     // range check 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
     {
         return e_Feedback_Error;
 	}
@@ -975,8 +975,9 @@ UINT8  MV_InitPara_V3(enum eMvMotor eMotor,
     return e_Feedback_Success; 
 }
 
+
 //
-UINT8  MV_InitPara(enum eMvMotor eMotor, 
+UINT8  MV_InitPara_V2(enum eMvMotor eMotor, 
                         UINT32 nFreqMin, 
                         UINT32 nFreqMax, 
                         UINT32 nFreqInc, 
@@ -986,7 +987,7 @@ UINT8  MV_InitPara(enum eMvMotor eMotor,
     IO_ UINT16 IRAM_  anBuffer[8]; 
 	
     // range check 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
     {
         return e_Feedback_Error;
 	}
@@ -1029,34 +1030,48 @@ UINT8  MV_InitPara(enum eMvMotor eMotor,
     return e_Feedback_Success; 
 }
 
+
+UINT8  MV_InitPara(enum eMvMotor eMotor, 
+                        UINT32 nFreqMin, 
+                        UINT32 nFreqMax, 
+                        UINT32 nFreqInc, 
+                        UINT32 nFreqSam )
+{
+	
+	// cx2000_c, cx3000
+	return  MV_InitParam_V3(eMotor, nFreqMin, nFreqMax, nFreqInc, nFreqSam);
+	// cx2000_b
+	//return  MV_InitParam_V2(eMotor, nFreqMin, nFreqMax, nFreqInc, nFreqSam);
+}
+
 //
 UINT8  MTx_DriverEnable(enum eMvMotor eMotor, enum eFlag bAble)
 {
     // check
-    if(eMotor >= Motor_End)
+    if(eMotor >= EN_Motor_End)
     {
 		return e_Feedback_Error;
 	}
 	
-	if(eMotor == Motor_X)
+	if(eMotor == EN_Motor1)
 	{
 		if(e_False == bAble)
 		{
-			EVAL_OutputClr(O_MotorX_EN);
+			EVAL_OutputClr(O_Motor1_EN);
 			MTx_TIMER_COUNT_OFF(eMotor);
 		}else{
-			EVAL_OutputSet(O_MotorX_EN);
+			EVAL_OutputSet(O_Motor1_EN);
 			MTx_TIMER_COUNT_ON(eMotor);
 			
 		}	
-	}else if(eMotor == Motor_Y){
+	}else if(eMotor == EN_Motor2){
 		if(e_False == bAble)
 		{
-			EVAL_OutputClr(O_MotorY_EN);
+			EVAL_OutputClr(O_Motor2_EN);
 			MTx_TIMER_COUNT_OFF(eMotor);
 		
 		}else{
-			EVAL_OutputSet(O_MotorY_EN);
+			EVAL_OutputSet(O_Motor2_EN);
 			MTx_TIMER_COUNT_ON(eMotor);
 		}			
 	}		
@@ -1076,7 +1091,7 @@ UINT8  MV_Move_V3(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
 	//------------------------------------------
     // 1. checking 
     // range check 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
     {
         g_atMotorStatus[eMotor].eFinish = e_True;
         return e_Feedback_Error;
@@ -1099,7 +1114,7 @@ UINT8  MV_Move_V3(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
     g_atMotorStatus[eMotor].nSteps			= nSteps;
 	g_atMotorStatus[eMotor].bAble   		= e_True;
 	g_atMotorStatus[eMotor].nStepsExecuted  = 0;
-	if(eMotor == Motor_X)
+	if(eMotor == EN_Motor1)
 	{
 		if(eDir == e_Dir_Neg) // out
 		{
@@ -1131,7 +1146,7 @@ UINT8  MV_Move_V3(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
 				g_atMotorStatus[eMotor].nOCStatus = 0;
 			}
 		}
-	}else if(eMotor == Motor_Y){
+	}else if(eMotor == EN_Motor2){
 		
 		if(eDir == e_Dir_Neg) // out
 		{
@@ -1228,7 +1243,7 @@ UINT8  MV_Move_V3(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
 
 
 //
-UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
+UINT8  MV_Move_V2(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
 {
     IO_ UINT32 IRAM_  nValue = 0;
 	IO_ UINT32 IRAM_  nBase  = 0;
@@ -1243,7 +1258,7 @@ UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
 	//------------------------------------------
     // 1. checking 
     // range check 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
     {
         g_atMotorStatus[eMotor].eFinish = e_True;
         return e_Feedback_Error;
@@ -1340,11 +1355,20 @@ UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
 	return e_Feedback_Success;
 }
 
+
+UINT8  MV_Move(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
+{
+	// cx2000_c, cx3000
+	return MV_Move_V3(eMotor, nSteps, eDir);
+	// cx2000_b
+	//return  MV_Move_V2(eMotor, nSteps, eDir);
+}
+
 //
 UINT8  MV_Stop_V3(enum eMvMotor eMotor)
 {
 	// range check 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
     {
         return e_Feedback_Error;
 	}
@@ -1357,13 +1381,13 @@ UINT8  MV_Stop_V3(enum eMvMotor eMotor)
 }
 
 //
-UINT8  MV_Stop(enum eMvMotor eMotor)
+UINT8  MV_Stop_V2(enum eMvMotor eMotor)
 {
     IO_ UINT32 IRAM_  nAddr  = 0; 
     IO_ UINT16 IRAM_  anBuffer[2]; 
 
 	// range check 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
     {
         return e_Feedback_Error;
 	}
@@ -1393,6 +1417,15 @@ UINT8  MV_Stop(enum eMvMotor eMotor)
     return e_Feedback_Success;
 }
 
+UINT8  MV_Stop(enum eMvMotor eMotor)
+{
+	// cx2000_c, cx3000
+	return MV_Stop_V3(eMotor);
+	// cx2000_b
+	//return MV_Stop_V2(eMotor);
+
+}
+
 
 /* 参数chIndex为通道号 */
 /* 参数nDlyMs为等待的最大超时时间，但bDlyType为TRUE时有效 */
@@ -1403,7 +1436,7 @@ UINT8  MTx_Wait_V3(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag)
 	IO_ UINT32 XRAM_ nCount   = 0;
 
     // check
-    if(eMotor >= Motor_End)
+    if(eMotor >= EN_Motor_End)
     {
 		return e_Feedback_Error;
 	}
@@ -1440,12 +1473,12 @@ UINT8  MTx_Wait_V3(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag)
 
 
 //
-UINT8  MV_Wait(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag)
+UINT8  MV_Wait_V2(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag)
 {
     IO_ UINT8  XRAM_ chReturn  = e_Feedback_Success;
 
     // range check 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
     {
         return e_Feedback_Error;
 	}
@@ -1473,12 +1506,19 @@ UINT8  MV_Wait(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag)
 	return chReturn;
 }
 
+UINT8  MTx_Wait(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag)
+{
+	return MTx_Wait_V3(eMotor, nTimeout, bFlag);
+	// cx2000_b
+	//return MTx_Wait_V2(eMotor, nTimeout, bFlag);
+
+}
 
 //
 UINT8  MV_GetStepsExecuted_V3(enum eMvMotor eMotor, UINT32* pnSteps)
 {
     // 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
     {
         *pnSteps = 0;
         return e_Feedback_Error;
@@ -1490,13 +1530,13 @@ UINT8  MV_GetStepsExecuted_V3(enum eMvMotor eMotor, UINT32* pnSteps)
 }
 
 //
-UINT8  MV_GetStepsExecuted(enum eMvMotor eMotor, UINT32* pnSteps)
+UINT8  MV_GetStepsExecuted_V2(enum eMvMotor eMotor, UINT32* pnSteps)
 {
     IO_ UINT32 IRAM_  nAddr  = 0; 
     IO_ UINT16 IRAM_  anBuffer[2]; 
 
     // range check 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
     {
         *pnSteps = 0;
         return e_Feedback_Error;
@@ -1512,10 +1552,33 @@ UINT8  MV_GetStepsExecuted(enum eMvMotor eMotor, UINT32* pnSteps)
 	return e_Feedback_Success;
 }
 
+
+UINT8  MV_GetStepsExecuted(enum eMvMotor eMotor, UINT32* pnSteps)
+{
+	// cx2000_c, cx3000
+	return MV_GetStepsExecuted_V3(eMotor, pnSteps);
+	// cx2000_b
+	//return MV_GetStepsExecuted_V2(eMotor, pnSteps);
+
+}
+
+
 enum eFlag  MV_IsFinished_V3(enum eMvMotor eMotor)
 {
     // range check 
-    if(eMotor >= MV_MOTOR_NUM)
+    if(eMotor >= EN_Motor_End)
+    {
+        return e_False;
+	}
+	
+    return g_atMotorStatus[eMotor].eFinish;
+}
+
+// 
+enum eFlag  MV_IsFinished_V2(enum eMvMotor eMotor)
+{
+    // range check 
+    if(eMotor >= EN_Motor_End)
     {
         return e_False;
 	}
@@ -1526,14 +1589,12 @@ enum eFlag  MV_IsFinished_V3(enum eMvMotor eMotor)
 // 
 enum eFlag  MV_IsFinished(enum eMvMotor eMotor)
 {
-    // range check 
-    if(eMotor >= MV_MOTOR_NUM)
-    {
-        return e_False;
-	}
-	
-    return g_atMotorStatus[eMotor].eFinish;
+	// cx2000_c, cx3000
+	MV_IsFinished_V3(eMotor);
+	// cx2000_b
+	//MV_IsFinished_V2(eMotor);
 }
+
 
 // not need at CX2000_C API
 UINT8  MV_IsrMoveHandling_V3(void)
@@ -1542,7 +1603,7 @@ UINT8  MV_IsrMoveHandling_V3(void)
 }
 
 // handle the status of the motors
-UINT8  MV_IsrMoveHandling(void)
+UINT8  MV_IsrMoveHandling_V2(void)
 {
 	IO_ UINT8  IRAM_  ch	  = 0;
 	IO_ UINT32 IRAM_  nOffset = 0;
@@ -1563,7 +1624,7 @@ UINT8  MV_IsrMoveHandling(void)
 	// for testing
 	// printf("mt-status: 0x%0.4X \r\n", (int)nStatus);
 	// 
-	for(ch = 0; ch < MV_MOTOR_NUM; ch++)
+	for(ch = 0; ch < EN_Motor_End; ch++)
 	{
 		// 
 		nOffset = (UINT32)(1 << ch);  // get the mark	 
@@ -1585,7 +1646,13 @@ UINT8  MV_IsrMoveHandling(void)
 }
 
 
-
+UINT8  MV_IsrMoveHandling(void)
+{
+	// cx2000_c, cx3000
+	return MV_IsrMoveHandling_V3();
+	// cx2000_b
+	//return MV_IsrMoveHandling_V2();
+}
 
 //-----------------------------------------------------------------------------------------
 void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
@@ -1595,7 +1662,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 	_STA_ IO_ UINT32 IRAM_ s_nTimerLoadedIndex  = 0;
 
     // check
-    if(eMotor >= Motor_End)
+    if(eMotor >= EN_Motor_End)
     {
 		return;   // error
 	}

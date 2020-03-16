@@ -499,7 +499,7 @@ void Return_Press_Value(void);
 INT32 Get_Press_Value(UINT8 nNum);
 UINT32 Get_Light_Path_V(UINT8 nChannel);
 
-_EXT_ UINT8 MSG_Testing(void);
+//_EXT_ UINT8 MSG_Testing(void);
 //
 #ifdef DEBUG_INFO_UP_LOAD
 _EXT_ UINT8 MSG_TestingFunc(UINT8 *pDInfo, UINT16 *pDILen, eTestMode eMode);

@@ -189,13 +189,13 @@ UINT8  HW_LWIP_Working(UINT32 nTickList, UINT32 nTickAdc,  EN_FPGA_DATA_FLAG eFl
 void Clear_FPGA_FIFO_Data(void); // function like: HW_LWIP_Working_V2
 
 
-UINT8 HW_Start_BC(eTestMode eMode);
-
+void HW_Start_BC(eTestMode eMode);
+void HW_End_BC(eTestMode eMode);
 
 // data channel
-UINT8 HW_Enable_Data_Channel(eTestMode eMode);
-UINT8 HW_Disable_Data_Channel(eTestMode eMode);
-UINT8 HW_Clear_Data_Channel(eTestMode eMode);
+void HW_Enable_Data_Channel(eTestMode eMode);
+void HW_Disable_Data_Channel(eTestMode eMode);
+//void HW_Clear_Data_Channel(eTestMode eMode);
 UINT8 Data_Circle_Handle(IO_ eTestMode eMode);
 //------------------------------------------------------ CX2000_C API END-----------------------
 

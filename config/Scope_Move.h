@@ -11,7 +11,7 @@
 // definition
 
 // 
-#define MV_MOTOR_NUM   2  // 
+//#define MV_MOTOR_NUM   2  // 
 
 // home-OC-detect-level
 #define CO_HOME_MT_X   0
@@ -33,9 +33,11 @@
 // index
 enum eMvMotor
 {
-    Motor_X  = 0,   // 
-    Motor_Y  = 1,   //
-	Motor_End = 2,  // add
+    EN_Motor1  = 0,   // 
+    EN_Motor2  = 1,   //
+	EN_Motor3  = 2,   //
+	EN_Motor4  = 3,   //
+	EN_Motor_End = 4,  // add
 };
 
 enum eMotorPhase		  
@@ -89,15 +91,34 @@ struct tMvMotorPara
 };
 
 
-_EXT_ IO_ struct tMvMotorStatus XRAM_ g_atMotorStatus[MV_MOTOR_NUM]; // status
-_EXT_ IO_ struct tMvMotorPara   XRAM_ g_atMotorPara[MV_MOTOR_NUM];   // paramenters
+_EXT_ IO_ struct tMvMotorStatus XRAM_ g_atMotorStatus[EN_Motor_End]; // status
+_EXT_ IO_ struct tMvMotorPara   XRAM_ g_atMotorPara[EN_Motor_End];   // paramenters
+
+
+//-------------------------------------------------------------- CX2000_C API START --------------------
+// function declaration, using the timer's interrupt
+
+_EXT_ UINT8  MV_InitPara_V2(enum eMvMotor eMotor, 
+                              UINT32 nFreqMin, 
+                              UINT32 nFreqMax, 
+                              UINT32 nFreqInc, 
+                              UINT32 nFreqSam );
+
+_EXT_ UINT8  MV_Move_V2(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir);
+UINT8  MV_Stop_V2(enum eMvMotor eMotor);
+_EXT_ UINT8  MV_Wait_V2(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag);
+_EXT_ UINT8  MV_GetStepsExecuted_V2(enum eMvMotor eMotor, UINT32* pnSteps);
+_EXT_ enum eFlag  MV_IsFinished_V2(enum eMvMotor eMotor); // not need at CX2000_C API
+
+
+//--------------------------------------------------------------- CX2000_C API END ----------------------
+
 
 
 //-------------------------------------------------------------- CX2000_C API START --------------------
 // function declaration, using the timer's interrupt
 
 void MTx_PWM_ISR(enum eMvMotor eMotor);
-
 
 _EXT_ UINT8  MV_InitPara_V3(enum eMvMotor eMotor, 
                               UINT32 nFreqMin, 
@@ -111,8 +132,9 @@ _EXT_ UINT8  MV_Wait_V3(enum eMvMotor eMotor, UINT32 nTimeout, enum eFlag bFlag)
 _EXT_ UINT8  MV_GetStepsExecuted_V3(enum eMvMotor eMotor, UINT32* pnSteps);
 _EXT_ enum eFlag  MV_IsFinished_V3(enum eMvMotor eMotor); // not need at CX2000_C API
 
-
 //--------------------------------------------------------------- CX2000_C API END ----------------------
+
+
 
 
 // initialize the moving parameters of the motor driver

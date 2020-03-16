@@ -116,16 +116,22 @@ typedef enum              // take attention of sequence
     O_MCU_LED_1     = 0,
     O_MCU_LED_2     = 1,
     O_LAN8720_RST   = 2,
-	O_MotorX_EN		= 3,
-	O_MotorX_DIR	= 4,
-	O_MotorX_CLK	= 5,
-	O_MotorY_EN		= 6,
-	O_MotorY_DIR	= 7,
-	O_MotorY_CLK	= 8,
-	O_Air_Walve		= 9,
-	O_Liquild_Walve = 10,
-	O_Beep			= 11,
-	O_OUTPUT_NUM	= 12
+	O_Motor1_EN		= 3,
+	O_Motor1_DIR	= 4,
+	O_Motor1_CLK	= 5,
+	O_Motor2_EN		= 6,
+	O_Motor2_DIR	= 7,
+	O_Motor2_CLK	= 8,
+	O_Motor3_EN		= 9,
+	O_Motor3_DIR	= 10,
+	O_Motor3_CLK	= 11,
+	O_Motor4_EN		= 12,
+	O_Motor4_DIR	= 13,
+	O_Motor4_CLK	= 14,
+	O_Air_Walve		= 15,
+	O_Liquild_Walve = 16,
+	O_Beep			= 17,
+	O_OUTPUT_END	= 18
 	
 } Output_TypeDef;
 //
@@ -140,12 +146,12 @@ typedef enum              // take attention of sequence
 //#define OUT_STATUS_LED2_GPIO_PIN            GPIO_Pin_8
 //#define OUT_STATUS_LED2_GPIO_PORT           GPIOF
 //#define OUT_STATUS_LED2_GPIO_CLK            RCC_AHB1Periph_GPIOF  
-//0. PF9  mcu_led_1   // testing ===> PE4
+//0. PE4  mcu_led_1   // testing ===> PE4
 #define OUT_MCU_LED1_GPIO_PIN               GPIO_Pin_4 //GPIO_Pin_9
 #define OUT_MCU_LED1_GPIO_PORT              GPIOE //GPIOF
 #define OUT_MCU_LED1_GPIO_CLK               RCC_AHB1Periph_GPIOE  //RCC_AHB1Periph_GPIOF 
-//1. PF10 mcu_led_2   // testing ===> PE5
-#define OUT_MCU_LED2_GPIO_PIN               GPIO_Pin_3 //GPIO_Pin_5
+//1. PE6 mcu_led_2   // testing ===> PE5
+#define OUT_MCU_LED2_GPIO_PIN               GPIO_Pin_6 //GPIO_Pin_5
 #define OUT_MCU_LED2_GPIO_PORT              GPIOE //GPIOF
 #define OUT_MCU_LED2_GPIO_CLK               RCC_AHB1Periph_GPIOE  //RCC_AHB1Periph_GPIOF 
 
@@ -154,49 +160,81 @@ typedef enum              // take attention of sequence
 #define OUT_LAN8720_RST_GPIO_PORT           GPIOD
 #define OUT_LAN8720_RST_GPIO_CLK            RCC_AHB1Periph_GPIOD
 
-//3. PD10 Motor X EN
-#define OUT_MotorX_EN_GPIO_PIN            GPIO_Pin_10
-#define OUT_MotorX_EN_GPIO_PORT           GPIOD
-#define OUT_MotorX_EN_GPIO_CLK            RCC_AHB1Periph_GPIOD
+//3. PD10 Motor1 EN
+#define OUT_Motor1_EN_GPIO_PIN            GPIO_Pin_10
+#define OUT_Motor1_EN_GPIO_PORT           GPIOD
+#define OUT_Motor1_EN_GPIO_CLK            RCC_AHB1Periph_GPIOD
 
-//4. PD9 Motor X DIR
-#define OUT_MotorX_DIR_GPIO_PIN            GPIO_Pin_9
-#define OUT_MotorX_DIR_GPIO_PORT           GPIOD
-#define OUT_MotorX_DIR_GPIO_CLK            RCC_AHB1Periph_GPIOD
+//4. PD9 Motor1 DIR
+#define OUT_Motor1_DIR_GPIO_PIN            GPIO_Pin_9
+#define OUT_Motor1_DIR_GPIO_PORT           GPIOD
+#define OUT_Motor1_DIR_GPIO_CLK            RCC_AHB1Periph_GPIOD
 
-//5. PC8 Motor X CLK
-#define OUT_MotorX_CLK_GPIO_PIN            GPIO_Pin_8
-#define OUT_MotorX_CLK_GPIO_PORT           GPIOC
-#define OUT_MotorX_CLK_GPIO_CLK            RCC_AHB1Periph_GPIOC
+//5. PC8 Motor1 CLK
+#define OUT_Motor1_CLK_GPIO_PIN            GPIO_Pin_8
+#define OUT_Motor1_CLK_GPIO_PORT           GPIOC
+#define OUT_Motor1_CLK_GPIO_CLK            RCC_AHB1Periph_GPIOC
 
-//6. PD7 Motor Y EN
-#define OUT_MotorY_EN_GPIO_PIN            GPIO_Pin_7
-#define OUT_MotorY_EN_GPIO_PORT           GPIOD
-#define OUT_MotorY_EN_GPIO_CLK            RCC_AHB1Periph_GPIOD
+//6. PD7 Motor2 EN
+#define OUT_Motor2_EN_GPIO_PIN            GPIO_Pin_7
+#define OUT_Motor2_EN_GPIO_PORT           GPIOD
+#define OUT_Motor2_EN_GPIO_CLK            RCC_AHB1Periph_GPIOD
 
-//7. PD0 Motor Y DIR
-#define OUT_MotorY_DIR_GPIO_PIN            GPIO_Pin_0
-#define OUT_MotorY_DIR_GPIO_PORT           GPIOD
-#define OUT_MotorY_DIR_GPIO_CLK            RCC_AHB1Periph_GPIOD
+//7. PD0 Motor2 DIR
+#define OUT_Motor2_DIR_GPIO_PIN            GPIO_Pin_0
+#define OUT_Motor2_DIR_GPIO_PORT           GPIOD
+#define OUT_Motor2_DIR_GPIO_CLK            RCC_AHB1Periph_GPIOD
 
-//8. PD14 Motor Y CLK
-#define OUT_MotorY_CLK_GPIO_PIN            GPIO_Pin_14
-#define OUT_MotorY_CLK_GPIO_PORT           GPIOD
-#define OUT_MotorY_CLK_GPIO_CLK            RCC_AHB1Periph_GPIOD
+//8. PD14 Motor2 CLK
+#define OUT_Motor2_CLK_GPIO_PIN            GPIO_Pin_14
+#define OUT_Motor2_CLK_GPIO_PORT           GPIOD
+#define OUT_Motor2_CLK_GPIO_CLK            RCC_AHB1Periph_GPIOD
 
-//9. PF11 Air Walve
+//9. PC9 Motor3 EN
+#define OUT_Motor3_EN_GPIO_PIN            GPIO_Pin_9
+#define OUT_Motor3_EN_GPIO_PORT           GPIOC
+#define OUT_Motor3_EN_GPIO_CLK            RCC_AHB1Periph_GPIOC
+
+//10. PC7 Motor3 DIR
+#define OUT_Motor3_DIR_GPIO_PIN            GPIO_Pin_7
+#define OUT_Motor3_DIR_GPIO_PORT           GPIOC
+#define OUT_Motor3_DIR_GPIO_CLK            RCC_AHB1Periph_GPIOC
+
+//11. PC6 Motor3 CLK
+#define OUT_Motor3_CLK_GPIO_PIN            GPIO_Pin_6
+#define OUT_Motor3_CLK_GPIO_PORT           GPIOC
+#define OUT_Motor3_CLK_GPIO_CLK            RCC_AHB1Periph_GPIOC
+
+//12. PD7 Motor4 EN
+#define OUT_Motor4_EN_GPIO_PIN            GPIO_Pin_13
+#define OUT_Motor4_EN_GPIO_PORT           GPIOE
+#define OUT_Motor4_EN_GPIO_CLK            RCC_AHB1Periph_GPIOE
+
+//13. PD0 Motor4 DIR
+#define OUT_Motor4_DIR_GPIO_PIN            GPIO_Pin_11
+#define OUT_Motor4_DIR_GPIO_PORT           GPIOE
+#define OUT_Motor4_DIR_GPIO_CLK            RCC_AHB1Periph_GPIOE
+
+//14. PD14 Motor4 CLK
+#define OUT_Motor4_CLK_GPIO_PIN            GPIO_Pin_9
+#define OUT_Motor4_CLK_GPIO_PORT           GPIOE
+#define OUT_Motor4_CLK_GPIO_CLK            RCC_AHB1Periph_GPIOE
+
+
+
+//15. PF11 Air Walve
 #define OUT_VALVE_AIR_PORT					GPIOF
 #define OUT_VALVE_AIR_PIN					GPIO_Pin_11
 #define OUT_VALVE_AIR_CLK    				RCC_AHB1Periph_GPIOF
 
-// 10. PH6 Liquild Walve
+// 16. PH6 Liquild Walve
 #define OUT_VALVE_LIQUID_PORT				GPIOH
 #define OUT_VALVE_LIQUID_PIN				GPIO_Pin_6
 #define OUT_VALVE_LIQUID_CLK				RCC_AHB1Periph_GPIOH
 
-// 11. PD6 Liquild Walve
-#define OUT_BEEP_PORT						GPIOD
-#define OUT_BEEP_LIQUID_PIN					GPIO_Pin_6
+// 17. PE3 Beep
+#define OUT_BEEP_PORT						GPIOE
+#define OUT_BEEP_LIQUID_PIN					GPIO_Pin_3
 #define OUT_BEEP_LIQUID_CLK					RCC_AHB1Periph_GPIOD
 
 //-----------------------------------------------------------------------------------------
@@ -284,8 +322,8 @@ typedef enum
 #define IN_ELEC_ET_PORT            			EXTI_PortSourceGPIOA
 #define IN_ELEC_ET_PIN             			EXTI_PinSource11
 #define IN_ELEC_ET_IRQn            			EXTI15_10_IRQn
-// 6. PD1 Micro OC 
-#define IN_MICRO_OC_GPIO_PIN           			GPIO_Pin_1          
+// 6. PD4 Micro OC 
+#define IN_MICRO_OC_GPIO_PIN           			GPIO_Pin_4          
 #define IN_MICRO_OC_GPIO_PORT          			GPIOD
 #define IN_MICRO_OC_GPIO_CLK           			RCC_AHB1Periph_GPIOD
 #define IN_MICRO_OC_ET_LINE            			EXTI_Line1
@@ -321,10 +359,10 @@ typedef enum{
 #define CUR_56V_ADC_CHANNEL					ADC_Channel_7
 
 //2. elec ADC3_IN6 PF8
-#define ELEC_ADC_PORT							GPIOF
-#define ELEC_ADC_PIN							GPIO_Pin_8
-#define ELEC_ADC_SRC							RCC_AHB1Periph_GPIOF
-#define ELEC_ADC_CHANNEL						ADC_Channel_6
+#define ELEC_ADC_PORT						GPIOF
+#define ELEC_ADC_PIN						GPIO_Pin_8
+#define ELEC_ADC_SRC						RCC_AHB1Periph_GPIOF
+#define ELEC_ADC_CHANNEL					ADC_Channel_6
 
 //3. 12V N
 #define CUR12N_ADC_PORT						GPIOA
@@ -338,7 +376,19 @@ typedef enum{
 #define CUR12P_ADC_SRC						RCC_AHB1Periph_GPIOF
 #define CUR12P_ADC_CHANNEL					ADC_Channel_8
 
-//5. PC2_ADC123_IN12 , Press
+//5. PF3, Motor3
+#define Motor3_ADC_PORT						GPIOF
+#define Motor3_ADC_PIN						GPIO_Pin_3
+#define Motor3_ADC_SRC						RCC_AHB1Periph_GPIOF
+#define Motor3_ADC_CHANNEL					ADC_Channel_9
+
+//6. PF4, Motor4
+#define Motor4_ADC_PORT						GPIOF
+#define Motor4_ADC_PIN						GPIO_Pin_4
+#define Motor4_ADC_SRC						RCC_AHB1Periph_GPIOF
+#define Motor4_ADC_CHANNEL					ADC_Channel_14
+
+//7. PC2_ADC123_IN12 , Press
 //#if PRESS_SENSOR_ADC_TYPE
 	#define PRESS_ADC_PORT					GPIOC
 	#define PRESS_ADC_PIN					GPIO_Pin_2
@@ -346,29 +396,30 @@ typedef enum{
 	#define PRESS_ADC_CHANNEL				ADC_Channel_12
 //#endif
 
-//6. LED Cur ADC, PF6_ADC3_CH4
+//8. LED Cur ADC, PF6_ADC3_CH4
 #define LED_CUR_ADC_PORT					GPIOF
 #define LED_CUR_ADC_PIN						GPIO_Pin_6
 #define LED_CUR_ADC_SRC						RCC_AHB1Periph_GPIOF
 #define LED_CUR_ADC_CHANNEL					ADC_Channel_4
 
-//7. PC0_ADC123_IN10, Temperature
+//9. PC0_ADC123_IN10, Temperature
 #define TEMP_ADC_PORT						GPIOC
 #define TEMP_ADC_PIN						GPIO_Pin_0
 #define TEMP_ADC_SRC						RCC_AHB1Periph_GPIOC
 #define TEMP_ADC_CHANNEL					ADC_Channel_10
 
-//8. Optical path Signal acquisiton ADC,   SIG2 ==> PA0_ADC3_IN0 ,HGB and CRP 
+
+//10. Optical path Signal acquisiton ADC,   SIG2 ==> PA0_ADC3_IN0 ,HGB and CRP 
 #define Light1_ADC_PORT						GPIOA
 #define Light1_ADC_PIN						GPIO_Pin_0
 #define Light1_ADC_SRC						RCC_AHB1Periph_GPIOA
 #define Light1_ADC_CHANNEL					ADC_Channel_0
 
 ////9. Optical path Signal acquisiton ADC,   SIG1 ==> PF7_ADC3_IN5 ,CRP
-//#define Light2_ADC_PORT						GPIOF
-//#define Light2_ADC_PIN						GPIO_Pin_7
-//#define Light2_ADC_SRC						RCC_AHB1Periph_GPIOF
-//#define Light2_ADC_CHANNEL					ADC_Channel_5
+//#define Light2_ADC_PORT					GPIOF
+//#define Light2_ADC_PIN					GPIO_Pin_7
+//#define Light2_ADC_SRC					RCC_AHB1Periph_GPIOF
+//#define Light2_ADC_CHANNEL				ADC_Channel_5
 
 
 enum{
@@ -377,26 +428,30 @@ enum{
 	EN_ADC_ELEC		= 2,
 	EN_ADC_CUR12N	= 3,
 	EN_ADC_CUR12P	= 4,
-	EN_ADC_PRESS	= 5,
-	EN_ADC_LED_CUR	= 6,
-	EN_ADC_TEMP		= 7,
-	EN_ADC_Light1	= 8, 
-	EN_ADC_END		= 9,
+	EN_ADC_Motor3	= 5,
+	EN_ADC_Motor4	= 6,
+	EN_ADC_PRESS	= 7,
+	EN_ADC_LED_CUR	= 8,
+	EN_ADC_TEMP		= 9,
+	EN_ADC_Light1	= 10, 
+	EN_ADC_END		= 11,
 };
 extern IO_ UINT16 g_ADC3_Value[EN_ADC_END];
 
 //
 static IO_ UINT8 g_ADC3_IN[EN_ADC_END] = 
 {
-		XK_ADC_CHANNEL,
-		CUR_56V_ADC_CHANNEL,
-		ELEC_ADC_CHANNEL,
-		CUR12N_ADC_CHANNEL,
-		CUR12P_ADC_CHANNEL,
-		PRESS_ADC_CHANNEL,
-		LED_CUR_ADC_CHANNEL,
-		TEMP_ADC_CHANNEL,
-		Light1_ADC_CHANNEL		
+	XK_ADC_CHANNEL,
+	CUR_56V_ADC_CHANNEL,
+	ELEC_ADC_CHANNEL,
+	CUR12N_ADC_CHANNEL,
+	CUR12P_ADC_CHANNEL,
+	Motor3_ADC_CHANNEL,
+	Motor4_ADC_CHANNEL,
+	PRESS_ADC_CHANNEL,
+	LED_CUR_ADC_CHANNEL,
+	TEMP_ADC_CHANNEL,
+	Light1_ADC_CHANNEL		
 };
 
 // WBC
@@ -416,13 +471,21 @@ UINT16 HW_56V_Cur_V(void);
 //
 UINT16 HW_Elec_ADC(void);
 UINT16 HW_Elec_V(void);
-
+//
 UINT16 HW_CUR12N_ADC(void);
 UINT16 HW_CUR12N_V(void);
-
+//
 UINT16 HW_CUR12P_ADC(void);
 UINT16 HW_CUR12P_V(void);
 //
+UINT16 HW_Motor3_ADC(void);
+UINT16 HW_Motor3_V(void);
+//
+UINT16 HW_Motor4_ADC(void);
+UINT16 HW_Motor4_V(void);
+//
+
+
 UINT16 HW_Press_ADC(void);
 //
 UINT16 HW_LED_Cur_ADC(void);
@@ -559,13 +622,15 @@ void Delay_US(UINT32 us);
 // timer interrupt
 _EXT_ UINT8  PF_InitTimer2(void);
 // Motor timer
-UINT8 PF_InitTimer3(void); // Motor X
-UINT8 PF_InitTimer4(void); // Motor Y
+UINT8 PF_InitTimer3(void); // Motor 1
+UINT8 PF_InitTimer4(void); // Motor 2
+UINT8 PF_InitTimer1(void); // Motor 3
+UINT8 PF_InitTimer8(void); // Motor 4
 
-#define IRQ_MotorX          TIM3_IRQHandler
-#define IRQ_MotorY          TIM4_IRQHandler
-
-
+#define IRQ_Motor1          TIM3_IRQHandler
+#define IRQ_Motor2          TIM4_IRQHandler
+#define IRQ_Motor3          TIM1_IRQHandler
+#define IRQ_Motor4          TIM8_IRQHandler
 
 
 // timer3,4 irq handler

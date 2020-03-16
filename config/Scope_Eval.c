@@ -33,9 +33,10 @@ UINT8          CODE_ COM_AF_UART[COM_NUM] = {COM1_AF_UART, COM2_AF_UART, COM3_AF
 
 
 
+
 // ----------------------------------------------------------out put----------------------
 // Output def --- led and speaker
-GPIO_TypeDef*  CODE_ OUT_PORT[O_OUTPUT_NUM]= 
+GPIO_TypeDef*  CODE_ OUT_PORT[O_OUTPUT_END]= 
 {
 //  OUT_STATUS_LED1_GPIO_PORT, 
 //  OUT_STATUS_LED2_GPIO_PORT, 
@@ -43,19 +44,25 @@ GPIO_TypeDef*  CODE_ OUT_PORT[O_OUTPUT_NUM]=
     OUT_MCU_LED2_GPIO_PORT,
     //
     OUT_LAN8720_RST_GPIO_PORT,
-    OUT_MotorX_EN_GPIO_PORT,
-	OUT_MotorX_DIR_GPIO_PORT,
-	OUT_MotorX_CLK_GPIO_PORT,
-	OUT_MotorY_EN_GPIO_PORT,
-	OUT_MotorY_DIR_GPIO_PORT,
-	OUT_MotorY_CLK_GPIO_PORT,
+    OUT_Motor1_EN_GPIO_PORT,
+	OUT_Motor1_DIR_GPIO_PORT,
+	OUT_Motor1_CLK_GPIO_PORT,
+	OUT_Motor2_EN_GPIO_PORT,
+	OUT_Motor2_DIR_GPIO_PORT,
+	OUT_Motor2_CLK_GPIO_PORT,
+	OUT_Motor3_EN_GPIO_PORT,
+	OUT_Motor3_DIR_GPIO_PORT,
+	OUT_Motor3_CLK_GPIO_PORT,
+	OUT_Motor4_EN_GPIO_PORT,
+	OUT_Motor4_DIR_GPIO_PORT,
+	OUT_Motor4_CLK_GPIO_PORT,
 	OUT_VALVE_AIR_PORT,
 	OUT_VALVE_LIQUID_PORT,
 	OUT_BEEP_PORT
 //  OUT_HEAT1_GPIO_PORT,
 //	OUT_HEAT1_GPIO_PORT
 };
-UINT16 CODE_ OUT_PIN[O_OUTPUT_NUM]= 
+UINT16 CODE_ OUT_PIN[O_OUTPUT_END]= 
 {
     //
 //  OUT_STATUS_LED1_GPIO_PIN, 
@@ -64,12 +71,18 @@ UINT16 CODE_ OUT_PIN[O_OUTPUT_NUM]=
     OUT_MCU_LED2_GPIO_PIN,
     //
     OUT_LAN8720_RST_GPIO_PIN,
-    OUT_MotorX_EN_GPIO_PIN,
-	OUT_MotorX_DIR_GPIO_PIN,
-	OUT_MotorX_CLK_GPIO_PIN,
-    OUT_MotorY_EN_GPIO_PIN,
-	OUT_MotorY_DIR_GPIO_PIN,
-	OUT_MotorY_CLK_GPIO_PIN,
+    OUT_Motor1_EN_GPIO_PIN,
+	OUT_Motor1_DIR_GPIO_PIN,
+	OUT_Motor1_CLK_GPIO_PIN,
+    OUT_Motor2_EN_GPIO_PIN,
+	OUT_Motor2_DIR_GPIO_PIN,
+	OUT_Motor2_CLK_GPIO_PIN,
+    OUT_Motor3_EN_GPIO_PIN,
+	OUT_Motor3_DIR_GPIO_PIN,
+	OUT_Motor3_CLK_GPIO_PIN,
+    OUT_Motor4_EN_GPIO_PIN,
+	OUT_Motor4_DIR_GPIO_PIN,
+	OUT_Motor4_CLK_GPIO_PIN,
 	OUT_VALVE_AIR_PIN,
 	OUT_VALVE_LIQUID_PIN,
 	OUT_BEEP_LIQUID_PIN
@@ -77,7 +90,7 @@ UINT16 CODE_ OUT_PIN[O_OUTPUT_NUM]=
 //  OUT_HEAT1_GPIO_PIN,
 //	OUT_HEAT1_GPIO_PIN
 };
-UINT32 CODE_ OUT_CLK[O_OUTPUT_NUM]= 
+UINT32 CODE_ OUT_CLK[O_OUTPUT_END]= 
 {
 
 //  OUT_STATUS_LED1_GPIO_CLK, 
@@ -86,12 +99,18 @@ UINT32 CODE_ OUT_CLK[O_OUTPUT_NUM]=
     OUT_MCU_LED2_GPIO_CLK,
     //
     OUT_LAN8720_RST_GPIO_CLK,
-    OUT_MotorX_EN_GPIO_CLK,
-	OUT_MotorX_DIR_GPIO_CLK,
-	OUT_MotorX_CLK_GPIO_CLK,
-	OUT_MotorY_EN_GPIO_CLK,
-	OUT_MotorY_DIR_GPIO_CLK,
-	OUT_MotorY_CLK_GPIO_CLK,
+    OUT_Motor1_EN_GPIO_CLK,
+	OUT_Motor1_DIR_GPIO_CLK,
+	OUT_Motor1_CLK_GPIO_CLK,
+	OUT_Motor2_EN_GPIO_CLK,
+	OUT_Motor2_DIR_GPIO_CLK,
+	OUT_Motor2_CLK_GPIO_CLK,
+	OUT_Motor3_EN_GPIO_CLK,
+	OUT_Motor3_DIR_GPIO_CLK,
+	OUT_Motor3_CLK_GPIO_CLK,
+	OUT_Motor4_EN_GPIO_CLK,
+	OUT_Motor4_DIR_GPIO_CLK,
+	OUT_Motor4_CLK_GPIO_CLK,
 	OUT_VALVE_AIR_CLK,
 	OUT_VALVE_LIQUID_CLK,
 	OUT_BEEP_LIQUID_CLK
@@ -723,7 +742,7 @@ UINT8  PF_InitTimer2(void)
 	return e_Feedback_Success;
 }
 
-// Timer 3
+// Motor 1
 UINT8 PF_InitTimer3(void)
 {
 	NVIC_InitTypeDef NVIC_InitStructure;
@@ -765,7 +784,7 @@ UINT8 PF_InitTimer3(void)
 
 
 
-// Timer 4
+// Motor 2
 UINT8 PF_InitTimer4(void)
 {
     NVIC_InitTypeDef NVIC_InitStructure;
@@ -805,131 +824,191 @@ UINT8 PF_InitTimer4(void)
 	return e_Feedback_Success;
 }
 
+// Motor 3
+UINT8 PF_InitTimer1(void)
+{
+
+}
+
+// Motor 4
+UINT8 PF_InitTimer8(void)
+{
+
+
+}
+
 
 // init motor io
 void InitMotor_IO(enum eMvMotor eMotor)
 {
-	if(eMotor >= Motor_End)
+	if(eMotor >= EN_Motor_End)
 	{
 		printf("InitMotor_IO, Input Wrong Paramer eMotor = %d\r\n", eMotor);
 		return;		
 	}
 	//
-	if(eMotor == Motor_X)
+	if(eMotor == EN_Motor1)
 	{
-		EVAL_OutputInit(O_MotorX_EN);
-        EVAL_OutputInit(O_MotorX_DIR);
-        EVAL_OutputInit(O_MotorX_CLK);
+		EVAL_OutputInit(O_Motor1_EN);
+        EVAL_OutputInit(O_Motor1_DIR);
+        EVAL_OutputInit(O_Motor1_CLK);
 		
-	}else if(eMotor == Motor_Y){
+	}else if(eMotor == EN_Motor2){
 		
-		EVAL_OutputInit(O_MotorY_EN);
-        EVAL_OutputInit(O_MotorY_DIR);
-        EVAL_OutputInit(O_MotorY_CLK);
+		EVAL_OutputInit(O_Motor2_EN);
+        EVAL_OutputInit(O_Motor2_DIR);
+        EVAL_OutputInit(O_Motor2_CLK);
+	}else if(eMotor == EN_Motor3){
+		
+		EVAL_OutputInit(O_Motor3_EN);
+        EVAL_OutputInit(O_Motor3_DIR);
+        EVAL_OutputInit(O_Motor3_CLK);
+		
+	}else if(eMotor == EN_Motor4){
+		
+		EVAL_OutputInit(O_Motor4_EN);
+        EVAL_OutputInit(O_Motor4_DIR);
+        EVAL_OutputInit(O_Motor4_CLK);
 	}
 }
 
 void Motor_Dir_Pos(enum eMvMotor eMotor)
 {
-	if(eMotor >= Motor_End)
+	if(eMotor >= EN_Motor_End)
 	{
 		printf("Motor_Dir_Pos: Input Wrong Paramer eMotor = %d\r\n", eMotor);
 		return;		
 	}
 	//
-	if(eMotor == Motor_X) //in
+	if(eMotor == EN_Motor1) //in
 	{
-        EVAL_OutputSet(O_MotorX_DIR);
-	}else if(eMotor == Motor_Y){
+        EVAL_OutputSet(O_Motor1_DIR);
+	}else if(eMotor == EN_Motor2){
 		
-        EVAL_OutputSet(O_MotorY_DIR);
+        EVAL_OutputSet(O_Motor2_DIR);
+	}else if(eMotor == EN_Motor3){
+		
+        EVAL_OutputSet(O_Motor3_DIR);
+	}else if(eMotor == EN_Motor4){
+		
+        EVAL_OutputSet(O_Motor4_DIR);
 	}
 }
 
 void Motor_Dir_Neg(enum eMvMotor eMotor)
 {
-	if(eMotor >= Motor_End)
+	if(eMotor >= EN_Motor_End)
 	{
 		printf("Motor_Dir_Neg: Input Wrong Paramer eMotor = %d\r\n", eMotor);
 		return;		
 	}
 	//
-	if(eMotor == Motor_X) // out
+	if(eMotor == EN_Motor1) // out
 	{
-        EVAL_OutputClr(O_MotorX_DIR);		
-	}else if(eMotor == Motor_Y){
+        EVAL_OutputClr(O_Motor1_DIR);		
+	}else if(eMotor == EN_Motor2){
 		
-        EVAL_OutputClr(O_MotorY_DIR);
+        EVAL_OutputClr(O_Motor2_DIR);
+	}else if(eMotor == EN_Motor3){
+		
+        EVAL_OutputClr(O_Motor3_DIR);
+	}else if(eMotor == EN_Motor4){
+		
+        EVAL_OutputClr(O_Motor4_DIR);
 	}
 }
 
 void Motor_Enable(enum eMvMotor eMotor)
 {
-	if(eMotor >= Motor_End)
+	if(eMotor >= EN_Motor_End)
 	{
 		printf("Motor_Enable: Input Wrong Paramer eMotor = %d\r\n", eMotor);
 		return;		
 	}
 	//
-	if(eMotor == Motor_X)
+	if(eMotor == EN_Motor1)
 	{
-		EVAL_OutputSet(O_MotorX_EN);		
-	}else if(eMotor == Motor_Y){
+		EVAL_OutputSet(O_Motor1_EN);		
+	}else if(eMotor == EN_Motor2){
 		
-		EVAL_OutputSet(O_MotorY_EN);
+		EVAL_OutputSet(O_Motor2_EN);
+	}else if(eMotor == EN_Motor3){
+		
+		EVAL_OutputSet(O_Motor3_EN);
+	}else if(eMotor == EN_Motor4){
+		
+		EVAL_OutputSet(O_Motor4_EN);
 	}
 }
 
 void Motor_Disable(enum eMvMotor eMotor)
 {
-	if(eMotor >= Motor_End)
+	if(eMotor >= EN_Motor_End)
 	{
 		printf("Motor_Disable: Input Wrong Paramer eMotor = %d\r\n", eMotor);
 		return;		
 	}
 	//
-	if(eMotor == Motor_X)
+	if(eMotor == EN_Motor1)
 	{
-		EVAL_OutputClr(O_MotorX_EN);		
-	}else if(eMotor == Motor_Y){
+		EVAL_OutputClr(O_Motor1_EN);		
+	}else if(eMotor == EN_Motor2){
 		
-		EVAL_OutputClr(O_MotorY_EN);
+		EVAL_OutputClr(O_Motor2_EN);
+	}else if(eMotor == EN_Motor3){
+		
+		EVAL_OutputClr(O_Motor3_EN);
+	}else if(eMotor == EN_Motor4){
+		
+		EVAL_OutputClr(O_Motor4_EN);
 	}
 }
 
 void Motor_Clk_Set(enum eMvMotor eMotor)
 {
-	if(eMotor >= Motor_End)
+	if(eMotor >= EN_Motor_End)
 	{
 		printf("Motor_CLK_Set: Input Wrong Paramer eMotor = %d\r\n", eMotor);
 		return;		
 	}
 	//
-	if(eMotor == Motor_X)
+	if(eMotor == EN_Motor1)
 	{
-        EVAL_OutputSet(O_MotorX_CLK);
+        EVAL_OutputSet(O_Motor1_CLK);
 		
-	}else if(eMotor == Motor_Y){
+	}else if(eMotor == EN_Motor2){
 	
-        EVAL_OutputSet(O_MotorY_CLK);
+        EVAL_OutputSet(O_Motor2_CLK);
+	}else if(eMotor == EN_Motor3){
+	
+        EVAL_OutputSet(O_Motor3_CLK);
+	}else if(eMotor == EN_Motor4){
+	
+        EVAL_OutputSet(O_Motor4_CLK);
 	}
 }
 
 void Motor_Clk_Reset(enum eMvMotor eMotor)
 {
-	if(eMotor >= Motor_End)
+	if(eMotor >= EN_Motor_End)
 	{
 		printf("Motor_CLK_Clr: Input Wrong Paramer eMotor = %d\r\n", eMotor);
 		return;		
 	}
 	//
-	if(eMotor == Motor_X)
+	if(eMotor == EN_Motor1)
 	{
-        EVAL_OutputClr(O_MotorX_CLK);
+        EVAL_OutputClr(O_Motor1_CLK);
 		
-	}else if(eMotor == Motor_Y){
+	}else if(eMotor == EN_Motor2){
 		
-        EVAL_OutputClr(O_MotorY_CLK);
+        EVAL_OutputClr(O_Motor2_CLK);
+	}else if(eMotor == EN_Motor3){
+		
+        EVAL_OutputClr(O_Motor3_CLK);
+	}else if(eMotor == EN_Motor4){
+		
+        EVAL_OutputClr(O_Motor4_CLK);
 	}
 }
 
@@ -937,17 +1016,23 @@ void Motor_Clk_Reset(enum eMvMotor eMotor)
 
 void InitMotor_Param(enum eMvMotor eMotor)
 {
-	if(eMotor >= Motor_End)
+	if(eMotor >= EN_Motor_End)
 	{
 		printf("InitMotor_Param, Input Wrong Paramer eMotor = %d\r\n", eMotor);
 		return;		
 	}
 	
-	if(eMotor == Motor_X)
+	if(eMotor == EN_Motor1)
 	{
 		 // timer3
 		
-	}else if(eMotor == Motor_Y){
+	}else if(eMotor == EN_Motor2){
+		
+		
+	}else if(eMotor == EN_Motor3){
+		
+		
+	}else if(eMotor == EN_Motor4){
 		
 	}
 }
@@ -956,19 +1041,27 @@ void InitMotor_Param(enum eMvMotor eMotor)
 // init motor timer and io
 void PF_InitMotor(enum eMvMotor eMotor)
 {
-	if(eMotor >= Motor_End)
+	if(eMotor >= EN_Motor_End)
 	{
 		printf("PF_InitMotor, Input Wrong Paramer eMotor = %d\r\n", eMotor);
 		return;		
 	}
 	
-	if(eMotor == Motor_X)
+	if(eMotor == EN_Motor1)
 	{
 		PF_InitTimer3(); // timer3
 		
-	}else if(eMotor == Motor_Y){
+	}else if(eMotor == EN_Motor2){
+		
 		PF_InitTimer4();
+	}else if(eMotor == EN_Motor3){
+		
+		PF_InitTimer1();
+	}else if(eMotor == EN_Motor4){
+		
+		PF_InitTimer8();
 	}
+	
 	//
 	InitMotor_IO(eMotor);
 }
@@ -976,23 +1069,34 @@ void PF_InitMotor(enum eMvMotor eMotor)
 
 
 
-void IRQ_MotorX(void)
+// Timer3 IRQ
+void IRQ_Motor1(void)
 {
-    MTx_PWM_ISR(Motor_X);
+    MTx_PWM_ISR(EN_Motor1);
+    return;
+}
+
+// Timer4 IRQ
+void IRQ_Motor2(void)
+{
+    MTx_PWM_ISR(EN_Motor2);
+    return;
+}
+
+// Timer1 IRQ
+void IRQ_Motor3(void)
+{
+    MTx_PWM_ISR(EN_Motor3);
 
     return;
 }
 
-void IRQ_MotorY(void)
+// Timer8 IRQ
+void IRQ_Motor4(void)
 {
-    MTx_PWM_ISR(Motor_Y);
-
+    MTx_PWM_ISR(EN_Motor4);
     return;
 }
-
-
-
-
 
 
 
@@ -1001,7 +1105,7 @@ void MTx_IoMinitor(enum eMvMotor eMotor)
     UINT8  XRAM_ chCurLevel;
 
     // check
-    if(eMotor >= Motor_End)
+    if(eMotor >= EN_Motor_End)
     {
 		return;  // error
 	}
@@ -1725,6 +1829,31 @@ UINT16 HW_CUR12P_ADC(void)
 UINT16 HW_CUR12P_V(void)
 {
 	return HW_CUR12P_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+}
+
+UINT16 HW_Motor3_ADC(void)
+{
+	UINT16 nVal = 0;
+	nVal = HW_ADC3_Channel_Value(EN_ADC_Motor3, ADC_SMOOTH_NUM_5);
+	return nVal;
+}
+
+UINT16 HW_Motor3_V(void)
+{
+	return HW_Motor3_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
+}
+
+//
+UINT16 HW_Motor4_ADC(void)
+{
+	UINT16 nVal = 0;
+	nVal = HW_ADC3_Channel_Value(EN_ADC_Motor4, ADC_SMOOTH_NUM_5);
+	return nVal;
+}
+
+UINT16 HW_Motor4_V(void)
+{
+	return HW_Motor4_ADC()*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
 }
 
 //
