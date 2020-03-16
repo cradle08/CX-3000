@@ -177,6 +177,7 @@ _EXT_ void  HW_End_WBC(void);
 //
 //
 //------------------------------------------------------ CX2000_C API START --------------------
+UINT8  MV_InitPara_V3(enum eMvMotor eMotor, UINT32 nFreqMin, UINT32 nFreqMax, UINT32 nFreqInc, UINT32 nFreqSam);
 _EXT_ UINT8  HW_LEVEL_GetOC_V3(UINT8 chIndex);
 _EXT_ UINT8  HW_Valve_On_V3(UINT8 chIndex);
 _EXT_ UINT8  HW_Valve_Off_V3(UINT8 chIndex);

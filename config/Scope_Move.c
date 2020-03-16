@@ -1039,7 +1039,7 @@ UINT8  MV_InitPara(enum eMvMotor eMotor,
 {
 	
 	// cx2000_c, cx3000
-	return  MV_InitParam_V3(eMotor, nFreqMin, nFreqMax, nFreqInc, nFreqSam);
+	return  MV_InitPara_V3(eMotor, nFreqMin, nFreqMax, nFreqInc, nFreqSam);
 	// cx2000_b
 	//return  MV_InitParam_V2(eMotor, nFreqMin, nFreqMax, nFreqInc, nFreqSam);
 }

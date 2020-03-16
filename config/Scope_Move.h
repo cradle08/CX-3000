@@ -163,7 +163,7 @@ _EXT_ UINT8  MV_IsrMoveHandling(void);
 void MV_InitMotorTimer(enum eMvMotor eMotor);
 
 // initialize the moving parameters of the motor driver
-_EXT_ UINT8  MV_InitPara_V3(enum eMvMotor eMotor, 
+_EXT_ UINT8  MV_InitPara(enum eMvMotor eMotor, 
                               UINT32 nFreqMin, 
                               UINT32 nFreqMax, 
                               UINT32 nFreqInc, 
