@@ -14,18 +14,22 @@
 //#define MV_MOTOR_NUM   2  // 
 
 // home-OC-detect-level
-#define CO_HOME_MT_X   0
-#define CO_HOME_MT_Y   0    // leave the home-OC
+//#define CO_HOME_MT_X   0
+//#define CO_HOME_MT_Y   0    // leave the home-OC
+
 // max-distance
 #define MAX_DITANCE_MT_X    ((UINT32)1000000)
 #define MAX_DITANCE_MT_Y    ((UINT32)1000000)
 // direction-negative
-#define DIR_NEG_MT_X     0
-#define DIR_NEG_MT_Y     1
+#define DIR_NEG_MT_1     1
+#define DIR_NEG_MT_2     1
+#define DIR_NEG_MT_3     1
+#define DIR_NEG_MT_4     1
 // direction-position
-#define DIR_POS_MT_X     1
-#define DIR_POS_MT_Y     0
-
+#define DIR_POS_MT_1     0
+#define DIR_POS_MT_2     0
+#define DIR_POS_MT_3     0
+#define DIR_POS_MT_4     0
 
 //-----------------------------------------------------------------------------------------
 // enumeration, status of the movement
@@ -33,11 +37,11 @@
 // index
 enum eMvMotor
 {
-    EN_Motor1  = 0,   // 
-    EN_Motor2  = 1,   //
-	EN_Motor3  = 2,   //
-	EN_Motor4  = 3,   //
-	EN_Motor_End = 4,  // add
+    EN_Motor1  		= 0,   // 
+    EN_Motor2  		= 1,   //
+	EN_Motor3  		= 2,   //
+	EN_Motor4 		= 3,   //
+	EN_Motor_End 	= 4,  // add
 };
 
 enum eMotorPhase		  
@@ -158,7 +162,7 @@ _EXT_ UINT8  MV_IsrMoveHandling(void);
 
 
 /******************************************** Driver IF Form CX3000 ************************************************/
-
+UINT8  MTx_DriverEnable(enum eMvMotor eMotor, enum eFlag bAble);
 // 
 void MV_InitMotorTimer(enum eMvMotor eMotor);
 
@@ -190,5 +194,3 @@ _EXT_ UINT8  MV_IsrMoveHandling(void);
 
 
 #endif
-
-

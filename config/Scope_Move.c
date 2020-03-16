@@ -831,39 +831,55 @@ IO_ struct tMvMotorPara   XRAM_ g_atMotorPara[EN_Motor_End];   // paramenters
 // direction position
 _STA_ UINT32 CODE_ m_acnDirPos[EN_Motor_End] =
 {
-     DIR_POS_MT_X,
-	 DIR_POS_MT_Y
+     DIR_POS_MT_1,
+	 DIR_POS_MT_2,
+	 DIR_POS_MT_3,
+	 DIR_POS_MT_4
 };
 // direction negation
 _STA_ UINT32 CODE_ m_acnDirNeg[EN_Motor_End] = 
 {
-	 DIR_NEG_MT_X,
-	 DIR_NEG_MT_Y
+	 DIR_NEG_MT_1,
+	 DIR_NEG_MT_2,
+	 DIR_NEG_MT_3,
+	 DIR_NEG_MT_4
 };
 
 UINT32 CODE_ MTx_FreqMin[EN_Motor_End] =
 {
+	0,
+	0,
 	0,
 	0
 };
 UINT32 CODE_ MTx_FreqMax[EN_Motor_End] =  // 32 * 8000
 {
 	256000,
+	256000,
+	256000,
 	256000
 };
 UINT32 CODE_ MTx_FreqInc[EN_Motor_End] =
 {
+	4000,
+	4000,
 	4000,
 	4000
 };
 UINT32 CODE_ MTx_Distance[EN_Motor_End] =
 {
 	1000000,
+	1000000,
+	1000000,
 	1000000
 };
 
 
-TIM_TypeDef*  CODE_ MTx_Timer[EN_Motor_End] = {TIM3, TIM4};
+// Motor1 = TIM3
+// Motor2 = TIM4
+// Motor3 = TIM1
+// Motor4 = TIM8
+TIM_TypeDef*  CODE_ MTx_Timer[EN_Motor_End] = {TIM3, TIM4, TIM1, TIM8};
 
 #define MTx_VALUE_FREQ_MIN(ch)             MTx_FreqMin[ch]            
 // 2) the maximum of the motor's frequence
@@ -873,8 +889,9 @@ TIM_TypeDef*  CODE_ MTx_Timer[EN_Motor_End] = {TIM3, TIM4};
 // 4) the maximum  steps of the total run(rectilinear movement or circular movement)
 #define MTx_VALUE_DISTANCE_MAX(ch)         MTx_Distance[ch] 
 
+
 // 1) timer init
-//#define MTx_TIMER_INIT(ch)               {PF_InitMotorTimer(ch);}
+#define MTx_TIMER_INIT(ch)               {PF_InitMotorTimer(ch);}
 // 2) enable the interrupt 
 #define MTx_TIMER_INTERRUPT_ON(ch)         {TIM_ITConfig(MTx_Timer[ch], TIM_IT_Update, ENABLE);}
 // 3) disable the interrupt
@@ -888,6 +905,60 @@ TIM_TypeDef*  CODE_ MTx_Timer[EN_Motor_End] = {TIM3, TIM4};
 // 7) change the reloaded value and don't effect the counter's value
 #define MTx_TIMER_LOAD(ch, VALUE)          {TIM_SetAutoreload(MTx_Timer[ch], (VALUE));} // {TIM_SetCounter(MTx_Timer[ch], (VALUE));}  
 
+
+//
+UINT8  MTx_DriverEnable(enum eMvMotor eMotor, enum eFlag bAble)
+{
+    // check
+    if(eMotor >= EN_Motor_End)
+    {
+		return e_Feedback_Error;
+	}
+	
+	if(eMotor == EN_Motor1)
+	{
+		if(e_False == bAble)
+		{
+			EVAL_OutputClr(O_Motor1_EN);
+			MTx_TIMER_COUNT_OFF(eMotor);
+		}else{
+			EVAL_OutputSet(O_Motor1_EN);
+			MTx_TIMER_COUNT_ON(eMotor);
+			
+		}	
+	}else if(eMotor == EN_Motor2){
+		if(e_False == bAble)
+		{
+			EVAL_OutputClr(O_Motor2_EN);
+			MTx_TIMER_COUNT_OFF(eMotor);
+		
+		}else{
+			EVAL_OutputSet(O_Motor2_EN);
+			MTx_TIMER_COUNT_ON(eMotor);
+		}			
+	}else if(eMotor == EN_Motor3){
+		if(e_False == bAble)
+		{
+			EVAL_OutputClr(O_Motor3_EN);
+			MTx_TIMER_COUNT_OFF(eMotor);
+		
+		}else{
+			EVAL_OutputSet(O_Motor3_EN);
+			MTx_TIMER_COUNT_ON(eMotor);
+		}			
+	}else if(eMotor == EN_Motor4){
+		if(e_False == bAble)
+		{
+			EVAL_OutputClr(O_Motor4_EN);
+			MTx_TIMER_COUNT_OFF(eMotor);
+		
+		}else{
+			EVAL_OutputSet(O_Motor4_EN);
+			MTx_TIMER_COUNT_ON(eMotor);
+		}			
+	}				
+    return e_Feedback_Success;
+}
 
 
 
@@ -1045,38 +1116,6 @@ UINT8  MV_InitPara(enum eMvMotor eMotor,
 }
 
 //
-UINT8  MTx_DriverEnable(enum eMvMotor eMotor, enum eFlag bAble)
-{
-    // check
-    if(eMotor >= EN_Motor_End)
-    {
-		return e_Feedback_Error;
-	}
-	
-	if(eMotor == EN_Motor1)
-	{
-		if(e_False == bAble)
-		{
-			EVAL_OutputClr(O_Motor1_EN);
-			MTx_TIMER_COUNT_OFF(eMotor);
-		}else{
-			EVAL_OutputSet(O_Motor1_EN);
-			MTx_TIMER_COUNT_ON(eMotor);
-			
-		}	
-	}else if(eMotor == EN_Motor2){
-		if(e_False == bAble)
-		{
-			EVAL_OutputClr(O_Motor2_EN);
-			MTx_TIMER_COUNT_OFF(eMotor);
-		
-		}else{
-			EVAL_OutputSet(O_Motor2_EN);
-			MTx_TIMER_COUNT_ON(eMotor);
-		}			
-	}		
-    return e_Feedback_Success;
-}
 
 //
 UINT8  MV_Move_V3(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
@@ -1858,7 +1897,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 	} // end of "switch"
 
 	
-	  IO_ UINT32   		   nStepsAcc;	   // steps, phase speed up 
+	IO_ UINT32   		   nStepsAcc;	   // steps, phase speed up 
     IO_ UINT32   		   nStepsEqu;      // steps, phase speed keep
 	IO_ UINT32   		   nStepsDec;	   // steps, phase speed reduction
 	IO_ UINT32	 		   nStepsExecuted; 	// steps had gone

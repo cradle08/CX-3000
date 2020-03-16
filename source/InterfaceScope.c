@@ -1330,6 +1330,7 @@ UINT8 HW_Valve_Off_V3(UINT8 chIndex)
 }		
 
 
+
 //------------------------------
 // DC motor control
 UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
@@ -1338,6 +1339,7 @@ UINT8  HW_PUMP_Pulse(UINT32 nFreq, enum eDirection eDir)
 	return HW_PUMP_Pulse_V3(nFreq, eDir);
 	// else cx2000_b
 }
+
 //
 UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir)
 {
@@ -1348,7 +1350,6 @@ UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir)
 	}
 	return 0;
 }
-
 
 
 
@@ -2013,14 +2014,19 @@ UINT32 HW_ADC_PressPara(UINT32 nK, UINT32 nB)
 }
 
 
+UINT8 HW_LEVEL_GetOC(UINT8 chIndex)
+{
+	// cx2000_c,cx3000
+	return HW_LEVEL_GetOC_V3(chIndex);
+	// cx2000_b
+	//return HW_LEVEL_GetOC_V3(chIndex);
+}
 
-
-	
 
 
 // get the level of the OC and the electrode
 // 预留的悬空位返回状态1表示光耦未被遮挡 
-UINT8  HW_LEVEL_GetOC(UINT8 chIndex)
+UINT8  HW_LEVEL_GetOC_V2(UINT8 chIndex)
 {
 	IO_ UINT32 IRAM_  nAddr 	= 0;
 	IO_ UINT16 IRAM_  anBuffer[2];
@@ -2070,7 +2076,6 @@ UINT8  HW_LEVEL_GetOC(UINT8 chIndex)
 			break;
 		}
 	}
-
 	return chValue;
 }
 
@@ -2139,7 +2144,7 @@ UINT8 hw_filter_get_electrode(UINT8 chIndex)
 	// cx2000_c, cx3000
 	return hw_filter_get_electrode_V3(chIndex);
 	// cx2000_b
-	//
+	// return hw_filter_get_electrode_V2(chIndex);
 }
 
 
@@ -3371,24 +3376,24 @@ UINT8  HW_LEVEL_GetOC_V3(UINT8 chIndex)
 	UINT8 nVal;
 	switch(chIndex)
 	{
-		case OC_HOME_CHANNEL: // Motor X IN OC
+		case OC_HOME_CHANNEL: // Motor 3 IN OC
 		{
-			nVal =  EVAL_InputGetState(I_MotorX_IN_OC);
+			nVal =  EVAL_InputGetState(I_Motor3_IN_OC);
 		}
 		break;
-		case OC_OUT_CHANNEL: // Motor X OUT OC
+		case OC_OUT_CHANNEL: // Motor 3 OUT OC
 		{
-			nVal =  EVAL_InputGetState(I_MotorX_OUT_OC);
+			nVal =  EVAL_InputGetState(I_Motor3_OUT_OC);
 		}
 		break;
-		case OC_SAMPLE_RELEA_CHANNEL: // Motor Y IN OC
+		case OC_SAMPLE_RELEA_CHANNEL: // Motor 4 IN OC
 		{
-			nVal = EVAL_InputGetState(I_MotorY_IN_OC);
+			nVal = EVAL_InputGetState(I_Motor4_IN_OC);
 		}
 		break;
-		case OC_SAMPLE_HOLD_CHANNEL: // Motor Y OUT OC
+		case OC_SAMPLE_HOLD_CHANNEL: // Motor 4 OUT OC
 		{
-			nVal = EVAL_InputGetState(I_MotorY_OUT_OC);
+			nVal = EVAL_InputGetState(I_Motor4_OUT_OC);
 		}
 		break;
 		default:break;

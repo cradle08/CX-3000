@@ -125,30 +125,30 @@ UINT32 CODE_ OUT_CLK[O_OUTPUT_END]=
 GPIO_TypeDef* CODE_ IN_PORT[I_INPUT_NUM]= 
 {
 	IN_MT_STATUS_GPIO_PORT,
-	IN_MotorX_IN_OC_GPIO_PORT,
-	IN_MotorX_OUT_OC_GPIO_PORT,
-	IN_MotorY_IN_OC_GPIO_PORT,
-	IN_MotorY_OUT_OC_GPIO_PORT,
+	IN_Motor3_IN_OC_GPIO_PORT,
+	IN_Motor3_OUT_OC_GPIO_PORT,
+	IN_Motor4_IN_OC_GPIO_PORT,
+	IN_Motor4_OUT_OC_GPIO_PORT,
 	IN_ELEC_GPIO_PORT,
 	IN_MICRO_OC_GPIO_PORT
 };
 UINT16 CODE_ IN_PIN[I_INPUT_NUM]=
 {
 	IN_MT_STATUS_GPIO_PIN,
-	IN_MotorX_IN_OC_GPIO_PIN,
-	IN_MotorX_OUT_OC_GPIO_PIN,
-	IN_MotorY_IN_OC_GPIO_PIN,
-	IN_MotorY_OUT_OC_GPIO_PIN,
+	IN_Motor3_IN_OC_GPIO_PIN,
+	IN_Motor3_OUT_OC_GPIO_PIN,
+	IN_Motor4_IN_OC_GPIO_PIN,
+	IN_Motor4_OUT_OC_GPIO_PIN,
 	IN_ELEC_GPIO_PIN,
 	IN_MICRO_OC_GPIO_PIN
 };	
 UINT32 CODE_ IN_CLK[I_INPUT_NUM]=
 {
 	IN_MT_STATUS_GPIO_CLK,
-	IN_MotorX_IN_OC_GPIO_CLK,
-	IN_MotorX_OUT_OC_GPIO_CLK,
-	IN_MotorY_IN_OC_GPIO_CLK,
-	IN_MotorY_OUT_OC_GPIO_CLK,
+	IN_Motor3_IN_OC_GPIO_CLK,
+	IN_Motor3_OUT_OC_GPIO_CLK,
+	IN_Motor4_IN_OC_GPIO_CLK,
+	IN_Motor4_OUT_OC_GPIO_CLK,
 	IN_ELEC_GPIO_CLK,
 	IN_MICRO_OC_GPIO_CLK
 };
@@ -156,10 +156,10 @@ UINT16 CODE_ IN_ET_LINE[I_INPUT_NUM]=
 {
 	//
 	IN_MT_STATUS_ET_LINE,
-	IN_MotorX_IN_OC_ET_LINE,
-	IN_MotorX_OUT_OC_ET_LINE,
-	IN_MotorY_IN_OC_ET_LINE,
-	IN_MotorY_OUT_OC_ET_LINE,
+	IN_Motor3_IN_OC_ET_LINE,
+	IN_Motor3_OUT_OC_ET_LINE,
+	IN_Motor4_IN_OC_ET_LINE,
+	IN_Motor4_OUT_OC_ET_LINE,
 	IN_ELEC_ET_LINE,
 	IN_MICRO_OC_ET_LINE
 	
@@ -167,30 +167,30 @@ UINT16 CODE_ IN_ET_LINE[I_INPUT_NUM]=
 UINT16 CODE_ IN_ET_PORT[I_INPUT_NUM]=
 {
 	IN_MT_STATUS_ET_PORT,
-	IN_MotorX_IN_OC_ET_PORT,
-	IN_MotorX_OUT_OC_ET_PORT,
-	IN_MotorY_IN_OC_ET_PORT,
-	IN_MotorY_OUT_OC_ET_PORT,
+	IN_Motor3_IN_OC_ET_PORT,
+	IN_Motor3_OUT_OC_ET_PORT,
+	IN_Motor4_IN_OC_ET_PORT,
+	IN_Motor4_OUT_OC_ET_PORT,
 	IN_ELEC_ET_IRQn,
 	IN_MICRO_OC_ET_PORT
 };
 UINT16 CODE_ IN_ET_PIN[I_INPUT_NUM]=
 {
 	IN_MT_STATUS_ET_PIN,
-	IN_MotorX_IN_OC_ET_PIN,
-	IN_MotorX_OUT_OC_ET_PIN,
-	IN_MotorY_IN_OC_ET_PIN,
-	IN_MotorY_OUT_OC_ET_PIN,
+	IN_Motor3_IN_OC_ET_PIN,
+	IN_Motor3_OUT_OC_ET_PIN,
+	IN_Motor4_IN_OC_ET_PIN,
+	IN_Motor4_OUT_OC_ET_PIN,
 	IN_ELEC_ET_PIN,
 	IN_MICRO_OC_ET_PIN
 };
 UINT16 CODE_ IN_ET_IRQn[I_INPUT_NUM]=
 {
 	IN_MT_STATUS_ET_IRQn,
-	IN_MotorX_IN_OC_ET_IRQn,
-	IN_MotorX_OUT_OC_ET_IRQn,
-	IN_MotorY_IN_OC_ET_IRQn,
-	IN_MotorY_OUT_OC_ET_IRQn,
+	IN_Motor3_IN_OC_ET_IRQn,
+	IN_Motor3_OUT_OC_ET_IRQn,
+	IN_Motor4_IN_OC_ET_IRQn,
+	IN_Motor4_OUT_OC_ET_IRQn,
 	IN_ELEC_ET_IRQn,
 	IN_MICRO_OC_ET_IRQn
 };
@@ -381,10 +381,10 @@ UINT8 EVAL_InputGetState(Input_TypeDef eIn)
 
 void HW_LEVEL_OC_Init(void)
 {
-	EVAL_InputInit(I_MotorX_IN_OC, IN_MODEL_GPIO);
-	EVAL_InputInit(I_MotorX_OUT_OC, IN_MODEL_GPIO);
-	EVAL_InputInit(I_MotorY_IN_OC, IN_MODEL_GPIO);
-	EVAL_InputInit(I_MotorY_OUT_OC, IN_MODEL_GPIO);
+	EVAL_InputInit(I_Motor3_IN_OC, IN_MODEL_GPIO);
+	EVAL_InputInit(I_Motor3_OUT_OC, IN_MODEL_GPIO);
+	EVAL_InputInit(I_Motor4_IN_OC, IN_MODEL_GPIO);
+	EVAL_InputInit(I_Motor4_OUT_OC, IN_MODEL_GPIO);
 }
 
 void HW_Beep_Init(void)
@@ -827,15 +827,86 @@ UINT8 PF_InitTimer4(void)
 // Motor 3
 UINT8 PF_InitTimer1(void)
 {
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStrecture;
+	NVIC_InitTypeDef NVIC_InitStructure;
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
+	TIM_DeInit(TIM1); 
+	
+	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_Init(&NVIC_InitStructure);
 
+	TIM_TimeBaseInitStrecture.TIM_Period = 10000;
+	TIM_TimeBaseInitStrecture.TIM_Prescaler = 168;
+	TIM_TimeBaseInitStrecture.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseInitStrecture.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInitStrecture.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM1, &TIM_TimeBaseInitStrecture);
+
+	TIM_ARRPreloadConfig(TIM1, ENABLE);
+	TIM_ClearFlag(TIM1,TIM_FLAG_Update);
+	TIM_ITConfig(TIM1, TIM_IT_Update,ENABLE);
+	TIM_Cmd(TIM1, ENABLE);
+	
+	return 0;
 }
 
 // Motor 4
 UINT8 PF_InitTimer8(void)
 {
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStrecture;
+	NVIC_InitTypeDef NVIC_InitStructure;
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM8, ENABLE);
+	TIM_DeInit(TIM8); 
+	
+	NVIC_InitStructure.NVIC_IRQChannel = TIM8_UP_TIM13_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_Init(&NVIC_InitStructure);
 
+	TIM_TimeBaseInitStrecture.TIM_Period = 10000;
+	TIM_TimeBaseInitStrecture.TIM_Prescaler = 168;
+	TIM_TimeBaseInitStrecture.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseInitStrecture.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInitStrecture.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM8, &TIM_TimeBaseInitStrecture);
 
+	TIM_ARRPreloadConfig(TIM8, ENABLE);
+	TIM_ClearFlag(TIM8, TIM_FLAG_Update);
+	TIM_ITConfig(TIM8, TIM_IT_Update, ENABLE);
+	TIM_Cmd(TIM8, ENABLE);
+	return 0;
 }
+
+
+//
+void PF_InitMotorTimer(enum eMvMotor eMotor)
+{
+	if(eMotor > EN_Motor_End)
+	{
+		printf("%s: Wrong Input Parameter eMotor=%d\r\n", __func__, eMotor);
+	}
+	
+	InitMotor_IO(eMotor);
+	if(eMotor == EN_Motor1)
+	{		
+		PF_InitTimer3();	
+	}else if(eMotor == EN_Motor2){
+		
+		PF_InitTimer4();
+	}else if(eMotor == EN_Motor3){
+			
+		PF_InitTimer1();
+	}else if(eMotor == EN_Motor4){
+		
+		PF_InitTimer8();
+	}
+	MTx_DriverEnable(eMotor, e_False);
+}
+
 
 
 // init motor io
@@ -1072,7 +1143,8 @@ void PF_InitMotor(enum eMvMotor eMotor)
 // Timer3 IRQ
 void IRQ_Motor1(void)
 {
-    MTx_PWM_ISR(EN_Motor1);
+    //MTx_PWM_ISR(EN_Motor1);
+	MTx_PWM_ISR(EN_Motor3);
     return;
 }
 
@@ -2052,13 +2124,7 @@ void EVAL_Init(void)
 	FPGA_ResetHardware();
 #endif
 
-	//-------------------------------------------
-	// 7. initialize  IO input --- normal and exti interrupt 
-	// input
-	//EVAL_InputInit(I_HOME_X, IN_MODEL_GPIO);      // //yaolan_20190715
-	//EVAL_InputInit(I_HOME_Y, IN_MODEL_GPIO);      // //yaolan_20190715
-	//EVAL_InputInit(I_HOME_Z, IN_MODEL_GPIO);      // //yaolan_20190715
-	//EVAL_InputInit(I_HOME_M, IN_MODEL_GPIO);      // //yaolan_20190715
+
 #if !USE_STM32F407_ONLY
 	EVAL_InputInit(I_FEEDBACK_1, IN_MODEL_EXTI);  //EXTI15-10 PB13// EXTI9_5_IRQn  EXTI_Line7
 #endif
@@ -2070,20 +2136,14 @@ void EVAL_Init(void)
 	
 #if USE_STM32F407_ONLY
 
-	ADC1_Init();//APP_ADC_Init(EN_ADC1);
-//	// ...?
-//	ADC_SoftwareStartConv(ADC1);
-//	IT_SYS_DlyMs(10);
-//	Disable_ADC(EN_ADC1);
-//	memset((void*)&ADC1_Status, 0, sizeof(ADC_Status_InitTypeDef));	
-
-
-
-	ADC2_Init();//APP_ADC_Init(EN_ADC2);
-		
-	ADC3_Init();//APP_ADC_Init(EN_ADC3);
+	ADC1_Init();
+	ADC2_Init();
+	ADC3_Init();
 	
 	PF_InitTimer2();
+	//
+	PF_InitMotorTimer(EN_Motor1); // timer1
+	//
 	HW_ELEC_Init();
 	HW_Beep_Init();
 	HW_Pump_Init();
@@ -2091,16 +2151,16 @@ void EVAL_Init(void)
 	HW_LEVEL_OC_Init();
 	HW_Press_Init();
 	//Turn_Motor_Init();
-	Mixing_Motor_Init();
-	LED_Init();
-	LED_Cur_DAC_Init();
-	ADC24Bit_Init();
+	//Mixing_Motor_Init();
+	//LED_Init();
+	//LED_Cur_DAC_Init();
+	//ADC24Bit_Init();
 	HW_ADJ_Resistor_Init();
-	HW_Micro_OC_Init();
-	//OutIn_Motor_Init();
+	//HW_Micro_OC_Init();
+
 	
-	Counter_Check_Init();
-	Counter_Adjust_Init();
+	//Counter_Check_Init();
+	//Counter_Adjust_Init();
 	
 #endif
 	Beep(1, 400);

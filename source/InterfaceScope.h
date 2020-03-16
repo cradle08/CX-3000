@@ -182,6 +182,8 @@ _EXT_ UINT8  HW_LEVEL_GetOC_V3(UINT8 chIndex);
 _EXT_ UINT8  HW_Valve_On_V3(UINT8 chIndex);
 _EXT_ UINT8  HW_Valve_Off_V3(UINT8 chIndex);
 _EXT_ UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir);
+
+
 _EXT_ UINT8  hw_filter_get_electrode_V3(UINT8 chIndex);
 _EXT_ UINT8  HW_ADJ_SetResistor_V3(UINT8 chIndex, UINT8 chValue);
 INT32 HW_Press_Value(void);

@@ -250,10 +250,10 @@ typedef enum
 	
     // the motor status, to be used as a extinal-interrupt, (PG7) use for cx2000 A and B version to get motor finished flag
     I_FEEDBACK_1   	= 0, 
-	I_MotorX_IN_OC	= 1,
-	I_MotorX_OUT_OC	= 2,
-	I_MotorY_IN_OC	= 3,
-	I_MotorY_OUT_OC	= 4,
+	I_Motor3_IN_OC	= 1,
+	I_Motor3_OUT_OC	= 2,
+	I_Motor4_IN_OC	= 3,
+	I_Motor4_OUT_OC	= 4,
 	I_ELEC			= 5,
 	I_MICRO_OC		= 6,
 	I_INPUT_NUM	    = 7
@@ -279,41 +279,41 @@ typedef enum
 #define IN_MT_STATUS_ET_IRQn            EXTI9_5_IRQn
 
 
-// 1. PG2 Motor X IN OC, so far, not use interrupt function at OC
-#define IN_MotorX_IN_OC_GPIO_PIN           GPIO_Pin_2          
-#define IN_MotorX_IN_OC_GPIO_PORT          GPIOG
-#define IN_MotorX_IN_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
-#define IN_MotorX_IN_OC_ET_LINE            EXTI_Line2
-#define IN_MotorX_IN_OC_ET_PORT            EXTI_PortSourceGPIOG
-#define IN_MotorX_IN_OC_ET_PIN             EXTI_PinSource2
-#define IN_MotorX_IN_OC_ET_IRQn            EXTI2_IRQn
+// 1. PG2 Motor 3 IN OC, so far, not use interrupt function at OC
+#define IN_Motor3_IN_OC_GPIO_PIN           GPIO_Pin_2          
+#define IN_Motor3_IN_OC_GPIO_PORT          GPIOG
+#define IN_Motor3_IN_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
+#define IN_Motor3_IN_OC_ET_LINE            EXTI_Line2
+#define IN_Motor3_IN_OC_ET_PORT            EXTI_PortSourceGPIOG
+#define IN_Motor3_IN_OC_ET_PIN             EXTI_PinSource2
+#define IN_Motor3_IN_OC_ET_IRQn            EXTI2_IRQn
 
-// 2. PG3 Motor X OUT OC
-#define IN_MotorX_OUT_OC_GPIO_PIN           GPIO_Pin_3          
-#define IN_MotorX_OUT_OC_GPIO_PORT          GPIOG
-#define IN_MotorX_OUT_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
-#define IN_MotorX_OUT_OC_ET_LINE            EXTI_Line3
-#define IN_MotorX_OUT_OC_ET_PORT            EXTI_PortSourceGPIOG
-#define IN_MotorX_OUT_OC_ET_PIN             EXTI_PinSource3
-#define IN_MotorX_OUT_OC_ET_IRQn            EXTI3_IRQn
+// 2. PG3 Motor 3 OUT OC
+#define IN_Motor3_OUT_OC_GPIO_PIN           GPIO_Pin_3          
+#define IN_Motor3_OUT_OC_GPIO_PORT          GPIOG
+#define IN_Motor3_OUT_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
+#define IN_Motor3_OUT_OC_ET_LINE            EXTI_Line3
+#define IN_Motor3_OUT_OC_ET_PORT            EXTI_PortSourceGPIOG
+#define IN_Motor3_OUT_OC_ET_PIN             EXTI_PinSource3
+#define IN_Motor3_OUT_OC_ET_IRQn            EXTI3_IRQn
 
-// 3. PG4 Motor Y IN OC
-#define IN_MotorY_IN_OC_GPIO_PIN           GPIO_Pin_4          
-#define IN_MotorY_IN_OC_GPIO_PORT          GPIOG
-#define IN_MotorY_IN_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
-#define IN_MotorY_IN_OC_ET_LINE            EXTI_Line4
-#define IN_MotorY_IN_OC_ET_PORT            EXTI_PortSourceGPIOG
-#define IN_MotorY_IN_OC_ET_PIN             EXTI_PinSource4
-#define IN_MotorY_IN_OC_ET_IRQn            EXTI4_IRQn
+// 3. PG4 Motor 4 IN OC
+#define IN_Motor4_IN_OC_GPIO_PIN           GPIO_Pin_4          
+#define IN_Motor4_IN_OC_GPIO_PORT          GPIOG
+#define IN_Motor4_IN_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
+#define IN_Motor4_IN_OC_ET_LINE            EXTI_Line4
+#define IN_Motor4_IN_OC_ET_PORT            EXTI_PortSourceGPIOG
+#define IN_Motor4_IN_OC_ET_PIN             EXTI_PinSource4
+#define IN_Motor4_IN_OC_ET_IRQn            EXTI4_IRQn
 
-// 4. PG5 Motor Y OUT OC
-#define IN_MotorY_OUT_OC_GPIO_PIN           GPIO_Pin_5          
-#define IN_MotorY_OUT_OC_GPIO_PORT          GPIOG
-#define IN_MotorY_OUT_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
-#define IN_MotorY_OUT_OC_ET_LINE            EXTI_Line5
-#define IN_MotorY_OUT_OC_ET_PORT            EXTI_PortSourceGPIOG
-#define IN_MotorY_OUT_OC_ET_PIN             EXTI_PinSource5
-#define IN_MotorY_OUT_OC_ET_IRQn            EXTI9_5_IRQn
+// 4. PG5 Motor 4 OUT OC
+#define IN_Motor4_OUT_OC_GPIO_PIN           GPIO_Pin_5          
+#define IN_Motor4_OUT_OC_GPIO_PORT          GPIOG
+#define IN_Motor4_OUT_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
+#define IN_Motor4_OUT_OC_ET_LINE            EXTI_Line5
+#define IN_Motor4_OUT_OC_ET_PORT            EXTI_PortSourceGPIOG
+#define IN_Motor4_OUT_OC_ET_PIN             EXTI_PinSource5
+#define IN_Motor4_OUT_OC_ET_IRQn            EXTI9_5_IRQn
 // 5. PA11 Elec 
 #define IN_ELEC_GPIO_PIN           			GPIO_Pin_11          
 #define IN_ELEC_GPIO_PORT          			GPIOA
@@ -323,13 +323,13 @@ typedef enum
 #define IN_ELEC_ET_PIN             			EXTI_PinSource11
 #define IN_ELEC_ET_IRQn            			EXTI15_10_IRQn
 // 6. PD4 Micro OC 
-#define IN_MICRO_OC_GPIO_PIN           			GPIO_Pin_4          
-#define IN_MICRO_OC_GPIO_PORT          			GPIOD
-#define IN_MICRO_OC_GPIO_CLK           			RCC_AHB1Periph_GPIOD
-#define IN_MICRO_OC_ET_LINE            			EXTI_Line1
-#define IN_MICRO_OC_ET_PORT            			EXTI_PortSourceGPIOD
-#define IN_MICRO_OC_ET_PIN             			EXTI_PinSource1
-#define IN_MICRO_OC_ET_IRQn            			EXTI1_IRQn
+#define IN_MICRO_OC_GPIO_PIN           		GPIO_Pin_4          
+#define IN_MICRO_OC_GPIO_PORT          		GPIOD
+#define IN_MICRO_OC_GPIO_CLK           		RCC_AHB1Periph_GPIOD
+#define IN_MICRO_OC_ET_LINE            		EXTI_Line4
+#define IN_MICRO_OC_ET_PORT            		EXTI_PortSourceGPIOD
+#define IN_MICRO_OC_ET_PIN             		EXTI_PinSource4
+#define IN_MICRO_OC_ET_IRQn            		EXTI4_IRQn
 
 // adc1 and2 use dma, adc3 not
 typedef enum{
@@ -340,10 +340,10 @@ typedef enum{
 
 #define ADC2_CHECK_NUM			2
 #define ADC3_INIT_WITH_DMA		0
-#define ADC_SMOOTH_NUM_5	5
-#define ADC_SMOOTH_NUM_10	10
-#define ADC_SMOOTH_NUM_20	20
-#define ADC_SMOOTH_NUM_30	30
+#define ADC_SMOOTH_NUM_5		5
+#define ADC_SMOOTH_NUM_10		10
+#define ADC_SMOOTH_NUM_20		20
+#define ADC_SMOOTH_NUM_30		30
 
 
 //0. XK ADC, PC3_ADC3_IN13	
@@ -627,16 +627,15 @@ UINT8 PF_InitTimer4(void); // Motor 2
 UINT8 PF_InitTimer1(void); // Motor 3
 UINT8 PF_InitTimer8(void); // Motor 4
 
-#define IRQ_Motor1          TIM3_IRQHandler
-#define IRQ_Motor2          TIM4_IRQHandler
-#define IRQ_Motor3          TIM1_IRQHandler
-#define IRQ_Motor4          TIM8_IRQHandler
-
-
-// timer3,4 irq handler
-void MTx_IoMinitor(enum eMvMotor eMotor);
 void PF_InitMotorTimer(enum eMvMotor eMotor);
+void MTx_IoMinitor(enum eMvMotor eMotor);
 void InitMotor_IO(enum eMvMotor eMotor);
+
+#define IRQ_Motor1		TIM3_IRQHandler
+#define IRQ_Motor2      TIM4_IRQHandler
+#define IRQ_Motor3      TIM1_UP_TIM10_IRQHandler
+#define IRQ_Motor4      TIM8_UP_TIM13_IRQHandler
+
 
 void Motor_Dir_Pos(enum eMvMotor eMotor); // in
 void Motor_Dir_Neg(enum eMvMotor eMotor); // out
@@ -651,13 +650,14 @@ void PF_InitMotor(enum eMvMotor eMotor);
 void HW_LEVEL_OC_Init(void);
 // Valve
 void HW_Valve_Init(void);
-UINT8  HW_PUMP_Pulse_V3(UINT32 nFreq, enum eDirection eDir);
 void HW_ELEC_Init(void);
 
 void HW_Beep_Init(void);
 void Beep(UINT8 nNum, UINT32 nTime);
 
-#define IRQ_Micro_OC  EXTI1_IRQHandler
+
+// PD4
+#define IRQ_Micro_OC  EXTI4_IRQHandler
 void HW_Micro_OC_Init(void);
 void HW_Micro_OC_IRQ_Disable(void);
 UINT8 Get_Micro_OC_Status(void);
