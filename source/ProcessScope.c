@@ -481,7 +481,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			case CMD_CTRL_TEST_RBC_PLT:
             case CMD_CTRL_TEST_WBC: // count func
             {
-				HW_Micro_OC_IRQ_Disable();
+				//HW_Micro_OC_IRQ_Disable();
 				eMode  = GetTestMode(nCommand);// which cmd was be exec
 				//g_Test_Mode = eMode;
 #if SIMUATION_TEST
@@ -757,8 +757,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			}
 			break;
 			case CMD_CTRL_UPDATE_FLAG:
-			{
-				
+			{				
 				printf("set updata flag value=%d\r\n",  pchCmdBuf[8]);
 				g_Record_Param.nUpdate_Flag = pchCmdBuf[8];
 				nStatus = Flash_Write_Param(&g_Record_Param, RECORD_PARAM_LEN);
@@ -772,7 +771,14 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				}
 			
 			}
-			break;					
+			break;		
+			case CMD_CTRL_TEST:
+			{
+				printf("index =%d\r\n", *(pchCmdBuf + 8));
+				Driver_Debug(*(pchCmdBuf + 8));
+			
+			}
+			break;
             default:
             {
                 break;

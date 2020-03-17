@@ -1012,11 +1012,14 @@ UINT8  MV_InitPara_V3(enum eMvMotor eMotor,
         return e_Feedback_Error;
 	}
 	
-    // 1) min
+    // init data
+	memset((char*)&g_atMotorStatus[eMotor], 0, sizeof(g_atMotorStatus[eMotor]));
+	memset((char*)&g_atMotorPara[eMotor], 0, sizeof(g_atMotorPara[eMotor]));
+	// 1) min
 	if(nFreqMin < MTx_VALUE_FREQ_MIN(eMotor))
 	{
-       g_atMotorStatus[eMotor].nFreqMin = MTx_VALUE_FREQ_MIN(eMotor);
-	}
+        g_atMotorStatus[eMotor].nFreqMin = MTx_VALUE_FREQ_MIN(eMotor);	
+	}		
 	else
 	{
         g_atMotorStatus[eMotor].nFreqMin = nFreqMin;
@@ -1041,7 +1044,6 @@ UINT8  MV_InitPara_V3(enum eMvMotor eMotor,
 	}
 	// 4) sam
 	g_atMotorStatus[eMotor].nFreqSam = nFreqSam;
-
 
     return e_Feedback_Success; 
 }
@@ -1136,10 +1138,10 @@ UINT8  MV_Move_V3(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
         return e_Feedback_Error;
 	}
 	// parameters check
-    if( (0 == g_atMotorPara[eMotor].nFreqSam) ||
-		(0 == g_atMotorPara[eMotor].nFreqInc) ||
-		(g_atMotorPara[eMotor].nFreqMin > g_atMotorPara[eMotor].nFreqMax) ||
-		(g_atMotorPara[eMotor].nFreqInc > g_atMotorPara[eMotor].nFreqMax) )
+    if( (0 == g_atMotorStatus[eMotor].nFreqSam) ||
+		(0 == g_atMotorStatus[eMotor].nFreqInc) ||
+		(g_atMotorStatus[eMotor].nFreqMin > g_atMotorStatus[eMotor].nFreqMax) ||
+		(g_atMotorStatus[eMotor].nFreqInc > g_atMotorStatus[eMotor].nFreqMax) )
 	{
 	    g_atMotorStatus[eMotor].eFinish = e_True;
         return e_Feedback_Error;
@@ -1147,76 +1149,33 @@ UINT8  MV_Move_V3(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
 	
 	//------------------------------------------
     // 2. record the status of the motor
-	memset((char*)&g_atMotorStatus[eMotor], 0, sizeof(g_atMotorStatus[eMotor]));
     g_atMotorStatus[eMotor].eDir    		= eDir;
     g_atMotorStatus[eMotor].eFinish 		= e_False;
     g_atMotorStatus[eMotor].nSteps			= nSteps;
 	g_atMotorStatus[eMotor].bAble   		= e_True;
 	g_atMotorStatus[eMotor].nStepsExecuted  = 0;
-	if(eMotor == EN_Motor1)
+	if(eMotor == Motor_X)
 	{
 		if(eDir == e_Dir_Neg) // out
 		{
 			g_atMotorStatus[eMotor].nOCIndex = OC_OUT_CHANNEL;
-			for(i = 0; i < 5; i++)
-			{
-				nVal += HW_LEVEL_GetOC(OC_OUT_CHANNEL);
-				IT_SYS_DlyMs(1);
-			}
-			//
-			if(nVal >=3)
-			{
-				g_atMotorStatus[eMotor].nOCStatus = 1; // not touch
-			}else{
-				g_atMotorStatus[eMotor].nOCStatus = 0; // touch
-			}
+			g_atMotorStatus[eMotor].nOCStatus =  HW_LEVEL_GetOC(OC_OUT_CHANNEL);
+			
 		}else if(eDir == e_Dir_Pos){ // in
 			g_atMotorStatus[eMotor].nOCIndex = OC_HOME_CHANNEL;
-			for(i = 0; i < 5; i++)
-			{
-				nVal += HW_LEVEL_GetOC(OC_HOME_CHANNEL); 
-				IT_SYS_DlyMs(1);
-			}
-			//
-			if(nVal >=3)
-			{
-				g_atMotorStatus[eMotor].nOCStatus = 1;
-			}else{
-				g_atMotorStatus[eMotor].nOCStatus = 0;
-			}
+			g_atMotorStatus[eMotor].nOCStatus =  HW_LEVEL_GetOC(OC_HOME_CHANNEL);
 		}
-	}else if(eMotor == EN_Motor2){
+	}else if(eMotor == Motor_Y){
 		
 		if(eDir == e_Dir_Neg) // out
 		{
 			g_atMotorStatus[eMotor].nOCIndex = OC_SAMPLE_HOLD_CHANNEL;
-			for(i = 0; i < 5; i++)
-			{
-				nVal += HW_LEVEL_GetOC(OC_SAMPLE_HOLD_CHANNEL);
-				IT_SYS_DlyMs(1);
-			}
-			//
-			if(nVal >=3)
-			{
-				g_atMotorStatus[eMotor].nOCStatus = 1; // not touch
-			}else{
-				g_atMotorStatus[eMotor].nOCStatus = 0; // touch
-			}
+			g_atMotorStatus[eMotor].nOCStatus = HW_LEVEL_GetOC(OC_SAMPLE_HOLD_CHANNEL);
+			
 		}else if(eDir == e_Dir_Pos){ // in
 			
 			g_atMotorStatus[eMotor].nOCIndex = OC_SAMPLE_RELEA_CHANNEL;
-			for(i = 0; i < 5; i++)
-			{
-				nVal += HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL); 
-				IT_SYS_DlyMs(1);
-			}
-			//
-			if(nVal >=3)
-			{
-				g_atMotorStatus[eMotor].nOCStatus = 1;
-			}else{
-				g_atMotorStatus[eMotor].nOCStatus = 0;
-			}
+			g_atMotorStatus[eMotor].nOCStatus = HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL);
 		}
 	}
 		//
@@ -1256,8 +1215,7 @@ UINT8  MV_Move_V3(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
 		g_atMotorStatus[eMotor].nStepsDec   = nAcc;
 		g_atMotorStatus[eMotor].nStepsEqu   = nEqu;
 		g_atMotorStatus[eMotor].nSteps		= nSteps;
-	  // 
-		g_atMotorStatus[eMotor].eDir  = eDir;
+		g_atMotorStatus[eMotor].eDir  		= eDir;
 		g_atMotorStatus[eMotor].ePhase      = Motor_Phase_IDLE;
 		//
 		g_atMotorStatus[eMotor].nCurFreq  = g_atMotorStatus[eMotor].nFreqMin;
@@ -1414,8 +1372,8 @@ UINT8  MV_Stop_V3(enum eMvMotor eMotor)
 
     g_atMotorStatus[eMotor].eFinish = e_True;
 	
-	MTx_TIMER_INTERRUPT_OFF(eMotor); // close irq
-	
+	//MTx_TIMER_INTERRUPT_OFF(eMotor); // close irq
+	MTx_DriverEnable(eMotor, e_False);
     return e_Feedback_Success;
 }
 
@@ -1629,7 +1587,7 @@ enum eFlag  MV_IsFinished_V2(enum eMvMotor eMotor)
 enum eFlag  MV_IsFinished(enum eMvMotor eMotor)
 {
 	// cx2000_c, cx3000
-	MV_IsFinished_V3(eMotor);
+	return MV_IsFinished_V3(eMotor);
 	// cx2000_b
 	//MV_IsFinished_V2(eMotor);
 }
@@ -1719,8 +1677,9 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
     //------------------------------------------------------------
     //************************************************************
 	// 3. PWM-processing
-
-	MTx_TIMER_LOAD(eMotor, g_atMotorStatus[eMotor].nTimeLoad*1.8); // 1.4-6, 1.6-7, 1.8-8, 2.0-0
+	MTx_TIMER_LOAD(eMotor, g_atMotorStatus[eMotor].nTimeLoad);
+	//MTx_TIMER_LOAD(eMotor, g_atMotorStatus[eMotor].nTimeLoad*1.8); // 1.4-6, 1.6-7, 1.8-8, 2.0-0
+	//MTx_TIMER_LOAD(eMotor, g_atMotorStatus[eMotor].nTimeLoad*8.4); // 1.4-6, 1.6-7, 1.8-8, 2.0-0
 
 	// 1) phase changing
 	switch(g_atMotorStatus[eMotor].ePhase)
@@ -1744,6 +1703,8 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 			}
 			else
 			{
+				MTx_DriverEnable(eMotor, e_False);  // stop immediately
+				g_atMotorStatus[eMotor].eFinish = e_True;
                 break;  // break out "switch"
 			}
 		}
@@ -1825,7 +1786,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
     			// keep the timer's reloaded-value
 			    // MTx_TIMER_LOAD(m_atMotorControl[chIndex].nTimeLoad);   
     			// counting
-    			g_atMotorStatus[eMotor].nStepsEqu   	 -= 1;
+    			g_atMotorStatus[eMotor].nStepsEqu   	-= 1;
     			g_atMotorStatus[eMotor].nSteps		  	-= 1;
 				g_atMotorStatus[eMotor].nStepsExecuted  += 1;
 				
@@ -1876,7 +1837,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 			else 
 		    {	
 			    g_atMotorStatus[eMotor].ePhase        = Motor_Phase_FIN;
-			    s_nTheSameStepsCount          = 0;
+			    s_nTheSameStepsCount          		  = 0;
                 // don't break out "switch" and continue
 		    }
 		}
@@ -1884,6 +1845,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 		case Motor_Phase_FIN:
 		{
              MTx_DriverEnable(eMotor, e_False);  // stop immediately
+			 g_atMotorStatus[eMotor].eFinish 		  = e_True;
              g_atMotorStatus[eMotor].ePhase           = Motor_Phase_IDLE;
 			 break;
 		}
@@ -1891,16 +1853,11 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 		default:
 		{
              MTx_DriverEnable(eMotor, e_False);  // stop immediately
+			 g_atMotorStatus[eMotor].eFinish		  = e_True;
              g_atMotorStatus[eMotor].ePhase           = Motor_Phase_IDLE;
 			 break;
 		}
 	} // end of "switch"
-
-	
-	IO_ UINT32   		   nStepsAcc;	   // steps, phase speed up 
-    IO_ UINT32   		   nStepsEqu;      // steps, phase speed keep
-	IO_ UINT32   		   nStepsDec;	   // steps, phase speed reduction
-	IO_ UINT32	 		   nStepsExecuted; 	// steps had gone
 	
 	
 	// 2) compute the absolute location
@@ -1929,8 +1886,8 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 #endif
 
     // 4) ending current pulse, pulls down 
+	//Delay_US(150);
     Motor_Clk_Reset(eMotor); //MTx_OUT_PULSE_LOW(eMotor); 
-
 
 	//************************************************************
     //------------------------------------------------------------

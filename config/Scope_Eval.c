@@ -824,36 +824,7 @@ UINT8 PF_InitTimer4(void)
 	return e_Feedback_Success;
 }
 
-// Motor 3
-UINT8 PF_InitTimer1(void)
-{
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStrecture;
-	NVIC_InitTypeDef NVIC_InitStructure;
-	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
-	TIM_DeInit(TIM1); 
-	
-	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_Init(&NVIC_InitStructure);
-
-	TIM_TimeBaseInitStrecture.TIM_Period = 10000;
-	TIM_TimeBaseInitStrecture.TIM_Prescaler = 168;
-	TIM_TimeBaseInitStrecture.TIM_ClockDivision = TIM_CKD_DIV1;
-	TIM_TimeBaseInitStrecture.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInitStrecture.TIM_RepetitionCounter = 0;
-	TIM_TimeBaseInit(TIM1, &TIM_TimeBaseInitStrecture);
-
-	TIM_ARRPreloadConfig(TIM1, ENABLE);
-	TIM_ClearFlag(TIM1,TIM_FLAG_Update);
-	TIM_ITConfig(TIM1, TIM_IT_Update,ENABLE);
-	TIM_Cmd(TIM1, ENABLE);
-	
-	return 0;
-}
-
-// Motor 4
+// Motor 3, Motor_X
 UINT8 PF_InitTimer8(void)
 {
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStrecture;
@@ -877,9 +848,40 @@ UINT8 PF_InitTimer8(void)
 	TIM_ARRPreloadConfig(TIM8, ENABLE);
 	TIM_ClearFlag(TIM8, TIM_FLAG_Update);
 	TIM_ITConfig(TIM8, TIM_IT_Update, ENABLE);
-	TIM_Cmd(TIM8, ENABLE);
+	TIM_Cmd(TIM8, DISABLE);
 	return 0;
 }
+
+// Motor 4, Motor_Y
+UINT8 PF_InitTimer1(void)
+{
+	TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStrecture;
+	NVIC_InitTypeDef NVIC_InitStructure;
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
+	TIM_DeInit(TIM1); 
+	
+	NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_TIM10_IRQn;
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	NVIC_Init(&NVIC_InitStructure);
+
+	TIM_TimeBaseInitStrecture.TIM_Period = 10000;
+	TIM_TimeBaseInitStrecture.TIM_Prescaler = 168;
+	TIM_TimeBaseInitStrecture.TIM_ClockDivision = TIM_CKD_DIV1;
+	TIM_TimeBaseInitStrecture.TIM_CounterMode = TIM_CounterMode_Up;
+	TIM_TimeBaseInitStrecture.TIM_RepetitionCounter = 0;
+	TIM_TimeBaseInit(TIM1, &TIM_TimeBaseInitStrecture);
+
+	TIM_ARRPreloadConfig(TIM1, ENABLE);
+	TIM_ClearFlag(TIM1,TIM_FLAG_Update);
+	TIM_ITConfig(TIM1, TIM_IT_Update,ENABLE);
+	TIM_Cmd(TIM1, DISABLE);
+	
+	return 0;
+}
+
+
 
 
 //
@@ -889,8 +891,9 @@ void PF_InitMotorTimer(enum eMvMotor eMotor)
 	{
 		printf("%s: Wrong Input Parameter eMotor=%d\r\n", __func__, eMotor);
 	}
-	
+	//
 	InitMotor_IO(eMotor);
+	InitMotor_Param(eMotor);
 	if(eMotor == EN_Motor1)
 	{		
 		PF_InitTimer3();	
@@ -899,10 +902,10 @@ void PF_InitMotorTimer(enum eMvMotor eMotor)
 		PF_InitTimer4();
 	}else if(eMotor == EN_Motor3){
 			
-		PF_InitTimer1();
+		PF_InitTimer8();
 	}else if(eMotor == EN_Motor4){
 		
-		PF_InitTimer8();
+		PF_InitTimer1();
 	}
 	MTx_DriverEnable(eMotor, e_False);
 }
@@ -1089,23 +1092,13 @@ void InitMotor_Param(enum eMvMotor eMotor)
 {
 	if(eMotor >= EN_Motor_End)
 	{
-		printf("InitMotor_Param, Input Wrong Paramer eMotor = %d\r\n", eMotor);
+		printf("%s: Input Wrong Paramer eMotor = %d\r\n", __func__, eMotor);
 		return;		
 	}
-	
-	if(eMotor == EN_Motor1)
-	{
-		 // timer3
-		
-	}else if(eMotor == EN_Motor2){
-		
-		
-	}else if(eMotor == EN_Motor3){
-		
-		
-	}else if(eMotor == EN_Motor4){
-		
-	}
+	//
+	memset((char*)&g_atMotorPara[eMotor], 0, sizeof(g_atMotorPara[eMotor]));
+	memset((char*)&g_atMotorStatus[eMotor], 0, sizeof(g_atMotorStatus[eMotor]));
+
 }
 
 
@@ -1143,8 +1136,7 @@ void PF_InitMotor(enum eMvMotor eMotor)
 // Timer3 IRQ
 void IRQ_Motor1(void)
 {
-    //MTx_PWM_ISR(EN_Motor1);
-	MTx_PWM_ISR(EN_Motor3);
+    MTx_PWM_ISR(EN_Motor1);
     return;
 }
 
@@ -1158,7 +1150,7 @@ void IRQ_Motor2(void)
 // Timer1 IRQ
 void IRQ_Motor3(void)
 {
-    MTx_PWM_ISR(EN_Motor3);
+     MTx_PWM_ISR(Motor_Y);//MTx_PWM_ISR(EN_Motor3);
 
     return;
 }
@@ -1166,7 +1158,7 @@ void IRQ_Motor3(void)
 // Timer8 IRQ
 void IRQ_Motor4(void)
 {
-    MTx_PWM_ISR(EN_Motor4);
+    MTx_PWM_ISR(Motor_X);//MTx_PWM_ISR(EN_Motor3);
     return;
 }
 
@@ -1190,24 +1182,31 @@ void MTx_IoMinitor(enum eMvMotor eMotor)
         chCurLevel = HW_LEVEL_GetOC(g_atMotorStatus[eMotor].nOCIndex);
 		//-----------------------------------------
 		// 2) excute the special movement according to the status of the level's change 
-		if(g_atMotorStatus[eMotor].nOCStatus != chCurLevel)
-		{ 
-			// stop immediately
-			//if(0 == g_atMotorStatus[eMotor].nStepsSlow) 
-			//{
-				g_atMotorStatus[eMotor].nStepsAcc   = 0;
-				g_atMotorStatus[eMotor].nStepsEqu   = 0;
-				g_atMotorStatus[eMotor].nStepsDec   = 0;
-				g_atMotorStatus[eMotor].nSteps = 0;
-			//}
+		if(EN_OPEN == chCurLevel) // OC touch
+		{
+			Delay_US(500);Delay_US(500);
+			Delay_US(500);Delay_US(500);
+			chCurLevel = HW_LEVEL_GetOC(g_atMotorStatus[eMotor].nOCIndex);
+			if(EN_OPEN == chCurLevel) //if(g_atMotorStatus[eMotor].nOCStatus != chCurLevel)
+			{ 
+				// stop immediately
+				//if(0 == g_atMotorStatus[eMotor].nStepsSlow) 
+				//{
+					g_atMotorStatus[eMotor].nStepsAcc   = 0;
+					g_atMotorStatus[eMotor].nStepsEqu   = 0;
+					g_atMotorStatus[eMotor].nStepsDec   = 0;
+					g_atMotorStatus[eMotor].nSteps = 0;
+				//}
 
-			//-----------------------------------------
-			// 3) attention: only for one time !!!
-			g_atMotorStatus[eMotor].bAble = e_False;
-			g_atMotorStatus[eMotor].nOCStatus = chCurLevel;
-		}
-	} // end of if
-
+				//-----------------------------------------
+				// 3) attention: only for one time !!!
+				g_atMotorStatus[eMotor].bAble = e_False;
+				g_atMotorStatus[eMotor].eFinish = e_True;
+				g_atMotorStatus[eMotor].nOCStatus = chCurLevel;
+				g_atMotorStatus[eMotor].ePhase = Motor_Phase_FIN;
+			}
+		} // end of if
+	}
 	// 2. for other's IO input
 	return;
 }	
@@ -1237,7 +1236,7 @@ void HW_Pump_Init(void)
 	TIM_TimeBaseStructure.TIM_CounterMode=TIM_CounterMode_Up; 
 	TIM_TimeBaseStructure.TIM_Period= PUMP_RRESS_MAX_FREQ - 1; // 25000 - 1 自动重装载值
 	TIM_TimeBaseStructure.TIM_ClockDivision=TIM_CKD_DIV1; 
-	TIM_TimeBaseInit(PUMP_PWM_TIM,&TIM_TimeBaseStructure);
+	TIM_TimeBaseInit(PUMP_PWM_TIM, &TIM_TimeBaseStructure);
 
 	//初始化TIM14 Channel1 PWM模式	 
 	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
@@ -2142,8 +2141,8 @@ void EVAL_Init(void)
 	
 	PF_InitTimer2();
 	//
-	PF_InitMotorTimer(EN_Motor3); // timer1
-	//
+	PF_InitMotorTimer(Motor_X); 
+	//PF_InitMotorTimer(Motor_Y); 
 	HW_ELEC_Init();
 	HW_Beep_Init();
 	HW_Pump_Init();

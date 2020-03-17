@@ -280,7 +280,7 @@ typedef enum
 
 
 // 1. PG2 Motor 3 IN OC, so far, not use interrupt function at OC
-#define IN_Motor3_IN_OC_GPIO_PIN           GPIO_Pin_4//GPIO_Pin_2          
+#define IN_Motor3_IN_OC_GPIO_PIN           GPIO_Pin_2          
 #define IN_Motor3_IN_OC_GPIO_PORT          GPIOG
 #define IN_Motor3_IN_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
 #define IN_Motor3_IN_OC_ET_LINE            EXTI_Line4
@@ -289,7 +289,7 @@ typedef enum
 #define IN_Motor3_IN_OC_ET_IRQn            EXTI4_IRQn
 
 // 2. PG3 Motor 3 OUT OC
-#define IN_Motor3_OUT_OC_GPIO_PIN           GPIO_Pin_5//GPIO_Pin_3          
+#define IN_Motor3_OUT_OC_GPIO_PIN           GPIO_Pin_3          
 #define IN_Motor3_OUT_OC_GPIO_PORT          GPIOG
 #define IN_Motor3_OUT_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
 #define IN_Motor3_OUT_OC_ET_LINE            EXTI_Line5
@@ -298,7 +298,7 @@ typedef enum
 #define IN_Motor3_OUT_OC_ET_IRQn            EXTI9_5_IRQn 
 
 // 3. PG4 Motor 4 IN OC
-#define IN_Motor4_IN_OC_GPIO_PIN           GPIO_Pin_2//GPIO_Pin_4          
+#define IN_Motor4_IN_OC_GPIO_PIN           GPIO_Pin_4          
 #define IN_Motor4_IN_OC_GPIO_PORT          GPIOG
 #define IN_Motor4_IN_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
 #define IN_Motor4_IN_OC_ET_LINE            EXTI_Line2
@@ -307,7 +307,7 @@ typedef enum
 #define IN_Motor4_IN_OC_ET_IRQn            EXTI2_IRQn
 
 // 4. PG5 Motor 4 OUT OC
-#define IN_Motor4_OUT_OC_GPIO_PIN           GPIO_Pin_3//GPIO_Pin_5          
+#define IN_Motor4_OUT_OC_GPIO_PIN           GPIO_Pin_5          
 #define IN_Motor4_OUT_OC_GPIO_PORT          GPIOG
 #define IN_Motor4_OUT_OC_GPIO_CLK           RCC_AHB1Periph_GPIOG  
 #define IN_Motor4_OUT_OC_ET_LINE            EXTI_Line3
@@ -630,12 +630,12 @@ UINT8 PF_InitTimer8(void); // Motor 4
 void PF_InitMotorTimer(enum eMvMotor eMotor);
 void MTx_IoMinitor(enum eMvMotor eMotor);
 void InitMotor_IO(enum eMvMotor eMotor);
+void InitMotor_Param(enum eMvMotor eMotor);
 
 #define IRQ_Motor1		TIM3_IRQHandler
 #define IRQ_Motor2      TIM4_IRQHandler
 #define IRQ_Motor3      TIM1_UP_TIM10_IRQHandler
 #define IRQ_Motor4      TIM8_UP_TIM13_IRQHandler
-
 
 void Motor_Dir_Pos(enum eMvMotor eMotor); // in
 void Motor_Dir_Neg(enum eMvMotor eMotor); // out

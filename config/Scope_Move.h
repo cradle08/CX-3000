@@ -43,6 +43,9 @@ enum eMvMotor
 	EN_Motor4 		= 3,   //
 	EN_Motor_End 	= 4,  // add
 };
+#define Motor_X		EN_Motor3
+#define Motor_Y		EN_Motor4
+
 
 enum eMotorPhase		  
 {

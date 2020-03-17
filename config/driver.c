@@ -2997,7 +2997,11 @@ void Driver_Debug(UINT8 nIndex)
 		case 0: //beep
 		{
 			printf("start\r\n");
-
+			for(i = 0; i < 10; i++)
+			{
+				printf("I_OC = %d, O_OC = %d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL), HW_LEVEL_GetOC(OC_OUT_CHANNEL));
+				IT_SYS_DlyMs(50);
+			}
 			//g_Test_Mode = EN_HGB_TEST;
 			//Turn_Motor_Init();
 //			Turn_Motor_Power(EN_OPEN);

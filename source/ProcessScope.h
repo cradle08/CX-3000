@@ -72,12 +72,13 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_CTRL_PART_TEST   		0x00000708
 #define    CMD_CTRL_MIXING_MOTOR_CHECK	0x0000070A
 #define    CMD_CTRL_TURN_MOTOR_CHECK    0x0000070B
-//#define    CMD_CTRL_NET_TEST   		0x00000808
+#define    CMD_CTRL_TEST   				0x00000808
 #define    CMD_CTRL_DEBUG_TEST 		    0x00000809
 #define    CMD_CTRL_LED				    0x00000901
 #define    CMD_CTRL_MOTOR_SEL_LED       0x00000902
 #define    CMD_CTRL_TURN_MOTOR_RESET	0x00000905
 #define    CMD_CTRL_MIXING_MOTOR   		0x00000906
+
 // debug cmd
 //#define    CMD_CTRL_DEBUG_GET_PRESS 	0x00000709 // get the press value
 //#define    CMD_CTRL_UPDATE_FLAG 		0x00000900 //define at update.h
