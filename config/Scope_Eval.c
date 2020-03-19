@@ -33,7 +33,6 @@ UINT8          CODE_ COM_AF_UART[COM_NUM] = {COM1_AF_UART, COM2_AF_UART, COM3_AF
 
 
 
-
 // ----------------------------------------------------------out put----------------------
 // Output def --- led and speaker
 GPIO_TypeDef*  CODE_ OUT_PORT[O_OUTPUT_END]= 
@@ -58,7 +57,8 @@ GPIO_TypeDef*  CODE_ OUT_PORT[O_OUTPUT_END]=
 	OUT_Motor4_CLK_GPIO_PORT,
 	OUT_VALVE_AIR_PORT,
 	OUT_VALVE_LIQUID_PORT,
-	OUT_BEEP_PORT
+	OUT_BEEP_PORT,
+	OUT_Counter_SIG_SW_PORT
 //  OUT_HEAT1_GPIO_PORT,
 //	OUT_HEAT1_GPIO_PORT
 };
@@ -85,7 +85,8 @@ UINT16 CODE_ OUT_PIN[O_OUTPUT_END]=
 	OUT_Motor4_CLK_GPIO_PIN,
 	OUT_VALVE_AIR_PIN,
 	OUT_VALVE_LIQUID_PIN,
-	OUT_BEEP_LIQUID_PIN
+	OUT_BEEP_PIN,
+	OUT_Counter_SIG_SW_PIN
 	
 //  OUT_HEAT1_GPIO_PIN,
 //	OUT_HEAT1_GPIO_PIN
@@ -113,7 +114,8 @@ UINT32 CODE_ OUT_CLK[O_OUTPUT_END]=
 	OUT_Motor4_CLK_GPIO_CLK,
 	OUT_VALVE_AIR_CLK,
 	OUT_VALVE_LIQUID_CLK,
-	OUT_BEEP_LIQUID_CLK
+	OUT_BEEP_CLK,
+	OUT_Counter_SIG_SW_CLK
 //  OUT_HEAT1_GPIO_CLK,
 //	OUT_HEAT1_GPIO_CLK
 };
@@ -1253,8 +1255,75 @@ void HW_Pump_Init(void)
 }
 
 
+// counter 
+void Counter_Init(void)
+{
+	Counter_Switch_Init();
+	Counter_PWM_Init(COUNTER_SIG_PWM_TIM_ARR, COUNTER_SIG_PWM_TIM_PSC);
+}
+
+void Counter_Switch_Init(void)
+{
+	EVAL_OutputInit(O_Counter_SIG_SW);
+}
 
 
+// TIM5 
+
+void Counter_PWM_Init(UINT32 nArr, UINT32 nPsc)
+{
+	//void OutIn_Motor_PWM_Init(UINT32 Arr, UINT32 Psc)
+
+	// TIM3_CH3
+	GPIO_InitTypeDef GPIO_InitStructure;
+	TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
+	TIM_OCInitTypeDef  TIM_OCInitStructure;
+
+	RCC_APB1PeriphClockCmd(COUNTER_SIG_PWM_TIM_SRC, ENABLE);  	
+	RCC_AHB1PeriphClockCmd(COUNTER_SIG_CLK_SRC, ENABLE); 	
+	GPIO_PinAFConfig(COUNTER_SIG_CLK_PORT, COUNTER_SIG_CLK_PIN_AF, COUNTER_SIG_CLK_PORT_AF); 
+
+	GPIO_InitStructure.GPIO_Pin   = COUNTER_SIG_CLK_PIN;       
+	GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF;       
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;     
+	GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;       
+	GPIO_Init(COUNTER_SIG_CLK_PORT, &GPIO_InitStructure);        
+	GPIO_SetBits(COUNTER_SIG_CLK_PORT, COUNTER_SIG_CLK_PIN);
+	
+	// 84M/4200=20K
+	TIM_DeInit(COUNTER_SIG_PWM_TIM);
+	TIM_TimeBaseStructure.TIM_Prescaler = nPsc;  
+	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up; 
+	TIM_TimeBaseStructure.TIM_Period = nArr;  
+	TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1; 
+	TIM_TimeBaseInit(COUNTER_SIG_PWM_TIM, &TIM_TimeBaseStructure);
+
+	TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM1; 
+	TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable; 
+	TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+	//TIM_OCInitStructure.TIM_Pulse = ;
+	TIM_OC1Init(COUNTER_SIG_PWM_TIM, &TIM_OCInitStructure);  
+
+	TIM_OC1PreloadConfig(COUNTER_SIG_PWM_TIM, TIM_OCPreload_Enable); 
+	TIM_ARRPreloadConfig(COUNTER_SIG_PWM_TIM, ENABLE);
+	TIM_Cmd(COUNTER_SIG_PWM_TIM, DISABLE);  //
+}
+
+//
+void Conuter_PWN_Enable(void)
+{
+	TIM_Cmd(COUNTER_SIG_PWM_TIM, ENABLE);  //
+}
+
+//
+void Counter_PWM_Disable(void)
+{
+	TIM_Cmd(COUNTER_SIG_PWM_TIM, DISABLE);  //
+}
+
+
+// D Resistor
 void HW_ADJ_Resistor_Init(void)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -2144,7 +2213,7 @@ void EVAL_Init(void)
 	PF_InitTimer2();
 	//
 	PF_InitMotorTimer(Motor_X); 
-	//PF_InitMotorTimer(Motor_Y); 
+	PF_InitMotorTimer(Motor_Y); 
 	HW_ELEC_Init();
 	HW_Beep_Init();
 	HW_Pump_Init();

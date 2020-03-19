@@ -111,27 +111,28 @@ _EXT_ IO_ UINT8 g_Micro_Switch;
 //-----------------------------------------------------------------------------------------
 typedef enum              // take attention of sequence
 {
-//  O_STATUS_LED_1  = 0,
-//  O_STATUS_LED_2  = 1,
-    O_MCU_LED_1     = 0,
-    O_MCU_LED_2     = 1,
-    O_LAN8720_RST   = 2,
-	O_Motor1_EN		= 3,
-	O_Motor1_DIR	= 4,
-	O_Motor1_CLK	= 5,
-	O_Motor2_EN		= 6,
-	O_Motor2_DIR	= 7,
-	O_Motor2_CLK	= 8,
-	O_Motor3_EN		= 9,
-	O_Motor3_DIR	= 10,
-	O_Motor3_CLK	= 11,
-	O_Motor4_EN		= 12,
-	O_Motor4_DIR	= 13,
-	O_Motor4_CLK	= 14,
-	O_Air_Walve		= 15,
-	O_Liquild_Walve = 16,
-	O_Beep			= 17,
-	O_OUTPUT_END	= 18
+//  O_STATUS_LED_1   = 0,
+//  O_STATUS_LED_2   = 1,
+    O_MCU_LED_1      = 0,
+    O_MCU_LED_2      = 1,
+    O_LAN8720_RST    = 2,
+	O_Motor1_EN		 = 3,
+	O_Motor1_DIR	 = 4,
+	O_Motor1_CLK	 = 5,
+	O_Motor2_EN		 = 6,
+	O_Motor2_DIR	 = 7,
+	O_Motor2_CLK	 = 8,
+	O_Motor3_EN		 = 9,
+	O_Motor3_DIR	 = 10,
+	O_Motor3_CLK	 = 11,
+	O_Motor4_EN		 = 12,
+	O_Motor4_DIR	 = 13,
+	O_Motor4_CLK	 = 14,
+	O_Air_Walve		 = 15,
+	O_Liquild_Walve  = 16,
+	O_Beep			 = 17,
+	O_Counter_SIG_SW = 18,
+	O_OUTPUT_END	 = 19
 	
 } Output_TypeDef;
 //
@@ -234,9 +235,13 @@ typedef enum              // take attention of sequence
 
 // 17. PE3 Beep
 #define OUT_BEEP_PORT						GPIOE
-#define OUT_BEEP_LIQUID_PIN					GPIO_Pin_3
-#define OUT_BEEP_LIQUID_CLK					RCC_AHB1Periph_GPIOD
+#define OUT_BEEP_PIN						GPIO_Pin_3
+#define OUT_BEEP_CLK						RCC_AHB1Periph_GPIOD
 
+// 18. PF12 Countere switch,
+#define OUT_Counter_SIG_SW_PORT				GPIOF
+#define OUT_Counter_SIG_SW_PIN				GPIO_Pin_12
+#define OUT_Counter_SIG_SW_CLK				RCC_AHB1Periph_GPIOF
 //-----------------------------------------------------------------------------------------
 typedef enum 
 {
@@ -570,6 +575,28 @@ void HW_Press_Init(void);
 //#define PUMP_PWM_LEVEL_BEST				10000
 //#define PUMP_PWM_LEVEL_HIGHEST			25000
 void HW_Pump_Init(void);
+
+
+// counter 
+
+// PH10, TIM5_CH1
+#define COUNTER_SIG_CLK_PORT			GPIOH
+#define COUNTER_SIG_CLK_PIN				GPIO_Pin_10
+#define COUNTER_SIG_CLK_SRC				RCC_AHB1Periph_GPIOH
+
+#define COUNTER_SIG_CLK_PIN_AF			GPIO_PinSource10
+#define COUNTER_SIG_CLK_PORT_AF			GPIO_AF_TIM5
+#define COUNTER_SIG_PWM_TIM				TIM5
+#define COUNTER_SIG_PWM_TIM_SRC			RCC_APB1Periph_TIM5
+#define COUNTER_SIG_PWM_TIM_ARR			10000 //25000
+#define COUNTER_SIG_PWM_TIM_PSC			4199   //4200    //84M/4200=20k=20000, 
+
+// Time3_CH3  Out_In_Motor clk
+void Counter_Init(void);
+void Counter_Switch_Init(void);
+void Counter_PWM_Init(UINT32 nArr, UINT32 nPsc);
+void Conuter_PWN_Enable(void);
+void Conuter_PWN_Disable(void);
 
 
 // --------- cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS 

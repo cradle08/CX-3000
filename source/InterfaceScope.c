@@ -366,7 +366,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 		}else{ // not need move, but the status msg need feekback to app
 			if(eCall == e_NormalCheck_Call)
 			{
-				//moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+				moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
 				moto_work_stat_2(1, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
 				return e_Feedback_Success;
 			}
@@ -977,7 +977,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 					}
 				}
 				//
-				if (e_True == MV_IsFinished(Motor_X))
+				if (e_True == MV_IsFinished(Motor_X) &&  EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
 				{
 					MV_Stop(Motor_X);
 					if(eCall == e_NormalCheck_Call)

@@ -1886,7 +1886,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 #endif
 
     // 4) ending current pulse, pulls down 
-	Delay_US(10);
+	Delay_US(5);
     Motor_Clk_Reset(eMotor); //MTx_OUT_PULSE_LOW(eMotor); 
 
 	//************************************************************
