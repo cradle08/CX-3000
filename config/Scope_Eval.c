@@ -956,16 +956,16 @@ void Motor_Dir_Pos(enum eMvMotor eMotor)
 	//
 	if(eMotor == EN_Motor1) //in
 	{
-        EVAL_OutputSet(O_Motor1_DIR);
+        EVAL_OutputClr(O_Motor1_DIR);
 	}else if(eMotor == EN_Motor2){
 		
-        EVAL_OutputSet(O_Motor2_DIR);
+        EVAL_OutputClr(O_Motor2_DIR);
 	}else if(eMotor == EN_Motor3){
 		
-        EVAL_OutputSet(O_Motor3_DIR);
+        EVAL_OutputClr(O_Motor3_DIR);
 	}else if(eMotor == EN_Motor4){
 		
-        EVAL_OutputSet(O_Motor4_DIR);
+        EVAL_OutputClr(O_Motor4_DIR);
 	}
 }
 
@@ -979,16 +979,16 @@ void Motor_Dir_Neg(enum eMvMotor eMotor)
 	//
 	if(eMotor == EN_Motor1) // out
 	{
-        EVAL_OutputClr(O_Motor1_DIR);		
+        EVAL_OutputSet(O_Motor1_DIR);		
 	}else if(eMotor == EN_Motor2){
 		
-        EVAL_OutputClr(O_Motor2_DIR);
+        EVAL_OutputSet(O_Motor2_DIR);
 	}else if(eMotor == EN_Motor3){
 		
-        EVAL_OutputClr(O_Motor3_DIR);
+        EVAL_OutputSet(O_Motor3_DIR);
 	}else if(eMotor == EN_Motor4){
 		
-        EVAL_OutputClr(O_Motor4_DIR);
+        EVAL_OutputSet(O_Motor4_DIR);
 	}
 }
 
@@ -1728,17 +1728,19 @@ void ADC3_GPIO_Init(void){
 		//ADC_Cmd(ADC3, ENABLE);
 		// ADC3 MDA Init
 		ADC3_DMA_Config();
-		//ADC_DMACmd(ADC3, ENABLE);		// 
+		//ADC_DMACmd(ADC3, ENABLE);		// 		
 		
-		ADC_RegularChannelConfig(ADC3, XK_ADC_CHANNEL, 		1, ADC_SampleTime_3Cycles);  // XK
-		ADC_RegularChannelConfig(ADC3, CUR_56V_ADC_CHANNEL, 2, ADC_SampleTime_3Cycles);  // 56v cur
-		ADC_RegularChannelConfig(ADC3, ELEC_ADC_CHANNEL, 	3, ADC_SampleTime_3Cycles);  // ELEC
-		ADC_RegularChannelConfig(ADC3, CUR12N_ADC_CHANNEL,  4, ADC_SampleTime_3Cycles);  // 12N
-		ADC_RegularChannelConfig(ADC3, CUR12P_ADC_CHANNEL,  5, ADC_SampleTime_3Cycles);  // 12P
-		ADC_RegularChannelConfig(ADC3, PRESS_ADC_CHANNEL,   6, ADC_SampleTime_3Cycles);  // Press
-		ADC_RegularChannelConfig(ADC3, LED_CUR_ADC_CHANNEL, 7, ADC_SampleTime_3Cycles);  // LED cur
-		ADC_RegularChannelConfig(ADC3, TEMP_ADC_CHANNEL,    8, ADC_SampleTime_3Cycles);  // temperature
-		ADC_RegularChannelConfig(ADC3, Light1_ADC_CHANNEL,  9, ADC_SampleTime_3Cycles);  // CRP and HGB
+		ADC_RegularChannelConfig(ADC3, XK_ADC_CHANNEL, 		EN_ADC_XK + 1, 		ADC_SampleTime_3Cycles);  // XK
+		ADC_RegularChannelConfig(ADC3, CUR_56V_ADC_CHANNEL, EN_ADC_CUR_56V + 1, ADC_SampleTime_3Cycles);  // 56v cur
+		ADC_RegularChannelConfig(ADC3, ELEC_ADC_CHANNEL, 	EN_ADC_ELEC + 1, 	ADC_SampleTime_3Cycles);  // ELEC
+		ADC_RegularChannelConfig(ADC3, CUR12N_ADC_CHANNEL,  EN_ADC_CUR12N + 1,  ADC_SampleTime_3Cycles);  // 12N
+		ADC_RegularChannelConfig(ADC3, CUR12P_ADC_CHANNEL,  EN_ADC_CUR12P + 1,  ADC_SampleTime_3Cycles);  // 12P
+		ADC_RegularChannelConfig(ADC3, Motor3_ADC_CHANNEL,  EN_ADC_Motor3 + 1,  ADC_SampleTime_3Cycles);  // 12P
+		ADC_RegularChannelConfig(ADC3, Motor4_ADC_CHANNEL,  EN_ADC_Motor4 + 1,  ADC_SampleTime_3Cycles);  // 12P
+		ADC_RegularChannelConfig(ADC3, PRESS_ADC_CHANNEL,   EN_ADC_PRESS + 1,   ADC_SampleTime_3Cycles);  // Press
+		ADC_RegularChannelConfig(ADC3, LED_CUR_ADC_CHANNEL, EN_ADC_LED_CUR + 1, ADC_SampleTime_3Cycles);  // LED cur
+		ADC_RegularChannelConfig(ADC3, TEMP_ADC_CHANNEL,    EN_ADC_TEMP + 1, 	ADC_SampleTime_3Cycles);  // temperature
+		ADC_RegularChannelConfig(ADC3, Light1_ADC_CHANNEL,  EN_ADC_Light1 + 1,  ADC_SampleTime_3Cycles);  // CRP and HGB
 
 		ADC_DMARequestAfterLastTransferCmd(ADC3, ENABLE); 
 		ADC_DMACmd(ADC3, ENABLE);
@@ -2011,7 +2013,7 @@ UINT16  Get_HGB_Value(void)
 	UINT32  nVal;
 	
 	nVal = HW_CRP_ADC();
-#if USE_STM32F407_ONLY	
+#if 0	
 	nRet = nVal*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12;
 #else
 	nRet = nVal*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24;

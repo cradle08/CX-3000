@@ -3002,6 +3002,12 @@ void Driver_Debug(UINT8 nIndex)
 				printf("I_OC = %d, O_OC = %d\r\n", HW_LEVEL_GetOC(OC_HOME_CHANNEL), HW_LEVEL_GetOC(OC_OUT_CHANNEL));
 				IT_SYS_DlyMs(50);
 			}
+			
+			printf("XK=%d, 56V=%d\r\n", HW_XK_V(), HW_56V_Cur_V());
+			printf("12N=%d, 12P=%d\r\n", HW_CUR12N_V(), HW_CUR12P_V());
+			printf("Elec=%d, LED=%d\r\n", HW_Elec_V(), HW_LED_Cur_V());
+			
+			
 			//g_Test_Mode = EN_HGB_TEST;
 			//Turn_Motor_Init();
 //			Turn_Motor_Power(EN_OPEN);

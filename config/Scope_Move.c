@@ -822,7 +822,7 @@ UINT16 CODE_ m_acTimerLoad[8000] =     // frep:(50 ~ 3150) * 8
 
 #endif
 
-#define MTx_FREQ_OFFSET_BITS(ch)   4 // 2 ^ 4 = 16  
+#define MTx_FREQ_OFFSET_BITS(ch)   1 // 2 ^ 4 = 16  
 
 // parameters and status
 IO_ struct tMvMotorStatus XRAM_ g_atMotorStatus[EN_Motor_End]; // status
@@ -1156,26 +1156,26 @@ UINT8  MV_Move_V3(enum eMvMotor eMotor, UINT32 nSteps, enum eDirection eDir)
 	g_atMotorStatus[eMotor].nStepsExecuted  = 0;
 	if(eMotor == Motor_X)
 	{
-		if(eDir == e_Dir_Neg) // out
+		if(eDir == e_Dir_Neg) // in
 		{
-			g_atMotorStatus[eMotor].nOCIndex = OC_OUT_CHANNEL;
-			g_atMotorStatus[eMotor].nOCStatus =  HW_LEVEL_GetOC(OC_OUT_CHANNEL);
-			
-		}else if(eDir == e_Dir_Pos){ // in
 			g_atMotorStatus[eMotor].nOCIndex = OC_HOME_CHANNEL;
 			g_atMotorStatus[eMotor].nOCStatus =  HW_LEVEL_GetOC(OC_HOME_CHANNEL);
+			
+		}else if(eDir == e_Dir_Pos){ // out
+			g_atMotorStatus[eMotor].nOCIndex = OC_OUT_CHANNEL;
+			g_atMotorStatus[eMotor].nOCStatus =  HW_LEVEL_GetOC(OC_OUT_CHANNEL);
 		}
 	}else if(eMotor == Motor_Y){
 		
-		if(eDir == e_Dir_Neg) // out
+		if(eDir == e_Dir_Neg) // in
 		{
-			g_atMotorStatus[eMotor].nOCIndex = OC_SAMPLE_HOLD_CHANNEL;
-			g_atMotorStatus[eMotor].nOCStatus = HW_LEVEL_GetOC(OC_SAMPLE_HOLD_CHANNEL);
-			
-		}else if(eDir == e_Dir_Pos){ // in
-			
 			g_atMotorStatus[eMotor].nOCIndex = OC_SAMPLE_RELEA_CHANNEL;
 			g_atMotorStatus[eMotor].nOCStatus = HW_LEVEL_GetOC(OC_SAMPLE_RELEA_CHANNEL);
+			
+		}else if(eDir == e_Dir_Pos){ // out
+			
+			g_atMotorStatus[eMotor].nOCIndex = OC_SAMPLE_HOLD_CHANNEL;
+			g_atMotorStatus[eMotor].nOCStatus = HW_LEVEL_GetOC(OC_SAMPLE_HOLD_CHANNEL);
 		}
 	}
 		//
@@ -1886,7 +1886,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 #endif
 
     // 4) ending current pulse, pulls down 
-	//Delay_US(150);
+	Delay_US(10);
     Motor_Clk_Reset(eMotor); //MTx_OUT_PULSE_LOW(eMotor); 
 
 	//************************************************************

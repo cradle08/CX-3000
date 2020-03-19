@@ -366,8 +366,9 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 		}else{ // not need move, but the status msg need feekback to app
 			if(eCall == e_NormalCheck_Call)
 			{
-				moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+				//moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
 				moto_work_stat_2(1, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
+				return e_Feedback_Success;
 			}
 		}
 		
@@ -397,24 +398,24 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 					break;
 				}
 			}
-			MV_InitPara(Motor_X, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
-			// OC is on the right, right step
-			MV_Move(Motor_X, 5000, e_Dir_Neg); // comes near the OC
-			while (EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(EN_Motor1))
-			{
-				if (e_True == MV_IsFinished(Motor_X))
-				{
-					MV_Stop(Motor_X);
-					if(eCall == e_NormalCheck_Call)
-					{
-						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
-						//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  // 动作执行失败					
-						moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
-					}
-					return e_Feedback_Error;
-				}
-			}
-			MV_Stop(Motor_X); 
+//			MV_InitPara(Motor_X, 1920, 1920, 100, 10);    // ZZC_0904   : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
+//			// OC is on the right, right step
+//			MV_Move(Motor_X, 5000, e_Dir_Neg); // comes near the OC
+//			while (EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(EN_Motor1))
+//			{
+//				if (e_True == MV_IsFinished(Motor_X))
+//				{
+//					MV_Stop(Motor_X);
+//					if(eCall == e_NormalCheck_Call)
+//					{
+//						collect_return_hdl(COLLECT_RET_FAIL_SAMPLE);
+//						//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  // 动作执行失败					
+//						moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
+//					}
+//					return e_Feedback_Error;
+//				}
+//			}
+//			MV_Stop(Motor_X); 
 			
 	#if 1 // add step 
 	//		IT_SYS_DlyMs(1000);
@@ -912,6 +913,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 
 #else 
 	
+	
 	UINT8 MT_X_MoveToPosRel(CALL_STYLE_E eCall)
 	{
 		struct tMvMotorPara  tMvoingPara;
@@ -942,11 +944,10 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 		tMvoingPara.nFreqSam = g_atMotorPara[Motor_X].nFreqSam;
 		
 		// not detect the single of home at the begining, moving long diatance
-		printf("start 1\r\n");
 		if (EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
 		{
 			// long distance
-			MV_InitPara(Motor_X, 3000, 10000, 100, 10);   // ZZC_0904 : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10); 
+			MV_InitPara(Motor_X, 3000, 10000, 100, 10);   // ZZC_0904 : MV_InitPara(Motor_X, 4000, 8000, 100, 10); 
 			// OC is on the right, right step
 			MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
 
@@ -985,7 +986,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 						//moto_work_stat(0, MOTO_WORK_STAT_FAIL);  /* 动作执行失败 */
 						moto_work_stat_2(0, MOTO_WORK_STAT_FAIL, e_BUILD_PRESS_SUCCESS);
 					}
-					return e_Feedback_Error;
+					break;
 				}
 			}
 			printf("2 X out-build press over: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
@@ -1028,7 +1029,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 						flag = 1;
 					}
 				}
-				IT_SYS_DlyMs(6);
+				IT_SYS_DlyMs(5);
 			}
 			printf("3 X out check press after build: npress=%010d, addpress=%010d\r\n", (int)nPress, (int)g_Record_Param.nAddPress);
 			HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
@@ -1058,11 +1059,12 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 			}
 		}
 	#ifdef  MOTO_DOBULE_ENABLE
-		MT_Y_Home(eCall);
+		//MT_Y_Home(eCall);
 	#endif
 
 		return e_Feedback_Success;
-	}
+	}	
+	
 #endif // USE_STM32F407_ONLY
 
 	
