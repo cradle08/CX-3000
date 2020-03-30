@@ -760,14 +760,9 @@ UINT8 PF_InitTimer3(void)
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;   
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 
     NVIC_Init(&NVIC_InitStructure); 
-	//----------------------------------------------------------------
-	// TIMx configuration  11059200 * 15 = (256*432*100) * 15 = 165888000  
-	// attention: "== SYSCLK / 3"
-	//            ".TIM_Period" is autoreload value, and must bigger 
-	//            than 1000, or it case many interrupts too frequently
-	//            that consumes all the interrupt-resource of the MCU
-    TIM_TimeBaseStructure.TIM_Period = 6480;                      // 10ms, 100Hz = 648000 / 6480
-    TIM_TimeBaseStructure.TIM_Prescaler = 256;                    // 165888000 / 256 = 648000 Hz
+
+    TIM_TimeBaseStructure.TIM_Period = 3000;                      
+    TIM_TimeBaseStructure.TIM_Prescaler = 6;                    
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;       // none   
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;   // up 
     TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure); 
@@ -803,13 +798,9 @@ UINT8 PF_InitTimer4(void)
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE; 
     NVIC_Init(&NVIC_InitStructure); 
 	//----------------------------------------------------------------
-	// TIMx configuration  11059200 * 15 = (256*432*100) * 15 = 165888000  
-	// attention: "== SYSCLK / 3"
-	//            ".TIM_Period" is autoreload value, and must bigger 
-	//            than 1000, or it case many interrupts too frequently
-	//            that consumes all the interrupt-resource of the MCU
-    TIM_TimeBaseStructure.TIM_Period = 6480;                      // 10ms, 100Hz = 648000 / 6480
-    TIM_TimeBaseStructure.TIM_Prescaler = 256;                    // 165888000 / 256 = 648000 Hz
+
+    TIM_TimeBaseStructure.TIM_Period = 3000;                 
+    TIM_TimeBaseStructure.TIM_Prescaler = 6;                   
     TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;       // none   
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;   // up 
     TIM_TimeBaseInit(TIM4, &TIM_TimeBaseStructure); 
@@ -840,8 +831,8 @@ UINT8 PF_InitTimer8(void)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_Init(&NVIC_InitStructure);
 
-	TIM_TimeBaseInitStrecture.TIM_Period = 10000;
-	TIM_TimeBaseInitStrecture.TIM_Prescaler = 168;
+	TIM_TimeBaseInitStrecture.TIM_Period = 3000;//10000;
+	TIM_TimeBaseInitStrecture.TIM_Prescaler = 13;//168;
 	TIM_TimeBaseInitStrecture.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseInitStrecture.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInitStrecture.TIM_RepetitionCounter = 0;
@@ -868,8 +859,8 @@ UINT8 PF_InitTimer1(void)
 	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
 	NVIC_Init(&NVIC_InitStructure);
 
-	TIM_TimeBaseInitStrecture.TIM_Period = 10000;
-	TIM_TimeBaseInitStrecture.TIM_Prescaler = 168;
+	TIM_TimeBaseInitStrecture.TIM_Period = 3000;//10000;
+	TIM_TimeBaseInitStrecture.TIM_Prescaler = 13;//168;
 	TIM_TimeBaseInitStrecture.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseInitStrecture.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInitStrecture.TIM_RepetitionCounter = 0;

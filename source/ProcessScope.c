@@ -205,6 +205,12 @@ void Msg_Return_Handle_String(EN_MSG_TYPE eType, UINT32 nCmd, UINT8 *pRst, UINT8
 }
 
 
+void HW_HeartBeat_Msg(void)
+{
+	Msg_Return_Handle_0(e_Msg_Status, CMD_STATUS_TICKS);
+}
+
+
 //void Status_Return_Handle_8(UINT32 nCmd, UINT8 nResult)
 //{
 //    UINT8  dat[4], n;
@@ -709,6 +715,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			{
 				nParam1 = PL_UnionTwoBytes_2(*(pchCmdBuf + 8),
 						  *(pchCmdBuf + 9));
+				printf("AddPress=%d\r\n", nParam1);
 				Set_Press_Add(nParam1);
 			}
 			break;
@@ -771,7 +778,12 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				}
 			
 			}
-			break;		
+			break;
+			case CMD_STATUS_TICKS:
+			{
+				HW_HeartBeat_Msg();
+			}
+			break;
 			case CMD_CTRL_TEST:
 			{
 				printf("index =%d\r\n", *(pchCmdBuf + 8));
@@ -892,6 +904,8 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				*(pchFbkBuf + 4) = 0;
 				*(pchFbkBuf + 5) = 0;
                 nParaLen         = 6;
+				printf("OC: In=%d, Out=%d, Free=%d, Hold=%d\r\n", *(pchFbkBuf + 0), *(pchFbkBuf + 1),\
+																  *(pchFbkBuf + 2), *(pchFbkBuf + 3));
             }
 			break;
             case CMD_QUERY_ELECTRODE:

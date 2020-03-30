@@ -822,7 +822,7 @@ UINT16 CODE_ m_acTimerLoad[8000] =     // frep:(50 ~ 3150) * 8
 
 #endif
 
-#define MTx_FREQ_OFFSET_BITS(ch)   1 // 2 ^ 4 = 16  
+#define MTx_FREQ_OFFSET_BITS(ch)   4 // 2 ^ 4 = 16  
 
 // parameters and status
 IO_ struct tMvMotorStatus XRAM_ g_atMotorStatus[EN_Motor_End]; // status
@@ -1677,9 +1677,9 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
     //------------------------------------------------------------
     //************************************************************
 	// 3. PWM-processing
-	MTx_TIMER_LOAD(eMotor, g_atMotorStatus[eMotor].nTimeLoad);
-	//MTx_TIMER_LOAD(eMotor, g_atMotorStatus[eMotor].nTimeLoad*1.8); // 1.4-6, 1.6-7, 1.8-8, 2.0-0
-	//MTx_TIMER_LOAD(eMotor, g_atMotorStatus[eMotor].nTimeLoad*8.4); // 1.4-6, 1.6-7, 1.8-8, 2.0-0
+	//MTx_TIMER_LOAD(eMotor, g_atMotorStatus[eMotor].nTimeLoad);
+	MTx_TIMER_LOAD(eMotor, g_atMotorStatus[eMotor].nTimeLoad*1.8); // 1.4-6, 1.6-7, 1.8-8, 2.0-0
+
 
 	// 1) phase changing
 	switch(g_atMotorStatus[eMotor].ePhase)

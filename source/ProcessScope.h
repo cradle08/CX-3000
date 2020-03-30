@@ -127,13 +127,14 @@ extern  UINT16 g_ADC2_Buffer[ADC2_BUFFER_LEN_HALF];
 #define    CMD_STATUS_WBC_48V        	0x01000002
 #define    CMD_STATUS_BUILD_PRESS    	0x01000003
 #define    CMD_STATUS_AIRLIGHT_PRESS 	0x01000004
+#define    CMD_STATUS_TICKS			 	0x0000000A
 #define    CMD_STATUS_PRESS_DATA     	0x00000100
 #define    CMD_STATUS_TMEPERATURE	   	0x01000103 
-#define    CMD_STATUS_MOT_X_IN_ADD		0x01000106
+#define    CMD_STATUS_MOT_X_IN_ADD		0x00000007//0x01000106
 #define    CMD_STATUS_ELECTRODE   		0x01000107//0x00000001
 #define    CMD_STATUS_CUR_V_56V   		0x01000108
 #define    CMD_STATUS_REGISTER_VALUE	0x0100010B
-#define    CMD_STATUS_PRESS_ADD      	0x01000205
+#define    CMD_STATUS_PRESS_ADD      	0x00000101 //0x01000205
 #define    CMD_STATUS_CUR_V_XK   		0x01000206
 #define    CMD_STATUS_MICRO_SWITCH		0x01000301
 #define    CMD_STATUS_LIGHT_PATH_V		0x01000302
@@ -457,6 +458,7 @@ eTestMode GetTestMode(UINT32 nCmd);
 _EXT_ UINT8 MSG_Handling(UINT8* pchCmdBuf, UINT8* pchFbkBuf);
 _EXT_ UINT8 MSG_Handling_MsgHandle(UINT8* pchCmdBuf, UINT8* pchFbkBuf);
 
+void HW_HeartBeat_Msg(void);
 /* 采集报告处理 */
 void collect_return_hdl(UINT16 stat);
 /* 报告状态结果数据 */
