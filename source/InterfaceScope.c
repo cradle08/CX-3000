@@ -361,7 +361,9 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 		if(EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL)) 
 		{
 	#ifdef  MOTO_DOBULE_ENABLE
-			//MT_Y_MoveToPosRel(eCall);
+			//MT_Y_MoveToPosRel(eCall);  // for appv008
+			moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+			moto_work_stat_2(1, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
 	#endif
 		}else{ // not need move, but the status msg need feekback to app
 			if(eCall == e_NormalCheck_Call)
@@ -389,7 +391,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 			// long distance
 			MV_InitPara(Motor_X, 1920, 10000, 100, 10);    // ZZC_0904   : MV_InitPara(EN_Motor1, 4000, 8000, 100, 10);
 			// OC is on the right, right step
-			MV_Move(Motor_X, 30000, e_Dir_Neg); // comes near the OC
+			MV_Move(Motor_X, 35000, e_Dir_Neg); // comes near the OC
 			while (EN_CLOSE == HW_LEVEL_GetOC(OC_HOME_CHANNEL))  //&& (0 == MV_IsFinished(EN_Motor1))
 			{			
 				if (e_True == MV_IsFinished(Motor_X))
@@ -415,8 +417,9 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 //					return e_Feedback_Error;
 //				}
 //			}
-//			MV_Stop(Motor_X); 
+			MV_Stop(Motor_X); 
 			
+			printf("stepexec=%d\r\n", (int)g_atMotorStatus[Motor_X].nStepsExecuted);
 	#if 1 // add step 
 	//		IT_SYS_DlyMs(1000);
 	//		IT_SYS_DlyMs(1000);
@@ -424,6 +427,7 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 			{
 				MV_InitPara(Motor_X, 1920, 1920, 100, 10);
 				MV_Move(Motor_X, (UINT32)g_Record_Param.nXAddStep, e_Dir_Neg); // comes near the OC 
+				MTx_IoMinitor_Disnable(Motor_X);
 				while(1)
 				{
 					MV_GetStepsExecuted(Motor_X, &nStep);
@@ -432,9 +436,10 @@ UINT16 AddStep_To_MS(UINT32 nStep)
 						MV_Stop(Motor_X);
 						break;
 					}
-					IT_SYS_DlyMs(2);
+					//IT_SYS_DlyMs(2);
 				}
 			}
+			printf("add stepexec=%d\r\n", (int)g_atMotorStatus[Motor_X].nStepsExecuted);
 			printf("Moto X Add Step(%d) Finshed\r\n", (int)g_Record_Param.nXAddStep);
 	#endif
 			MV_Stop(Motor_X); 
@@ -1060,6 +1065,8 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 		}
 	#ifdef  MOTO_DOBULE_ENABLE
 		//MT_Y_Home(eCall);
+		moto_work_stat_2(1, MOTO_WORK_STAT_RUN, e_BUILD_PRESS_SUCCESS);
+		moto_work_stat_2(1, MOTO_WORK_STAT_OK, e_BUILD_PRESS_SUCCESS);
 	#endif
 
 		return e_Feedback_Success;
@@ -1382,40 +1389,50 @@ _EXT_ UINT8  HW_ADJ_SetResistor_V3(UINT8 chIndex, UINT8 chValue)
 	UINT16 nCmd =0;
 	UINT8 i;
 	
-	DREGISTER_CLK_1();
+	DREGISTER1_CLK_1();
 	Delay_US(2);
-	DREGISTER_CS_1();
+	DREGISTER1_CS_1();
 	Delay_US(5);
-	DREGISTER_CS_0();
+	DREGISTER1_CS_0();
 	Delay_US(10);
 	nCmd = (UINT16)(( chIndex & 0x03) << 8) | chValue;
 	printf("CMD =%X\r\n", nCmd);
 	for(i = 0; i < DREGISTER_DATA_LEN; i++)
 	{
-		DREGISTER_CLK_0();
+		DREGISTER1_CLK_0();
 		if(0x0200 == (nCmd & 0x0200))
 		{
-			DREGISTER_MOSI_1();
+			DREGISTER1_MOSI_1();
 		}else{
-			DREGISTER_MOSI_0();	
+			DREGISTER1_MOSI_0();	
 		}
 		Delay_US(10);
-		DREGISTER_CLK_1();
+		DREGISTER1_CLK_1();
 		Delay_US(10);
 		nCmd <<= 1;
 	}
-	DREGISTER_CS_1();
+	DREGISTER1_CS_1();
 	Delay_US(2);
-	DREGISTER_CLK_1();
+	DREGISTER1_CLK_1();
 	
 	return chValue;
 }
 
 
 
+UINT8  HW_ADJ_SetResistor(UINT8 chIndex, UINT8 chValue)
+{
+	// cx2000 b
+	//return HW_ADJ_SetResistor_V2(chIndex, chValue);
+	// cx2000_c,cx3000
+	return HW_ADJ_SetResistor_V3(chIndex, chValue);
+
+}
+ 
+
 //------------------------------
 // the digtal adjustable resistor
-UINT8  HW_ADJ_SetResistor(UINT8 chIndex, UINT8 chValue)
+UINT8  HW_ADJ_SetResistor_V2(UINT8 chIndex, UINT8 chValue)
 {
     IO_ UINT32 IRAM_  nAddr 	= 0;
     IO_ UINT16 IRAM_  anBuffer[2];
@@ -1752,7 +1769,7 @@ UINT8 Get_WBC_V_Status(UINT32 nV)
 	else return EN_WBC_V_HIGH;
 }
 
-
+/*
 UINT8 Get_DRegister_Value(UINT8 nChannel)
 {
 	UINT8 nVal = 0;
@@ -1787,7 +1804,7 @@ UINT8 Get_DRegister_Value(UINT8 nChannel)
 	return nVal;
 }
 
-
+*/
 
 
 UINT32 Get_Light_Path_V(UINT8 nChannel)
@@ -1988,9 +2005,12 @@ INT32 HW_ADC_SpiGetPress(void)
     UINT16 nAd    = 0;
     INT32 nValue = 0;
     double fValue = 0;
-
-    nAd = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1
-    //
+#if USE_STM32F407_ONLY
+	nAd = 0.66*HW_Press_ADC();  // v div to 2 at cx2000_c,cx3000
+	//printf("P_adc=%d\r\n", nAd);
+#else
+	 nAd = HW_ADC_SpiGetADC(INDEX_PRESS);  // 0: HGB, 1: press1, use FPGA
+#endif    //
 
     fValue = nAd * ((double)s_nK);
     if (fValue <= (double)s_nB)
@@ -3359,15 +3379,13 @@ INT32 HW_Press_Value(void)
 	
 	INT32 nVal = 0;
 	
-#if (1 == 1)
+#if PRESS_SENSOR_TYPE_ADC  
+	 // ADC Interface 
+	 nVal = HW_ADC_SpiGetPress();
+#else
 	 // IIC Interface Press Sensor
 	 nVal = HW_Press_I2C();
-#elif (2 == 0)
-	 // ADC Interface Press Sensor
-	 nVal = HW_Press_ADC();
-#elif (3 == 0)
-	 // FPGA Interface 
-	 nVal = HW_ADC_SpiGetPress();
+
 #endif
 	 return nVal;
 }

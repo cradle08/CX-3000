@@ -494,12 +494,14 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 				nParaLen = 0;
 				Simulation_Data((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode);
 #else
+				//HW_CUR_BC_SW_Open();
 				if(e_Feedback_Success != MSG_TestingFunc((UINT8*)g_achFbkSdLogBuf, &nParaLen, eMode)) //if(e_Feedback_Success != MSG_TestingFunc())
 				{
 					HW_PUMP_Pulse(PUMP_PRESS_OFF, e_Dir_Pos);
 					HW_Valve_Off(INDEX_VALVE_PUMP);
 					HW_Valve_Off(INDEX_VALVE_WBC);
 				}
+				//HW_CUR_BC_SW_Close();
 				printf("adc1 end: id=%d, sendid=%d\r\n", \
 						(int)ADC1_Status.nID, (int)ADC1_Status.nSendID);
 				printf("adc2 end: id=%d, sendid=%d\r\n", \
@@ -779,11 +781,6 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			
 			}
 			break;
-			case CMD_STATUS_TICKS:
-			{
-				HW_HeartBeat_Msg();
-			}
-			break;
 			case CMD_CTRL_TEST:
 			{
 				printf("index =%d\r\n", *(pchCmdBuf + 8));
@@ -838,7 +835,7 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
 			{
 				bSendBack = e_True;
                 nCommand  = CMD_STATUS_REGISTER_VALUE;
-				nVal = Get_DRegister_Value(*(pchCmdBuf + 8)); // todo...
+				//nVal = Get_DRegister_Value(*(pchCmdBuf + 8)); // todo...
 				 *(pchFbkBuf + 0) = *(pchCmdBuf + 8);
 				 *(pchFbkBuf + 1) = nVal;
 				printf("channel = %d, Dregister = %d\r\n", *(pchCmdBuf + 8), nVal);		
@@ -897,13 +894,13 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
                 nCommand  = CMD_STATUS_OC;
                 bSendBack = e_True;
                 //
-                *(pchFbkBuf + 0) = HW_LEVEL_GetOC(0); // in oc
-                *(pchFbkBuf + 1) = HW_LEVEL_GetOC(1); // out oc
-                *(pchFbkBuf + 2) = HW_LEVEL_GetOC(2); // 
-                *(pchFbkBuf + 3) = HW_LEVEL_GetOC(3);
-				*(pchFbkBuf + 4) = 0;
-				*(pchFbkBuf + 5) = 0;
-                nParaLen         = 6;
+                *(pchFbkBuf + 0) = !HW_LEVEL_GetOC(0); // in oc
+                *(pchFbkBuf + 1) = !HW_LEVEL_GetOC(1); // out oc
+                *(pchFbkBuf + 2) = !HW_LEVEL_GetOC(2); // 
+                *(pchFbkBuf + 3) = !HW_LEVEL_GetOC(3);
+				//*(pchFbkBuf + 4) = 0;
+				//*(pchFbkBuf + 5) = 0;
+                nParaLen         = 4;
 				printf("OC: In=%d, Out=%d, Free=%d, Hold=%d\r\n", *(pchFbkBuf + 0), *(pchFbkBuf + 1),\
 																  *(pchFbkBuf + 2), *(pchFbkBuf + 3));
             }
@@ -938,6 +935,11 @@ UINT8 MSG_Handling(UINT8 * pchCmdBuf, UINT8 * pchFbkBuf)
                 memcpy((pchFbkBuf + 2), softver_edtion, (sizeof(softver_edtion)));/* MCU版本 ASCII格式 32个字节 */
                 nParaLen         = (2 + 32);           
             }
+			break;
+			case CMD_STATUS_TICKS:
+			{
+				HW_HeartBeat_Msg();
+			}
 			break;
 			/*
             case CMD_QUERY_MOT_STAT:    // 
@@ -2637,7 +2639,7 @@ UINT8 MSG_TestingFunc(void)
 //		if(nPress <= COUNT_MIN_PRESS)
 //		{
 //			HW_Disable_Data_Channel(eMode);//HW_End_WBC();
-//			Send_Last_FIFO_Data();	
+//			//Send_Last_FIFO_Data();	
 //			printf("\r\nCount Error: press error, ticks=%05d, adc_ticks=%05%, udp=%d, q=%d, elec=%d, wbc_v=%d, press=%010d\r\n",\
 //				(int)IT_LIST_GetTicks(), (int)IT_ADC_GetTicks(), (int)Get_Udp_Count(), (int)g_Frame_Count,\
 //				(int)hw_filter_get_electrode(INDEX_ELECTRODE),(int)Get_WBC_V_Value(), (int)nPress);
@@ -2654,7 +2656,7 @@ UINT8 MSG_TestingFunc(void)
 //			collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE); 
 //			return e_Feedback_Error;
 //		}
-		nCurTicks = IT_SYS_GetTicks();	
+//		nCurTicks = IT_SYS_GetTicks();	
     }
 	//------after count, stop all--------
 	HW_Disable_Data_Channel(eMode);//HW_End_WBC();
@@ -2714,7 +2716,7 @@ UINT8 MSG_TestingFunc(void)
 //	Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
 //	*pDILen = nDILen;
 #endif
-	//collect_return_hdl(COLLECT_RET_SUCESS);  /* 采集完成 */
+	collect_return_hdl(COLLECT_RET_SUCESS);  /* 采集完成 */
     return e_Feedback_Success;
 }
 
@@ -3109,7 +3111,7 @@ UINT8 Set_Press_Add(UINT16 nAdd)
 UINT8 Set_Register_Param(UINT8 nIndex, UINT8 nVal)
 {
 	UINT8 nRet;
-	HW_ADJ_SetResistor(nIndex, nVal);
+	//HW_ADJ_SetResistor(nIndex, nVal);
 	// todo
 	switch(nIndex)
 	{

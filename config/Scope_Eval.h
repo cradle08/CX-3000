@@ -132,7 +132,8 @@ typedef enum              // take attention of sequence
 	O_Liquild_Walve  = 16,
 	O_Beep			 = 17,
 	O_Counter_SIG_SW = 18,
-	O_OUTPUT_END	 = 19
+	O_CUR_BC_SW		 = 19, // blood cell current switch
+	O_OUTPUT_END	 = 20
 	
 } Output_TypeDef;
 //
@@ -233,15 +234,22 @@ typedef enum              // take attention of sequence
 #define OUT_VALVE_LIQUID_PIN				GPIO_Pin_6
 #define OUT_VALVE_LIQUID_CLK				RCC_AHB1Periph_GPIOH
 
-// 17. PE3 Beep
+// 17. PE3, Beep
 #define OUT_BEEP_PORT						GPIOE
 #define OUT_BEEP_PIN						GPIO_Pin_3
-#define OUT_BEEP_CLK						RCC_AHB1Periph_GPIOD
+#define OUT_BEEP_CLK						RCC_AHB1Periph_GPIOE
 
 // 18. PF12 Countere switch,
 #define OUT_Counter_SIG_SW_PORT				GPIOF
 #define OUT_Counter_SIG_SW_PIN				GPIO_Pin_12
 #define OUT_Counter_SIG_SW_CLK				RCC_AHB1Periph_GPIOF
+
+// 19. PE7, blood cell current switch
+#define OUT_CUR_BC_PORT						GPIOE
+#define OUT_CUR_BC_PIN						GPIO_Pin_7
+#define OUT_CUR_BC_CLK						RCC_AHB1Periph_GPIOE
+
+
 //-----------------------------------------------------------------------------------------
 typedef enum 
 {
@@ -320,6 +328,7 @@ typedef enum
 #define IN_Motor4_OUT_OC_ET_PIN             EXTI_PinSource7
 #define IN_Motor4_OUT_OC_ET_IRQn            EXTI9_5_IRQn
 // 5. PA11 Elec 
+#if 1
 #define IN_ELEC_GPIO_PIN           			GPIO_Pin_11          
 #define IN_ELEC_GPIO_PORT          			GPIOA
 #define IN_ELEC_GPIO_CLK           			RCC_AHB1Periph_GPIOA
@@ -327,6 +336,16 @@ typedef enum
 #define IN_ELEC_ET_PORT            			EXTI_PortSourceGPIOA
 #define IN_ELEC_ET_PIN             			EXTI_PinSource11
 #define IN_ELEC_ET_IRQn            			EXTI15_10_IRQn
+#else  //PH12
+//#define IN_ELEC_GPIO_PIN           			GPIO_Pin_12          
+//#define IN_ELEC_GPIO_PORT          			GPIOH
+//#define IN_ELEC_GPIO_CLK           			RCC_AHB1Periph_GPIOH
+//#define IN_ELEC_ET_LINE            			EXTI_Line12
+//#define IN_ELEC_ET_PORT            			EXTI_PortSourceGPIOH
+//#define IN_ELEC_ET_PIN             			EXTI_PinSource12
+//#define IN_ELEC_ET_IRQn            			EXTI111_15_IRQn
+#endif
+
 // 6. PD4 Micro OC 
 #define IN_MICRO_OC_GPIO_PIN           		GPIO_Pin_4          
 #define IN_MICRO_OC_GPIO_PORT          		GPIOD
@@ -465,6 +484,12 @@ void ADC1_Init(void);
 void ADC2_Init(void);
 // Others, g_ADC3_Value
 void ADC3_Init(void);
+
+// blood cell current(56V) switch operation
+void HW_CUR_BC_SW_Init(void);
+void HW_CUR_BC_SW_Open(void);
+void HW_CUR_BC_SW_Close(void);
+
 	 
 UINT16 HW_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount);
 //
@@ -492,6 +517,7 @@ UINT16 HW_Motor4_V(void);
 
 
 UINT16 HW_Press_ADC(void);
+
 //
 UINT16 HW_LED_Cur_ADC(void);
 UINT16 HW_LED_Cur_V(void);
@@ -547,7 +573,11 @@ extern UINT8 EVAL_InputGetState(Input_TypeDef eIn);
 #define PRESS_I2C_SCL    					 PHout(4) //SCL 
 #define PRESS_I2C_SDA   	 				 PHout(5) //SDA	 
 #define PRESS_I2C_READ_SDA  				 PHin(5)  //SDA 
-//
+
+//*******************************************************************
+#define PRESS_SENSOR_TYPE_ADC				 1	 // 1:adc, 0:IIC
+#define USE_MCU_HARDWARE_I2C_PRESS			 0
+
 //void Press_Init(void);
 void Press_I2C_Init(void);
 void Press_I2C_Start(void);
@@ -599,49 +629,95 @@ void Conuter_PWN_Enable(void);
 void Conuter_PWN_Disable(void);
 
 
-// --------- cx3000 Digital Register(SPI2), PI1_CLK,PI3_MOSI,PI0_CS 
-#define D_REGISTER_CLK_PORT					GPIOI
-#define D_REGISTER_CLK_PIN					GPIO_Pin_1
-#define D_REGISTER_CLK_SRC					RCC_AHB1Periph_GPIOI
-#define D_REGISTER_CLK_AF_SRC 				GPIO_PinSource1
+// --------- cx3000 WBC/RBC/PLT Digital Register (AD8403)(SPI2), PI1_CLK,PI3_MOSI,PI0_CS 
+#define D_REGISTER1_CLK_PORT					GPIOI
+#define D_REGISTER1_CLK_PIN					GPIO_Pin_1
+#define D_REGISTER1_CLK_SRC					RCC_AHB1Periph_GPIOI
+#define D_REGISTER1_CLK_AF_SRC 				GPIO_PinSource1
 // MOSI
-#define D_REGISTER_MOSI_PORT				GPIOI
-#define D_REGISTER_MOSI_PIN					GPIO_Pin_3
-#define D_REGISTER_MOSI_SRC					RCC_AHB1Periph_GPIOI
-#define D_REGISTER_MOSI_AF_SRC 				GPIO_PinSource3
+#define D_REGISTER1_MOSI_PORT				GPIOI
+#define D_REGISTER1_MOSI_PIN					GPIO_Pin_3
+#define D_REGISTER1_MOSI_SRC					RCC_AHB1Periph_GPIOI
+#define D_REGISTER1_MOSI_AF_SRC 				GPIO_PinSource3
 // CS
-#define D_REGISTER_CS_PORT					GPIOI
-#define D_REGISTER_CS_PIN					GPIO_Pin_0
-#define D_REGISTER_CS_SRC					RCC_AHB1Periph_GPIOI
-#define D_REGISTER_CS_AF_SRC 				GPIO_PinSource0
+#define D_REGISTER1_CS_PORT					GPIOI
+#define D_REGISTER1_CS_PIN					GPIO_Pin_0
+#define D_REGISTER1_CS_SRC					RCC_AHB1Periph_GPIOI
+#define D_REGISTER1_CS_AF_SRC 				GPIO_PinSource0
 //// MISO Digital Register is 3lines SP, not need MISO
 //#define D_REGISTER_MISO_PORT				GPIOI
 //#define D_REGISTER_MISO_PIN				GPIO_Pin_2
 //#define D_REGISTER_MISO_SRC				RCC_AHB1Periph_GPIOI
 //#define D_REGISTER_MISO_AF_SRC 			GPIO_PinSource2
 //
-#define D_REGISTER_SPI						SPI2
-#define D_REGISTER_SPI_SRC 					RCC_APB1Periph_SPI2
-#define D_REGISTER_SPI_AF 					GPIO_AF_SPI2
+#define D_REGISTER1_SPI						SPI2
+#define D_REGISTER1_SPI_SRC 					RCC_APB1Periph_SPI2
+#define D_REGISTER1_SPI_AF 					GPIO_AF_SPI2
 
-#define DREGISTER_CLK_1()	GPIO_SetBits(D_REGISTER_CLK_PORT, D_REGISTER_CLK_PIN)
-#define DREGISTER_CLK_0()	GPIO_ResetBits(D_REGISTER_CLK_PORT, D_REGISTER_CLK_PIN)
-#define DREGISTER_CS_1()	GPIO_SetBits(D_REGISTER_CS_PORT, D_REGISTER_CS_PIN)
-#define DREGISTER_CS_0()	GPIO_ResetBits(D_REGISTER_CS_PORT, D_REGISTER_CS_PIN)
-#define DREGISTER_MOSI_1()	GPIO_SetBits(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_PIN)
-#define DREGISTER_MOSI_0()	GPIO_ResetBits(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_PIN)
+#define DREGISTER1_CLK_1()	GPIO_SetBits(D_REGISTER1_CLK_PORT, D_REGISTER1_CLK_PIN)
+#define DREGISTER1_CLK_0()	GPIO_ResetBits(D_REGISTER1_CLK_PORT, D_REGISTER1_CLK_PIN)
+#define DREGISTER1_CS_1()	GPIO_SetBits(D_REGISTER1_CS_PORT, D_REGISTER1_CS_PIN)
+#define DREGISTER1_CS_0()	GPIO_ResetBits(D_REGISTER1_CS_PORT, D_REGISTER1_CS_PIN)
+#define DREGISTER1_MOSI_1()	GPIO_SetBits(D_REGISTER1_MOSI_PORT, D_REGISTER1_MOSI_PIN)
+#define DREGISTER1_MOSI_0()	GPIO_ResetBits(D_REGISTER1_MOSI_PORT, D_REGISTER1_MOSI_PIN)
 // 
 enum {
-	EN_DRESISTOR_CHAN0 = 0,
-	EN_DRESISTOR_CHAN1 = 1,
-	EN_DRESISTOR_CHAN2 = 2,
-	EN_DRESISTOR_CHAN3 = 3,
+	EN_DRESISTOR1_CHAN0 = 0, // w1-b1-wbc 
+	EN_DRESISTOR1_CHAN1 = 1, // w2-b2-plt
+	EN_DRESISTOR1_CHAN2 = 2, // motor3_driver_current
+	EN_DRESISTOR1_CHAN3 = 3, // not use
 };
 #define DREGISTER_DATA_LEN	10
+void HW_ADJ_Resistor1_Init(void);
+void DResistor1_Adjust_WBC(UINT8 nVal);
+void DResistor1_Adjust_PLT(UINT8 nVal);
+void DResistor1_Adjust_Motor3(UINT8 nVal);
+
+
+// --------- cx3000 HGB/Motor3 Digital Register (AD5162)(SPI2), PD5_CLK,PD1_MOSI,PD11_CS 
+#define D_REGISTER2_CLK_PORT				GPIOD
+#define D_REGISTER2_CLK_PIN					GPIO_Pin_5
+#define D_REGISTER2_CLK_SRC					RCC_AHB1Periph_GPIOD
+#define D_REGISTER2_CLK_AF_SRC 				GPIO_PinSource5
+// MOSI
+#define D_REGISTER2_MOSI_PORT				GPIOD
+#define D_REGISTER2_MOSI_PIN				GPIO_Pin_1
+#define D_REGISTER2_MOSI_SRC				RCC_AHB1Periph_GPIOD
+#define D_REGISTER2_MOSI_AF_SRC 			GPIO_PinSource1
+// CS
+#define D_REGISTER2_CS_PORT					GPIOD
+#define D_REGISTER2_CS_PIN					GPIO_Pin_11
+#define D_REGISTER2_CS_SRC					RCC_AHB1Periph_GPIOD
+#define D_REGISTER2_CS_AF_SRC 				GPIO_PinSource11
+//// MISO Digital Register is 3lines SP, not need MISO
+//#define D_REGISTER_MISO_PORT				GPIOI
+//#define D_REGISTER_MISO_PIN				GPIO_Pin_2
+//#define D_REGISTER_MISO_SRC				RCC_AHB1Periph_GPIOI
+//#define D_REGISTER_MISO_AF_SRC 			GPIO_PinSource2
+//
+#define D_REGISTER2_SPI						SPI2
+#define D_REGISTER2_SPI_SRC 				RCC_APB1Periph_SPI2
+#define D_REGISTER2_SPI_AF 					GPIO_AF_SPI2
+
+#define DREGISTER2_CLK_1()	GPIO_SetBits(D_REGISTER2_CLK_PORT, D_REGISTER2_CLK_PIN)
+#define DREGISTER2_CLK_0()	GPIO_ResetBits(D_REGISTER2_CLK_PORT, D_REGISTER2_CLK_PIN)
+#define DREGISTER2_CS_1()	GPIO_SetBits(D_REGISTER2_CS_PORT, D_REGISTER2_CS_PIN)
+#define DREGISTER2_CS_0()	GPIO_ResetBits(D_REGISTER2_CS_PORT, D_REGISTER2_CS_PIN)
+#define DREGISTER2_MOSI_1()	GPIO_SetBits(D_REGISTER2_MOSI_PORT, D_REGISTER2_MOSI_PIN)
+#define DREGISTER2_MOSI_0()	GPIO_ResetBits(D_REGISTER2_MOSI_PORT, D_REGISTER2_MOSI_PIN)
+// 
+enum {
+	EN_DRESISTOR2_CHAN0 = 0, 
+	EN_DRESISTOR2_CHAN1 = 1, 
+	EN_DRESISTOR2_CHAN2 = 2, // 
+	EN_DRESISTOR2_CHAN3 = 3, // 
+};
+#define DREGISTER_DATA_LEN	10
+void HW_ADJ_Resistor2_Init(void);
+
+
+
 void HW_ADJ_Resistor_Init(void);
-
-
-
 
 //-----------------------------------------------------------------------------------------
 void Delay_US(UINT32 us);
@@ -653,9 +729,12 @@ UINT8 PF_InitTimer3(void); // Motor 1
 UINT8 PF_InitTimer4(void); // Motor 2
 UINT8 PF_InitTimer1(void); // Motor 3
 UINT8 PF_InitTimer8(void); // Motor 4
-
 void PF_InitMotorTimer(enum eMvMotor eMotor);
+
+void MTx_IoMinitor_Disnable(enum eMvMotor eMotor);
+void MTx_IoMinitor_Enable(enum eMvMotor eMotor);
 void MTx_IoMinitor(enum eMvMotor eMotor);
+
 void InitMotor_IO(enum eMvMotor eMotor);
 void InitMotor_Param(enum eMvMotor eMotor);
 
@@ -677,9 +756,11 @@ void PF_InitMotor(enum eMvMotor eMotor);
 void HW_LEVEL_OC_Init(void);
 // Valve
 void HW_Valve_Init(void);
+//elec
 void HW_ELEC_Init(void);
-
+//
 void HW_Beep_Init(void);
+//
 void Beep(UINT8 nNum, UINT32 nTime);
 
 

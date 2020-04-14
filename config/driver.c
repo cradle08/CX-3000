@@ -3007,6 +3007,15 @@ void Driver_Debug(UINT8 nIndex)
 			printf("12N=%d, 12P=%d\r\n", HW_CUR12N_V(), HW_CUR12P_V());
 			printf("Elec=%d, LED=%d\r\n", HW_Elec_V(), HW_LED_Cur_V());
 			
+			printf("elec=%d, e_v=%d\r\n", hw_filter_get_electrode_V3(INDEX_ELECTRODE), HW_Elec_V());
+			
+			val = HW_Press_ADC();
+			printf("adc=%d, press_v=%d\r\n", val,  val*ADC_V_REF_VALUE_3_3/ADC_RESOLUTION_12);
+			
+			HW_ELEC_Init();
+			val = HW_Elec_V();
+			printf("s=%d, e_s=%d, e_v=%d\r\n", EVAL_InputGetState(I_ELEC), hw_filter_get_electrode(INDEX_ELECTRODE), val);
+			
 			
 			//g_Test_Mode = EN_HGB_TEST;
 			//Turn_Motor_Init();

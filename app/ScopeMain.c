@@ -52,14 +52,14 @@ void start_run(void)
 	
 	// wbc 
     //HW_ADJ_SetResistor(0, 255);  /*  */
-#if !USE_STM32F407_ONLY
+//#if !USE_STM32F407_ONLY
 	printf("wbc ticks=%d\n", (int)IT_SYS_GetTicks());
 	HW_ADJ_SetResistor(0, g_Record_Param.nRegister_WBC); // (0-50K)-->(0-255)
-    //HW_ADJ_SetResistor(0, 128);
-	HW_ADJ_SetResistor(1, 255);  /*  */
-    HW_ADJ_SetResistor(2, 255);  /*  */
-    HW_ADJ_SetResistor(3, 255);  /*  */
- #endif
+    HW_ADJ_SetResistor(0, 128);
+	//HW_ADJ_SetResistor(1, 255);  /*  */
+    //HW_ADJ_SetResistor(2, 255);  /*  */
+    //HW_ADJ_SetResistor(3, 255);  /*  */
+// #endif
     //----------------------------------------------
     // init, stuatus's parameters
     EVAL_OutputSet(O_MCU_LED_1);

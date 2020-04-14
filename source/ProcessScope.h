@@ -4,7 +4,9 @@
 #define    __PROCESS_SCOPE_H__
 
 #include  "MyType.h"
+
 //#include "InterfaceScope.h"
+
 #include "Scope_Eval.h"
 extern const UINT8 softver_edtion[];
 
@@ -326,7 +328,7 @@ void Reset_ADC_InitDataType(void);
 //#define  TIME_OVER_TS_BUILD_PRESS      60000       /* 60秒  负压泵建立负压超时时间 */
 //#define  TIME_OVER_TS_ADC              20000       /* 15秒  临时调试用 */
 #else
-#define  PRESS_BUILD                   2200000 //230000000   /* 30kPa->22kPa 适合检测的气压 */
+
 #define  TIME_OVER_TS_BUILD_PRESS      15000       /* 10秒  负压泵建立负压超时时间 */
 #define  TIME_OVER_TS_ADC              25000       /* 25秒  数据采集超时时间 */
 #endif
@@ -339,11 +341,24 @@ void Reset_ADC_InitDataType(void);
 #endif
 
 //-----------------------------------------------------------------------
+#include "Scope_Eval.h"
+#if PRESS_SENSOR_TYPE_ADC
+#define  PRESS_BUILD                   230000000   /* 30kPa->22kPa 适合检测的气压 */
+#define BUILD_PRESS_MIN                225000000 //21.5kpa
+#define BUILD_PRESS_RIGHT              PRESS_BUILD // (UINT32)220000000 //22kpa
+#define BUILD_PRESS_MAX                235000000  //22.5kpa
+#define BUILD_PRESS_DEVIATION          20000000   //2kpa
+#define COUNT_MIN_PRESS                140000000  //15kpa
+
+#else
+#define  PRESS_BUILD                   2200000 //230000000   /* 30kPa->22kPa 适合检测的气压 */
 #define BUILD_PRESS_MIN                2150000 //225000000 //21.5kpa
 #define BUILD_PRESS_RIGHT              PRESS_BUILD // (UINT32)220000000 //22kpa
 #define BUILD_PRESS_MAX                2250000 //235000000  //22.5kpa
 #define BUILD_PRESS_DEVIATION          300000 //20000000   //2kpa
 #define COUNT_MIN_PRESS                1400000//140000000  //15kpa
+#endif
+
 #define TIME_AIRLIGHT_CHECK            20000       /* 20秒  密闭性检测延时时间 */
 #define GET_PRESS_NUM_FIVE			   5
 #define GET_PRESS_NUM_THREE			   3

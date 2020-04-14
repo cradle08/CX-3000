@@ -58,7 +58,8 @@ GPIO_TypeDef*  CODE_ OUT_PORT[O_OUTPUT_END]=
 	OUT_VALVE_AIR_PORT,
 	OUT_VALVE_LIQUID_PORT,
 	OUT_BEEP_PORT,
-	OUT_Counter_SIG_SW_PORT
+	OUT_Counter_SIG_SW_PORT,
+	OUT_CUR_BC_PORT
 //  OUT_HEAT1_GPIO_PORT,
 //	OUT_HEAT1_GPIO_PORT
 };
@@ -86,7 +87,8 @@ UINT16 CODE_ OUT_PIN[O_OUTPUT_END]=
 	OUT_VALVE_AIR_PIN,
 	OUT_VALVE_LIQUID_PIN,
 	OUT_BEEP_PIN,
-	OUT_Counter_SIG_SW_PIN
+	OUT_Counter_SIG_SW_PIN,
+	OUT_CUR_BC_PIN
 	
 //  OUT_HEAT1_GPIO_PIN,
 //	OUT_HEAT1_GPIO_PIN
@@ -115,7 +117,8 @@ UINT32 CODE_ OUT_CLK[O_OUTPUT_END]=
 	OUT_VALVE_AIR_CLK,
 	OUT_VALVE_LIQUID_CLK,
 	OUT_BEEP_CLK,
-	OUT_Counter_SIG_SW_CLK
+	OUT_Counter_SIG_SW_CLK,
+	OUT_CUR_BC_CLK
 //  OUT_HEAT1_GPIO_CLK,
 //	OUT_HEAT1_GPIO_CLK
 };
@@ -424,7 +427,7 @@ void HW_ELEC_Init(void)
 
 void HW_Press_Init(void)
 {
-#if (1 == 1)
+#if !PRESS_SENSOR_TYPE_ADC
 	Press_I2C_Init();
 #else
 	//ADC
@@ -518,11 +521,118 @@ void Micro_Switch_Check(void)
 }
 
 
-
+// PH4
+#define PRESS_I2C_SCL_PORT					GPIOH
+#define PRESS_I2C_SCL_PIN					GPIO_Pin_4
+#define PRESS_I2C_SCL_SCLCLK_SRC			RCC_AHB1Periph_GPIOH
+// PH5
+#define PRESS_I2C_SDA_PORT					GPIOH
+#define PRESS_I2C_SDA_PIN					GPIO_Pin_5
+#define PRESS_I2C_SDA_SCLCLK_SRC			RCC_AHB1Periph_GPIOH
 
 // i2c interface init
 void Press_I2C_Init(void)
 {
+#if USE_MCU_HARDWARE_I2C_PRESS
+	GPIO_InitTypeDef  GPIO_InitStructure;
+    I2C_InitTypeDef I2C_InitStructure;
+    RCC_ClocksTypeDef   rcc_clocks;
+
+    /* GPIO Peripheral clock enable */
+    RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA|RCC_AHB1Periph_GPIOB|RCC_AHB1Periph_GPIOC, ENABLE);
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1|RCC_APB1Periph_I2C2|RCC_APB1Periph_I2C3, ENABLE);
+      /* Reset I2Cx IP */
+    RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1|RCC_APB1Periph_I2C2|RCC_APB1Periph_I2C3, ENABLE);
+    /* Release reset signal of I2Cx IP */
+    RCC_APB1PeriphResetCmd(RCC_APB1Periph_I2C1|RCC_APB1Periph_I2C2|RCC_APB1Periph_I2C3, DISABLE);
+
+    /*I2C1 configuration*/
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource6, GPIO_AF_I2C1); //??,????????GPIO_PinSource6|GPIO_PinSource7
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource7, GPIO_AF_I2C1);
+
+    //PB6: I2C1_SCL  PB7: I2C1_SDA
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6|GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    /* I2C Struct Initialize */
+    I2C_DeInit(I2C1);
+    I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
+    I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
+    I2C_InitStructure.I2C_OwnAddress1 = 0x00;
+    I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
+    I2C_InitStructure.I2C_ClockSpeed = 100000;
+    I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+    I2C_Init(I2C1, &I2C_InitStructure);
+
+    /* I2C Initialize */
+    I2C_Cmd(I2C1, ENABLE);
+
+    /*I2C2 configuration*/
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource10, GPIO_AF_I2C2); //??,????????GPIO_PinSource6|GPIO_PinSource7
+    GPIO_PinAFConfig(GPIOB, GPIO_PinSource11, GPIO_AF_I2C2);
+
+    //PB10: I2C2_SCL  PB11: I2C2_SDA
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_10|GPIO_Pin_11;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+    /* I2C Struct Initialize */
+    I2C_DeInit(I2C2);
+    I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
+    I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
+    I2C_InitStructure.I2C_OwnAddress1 = 0x00;
+    I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
+    I2C_InitStructure.I2C_ClockSpeed = 100000;
+    I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+    I2C_Init(I2C2, &I2C_InitStructure);
+
+    /* I2C Initialize */
+    I2C_Cmd(I2C2, ENABLE);
+
+    /*I2C3 configuration*/
+    GPIO_PinAFConfig(GPIOA, GPIO_PinSource8, GPIO_AF_I2C3);
+    GPIO_PinAFConfig(GPIOC, GPIO_PinSource9, GPIO_AF_I2C3);
+
+    //PA8: I2C3_SCL
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+    GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+    GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    //PC9: I2C3_SDA
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+    /* I2C Struct Initialize */
+    I2C_DeInit(I2C3);
+    I2C_InitStructure.I2C_Mode = I2C_Mode_I2C;
+    I2C_InitStructure.I2C_DutyCycle = I2C_DutyCycle_2;
+    I2C_InitStructure.I2C_OwnAddress1 = 0x00;
+    I2C_InitStructure.I2C_Ack = I2C_Ack_Enable;
+    I2C_InitStructure.I2C_ClockSpeed = 100000;
+    I2C_InitStructure.I2C_AcknowledgedAddress = I2C_AcknowledgedAddress_7bit;
+    I2C_Init(I2C3, &I2C_InitStructure);
+
+    /* I2C Initialize */
+    I2C_Cmd(I2C3, ENABLE);
+
+
+    /*????*/
+    RCC_GetClocksFreq(&rcc_clocks);
+    ulTimeOut_Time = (rcc_clocks.SYSCLK_Frequency /10000); 
+	
+	
+	
+#else
 	GPIO_InitTypeDef  GPIO_InitStructure;
 	RCC_AHB1PeriphClockCmd(PRESS_I2C_SCL_SCLCLK_SRC|PRESS_I2C_SDA_SCLCLK_SRC, ENABLE);//Ê¹ÄÜGPIOBÊ±ÖÓ
 	// i2c scl
@@ -542,6 +652,8 @@ void Press_I2C_Init(void)
 	
 	PRESS_I2C_SCL = 1;
 	PRESS_I2C_SDA = 1;
+
+#endif
 }
 
 void Press_I2C_Start(void)
@@ -1156,6 +1268,16 @@ void IRQ_Motor4(void)
 }
 
 
+void MTx_IoMinitor_Disnable(enum eMvMotor eMotor)
+{
+	g_atMotorStatus[eMotor].bAble = e_False;
+}
+
+void MTx_IoMinitor_Enable(enum eMvMotor eMotor)
+{
+	g_atMotorStatus[eMotor].bAble = e_True;
+}
+
 
 void MTx_IoMinitor(enum eMvMotor eMotor)
 {
@@ -1314,19 +1436,27 @@ void Counter_PWM_Disable(void)
 }
 
 
+
 // D Resistor
 void HW_ADJ_Resistor_Init(void)
 {
+	HW_ADJ_Resistor1_Init();
+	//HW_ADJ_Resistor2_Init();
+}
+
+// D Resistor1
+void HW_ADJ_Resistor1_Init(void)
+{
 	GPIO_InitTypeDef GPIO_InitStructure;
-	RCC_AHB1PeriphClockCmd(D_REGISTER_CLK_SRC|D_REGISTER_MOSI_SRC|D_REGISTER_CS_SRC, ENABLE);
+	RCC_AHB1PeriphClockCmd(D_REGISTER1_CLK_SRC|D_REGISTER1_MOSI_SRC|D_REGISTER1_CS_SRC, ENABLE);
 	//cs
-	GPIO_InitStructure.GPIO_Pin = D_REGISTER_CS_PIN;
+	GPIO_InitStructure.GPIO_Pin = D_REGISTER1_CS_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(D_REGISTER_CS_PORT, &GPIO_InitStructure);
-	GPIO_SetBits(D_REGISTER_CS_PORT, D_REGISTER_CS_PIN);
+	GPIO_Init(D_REGISTER1_CS_PORT, &GPIO_InitStructure);
+	GPIO_SetBits(D_REGISTER1_CS_PORT, D_REGISTER1_CS_PIN);
 	
 	//MISO	
 //	GPIO_InitStructure.GPIO_Pin = D_REGISTER_MISO_PIN;
@@ -1338,27 +1468,83 @@ void HW_ADJ_Resistor_Init(void)
 //	GPIO_ResetBits(D_REGISTER_MISO_PORT, D_REGISTER_MISO_PIN);
 	
 	// MOSI
-	GPIO_InitStructure.GPIO_Pin = D_REGISTER_MOSI_PIN;
+	GPIO_InitStructure.GPIO_Pin = D_REGISTER1_MOSI_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(D_REGISTER_MOSI_PORT, &GPIO_InitStructure);
-	GPIO_ResetBits(D_REGISTER_MOSI_PORT, D_REGISTER_MOSI_PIN);
+	GPIO_Init(D_REGISTER1_MOSI_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(D_REGISTER1_MOSI_PORT, D_REGISTER1_MOSI_PIN);
 	// clk
-	GPIO_InitStructure.GPIO_Pin = D_REGISTER_CLK_PIN;
+	GPIO_InitStructure.GPIO_Pin = D_REGISTER1_CLK_PIN;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-	GPIO_Init(D_REGISTER_CLK_PORT, &GPIO_InitStructure);
-	GPIO_SetBits(D_REGISTER_CLK_PORT, D_REGISTER_CLK_PIN);
-
+	GPIO_Init(D_REGISTER1_CLK_PORT, &GPIO_InitStructure);
+	GPIO_SetBits(D_REGISTER1_CLK_PORT, D_REGISTER1_CLK_PIN);
 }
 
 
+// D Resistor1
+void HW_ADJ_Resistor2_Init(void)
+{
+	GPIO_InitTypeDef GPIO_InitStructure;
+	RCC_AHB1PeriphClockCmd(D_REGISTER2_CLK_SRC|D_REGISTER2_MOSI_SRC|D_REGISTER2_CS_SRC, ENABLE);
+	//cs
+	GPIO_InitStructure.GPIO_Pin = D_REGISTER2_CS_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(D_REGISTER2_CS_PORT, &GPIO_InitStructure);
+	GPIO_SetBits(D_REGISTER2_CS_PORT, D_REGISTER2_CS_PIN);
+	
+	//MISO	
+//	GPIO_InitStructure.GPIO_Pin = D_REGISTER_MISO_PIN;
+//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;//GPIO_Mode_IN;
+//	//GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+//	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
+//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;//GPIO_PuPd_DOWN; //GPIO_PuPd_UP
+//	GPIO_Init(ADC24BIT_MISO_PORT, &GPIO_InitStructure);
+//	GPIO_ResetBits(D_REGISTER_MISO_PORT, D_REGISTER_MISO_PIN);
+	
+	// MOSI
+	GPIO_InitStructure.GPIO_Pin = D_REGISTER2_MOSI_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(D_REGISTER2_MOSI_PORT, &GPIO_InitStructure);
+	GPIO_ResetBits(D_REGISTER2_MOSI_PORT, D_REGISTER2_MOSI_PIN);
+	// clk
+	GPIO_InitStructure.GPIO_Pin = D_REGISTER2_CLK_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;//100MHz
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+	GPIO_Init(D_REGISTER2_CLK_PORT, &GPIO_InitStructure);
+	GPIO_SetBits(D_REGISTER2_CLK_PORT, D_REGISTER2_CLK_PIN);
+}
+
+void DResistor1_Adjust_WBC(UINT8 nVal)
+{
+	//HW_ADJ_DResistor()
+	HW_ADJ_SetResistor_V3(EN_DRESISTOR1_CHAN0, nVal);
+}
+	
+void DResistor1_Adjust_PLT(UINT8 nVal)
+{
+	HW_ADJ_SetResistor_V3(EN_DRESISTOR1_CHAN1, nVal);
+}
+
+void DResistor1_Adjust_Motor3(UINT8 nVal)
+{
+	HW_ADJ_SetResistor_V3(EN_DRESISTOR1_CHAN2, nVal);
+}
 
 
+// WBC 
 void ADC1_DMA_Config()
 {
 	DMA_InitTypeDef DMA_InitStructure;
@@ -1660,7 +1846,28 @@ void ADC3_GPIO_Init(void){
 	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
 	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
 	GPIO_Init(CUR12P_ADC_PORT, &GPIO_InitStructure);	
-		
+	
+		//  PF3, Motor3
+	GPIO_InitStructure.GPIO_Pin		= Motor3_ADC_PIN;		
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(CUR12P_ADC_PORT, &GPIO_InitStructure);	
+	
+	//  PF4, Motor4
+	GPIO_InitStructure.GPIO_Pin		= Motor3_ADC_PIN;		
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(CUR12P_ADC_PORT, &GPIO_InitStructure);	
+	
+		//  PF10_ADC3_IN8 ,12V_P
+	GPIO_InitStructure.GPIO_Pin		= CUR12P_ADC_PIN;		
+	GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd	= GPIO_PuPd_NOPULL;
+	GPIO_InitStructure.GPIO_Speed   = GPIO_Speed_50MHz;
+	GPIO_Init(CUR12P_ADC_PORT, &GPIO_InitStructure);	
+
 	//#if PRESS_SENSOR_ADC_TYPE
 		GPIO_InitStructure.GPIO_Pin		= PRESS_ADC_PIN; // PC2_ADC123_IN12 , Press
 		GPIO_InitStructure.GPIO_Mode 	= GPIO_Mode_AN;
@@ -1766,9 +1973,9 @@ void ADC3_GPIO_Init(void){
 		
 		// IO Init
 		ADC3_GPIO_Init();
-		
-		RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3, ENABLE);
-		RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3, DISABLE);
+		///////////////////////////////////
+		//RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3, ENABLE);
+		//RCC_APB2PeriphResetCmd(RCC_APB2Periph_ADC3, DISABLE);
 		
 		// Common Set
 		ADC_CommonInitStructure.ADC_Mode	= ADC_Mode_Independent;
@@ -1779,7 +1986,7 @@ void ADC3_GPIO_Init(void){
 		// ADC Set
 		ADC_InitStructure.ADC_Resolution	= ADC_Resolution_12b;
 		ADC_InitStructure.ADC_ScanConvMode  = ENABLE;//DISABLE;
-		ADC_InitStructure.ADC_NbrOfConversion = ADC3_CHECK_NUM;
+		ADC_InitStructure.ADC_NbrOfConversion = EN_ADC_END;//ADC3_CHECK_NUM;
 		ADC_InitStructure.ADC_ContinuousConvMode = ENABLE;// ENABLE;
 		ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_None;
 		ADC_InitStructure.ADC_ExternalTrigConv  = ADC_ExternalTrigConv_T1_CC1;
@@ -1865,7 +2072,24 @@ void ADC3_GPIO_Init(void){
 	
 #endif //ADC3_INIT_WITH_DMA
 
+	
 
+// blood cell current(56V) switch operation
+void HW_CUR_BC_SW_Init(void)
+{
+	EVAL_OutputInit(O_CUR_BC_SW);
+}
+	
+void HW_CUR_BC_SW_Open(void)
+{
+	EVAL_OutputSet(O_CUR_BC_SW);
+}
+	
+void HW_CUR_BC_SW_Close(void)
+{
+	EVAL_OutputClr(O_CUR_BC_SW);
+}
+	
 
 UINT16 HW_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
 {
@@ -1881,7 +2105,7 @@ UINT16 HW_ADC3_Channel_Value(UINT8 nIndex, UINT8 nCount)
 #if ADC3_INIT_WITH_DMA
 	for(i = 0; i < nCount; i++)
 	{
-		nVal += g_ADC3_Value[nIndex];;;
+		nVal += g_ADC3_Value[nIndex];
 	}
 	nVal /= nCount;
 #else
@@ -1993,7 +2217,7 @@ UINT16 HW_Motor4_V(void)
 UINT16 HW_Press_ADC(void)
 {
 	UINT16 nVal = 0;
-	nVal = HW_ADC3_Channel_Value(EN_ADC_PRESS, ADC_SMOOTH_NUM_5);
+	nVal = HW_ADC3_Channel_Value(EN_ADC_PRESS, ADC_SMOOTH_NUM_5);	
 	return nVal;
 }
 
@@ -2211,6 +2435,7 @@ void EVAL_Init(void)
 	HW_Valve_Init();
 	HW_LEVEL_OC_Init();
 	HW_Press_Init();
+	HW_CUR_BC_SW_Init();
 	//Turn_Motor_Init();
 	//Mixing_Motor_Init();
 	//LED_Init();
@@ -2226,7 +2451,7 @@ void EVAL_Init(void)
 #endif
 	Beep(1, 400);
 	
-	
+	HW_CUR_BC_SW_Open();
 	
 	
 }

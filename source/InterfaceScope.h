@@ -111,6 +111,7 @@ typedef enum{
 }EN_FPGA_DATA_FLAG;
 
 
+/*
 enum{
 	EN_DREGISTER_WBC		= 0,
 	EN_DREGISTER_PLT_RBC	= 1,
@@ -119,6 +120,8 @@ enum{
 	EN_DREGISTER_OUTIN_HGB	= 4,
 };
 UINT8 Get_DRegister_Value(UINT8 nChannel);
+*/
+
 
 //------------------------------------------------------CX3000 ADD API---------------------
 // led
@@ -243,6 +246,7 @@ _EXT_ UINT32 HW_PUMP_GetFeedbackPulse(void);
 //------------------------------
 // the digtal adjustable resistor 
 _EXT_ UINT8  HW_ADJ_SetResistor(UINT8 chIndex, UINT8 chValue);
+
 
 //------------------------------
 // the SPI ADC control
