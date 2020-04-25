@@ -207,17 +207,17 @@ typedef enum              // take attention of sequence
 #define OUT_Motor3_CLK_GPIO_PORT           GPIOC
 #define OUT_Motor3_CLK_GPIO_CLK            RCC_AHB1Periph_GPIOC
 
-//12. PD7 Motor4 EN
+//12. PE13 Motor4 EN
 #define OUT_Motor4_EN_GPIO_PIN            GPIO_Pin_13
 #define OUT_Motor4_EN_GPIO_PORT           GPIOE
 #define OUT_Motor4_EN_GPIO_CLK            RCC_AHB1Periph_GPIOE
 
-//13. PD0 Motor4 DIR
+//13. PE11 Motor4 DIR
 #define OUT_Motor4_DIR_GPIO_PIN            GPIO_Pin_11
 #define OUT_Motor4_DIR_GPIO_PORT           GPIOE
 #define OUT_Motor4_DIR_GPIO_CLK            RCC_AHB1Periph_GPIOE
 
-//14. PD14 Motor4 CLK
+//14. PE9 Motor4 CLK
 #define OUT_Motor4_CLK_GPIO_PIN            GPIO_Pin_9
 #define OUT_Motor4_CLK_GPIO_PORT           GPIOE
 #define OUT_Motor4_CLK_GPIO_CLK            RCC_AHB1Periph_GPIOE
@@ -550,7 +550,7 @@ static void EVAL_InputInit(Input_TypeDef eIn, InModel_Typedef eModel);
 extern UINT8 EVAL_InputGetState(Input_TypeDef eIn);
 
 // Press IIC APi
-// press check, PH4_SCl, PH5_SDA I2C, I2C
+// press check, PH4_I2C2_SCl, PH5_I2C2_SDA I2C, I2C
 // PH4
 #define PRESS_I2C_SCL_PORT					GPIOH
 #define PRESS_I2C_SCL_PIN					GPIO_Pin_4
@@ -618,8 +618,8 @@ void HW_Pump_Init(void);
 #define COUNTER_SIG_CLK_PORT_AF			GPIO_AF_TIM5
 #define COUNTER_SIG_PWM_TIM				TIM5
 #define COUNTER_SIG_PWM_TIM_SRC			RCC_APB1Periph_TIM5
-#define COUNTER_SIG_PWM_TIM_ARR			10000 //25000
-#define COUNTER_SIG_PWM_TIM_PSC			4199   //4200    //84M/4200=20k=20000, 
+#define COUNTER_SIG_PWM_TIM_ARR			100 // 20k
+#define COUNTER_SIG_PWM_TIM_PSC			41 // 84/41+1 = 2M/100 =20k,   
 
 // Time3_CH3  Out_In_Motor clk
 void Counter_Init(void);
@@ -629,16 +629,16 @@ void Conuter_PWN_Enable(void);
 void Conuter_PWN_Disable(void);
 
 
-// --------- cx3000 WBC/RBC/PLT Digital Register (AD8403)(SPI2), PI1_CLK,PI3_MOSI,PI0_CS 
-#define D_REGISTER1_CLK_PORT					GPIOI
+// --------- cx3000 WBC/RBC/PLT Digital Register (AD8403)(SPI2), PI1_SPI2_CLK, PI3_SPI2_MOSI, PI0_SPI2_CS 
+#define D_REGISTER1_CLK_PORT				GPIOI
 #define D_REGISTER1_CLK_PIN					GPIO_Pin_1
 #define D_REGISTER1_CLK_SRC					RCC_AHB1Periph_GPIOI
 #define D_REGISTER1_CLK_AF_SRC 				GPIO_PinSource1
 // MOSI
 #define D_REGISTER1_MOSI_PORT				GPIOI
-#define D_REGISTER1_MOSI_PIN					GPIO_Pin_3
-#define D_REGISTER1_MOSI_SRC					RCC_AHB1Periph_GPIOI
-#define D_REGISTER1_MOSI_AF_SRC 				GPIO_PinSource3
+#define D_REGISTER1_MOSI_PIN				GPIO_Pin_3
+#define D_REGISTER1_MOSI_SRC				RCC_AHB1Periph_GPIOI
+#define D_REGISTER1_MOSI_AF_SRC 			GPIO_PinSource3
 // CS
 #define D_REGISTER1_CS_PORT					GPIOI
 #define D_REGISTER1_CS_PIN					GPIO_Pin_0
@@ -742,6 +742,18 @@ void InitMotor_Param(enum eMvMotor eMotor);
 #define IRQ_Motor2      TIM4_IRQHandler
 #define IRQ_Motor3      TIM1_UP_TIM10_IRQHandler
 #define IRQ_Motor4      TIM8_UP_TIM13_IRQHandler
+
+#define Motor_CUR_ADJUST_PORT			GPIOA
+#define Motor_CUR_ADJUST_PIN			GPIO_Pin_5
+#define Motor_CUR_ADJUST_SRC			RCC_AHB1Periph_GPIOA  
+#define Motor_CUR_ADJUST_DAC_CH			DAC_Channel_2
+#define Motor_CUR_START					500
+#define Motor_CUR_RUNING				250
+// adjust motor out current
+void Motor_Cur_DAC_Init(void);
+void Motor_Cur_DAC_Set(UINT16 nV);
+void Motor_Cur_Set(UINT16 nIVal);
+
 
 void Motor_Dir_Pos(enum eMvMotor eMotor); // in
 void Motor_Dir_Neg(enum eMvMotor eMotor); // out

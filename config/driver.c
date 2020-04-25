@@ -2440,8 +2440,11 @@ void LED_Cur_DAC_Set(UINT16 nVal)
 {
 //	UINT16 nTemp;
 //	nTemp = nVal*4095 / 3300;
+	if(nVal >= 4095)  nVal = 4095;
 	DAC_SetChannel1Data(DAC_Align_12b_R, nVal);
 }
+
+
 
 //
 void LED_Cur_Auto_Adjust(UINT16 nVal)

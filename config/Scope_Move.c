@@ -1699,12 +1699,14 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 				}
 				g_atMotorStatus[eMotor].ePhase = Motor_Phase_ACC; // Motor_Phase_LOAD -> Motor_Phase_ACC
 				s_nTheSameStepsCount             = 0;
+				 Motor_Cur_Set(Motor_CUR_START);
 				// don't break out "switch" and continue
 			}
 			else
 			{
 				MTx_DriverEnable(eMotor, e_False);  // stop immediately
 				g_atMotorStatus[eMotor].eFinish = e_True;
+				Motor_Cur_Set(Motor_CUR_RUNING);
                 break;  // break out "switch"
 			}
 		}
@@ -1773,6 +1775,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 				// 
 				g_atMotorStatus[eMotor].ePhase    = Motor_Phase_EQU;  
 			    s_nTheSameStepsCount                = 0;			
+				 Motor_Cur_Set(Motor_CUR_RUNING);
 			    // don't break out "switch" and continue
 			}
 		}
@@ -1796,6 +1799,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 			{
                 g_atMotorStatus[eMotor].ePhase        = Motor_Phase_DEC;  
 			    s_nTheSameStepsCount          = 0;
+				 Motor_Cur_Set(Motor_CUR_START);
 			    // don't break out "switch" and continue
 			}
 		}
@@ -1838,6 +1842,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
 		    {	
 			    g_atMotorStatus[eMotor].ePhase        = Motor_Phase_FIN;
 			    s_nTheSameStepsCount          		  = 0;
+				Motor_Cur_Set(Motor_CUR_START);
                 // don't break out "switch" and continue
 		    }
 		}
@@ -1847,6 +1852,7 @@ void MTx_PWM_ISR(enum eMvMotor eMotor)  // _USE  MTx_TIMER_INTERRUPT_INDEX
              MTx_DriverEnable(eMotor, e_False);  // stop immediately
 			 g_atMotorStatus[eMotor].eFinish 		  = e_True;
              g_atMotorStatus[eMotor].ePhase           = Motor_Phase_IDLE;
+			 Motor_Cur_Set(Motor_CUR_START);
 			 break;
 		}
 		//--

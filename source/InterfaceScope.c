@@ -952,7 +952,7 @@ _EXT_ UINT8 MT_Y_Home_Self_Check(void)
 		if (EN_CLOSE == HW_LEVEL_GetOC(OC_OUT_CHANNEL))
 		{
 			// long distance
-			MV_InitPara(Motor_X, 3000, 10000, 100, 10);   // ZZC_0904 : MV_InitPara(Motor_X, 4000, 8000, 100, 10); 
+			MV_InitPara(Motor_X, 3000, 15000, 100, 10);   // ZZC_0904 : MV_InitPara(Motor_X, 4000, 8000, 100, 10); 
 			// OC is on the right, right step
 			MV_Move(Motor_X, 35000, e_Dir_Pos);  /* 靠近出仓光耦方向 */
 

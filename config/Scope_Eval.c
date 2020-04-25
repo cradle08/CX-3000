@@ -972,7 +972,7 @@ UINT8 PF_InitTimer1(void)
 	NVIC_Init(&NVIC_InitStructure);
 
 	TIM_TimeBaseInitStrecture.TIM_Period = 3000;//10000;
-	TIM_TimeBaseInitStrecture.TIM_Prescaler = 13;//168;
+	TIM_TimeBaseInitStrecture.TIM_Prescaler = 13;//168;13
 	TIM_TimeBaseInitStrecture.TIM_ClockDivision = TIM_CKD_DIV1;
 	TIM_TimeBaseInitStrecture.TIM_CounterMode = TIM_CounterMode_Up;
 	TIM_TimeBaseInitStrecture.TIM_RepetitionCounter = 0;
@@ -1050,6 +1050,55 @@ void InitMotor_IO(enum eMvMotor eMotor)
         EVAL_OutputInit(O_Motor4_CLK);
 	}
 }
+
+
+void Motor_Cur_DAC_Init(void)
+{
+	GPIO_InitTypeDef  GPIO_InitStructure;
+	DAC_InitTypeDef DAC_InitType;
+	
+	RCC_AHB1PeriphClockCmd(Motor_CUR_ADJUST_SRC, ENABLE);
+	RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
+	   
+	GPIO_InitStructure.GPIO_Pin = Motor_CUR_ADJUST_PIN;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
+	GPIO_Init(Motor_CUR_ADJUST_PORT, &GPIO_InitStructure);
+
+	DAC_InitType.DAC_Trigger=DAC_Trigger_None;
+	DAC_InitType.DAC_WaveGeneration=DAC_WaveGeneration_None;
+	DAC_InitType.DAC_LFSRUnmask_TriangleAmplitude=DAC_LFSRUnmask_Bit0;
+	DAC_InitType.DAC_OutputBuffer=DAC_OutputBuffer_Disable ;
+	
+	DAC_Init(Motor_CUR_ADJUST_DAC_CH, &DAC_InitType);	 
+	DAC_Cmd(Motor_CUR_ADJUST_DAC_CH, ENABLE);  
+	DAC_SetChannel2Data(DAC_Align_12b_R, 0);  
+	
+	Motor_Cur_Set(Motor_CUR_START);
+}
+
+
+// DAC nV = nDAC*3300/4095 --->nDAC = nV*4095/3300
+void Motor_Cur_DAC_Set(UINT16 nV)
+{
+	UINT16 nDAC = 0;
+	
+	nDAC = nV*4095/3300;
+	if(nDAC >= 4095)  nDAC = 4095;
+	printf("nDAC=%d\r\n", nDAC);
+	DAC_SetChannel2Data(DAC_Align_12b_R, nDAC);
+}
+
+// I = 0.776*V ---> V=I/0.766
+void Motor_Cur_Set(UINT16 nIVal)
+{
+	UINT16 nV = 0, nDAC = 0;
+	
+	nV = nIVal/0.766;
+	printf("Motor nI=%d, nV=%d, ", nIVal, nV);
+	Motor_Cur_DAC_Set(nV);
+}
+
 
 void Motor_Dir_Pos(enum eMvMotor eMotor)
 {
@@ -1592,7 +1641,7 @@ void ADC1_DMA_Config()
 }
 
 
-#define WBC_USE_PA5    	1
+#define WBC_USE_PA5    	0
 // ADC1_IN5  PA5  WBC
 void ADC1_Init(void)
 {
@@ -2443,7 +2492,7 @@ void EVAL_Init(void)
 	//ADC24Bit_Init();
 	HW_ADJ_Resistor_Init();
 	//HW_Micro_OC_Init();
-
+	Motor_Cur_DAC_Init();
 	
 	//Counter_Check_Init();
 	//Counter_Adjust_Init();
