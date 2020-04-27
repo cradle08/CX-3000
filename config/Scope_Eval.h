@@ -747,9 +747,9 @@ void InitMotor_Param(enum eMvMotor eMotor);
 #define Motor_CUR_ADJUST_PIN			GPIO_Pin_5
 #define Motor_CUR_ADJUST_SRC			RCC_AHB1Periph_GPIOA  
 #define Motor_CUR_ADJUST_DAC_CH			DAC_Channel_2
-#define Motor_CUR_START					500
-#define Motor_CUR_RUNING				250
-// adjust motor out current
+#define Motor_CUR_READY					500
+#define Motor_CUR_RUNING				500
+// usd mcu dac to adjust motor output current
 void Motor_Cur_DAC_Init(void);
 void Motor_Cur_DAC_Set(UINT16 nV);
 void Motor_Cur_Set(UINT16 nIVal);

@@ -1074,7 +1074,7 @@ void Motor_Cur_DAC_Init(void)
 	DAC_Cmd(Motor_CUR_ADJUST_DAC_CH, ENABLE);  
 	DAC_SetChannel2Data(DAC_Align_12b_R, 0);  
 	
-	Motor_Cur_Set(Motor_CUR_START);
+	Motor_Cur_Set(Motor_CUR_READY);
 }
 
 
@@ -1099,7 +1099,7 @@ void Motor_Cur_Set(UINT16 nIVal)
 	Motor_Cur_DAC_Set(nV);
 }
 
-
+// motor in
 void Motor_Dir_Pos(enum eMvMotor eMotor)
 {
 	if(eMotor >= EN_Motor_End)
@@ -1123,6 +1123,7 @@ void Motor_Dir_Pos(enum eMvMotor eMotor)
 	}
 }
 
+// motor out
 void Motor_Dir_Neg(enum eMvMotor eMotor)
 {
 	if(eMotor >= EN_Motor_End)

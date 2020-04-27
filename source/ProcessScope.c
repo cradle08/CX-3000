@@ -2656,7 +2656,7 @@ UINT8 MSG_TestingFunc(void)
 //			collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE); 
 //			return e_Feedback_Error;
 //		}
-//		nCurTicks = IT_SYS_GetTicks();	
+		nCurTicks = IT_SYS_GetTicks();	
     }
 	//------after count, stop all--------
 	HW_Disable_Data_Channel(eMode);//HW_End_WBC();
