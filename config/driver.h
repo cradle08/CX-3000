@@ -477,7 +477,7 @@ void Turn_Motor_Init(void);
 	void Turn_Motor_Enable(void);
 	void Turn_Motor_Disable(void);
 	void Turn_Motor_Dir(UINT8 nDir); // e_Dir_Pos=clockwise. e_Dir_Neg=anti-clockwise
-	void Turn_Motor_Reset();	
+	void Turn_Motor_Reset(void);	
 	void Turn_Motor_Run(UINT32 nSteps);
 	UINT8 Turn_Motor_Goto_Postion(UINT8 nDir, UINT32 nSteps);
 	UINT8 Turn_Motor_Select_LED(UINT8 nIndex);

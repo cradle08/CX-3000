@@ -2728,6 +2728,7 @@ void LED_Cur_DAC_Set(UINT16 nVal)
 {
 //	UINT16 nTemp;
 //	nTemp = nVal*4095 / 3300;
+	if(nVal > 4095) nVal = 4095;
 	DAC_SetChannel1Data(DAC_Align_12b_R, nVal);
 }
 
@@ -4188,6 +4189,34 @@ void Driver_Debug(UINT8 nIndex, UINT32 nData)
 //				IT_SYS_DlyMs(500);IT_SYS_DlyMs(500);
 //			}
 //			printf("end\r\n");
+		}
+		break;
+		case 16: // 0x10  HGB_LED_INDEX 525, index 6
+		{
+			printf("index: 0x10 hgb start \r\n");
+			LED_Exec(HGB_LED_INDEX, EN_OPEN); 	  		// open led
+			Turn_Motor_Select_LED(HGB_LED_INDEX); 		// led go to test positon 
+			LED_Cur_ADC_Check_Channel(HGB_LED_INDEX); 	// CD4051 open the channel, and then start to adjust	
+			LED_Cur_DAC_Set(nData);
+			LED_Cur_Switch(EN_OPEN);	//led cur open
+			//LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
+			//g_Test_Mode = EN_HGB_TEST;
+			printf("index: 0x10 start \r\n");
+		
+		}
+		break;
+		case 17: // 0x11  CRP_LED_INDEX 840 , index 3
+		{
+			printf("index: 0x11 crp start \r\n");
+			LED_Exec(CRP_LED_INDEX, EN_OPEN); 	  		// open led
+			Turn_Motor_Select_LED(CRP_LED_INDEX); 		// led go to test positon 
+			LED_Cur_ADC_Check_Channel(CRP_LED_INDEX); 	// CD4051 open the channel, and then start to adjust	
+			LED_Cur_DAC_Set(nData);
+			LED_Cur_Switch(EN_OPEN);	//led cur open
+			//LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
+			//g_Test_Mode = EN_HGB_TEST;
+			printf("index: 0x11 start \r\n");
+		
 		}
 		break;
 		default:break;	
