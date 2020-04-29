@@ -279,7 +279,7 @@ void Reset_ADC_InitDataType(void);
 #define  TIME_OVER_TS_ADC              25000       /* 25秒  数据采集超时时间 */
 #endif
 
-#define  TIME_TS_ACTION_TIMEOUT_1        24000 //18000
+#define  TIME_TS_ACTION_TIMEOUT_1        10000 //24000
 #define  TIME_TS_ACTION_TIMEOUT_2        50000
 #define  TIME_TS_ACTION_PRE_TIME_1       4500      /* 4秒   检测期间关阀时间 */
 #define  TIME_TS_ACTION_PRE_TIME_2       9000

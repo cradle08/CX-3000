@@ -1943,11 +1943,12 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 		case EN_HGB_TEST: // HGB LED adjust LED Cur
 		{
 			LED_Exec(nLED, EN_OPEN); 	  		// open led
-			Turn_Motor_Select_LED(nLED); 		// led go to test positon 
+		//	Turn_Motor_Select_LED(nLED); 		// led go to test positon 
 			LED_Cur_ADC_Check_Channel(nLED); 	// CD4051 open the channel, and then start to adjust	
 			LED_Cur_DAC_Set(LED_525_DEFUALT_CUR_VALUE);
 			LED_Cur_Switch(EN_OPEN);	//led cur open
 			//LED_Cur_Auto_Adjust(HGB_LED_CUR_ADJUST_VALUE);
+			AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
 			g_Test_Mode = EN_HGB_TEST;
 			printf("HGB Mode Set Finished M=%d\r\n", g_Test_Mode);
 		}
@@ -1955,11 +1956,11 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 		case EN_CRP_TEST: // CRP need select LED and adjust LED Cur
 		{
 			LED_Exec(nLED, EN_OPEN); 	 	 		 // open led
-			Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
+		//	Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
 			LED_Cur_ADC_Check_Channel(nLED);		 // CD4051 open the channel, and then start to adjust
 			LED_Cur_DAC_Set(LED_840_DEFUALT_CUR_VALUE);
 			LED_Cur_Switch(EN_OPEN);	//led cur open
-			
+			AD7799_SetChannel(AD7799_CH_AIN1P_AIN1M);
 			//LED_Cur_Auto_Adjust(CRP_LED_CUR_ADJUST_VALUE); 	 // adjust cur		
 			g_Test_Mode = EN_CRP_TEST;
 			printf("CRP Mode Set Finished, M=%d\r\n", g_Test_Mode);
@@ -1968,7 +1969,7 @@ UINT8 LED_Mode_Set(UINT8 nIndex, UINT8 nLED)
 		default:
 		{
 			LED_Exec(nLED, EN_OPEN); 	 	 		 // open led
-			Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
+		//	Turn_Motor_Select_LED(nLED); 			 // led go to test positon 
 			LED_Cur_ADC_Check_Channel(nLED);		 // CD4051 open the channel, and then start to adjust
 			LED_Cur_DAC_Set(LED_840_DEFUALT_CUR_VALUE);
 			LED_Cur_Switch(EN_OPEN);	//led cur open
@@ -2045,11 +2046,11 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 #else				
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
-			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
-				printf(" cuvette out error\r\n");
-				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
-				return 0;
-			}
+//			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+//				printf(" cuvette out error\r\n");
+//				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+//				return 0;
+//			}
 			buffer[i] = HW_Get_ADC_HGB();     
 			printf("ADC=%d, V=%6.2f\r\n", (int)buffer[i], (float)buffer[i]*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
@@ -2187,24 +2188,24 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		// send crp calibrate start msg to app
 		Msg_Return_Handle_0(e_Msg_Status, CMD_STATUS_CRP_TEST_START);
 		// check micro switch status
-		if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
-		{
-			printf(" cuvette out error\r\n");
-			collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
-			return 0;
-		}
+//		if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
+//		{
+//			printf(" cuvette out error\r\n");
+//			collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+//			return 0;
+//		}
 		// mixing
 		nCurTicks = IT_SYS_GetTicks();
 		nTempTicks = nCurTicks;
 		Mixing_Motor_Run();
 		while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 2s
-			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
-			{
-				Mixing_Motor_Stop();
-				printf(" cuvette out error\r\n");
-				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
-				return 0;
-			}
+//			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
+//			{
+//				Mixing_Motor_Stop();
+//				printf(" cuvette out error\r\n");
+//				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+//				return 0;
+//			}
 			IT_SYS_DlyMs(10);
 			nCurTicks = IT_SYS_GetTicks();
 		}
@@ -2213,11 +2214,11 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		IT_SYS_DlyMs(500);
 		for(i = 0; i < CRP_CALIBRATE_DATA_NUM; i++)
 		{
-			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
-				printf(" cuvette out error\r\n");
-				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
-				return 0;
-			}
+//			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+//				printf(" cuvette out error\r\n");
+//				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+//				return 0;
+//			}
 			buffer[i] = HW_Get_ADC_CRP();
 			printf("CRP ADC=%08d, 5V=%6.2f\r\n", (int)buffer[i], (float)(buffer[i])*ADC_V_REF_VALUE_5/ADC_RESOLUTION_24);
 			IT_SYS_DlyMs(100);
@@ -2574,21 +2575,21 @@ UINT8 MSG_TestingFunc(void)
         }
 		// to check press
 		nPress = 0;
-		nPress =  Get_Press_Value(GET_PRESS_NUM_FIVE);
-		if(nPress <= COUNT_MIN_PRESS)
-		{
-			printf("\r\nCount Error: the press error(%d.%dS),ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
-								(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)g_Frame_Count);
-#ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo, "\r\nCount Error: the press error(%d.%dS), ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
-												(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)g_Frame_Count);
-			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
-			*pDILen = nDILen;
-#endif
-            collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
-            return e_Feedback_Error;
-		}
+//		nPress =  Get_Press_Value(GET_PRESS_NUM_FIVE);
+//		if(nPress <= COUNT_MIN_PRESS)
+//		{
+//			printf("\r\nCount Error: the press error(%d.%dS),ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
+//								(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)g_Frame_Count);
+//		#ifdef DEBUG_INFO_UP_LOAD
+//			sprintf((char*)sTempInfo, "\r\nCount Error: the press error(%d.%dS), ticks=%05d, press=%010d, udp=%d, q=%d\r\n", (int)(nPreTimeOutTicks/1000), (int)(nPreTimeOutTicks%1000/100),\
+//												(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)g_Frame_Count);
+//			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
+//			*pDILen = nDILen;
+//		#endif
+//			collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
+//			return e_Feedback_Error;
+//		}
 		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
 		nCurTicks = IT_SYS_GetTicks();
 		nPreTicks = nCurTicks - nTempTicks;
@@ -2690,21 +2691,21 @@ UINT8 MSG_TestingFunc(void)
         }
 		// to check press
 		nPress = 0;
-		nPress =  Get_Press_Value(GET_PRESS_NUM_FIVE);
-		if(nPress <= COUNT_MIN_PRESS)
-		{
-			printf("Count Error: the press error(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
-							(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_XK_V_Value());
-#ifdef DEBUG_INFO_UP_LOAD
-			sprintf((char*)sTempInfo, "Count Error: the press error(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
-								(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_XK_V_Value());
-			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
-			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
-			*pDILen = nDILen;
-#endif
-            collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
-            return e_Feedback_Error;
-		}
+//		nPress =  Get_Press_Value(GET_PRESS_NUM_FIVE);
+//		if(nPress <= COUNT_MIN_PRESS)
+//		{
+//			printf("Count Error: the press error(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+//							(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+//#ifdef DEBUG_INFO_UP_LOAD
+//			sprintf((char*)sTempInfo, "Count Error: the press error(3S stop), ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \
+//								(int)IT_LIST_GetTicks(), (int)nPress, (int)Get_Udp_Count(), (int)Get_XK_V_Value());
+//			Append_Debug_Info((INT8*)pDInfo+nDILen, (INT8*)sTempInfo, (UINT16*)&nDILen);
+//			memset((char*)sTempInfo, 0, DEBUG_INFO_TEMP_LEN);
+//			*pDILen = nDILen;
+//#endif
+//            collect_return_hdl(COLLECT_RET_FAIL_AIR_COKE);
+//            return e_Feedback_Error;
+//		}
 		//HW_LWIP_Working(IT_LIST_GetTicks(), IT_ADC_GetTicks(), EN_DROP_FPGA_DATA);
     }
 	printf("Count Status(after 3S): ticks=%05d, press=%010d, udp=%d, wbc_v=%d\r\n", \

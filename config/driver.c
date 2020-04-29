@@ -4195,7 +4195,7 @@ void Driver_Debug(UINT8 nIndex, UINT32 nData)
 		{
 			printf("index: 0x10 hgb start \r\n");
 			LED_Exec(HGB_LED_INDEX, EN_OPEN); 	  		// open led
-			Turn_Motor_Select_LED(HGB_LED_INDEX); 		// led go to test positon 
+			//Turn_Motor_Select_LED(HGB_LED_INDEX); 		// led go to test positon 
 			LED_Cur_ADC_Check_Channel(HGB_LED_INDEX); 	// CD4051 open the channel, and then start to adjust	
 			LED_Cur_DAC_Set(nData);
 			LED_Cur_Switch(EN_OPEN);	//led cur open
@@ -4209,7 +4209,7 @@ void Driver_Debug(UINT8 nIndex, UINT32 nData)
 		{
 			printf("index: 0x11 crp start \r\n");
 			LED_Exec(CRP_LED_INDEX, EN_OPEN); 	  		// open led
-			Turn_Motor_Select_LED(CRP_LED_INDEX); 		// led go to test positon 
+			//Turn_Motor_Select_LED(CRP_LED_INDEX); 		// led go to test positon 
 			LED_Cur_ADC_Check_Channel(CRP_LED_INDEX); 	// CD4051 open the channel, and then start to adjust	
 			LED_Cur_DAC_Set(nData);
 			LED_Cur_Switch(EN_OPEN);	//led cur open
