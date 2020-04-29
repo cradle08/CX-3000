@@ -2035,6 +2035,10 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 //	HW_EN_ADC_HGB(e_True);
 //	IT_SYS_DlyMs(100);
 	//
+	HW_Get_ADC_HGB(); 
+	IT_SYS_DlyMs(100);
+	HW_Get_ADC_HGB(); 
+	IT_SYS_DlyMs(100);
 	if(eMode ==  EN_HGB_TEST)
 	{
 		// get HGB adc data
@@ -2043,7 +2047,8 @@ UINT8 HGB_Test_Exec(eTestMode eMode)
 		srand(IT_SYS_GetTicks());
 		nVal = rand()%5000;
 		printf("\r\nHGB_V: %d=0d\r\n", nVal);
-#else				
+#else			
+
 		for(i = 0; i < HGB_CALIBRATE_DATA_NUM; i++)
 		{
 //			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
@@ -2116,7 +2121,10 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 //	IT_SYS_DlyMs(50);
 	// get CRP adc data
 //	printf("CRP_Test_Exec:");
-	
+	HW_Get_ADC_CRP(); 
+	IT_SYS_DlyMs(100);
+	HW_Get_ADC_CRP(); 
+	IT_SYS_DlyMs(100);
 	if(eMode ==  EN_CRP_TEST)
 	{
 		printf("CRP_Test_Exec Start\r\n");
@@ -2212,6 +2220,7 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		Mixing_Motor_Stop();
 		// get data
 		IT_SYS_DlyMs(500);
+		
 		for(i = 0; i < CRP_CALIBRATE_DATA_NUM; i++)
 		{
 //			if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
