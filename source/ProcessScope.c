@@ -2121,10 +2121,33 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 //	IT_SYS_DlyMs(50);
 	// get CRP adc data
 //	printf("CRP_Test_Exec:");
-	HW_Get_ADC_CRP(); 
-	IT_SYS_DlyMs(100);
-	HW_Get_ADC_CRP(); 
-	IT_SYS_DlyMs(100);
+
+	
+	
+	
+	nCurTicks = IT_SYS_GetTicks();
+	nTempTicks = nCurTicks;
+	Mixing_Motor_Run();
+	while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 2s
+//			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
+//			{
+//				Mixing_Motor_Stop();
+//				printf(" cuvette out error\r\n");
+//				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+//				return 0;
+//			}
+		IT_SYS_DlyMs(10);
+		nCurTicks = IT_SYS_GetTicks();
+	}
+	Mixing_Motor_Stop();
+	// wait 500ms and discard first five data
+	for(i = 0; i < 5; i++)
+	{
+		HW_Get_ADC_CRP(); 
+		IT_SYS_DlyMs(100);
+	}
+
+	
 	if(eMode ==  EN_CRP_TEST)
 	{
 		printf("CRP_Test_Exec Start\r\n");
@@ -2168,10 +2191,10 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 		}
 		if(g_CRP_Data.nTotal == INVAIL_VALUE) // check bi se ming error
 		{
-			memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
-			printf(" cuvette out error\r\n");
-			collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
-			return 0;
+//			memset((void*)&g_CRP_Data, 0, sizeof(struct CRP_DataType));
+//			printf(" cuvette out error\r\n");
+//			collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+//			return 0;
 		}
 		// send the last data
 		if(g_CRP_Data.nIndex != 0)
@@ -2203,23 +2226,23 @@ UINT8 CRP_Test_Exec(eTestMode eMode)
 //			return 0;
 //		}
 		// mixing
-		nCurTicks = IT_SYS_GetTicks();
-		nTempTicks = nCurTicks;
-		Mixing_Motor_Run();
-		while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 2s
-//			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
-//			{
-//				Mixing_Motor_Stop();
-//				printf(" cuvette out error\r\n");
-//				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
-//				return 0;
-//			}
-			IT_SYS_DlyMs(10);
-			nCurTicks = IT_SYS_GetTicks();
-		}
-		Mixing_Motor_Stop();
-		// get data
-		IT_SYS_DlyMs(500);
+//		nCurTicks = IT_SYS_GetTicks();
+//		nTempTicks = nCurTicks;
+//		Mixing_Motor_Run();
+//		while(nCurTicks < nTempTicks + MIXING_OVER_TIME){ // 2s
+////			if(Get_Micro_OC_Status() == EN_OPEN) // cuvette out 
+////			{
+////				Mixing_Motor_Stop();
+////				printf(" cuvette out error\r\n");
+////				collect_return_hdl(COLLECT_RET_FAIL_CUVETTE_OUT);
+////				return 0;
+////			}
+//			IT_SYS_DlyMs(10);
+//			nCurTicks = IT_SYS_GetTicks();
+//		}
+//		Mixing_Motor_Stop();
+//		// get data
+//		IT_SYS_DlyMs(500);
 		
 		for(i = 0; i < CRP_CALIBRATE_DATA_NUM; i++)
 		{

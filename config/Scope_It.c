@@ -94,11 +94,11 @@ void IRQ_SysTimer(void)
 					g_CRP_Data.nIndex++;
 					g_CRP_Data.nTotal++;
 				}
-				if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
-					g_CRP_Data.nTotal = INVAIL_VALUE;
-					g_CRP_Data.nIndex = 0;
-					g_CRP_Data.eEnable = 0;
-				}
+//				if(Get_Micro_OC_Status() == EN_OPEN){ // cuvette out
+//					g_CRP_Data.nTotal = INVAIL_VALUE;
+//					g_CRP_Data.nIndex = 0;
+//					g_CRP_Data.eEnable = 0;
+//				}
 			}
         }	
         
