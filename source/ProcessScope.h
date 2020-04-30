@@ -343,18 +343,18 @@ void Reset_ADC_InitDataType(void);
 //-----------------------------------------------------------------------
 #include "Scope_Eval.h"
 #if PRESS_SENSOR_TYPE_ADC
-#define  PRESS_BUILD                   230000000   /* 30kPa->22kPa 适合检测的气压 */
-#define BUILD_PRESS_MIN                225000000 //21.5kpa
-#define BUILD_PRESS_RIGHT              PRESS_BUILD // (UINT32)220000000 //22kpa
-#define BUILD_PRESS_MAX                235000000  //22.5kpa
-#define BUILD_PRESS_DEVIATION          20000000   //2kpa
+#define  PRESS_BUILD                   300000000   /* 30kPa->22kPa 适合检测的气压 */
+#define BUILD_PRESS_MIN                295000000 //21.5kpa
+#define BUILD_PRESS_RIGHT              PRESS_BUILD // (UINT32)300000000 //22kpa
+#define BUILD_PRESS_MAX                305000000  //22.5kpa
+#define BUILD_PRESS_DEVIATION          30000000   //2kpa
 #define COUNT_MIN_PRESS                140000000  //15kpa
 
 #else
-#define  PRESS_BUILD                   2200000 //230000000   /* 30kPa->22kPa 适合检测的气压 */
-#define BUILD_PRESS_MIN                2150000 //225000000 //21.5kpa
-#define BUILD_PRESS_RIGHT              PRESS_BUILD // (UINT32)220000000 //22kpa
-#define BUILD_PRESS_MAX                2250000 //235000000  //22.5kpa
+#define  PRESS_BUILD                   3000000 //230000000   /* 30kPa->22kPa 适合检测的气压 */
+#define BUILD_PRESS_MIN                2950000 //225000000 //21.5kpa
+#define BUILD_PRESS_RIGHT              PRESS_BUILD // (UINT32)300000000 //22kpa
+#define BUILD_PRESS_MAX                3050000 //235000000  //22.5kpa
 #define BUILD_PRESS_DEVIATION          300000 //20000000   //2kpa
 #define COUNT_MIN_PRESS                1400000//140000000  //15kpa
 #endif

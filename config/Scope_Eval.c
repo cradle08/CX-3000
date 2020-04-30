@@ -768,7 +768,7 @@ INT32 HW_Press_I2C(void)
 	UINT8 Status;
 	INT32 Pressure_data,Tempertaure_data;
 	
-	
+	__disable_irq();//__set_PRIMASK(0);
 //	Press_I2C_Init();
 	Press_I2C_Start();
 	Press_I2C_Send_Byte((I2c_Address)<<1|0);//write
@@ -779,7 +779,7 @@ INT32 HW_Press_I2C(void)
 	
 	IT_SYS_DlyMs(5);
 	//Delay_US(250);
-	__disable_irq();//__set_PRIMASK(0);
+
 	Press_I2C_Start();
 	Press_I2C_Send_Byte((I2c_Address)<<1|1);//read
 	Press_I2C_Wait_Ack();
