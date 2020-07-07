@@ -4016,7 +4016,7 @@ void Driver_Debug(UINT8 nIndex, UINT32 nData)
 //				IT_SYS_DlyMs(5);
 //			}
 
-			
+		
 			for(i = 0; i < 10; i++)
 			{
 				// CH1_W3
@@ -4035,6 +4035,8 @@ void Driver_Debug(UINT8 nIndex, UINT32 nData)
 				IT_SYS_DlyMs(500);
 				IT_SYS_DlyMs(500);
 				
+				val = Get_LED_Cur_ADC();
+				printf("-->ADC=%d, V=%d\r\n",val, val*3300/4096);
 			}
 			printf("AD7799 end\r\n");
 		}
