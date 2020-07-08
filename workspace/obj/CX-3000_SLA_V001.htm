@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\obj\CX-3000_SLA_V001.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\obj\CX-3000_SLA_V001.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Tue Jul 07 14:02:04 2020
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5.03 [Build 76]: Last Updated: Wed Jul 08 10:18:30 2020
 <BR><P>
 <H3>Maximum Stack Usage =        868 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -5433,7 +5433,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[2ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Get_ADC3_Channel_Value
 </UL>
 
-<P><STRONG><a name="[b8]"></a>HW_Get_ADC_HGB</STRONG> (Thumb, 20 bytes, Stack size 16 bytes, driver.o(.text))
+<P><STRONG><a name="[b8]"></a>HW_Get_ADC_HGB</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = HW_Get_ADC_HGB &rArr; AD7799_Get_Out_Data &rArr; AD7799_GetRegisterValue &rArr; SPI_Read &rArr; GPIO_ResetBits &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Get_Out_Data
@@ -5442,7 +5442,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[b7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HGB_Test_Exec
 </UL>
 
-<P><STRONG><a name="[b3]"></a>HW_Get_ADC_CRP</STRONG> (Thumb, 20 bytes, Stack size 16 bytes, driver.o(.text))
+<P><STRONG><a name="[b3]"></a>HW_Get_ADC_CRP</STRONG> (Thumb, 40 bytes, Stack size 16 bytes, driver.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = HW_Get_ADC_CRP &rArr; AD7799_Get_Out_Data &rArr; AD7799_GetRegisterValue &rArr; SPI_Read &rArr; GPIO_ResetBits &rArr; assert_failed &rArr; __2printf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[2f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;AD7799_Get_Out_Data

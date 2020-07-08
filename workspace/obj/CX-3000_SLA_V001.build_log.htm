@@ -3,50 +3,85 @@
 <pre>
 <h1>µVision Build Log</h1>
 <h2>Project:</h2>
-F:\CX-3000\CX-3000\workspace\prj\CX-3000.uvproj
-Project File Date:  07/07/2020
+F:\CX-3000\src\CX-3000\workspace\prj\CX-3000.uvproj
+Project File Date:  07/08/2020
 
 <h2>Output:</h2>
 Build target 'Scope'
+compiling ScopeMain.c...
+compiling SystemScope.c...
+compiling ProcessScope.c...
+..\..\source\ProcessScope.c(2014): warning:  #940-D: missing return statement at end of non-void function "LED_Mode_Set"
+  }
+..\..\source\ProcessScope.c(2042): warning:  #177-D: variable "nVal" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\source\ProcessScope.c(2125): warning:  #177-D: variable "j" was declared but never referenced
+        UINT16 i, j;
+..\..\source\ProcessScope.c(2305): warning:  #550-D: variable "nTempTicks" was set but never used
+        UINT32 nCurTicks, nTempTicks, i, j;
+..\..\source\ProcessScope.c: 4 warnings, 0 errors
+compiling Protocol.c...
+compiling InterfaceScope.c...
+..\..\source\InterfaceScope.c(266): warning:  #177-D: variable "i" was declared but never referenced
+                UINT32 nCurTime = 0, nTempTime = 0, nDlyTime = 0, i;
+..\..\source\InterfaceScope.c(499): warning:  #177-D: variable "i" was declared but never referenced
+                UINT32 nCurTime, nTempTime, i = 0;
+..\..\source\InterfaceScope.c(1899): warning:  #177-D: variable "i" was declared but never referenced
+        UINT8 i;
+..\..\source\InterfaceScope.c: 3 warnings, 0 errors
+compiling StorageManagement.c...
+compiling stm32f4x7_eth.c...
+compiling Fpga.c...
+compiling Scope_It.c...
+compiling Scope_Move.c...
+compiling BufferCircle.c...
+compiling NetBufferCircle.c...
+compiling SampleBufferCircle.c...
+compiling InterruptBufferCircle.c...
+compiling driver.c...
+..\..\config\driver.c(160): warning:  #188-D: enumerated type mixed with another type
+                EVAL_OutputInit(i);
+..\..\config\driver.c(214): warning:  #177-D: variable "EXTI_InitStructure" was declared but never referenced
+      EXTI_InitTypeDef EXTI_InitStructure;
+..\..\config\driver.c(215): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+      NVIC_InitTypeDef NVIC_InitStructure;
+..\..\config\driver.c(234): warning:  #188-D: enumerated type mixed with another type
+                EVAL_InputInit(i);
+..\..\config\driver.c(330): warning:  #177-D: variable "GPIO_InitStructure" was declared but never referenced
+        GPIO_InitTypeDef  GPIO_InitStructure;
+..\..\config\driver.c(684): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Goto_Postion"
+  }
+..\..\config\driver.c(794): warning:  #940-D: missing return statement at end of non-void function "Turn_Motor_Select_LED"
+  }
+..\..\config\driver.c(841): warning:  #177-D: variable "NVIC_InitStructure" was declared but never referenced
+        NVIC_InitTypeDef NVIC_InitStructure;
+..\..\config\driver.c(1465): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1477): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1515): warning:  #177-D: variable "i" was declared but never referenced
+        UINT16 nVal = 0, i;
+..\..\config\driver.c(1763): warning:  #550-D: variable "Status" was set but never used
+        UINT8 Status;
+..\..\config\driver.c(1764): warning:  #550-D: variable "Tempertaure_data" was set but never used
+        INT32 Pressure_data,Tempertaure_data;
+..\..\config\driver.c(3479): warning:  #177-D: variable "USART_InitStructure" was declared but never referenced
+      USART_InitTypeDef USART_InitStructure;    
+..\..\config\driver.c: 14 warnings, 0 errors
+compiling AD7799.c...
+..\..\config\AD7799.c(512): warning:  #940-D: missing return statement at end of non-void function "AD7799_Get_ADC_Value"
+  }
+..\..\config\AD7799.c(508): warning:  #550-D: variable "nADC" was set but never used
+        UINT32  nADC;
+..\..\config\AD7799.c: 2 warnings, 0 errors
+compiling ethernetif.c...
+compiling netconf.c...
+compiling stm32f4x7_eth_bsp.c...
+compiling udp_echoserver.c...
 linking...
-Program Size: Code=135908 RO-data=4520 RW-data=960 ZI-data=85824  
+Program Size: Code=135948 RO-data=4520 RW-data=960 ZI-data=85824  
 FromELF: creating hex file...
-"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 0 Warning(s).
+"..\obj\CX-3000_SLA_V001.axf" - 0 Error(s), 23 Warning(s).
 </pre>
 </body>
 </html>
-_V001.axf" 
-Set JLink Project File to "F:\CX-3000\CX-3000\workspace\prj\JLinkSettings.ini"
-* JLink Info: Device "STM32F407ZE" selected (512 KB flash, 128 KB RAM).
- 
-JLink info:
-------------
-DLL: V4.80g, compiled Feb 13 2014 20:50:02
-Firmware: J-Link ARM V8 compiled Nov 28 2014 13:44:46
-Hardware: V8.00
-S/N : 17935099 
-Feature(s) : RDI,FlashDL,FlashBP,JFlash 
- 
-* JLink Info: Found SWD-DP with ID 0x2BA01477
-* JLink Info: Found SWD-DP with ID 0x2BA01477
-* JLink Info: Found Cortex-M4 r0p1, Little endian.
-* JLink Info: FPUnit: 6 code (BP) slots and 2 literal slots
-* JLink Info: TPIU fitted.
-* JLink Info: ETM fitted.
-ROMTableAddr = 0xE00FF003
- 
-Target info:
-------------
-Device: STM32F407ZE
-VTarget = 3.325V
-State of Pins: 
-TCK: 0, TDI: 0, TDO: 0, TMS: 1, TRES: 1, TRST: 1
-Hardware-Breakpoints: 6
-Software-Breakpoints: 8192
-Watchpoints:          4
-JTAG speed: 1000 kHz
- 
-Erase Done.
-Programming Done.
-Verify OK.
-Application running ...

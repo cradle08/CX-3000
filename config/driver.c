@@ -1526,10 +1526,14 @@ UINT16 Get_Temp_ADC(void)
 UINT32 HW_Get_ADC_HGB(void)
 {
 	UINT32 nVal = 0;
-	
+	UINT8 i = 0;
 #if USE_STM32F407_ONLY
 	//nVal = Get_ADC3_Channel_Value(EN_ADC_HGB, ADC_SMOOTH_NUM_30);
-	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
+	for(i = 0; i < 5; i++)
+	{
+		nVal += AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
+	}
+	nVal /= 5;
 #else	
 	nVal = HW_Get_ADC_Perip(0); // /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 	
@@ -1541,10 +1545,16 @@ UINT32 HW_Get_ADC_HGB(void)
 UINT32  HW_Get_ADC_CRP(void)
 {
 	UINT32  nVal = 0;
+	UINT8		i = 0;
 	
 #if USE_STM32F407_ONLY
 	//nVal = Get_ADC3_Channel_Value(EN_ADC_CRP, ADC_SMOOTH_NUM_30);
-	nVal = AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
+	for(i = 0; i < 5; i++)
+	{
+		nVal += AD7799_Get_ADC_Value(AD7799_Get_Out_Data());
+	}
+	nVal /= 5;
+	
 #else	
 	nVal = HW_Get_ADC_Perip(2);  /* adc, 0=HGB,1=WBC vol value, 2=RBC(wbc backup,crp test), 3=press, */ 
 #endif
